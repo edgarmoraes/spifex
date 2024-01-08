@@ -1,0 +1,711 @@
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
+
+/* Estilos Universais */
+:root {
+  --primary-font: 'Open Sans', sans-serif;
+  --transition-duration1: 0.3s;
+  --transition-duration2: 0.2s;
+  --transition-effect1: all ease-in-out;
+  --box-shadow1: 0 0 1em #00000013;
+  --box-shadow2: 0 0 1em #00000023;
+  --branco: #FFFFFF;
+  --preto: #000000;
+  --color1: #F0EEEE;
+  --color2: #F4F2F2;
+  --color3: #B1C381;
+  --color4: #3D3D40;
+  --color5: #006919;
+  --color6: #740000;
+  --color7: #9BB8CD;
+  --color8: #F87C7C;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+a {
+  color: var(--branco);
+  text-decoration: none;
+  transition: var(--transition-duration1);
+}
+
+a:hover {
+  opacity: 0.7;
+}
+
+.main {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* Barra de Navegação Fixa */
+.logo {
+  font-size: 24px;
+  letter-spacing: 4px;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+}
+
+nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 8vh;
+  font-family: var(--primary-font);
+  background-color: #3d3d40bf;
+  backdrop-filter: blur(5px);
+}
+
+.nav-list {
+  display: flex;
+  list-style: none;
+}
+
+.nav-list li {
+  margin-left: 48px;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.line {
+  border: 0.5px solid var(--branco);
+  margin-top: 1.8px;
+  height: 16px;
+}
+
+/* Componentes da Caixa de Filtros
+... */
+
+.mesclar-2 {
+  grid-column: span 2;
+}
+
+.mesclar-3 {
+  grid-column: span 3;
+}
+
+.flex {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+  font-family: var(--primary-font);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.flex > select, .flex > input {
+  width: 100%;
+  font-family: var(--primary-font);
+  font-size: 15px;
+  margin-top: 5px;
+}
+
+/* Estilos dos Selects e Inputs */
+.flex select, .flex input {
+  background-color: var(--color2);
+  border: none;
+  color: var(--color4);
+  padding: 0.7rem 1rem;
+  border-radius: 5px;
+  transition: var(--transition-effect1) var(--transition-duration1);
+}
+
+.flex select:hover, .flex select:focus,
+.flex input:hover, .flex input:focus {
+  box-shadow: var(--box-shadow1);
+}
+
+.flex select, input:focus {
+  outline: none;
+  background-color: var(--color1);
+}
+
+/* Caixa de Pesquisa */
+.pesquisa {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 10px;
+  font-family: var(--primary-font);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.caixa-pesquisa {
+  margin: 0;
+  padding: 0.7rem 1rem;
+  width: 100%;
+  font-family: var(--primary-font);
+  color: var(--color4);
+  background-color: var(--color2);
+  font-size: 15px;
+  border: none;
+  border-radius: 30px;
+  transition: var(--transition-effect1) var(--transition-duration1);
+}
+
+.caixa-pesquisa:hover, .caixa-pesquisa:focus {
+  box-shadow: var(--box-shadow1);
+}
+
+.caixa-pesquisa:focus {
+  outline: none;
+  background-color: var(--color1);
+}
+
+.caixa-pesquisa::-webkit-input-placeholder {
+  font-weight: 400;
+  color: var(--color4);
+}
+
+.caixa-pesquisa:focus + .botao-pesquisa {
+  background-color: var(--color1);
+}
+
+.botao-pesquisa {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  margin-right: 1rem;
+  border: none;
+  background-color: var(--color2);
+}
+
+.botao-pesquisa:hover {
+  cursor: pointer;
+}
+
+.icon-pesquisa {
+  height: 1.3em;
+  width: 1.3em;
+  fill: #b4b4b4;
+}
+
+/* Caixa de Pesquisa de Tags */
+.pesquisa-tags {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 10px;
+  font-family: var(--primary-font);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.caixa-pesquisa-tags {
+  margin: 0;
+  padding: 0.7rem 1rem;
+  width: 100%;
+  font-family: var(--primary-font);
+  color: var(--color4);
+  background-color: var(--color2);
+  font-size: 15px;
+  border: none;
+  border-radius: 30px;
+  transition: var(--transition-effect1) var(--transition-duration1);
+}
+
+.caixa-pesquisa-tags:hover, .caixa-pesquisa-tags:focus {
+  box-shadow: var(--box-shadow1);
+}
+
+.caixa-pesquisa-tags:focus {
+  outline: none;
+  background-color: var(--color1);
+}
+
+.caixa-pesquisa-tags::-webkit-input-placeholder {
+  font-weight: 400;
+  color: var(--color4);
+}
+
+.caixa-pesquisa-tags:focus + .botao-pesquisa-tags {
+  background-color: var(--color1);
+}
+
+.botao-pesquisa-tags {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  margin-right: 1rem;
+  border: none;
+  background-color: var(--color2);
+}
+
+.botao-pesquisa-tags:hover {
+  cursor: pointer;
+}
+
+.icon-pesquisa-tags {
+  height: 1.3em;
+  width: 1.3em;
+  fill: #b4b4b4;
+}
+
+/* Tabela com Lançamentos */
+.conteudo-tabela-lancamentos {
+  display: flex;
+  justify-content: center;
+  font-family: var(--primary-font);
+  background-color: var(--branco);
+  font-weight: 300;
+  color: var(--color4);
+}
+
+.tabela-lancamentos {
+  margin: 10px;
+  margin-bottom: 30px;
+  min-width: 900px;
+  border-collapse: collapse;
+  border-spacing: 0;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.tabela-lancamentos0 th,
+.tabela-lancamentos0 td {
+  padding: 5px 10px;
+  overflow: hidden; /* Oculta o conteúdo excedente */
+  white-space: nowrap; /* Impede a quebra de texto */
+  text-overflow: ellipsis; /* Adiciona reticências (...) para indicar que há mais texto */
+}
+
+.tabela-lancamentos th {
+  padding: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.tabela-lancamentos td {
+  font-size: 12px;
+  font-weight: 300;
+}
+
+.tabela-lancamentos th small,
+.tabela-lancamentos td small {
+  display: block;
+  color: var(--color4);
+  font-weight: 300;
+}
+
+.tabela-lancamentos tbody tr:hover,
+.tabela-lancamentos tbody tr:focus {
+  background: var(--color1);
+}
+
+.tabela-lancamentos tbody tr {
+  transition: .3s all ease;
+}
+
+.row-lancamentos {
+  height: 40px;
+  border-bottom: 1px solid var(--color2);
+}
+
+.checkbox-col {
+  width: 40px;
+}
+
+.vencimento-col {
+  width: 100px;
+}
+
+.descricao-col {
+  width: 300px;
+}
+
+.obs-col {
+  width: 450px;
+}
+
+.parcela-col {
+  width: 60px;
+}
+
+.debito-col,
+.credito-col,
+.saldo-col {
+  width: 120px;
+}
+
+.checkbox-row {
+  text-align: center;
+}
+
+.vencimento-row,
+.parcela-row,
+.debito-row,
+.credito-row,
+.saldo-row {
+  text-align: center;
+  overflow: hidden; /* Oculta o conteúdo excedente */
+  white-space: nowrap; /* Impede a quebra de texto */
+  text-overflow: ellipsis; /* Adiciona reticências (...) para indicar que há mais texto */
+}
+
+.descricao-row,
+.obs-row {
+  padding: 5px 20px;
+}
+
+/* Checkbox */
+.checkbox-container {
+  display: inline-block;
+  position: relative;
+  padding-left: 35px;
+  margin-left: 15px;
+  margin-bottom: 20px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 16px;
+  user-select: none;
+}
+
+.checkbox-personalizado {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: var(--color2);
+  border-radius: 4px;
+  transition: background-color var(--transition-duration1);
+  box-shadow: 0 2px 5px #00000033;
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--branco);
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-personalizado:checked ~ .checkmark {
+  background-color: var(--color7);
+  box-shadow: 0 3px 7px #2196f34d;
+}
+
+.checkbox-personalizado:checked ~ .checkmark:after {
+  display: block;
+}
+
+@keyframes checkAnim {
+  0% {
+    height: 0;
+  }
+
+  100% {
+    height: 10px;
+  }
+}
+
+.checkbox-personalizado:checked ~ .checkmark:after {
+  animation: checkAnim 0.2s forwards;
+}
+
+/* Tabela Bancos */
+.cabecalho-bancos {
+  position: sticky;
+  top: 0;
+  height: 35px;
+  background-color: var(--color2); /* Adicione uma cor de fundo para destacar o cabeçalho */
+  z-index: 1; /* Certifique-se de que o cabeçalho esteja acima do restante do conteúdo */
+}
+
+.totais-row {
+  position: sticky;
+  bottom: 0;
+  height: 35px;
+  background-color: var(--color2); /* Adicione uma cor de fundo para destacar o cabeçalho */
+  z-index: 1; /* Certifique-se de que o cabeçalho esteja acima do restante do conteúdo */
+}
+.tabela-bancos {
+  width: 100%;
+  font-family: var(--primary-font);
+  color: var(--color4);
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.tabela-bancos th {
+  padding: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.tabela-bancos td {
+  font-size: 12px;
+  font-weight: 300;
+}
+
+.tabela-bancos tbody tr:hover,
+.tabela-bancos tbody tr:focus {
+  background: var(--color1);
+}
+
+.tabela-bancos tbody tr {
+  transition: .3s all ease;
+}
+
+.row-bancos {
+  height: 35px;
+  text-align: center;
+}
+
+.contas-bancos-col {
+  width: 300px;
+}
+
+.ag-bancos-col {
+  width: 100px;
+}
+
+.conta-bancos-col {
+  width: 100px;
+}
+
+.banco-row {
+  text-align: left;
+  padding: 0 20px;
+}
+
+td.total-row {
+  text-align: center;
+  font-weight: 900;
+}
+
+td.saldo-total-banco-row {
+  text-align: center;
+  font-weight: 900;
+}
+
+/* Botões da Checkbox */
+.botoes-acoes {
+  opacity: 0; /* Inicialmente transparente */
+  grid-template-columns: repeat(3, 1fr);
+  position: fixed;
+  justify-content: center;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(100%); /* Inicialmente escondido abaixo */
+  background-color: #3d3d40bf;
+  backdrop-filter: blur(5px);
+  padding: 10px;
+  width: 100%;
+  box-shadow: 0px -2px 5px 0px #0000001a;
+  transition: transform 0.5s ease, opacity 0.5s ease; /* Adiciona uma transição suave para as propriedades transform e opacity */
+}
+
+.botoes-acoes.mostrar {
+  opacity: 1; /* Quando mostrar, torna totalmente visível */
+  transform: translateX(-50%) translateY(0); /* Quando mostrar, move para translateY(0) para aparecer de baixo para cima */
+}
+
+.btn-areas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.btn-coluna, .total-liquidar-row {
+  font-family: var(--primary-font);
+  color: var(--branco);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.btn-coluna {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-acoes {
+  margin: 0 2rem;
+}
+
+.total-liquidar-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Botão de Liquidar */
+.liquidar-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background-color: var(--color3);
+  cursor: pointer;
+  border: 2px solid var(--color3);
+  transition-duration: 0.3s;
+  position: relative;
+  overflow: hidden;
+  transform: scale(0.7);
+}
+
+.liquidar-button:hover {
+  background-color: #8fa74c;
+  border: 2px solid #91a756;
+}
+
+.liquidar-button:active {
+  transform: scale(0.8);
+}
+
+.nuvem {
+  transform: scale(1.0);
+  transition: 200ms linear;
+  fill: var(--branco);
+}
+
+.liquidar-button:hover > .nuvem {
+  transform: scale(1.2);
+}
+
+.liquidar-button:hover > .nuvem path {
+  fill: var(--branco);
+  cursor: pointer;
+}
+
+/* Botão de Apagar */
+.apagar-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background-color: #ff5f5f;
+  cursor: pointer;
+  border: 2px solid #ff5f5f;
+  transition-duration: 0.3s;
+  position: relative;
+  overflow: hidden;
+  transform: scale(0.7);
+}
+
+.fundo-lixeira {
+  width: 15px;
+  z-index: 2;
+}
+
+.topo-lixeira {
+  width: 17px;
+  transform-origin: right;
+  transition-duration: 0.3s;
+  z-index: 2;
+}
+
+.apagar-button:hover .topo-lixeira {
+  transform: rotate(45deg);
+}
+
+.apagar-button:hover {
+  background-color: rgb(255, 0, 0);
+}
+
+.apagar-button:active {
+  transform: scale(0.8);
+}
+
+.lixeira {
+  position: absolute;
+  width: 14px;
+  height: auto;
+  z-index: 1;
+  opacity: 0;
+  transition: all 0.3s;
+}
+
+.apagar-button:hover .lixeira {
+  animation: throw 0.4s linear;
+}
+
+@keyframes throw {
+  from {
+    transform: translate(-400%, -700%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(0%, 0%);
+    opacity: 1;
+  }
+}
+
+/* Botão de Cancelar */
+.cancelar-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background-color: var(--branco);
+  cursor: pointer;
+  border: 2px solid var(--color1);
+  transition-duration: 0.3s;
+  position: relative;
+  overflow: hidden;
+  transform: scale(0.7);
+}
+
+.cancelar-button:hover {
+  background-color: var(--color2);  
+}
+
+.cancelar-button:active {
+  transform: scale(0.8);
+}
+
+.x-svg {
+  transform: scale(.4);
+  transition: 200ms linear;
+  fill: var(--color4);
+}
+
+.cancelar-button:hover > .x-svg {
+  transform: scale(.45);
+}
+
+.cancelar-button:hover > .x-svg path {
+  fill: var(--color4);
+  cursor: pointer;
+}
