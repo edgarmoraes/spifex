@@ -116,11 +116,14 @@ fecharModal(closeModalTransferencias, modalTransferencias, ".modal-form-transfer
 function mostrarOcultarParcelas(recorrenciaId, parcelasSectionId) {
   var recorrenciaSelect = document.getElementById(recorrenciaId);
   var parcelasSection = document.getElementById(parcelasSectionId);
+  var parcelasInput = document.getElementById("parcelas");
 
   if (recorrenciaSelect.value === "sim") {
     parcelasSection.style.display = "block";
+    parcelasInput.value = "";
   } else {
     parcelasSection.style.display = "none";
+    parcelasInput.value = "1";
   }
 }
 

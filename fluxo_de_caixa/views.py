@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import recebimentos
 from datetime import datetime
@@ -10,13 +10,23 @@ def fluxo_de_caixa(request):
     elif request.method == "POST":
         vencimento = request.POST.get('vencimento')
         descricao = request.POST.get('descricao')
+        observacao = request.POST.get('observacao')
+        valor = request.POST.get('valor')
+        conta_contabil = request.POST.get('conta_contabil')
+        parcelas = request.POST.get('parcelas')
+        tags = request.POST.get('tags')
 
         recebimento = recebimentos(
             vencimento=vencimento,
             descricao=descricao,
-            data_criacao=datetime.now()
+            observacao=observacao,
+            valor=valor,
+            conta_contabil=conta_contabil,
+            parcelas=parcelas,
+            tags=tags,
+            data_criacao=datetime.now(),
         )
 
         recebimento.save()
 
-        return render(request, 'fluxo_de_caixa.html')
+        return redirect(request.path)
