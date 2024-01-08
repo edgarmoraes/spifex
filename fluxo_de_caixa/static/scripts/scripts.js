@@ -145,6 +145,10 @@ function formatarCampoValor(input) {
 
   // Adiciona o "R$" ao valor formatado e atualiza o campo
   input.value = "R$ " + (isNaN(valorDecimal) ? "0,00" : valorFormatado.replace('R$', '').trim());
+
+  // Atualizar o valor do campo number
+  document.getElementById('valor_number').value = valorNumerico / 100;
+
 }
 
 // Adiciona um evento de teclado para detectar 'Shift + D'

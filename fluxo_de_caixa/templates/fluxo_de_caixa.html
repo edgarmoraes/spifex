@@ -15,7 +15,7 @@
         <nav class="nav-bar">
             <a class="logo" href="#">WAYEASI</a>
             <ul class="nav-list">
-                <li class="nav-fluxo-de-caixa"><a href="fluxo-de-caixa.html">FLUXO DE CAIXA</a></li>
+                <li class="nav-fluxo-de-caixa"><a href="/fluxo_de_caixa/">FLUXO DE CAIXA</a></li>
                 <li class="nav-realizado"><a href="realizado.html">REALIZADO</a></li>
                 <li class="nav-relatorios"><a href="#">RELATÓRIOS</a></li>
                 <li><div class="line"></div></li>
@@ -170,17 +170,18 @@
         
             <section class="modal-flex">
                 <label for="descricao">Descrição</label>
-                <input class="modal-descricao" id="descricao-recebimentos" type="text" name="descricao" required><br>
+                <input class="modal-descricao" id="descricao-recebimentos" maxlength="100" type="text" name="descricao" required><br>
             </section>
         
             <section class="modal-flex">
                 <label for="observacao">Observação</label>
-                <input class="modal-obs" type="text" name="observacao"></input><br>
+                <input class="modal-obs" maxlength="100" type="text" name="observacao"></input><br>
             </section>
             
             <section class="modal-flex">
                 <label for="valor">Valor</label>
-                <input class="modal-valor" id="valor" type="text" name="valor" oninput="formatarCampoValor(this)" value="R$ 0,00" required><br>
+                <input class="modal-valor" id="valor" type="text" name="" oninput="formatarCampoValor(this)" value="R$ 0,00" required><br>
+                <input type="number" name="valor" id="valor_number" hidden>
             </section>
         
             <section class="modal-flex">
