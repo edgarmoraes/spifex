@@ -143,38 +143,47 @@ function mostrarParcelasPagamentos() {
 
 // Função para formatar o valor de um campo como moeda brasileira
 function formatarCampoValorRecebimentos(input) {
-  // Obtém apenas os dígitos do valor atual
-  var valorNumerico = input.value.replace(/\D/g, '');
+  // Remover caracteres não numéricos
+  let valor = input.value.replace(/\D/g, '');
 
-  // Converte o valor para número
-  var valorDecimal = parseFloat(valorNumerico) / 100;
+  // Remover zeros à esquerda
+  valor = valor.replace(/^0+/, '');
 
-  // Formata o valor como moeda brasileira
-  var valorFormatado = valorDecimal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  // Adicionar o ponto decimal nas duas últimas casas decimais
+  if (valor.length > 2) {
+      valor = valor.slice(0, -2) + '.' + valor.slice(-2);
+  } else if (valor.length === 2) {
+      valor = '0.' + valor;
+  } else if (valor.length === 1) {
+      valor = '0.0' + valor;
+  } else {
+      valor = '0.00';
+  }
 
-  // Adiciona o "R$" ao valor formatado e atualiza o campo
-  input.value = "R$ " + (isNaN(valorDecimal) ? "0,00" : valorFormatado.replace('R$', '').trim());
-
-  // Atualizar o valor do campo number
-  document.getElementById('valor_formatado_recebimentos').value = valorNumerico / 100;
+  // Atualizar o valor do campo
+  input.value = valor;
 }
 
 function formatarCampoValorPagamentos(input) {
-  // Obtém apenas os dígitos do valor atual
-  var valorNumerico = input.value.replace(/\D/g, '');
+  // Remover caracteres não numéricos
+  let valor = input.value.replace(/\D/g, '');
 
-  // Converte o valor para número
-  var valorDecimal = parseFloat(valorNumerico) / 100;
+  // Remover zeros à esquerda
+  valor = valor.replace(/^0+/, '');
 
-  // Formata o valor como moeda brasileira
-  var valorFormatado = valorDecimal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  // Adicionar o ponto decimal nas duas últimas casas decimais
+  if (valor.length > 2) {
+      valor = valor.slice(0, -2) + '.' + valor.slice(-2);
+  } else if (valor.length === 2) {
+      valor = '0.' + valor;
+  } else if (valor.length === 1) {
+      valor = '0.0' + valor;
+  } else {
+      valor = '0.00';
+  }
 
-  // Adiciona o "R$" ao valor formatado e atualiza o campo
-  input.value = "R$ " + (isNaN(valorDecimal) ? "0,00" : valorFormatado.replace('R$', '').trim());
-
-  // Atualizar o valor do campo number
-  document.getElementById('valor_formatado_pagamentos').value = valorNumerico / 100;
-
+  // Atualizar o valor do campo
+  input.value = valor;
 }
 
 
