@@ -180,7 +180,7 @@
             
             <section class="modal-flex">
                 <label for="valor">Valor</label>
-                <input class="modal-valor" id="valor" type="text" name="valor" oninput="formatarCampoValorRecebimentos(this)" value="R$ 0,00" required><br>
+                <input class="modal-valor" id="" type="text" name="" oninput="formatarCampoValorRecebimentos(this)" value="R$ 0,00" required><br>
                 <input type="number" name="valor" id="valor_formatado_recebimentos" hidden>
             </section>
         
@@ -214,7 +214,7 @@
                   <input type="hidden" id="tagsHiddenInput-recebimentos" name="tags">
             </section>
             <section class="modal-botoes">
-                <input class="modal-salvar" id="salvar_recebimento" type="submit" value="Salvar">
+                <input type="submit" class="modal-salvar" name="salvar_recebimento" value="Salvar">
                 <button class="modal-fechar-recebimentos">Cancelar</button>
             </section>
         </form>
@@ -277,7 +277,7 @@
                   <input type="hidden" id="tagsHiddenInput-pagamentos" name="tags">
             </section>
             <section class="modal-botoes">
-                <input class="modal-salvar" id="salvar_pagamento" type="submit" value="Salvar">
+                <input type="submit" class="modal-salvar" name="salvar_pagamentos" value="Salvar">
                 <button class="modal-fechar-pagamentos">Cancelar</button>
             </section>
         </form>
@@ -343,24 +343,24 @@
                 </tr>
             </thead>
             <tbody>
-                {% for recebimento in recebimentos_list %}
+                {% for fluxo_de_caixa in Tabela_fluxo_list %}
                 <tr class="row-lancamentos" scope="row">
                     <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado" type="checkbox"><span class="checkmark"></span></label></td>
-                    <td class="vencimento-row">{{ recebimento.vencimento|date:"d/m/Y" }}</td>
-                    <td class="descricao-row">{{ recebimento.descricao }}</td>
+                    <td class="vencimento-row">{{ fluxo_de_caixa.vencimento|date:"d/m/Y" }}</td>
+                    <td class="descricao-row">{{ fluxo_de_caixa.descricao }}</td>
                     <td class="obs-row">
-                        {{ recebimento.observacao }}
-                        <small class="d-block">Tags: {{ recebimento.tags }}</small>
+                        {{ fluxo_de_caixa.observacao }}
+                        <small class="d-block">Tags: {{ fluxo_de_caixa.tags }}</small>
                     </td>
-                    <td class="parcela-row">{{ recebimento.parcelas }}</td>
-                    {% if recebimento.natureza == 'Débito' %}
-                        <td class="debito-row">{{ recebimento.valor }}</td>
+                    <td class="parcela-row">{{ fluxo_de_caixa.parcelas }}</td>
+                    {% if fluxo_de_caixa.natureza == 'Débito' %}
+                        <td class="debito-row">{{ fluxo_de_caixa.valor }}</td>
                         <td class="credito-row"></td>
                     {% else %}
                         <td class="debito-row"></td>
-                        <td class="credito-row">{{ recebimento.valor }}</td>
+                        <td class="credito-row">{{ fluxo_de_caixa.valor }}</td>
                     {% endif %}
-                    <td class="saldo-row">{{ recebimento.saldo }}</td>
+                    <td class="saldo-row">{{ fluxo_de_caixa.saldo }}</td>
                 </tr>
             {% endfor %}
             </tbody>

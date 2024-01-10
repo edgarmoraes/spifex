@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import recebimentos
+from .models import Tabela_fluxo
 
 # Register your models here.
-admin.site.register(recebimentos)
+admin.site.register(Tabela_fluxo)

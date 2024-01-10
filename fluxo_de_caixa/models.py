@@ -1,6 +1,6 @@
 from django.db import models
 
-class recebimentos(models.Model):
+class Tabela_fluxo(models.Model):
     vencimento = models.DateField()
     descricao = models.CharField(max_length = 100)
     observacao = models.CharField(max_length = 100)

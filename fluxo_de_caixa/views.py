@@ -2,16 +2,16 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from datetime import datetime
 from django.shortcuts import render
-from .models import recebimentos
+from .models import Tabela_fluxo
 
 # Create your views here.
 def fluxo_de_caixa(request):
     if request.method == "GET":
         # Retrieve all recebimentos objects from the database
-        recebimentos_list = recebimentos.objects.all()
+        Tabela_fluxo_list = Tabela_fluxo.objects.all()
         
         # Pass the data to the template context
-        context = {'recebimentos_list': recebimentos_list}
+        context = {'Tabela_fluxo_list': Tabela_fluxo_list}
         return render(request, 'fluxo_de_caixa.html', context)
     elif request.method == "POST":
         vencimento = request.POST.get('vencimento')
@@ -21,15 +21,12 @@ def fluxo_de_caixa(request):
         conta_contabil = request.POST.get('conta_contabil')
         parcelas = request.POST.get('parcelas')
         tags = request.POST.get('tags')
+        if 'salvar_recebimento' in request.POST:
+            natureza = 'Crédito'
+        else: natureza = 'Débito'
 
-        natureza = 'Crédito'  # Valor padrão
 
-        # Verificar o botão submit
-        submit_button = request.POST.get('submit_button')
-        if submit_button == 'salvar_pagamento':
-            natureza = 'Débito'
-
-        recebimento = recebimentos(
+        fluxo_de_caixa = Tabela_fluxo(
             vencimento=vencimento,
             descricao=descricao,
             observacao=observacao,
@@ -41,7 +38,7 @@ def fluxo_de_caixa(request):
             data_criacao=datetime.now(),
         )
 
-        recebimento.save()
+        fluxo_de_caixa.save()
 
         return redirect(request.path)
     
