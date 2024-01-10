@@ -113,34 +113,36 @@ abrirModal(openModalTransferencias, modalTransferencias, ".modal-form-transferen
 fecharModal(closeModalTransferencias, modalTransferencias, ".modal-form-transferencias");
 
 // Função para mostrar campo de recorrência
-function mostrarOcultarParcelas(recorrenciaId, parcelasSectionId, parcelasId) {
-  var recorrenciaSelect = document.getElementById(recorrenciaId);
-  var parcelasSection = document.getElementById(parcelasSectionId);
-  var parcelasInput = document.getElementById(parcelasId);
+function mostrarParcelasRecebimentos() {
+  var select = document.getElementById('recorrencia-recebimentos');
+  var section = document.getElementById('parcelas-section-recebimentos');
+  var input = document.getElementById('parcelas-recebimentos');
 
-  console.log("recorrenciaSelect.value:", recorrenciaSelect.value);
-  console.log("parcelasSection.style.display:", parcelasSection.style.display);
-  console.log("parcelasInput.value:", parcelasInput.value);
-
-  if (recorrenciaSelect.value === "sim") {
-    parcelasSection.style.display = "block";
-    parcelasInput.value = "";
+  if (select.value === 'sim') {
+      section.style.display = 'block';
+      input.value = '';  // Removido o valor '1' aqui
   } else {
-    parcelasSection.style.display = "none";
-    parcelasInput.value = "1";
+      section.style.display = 'none';
+      input.value = '1';
   }
 }
 
-function mostrarParcelasRecebimentos() {
-  mostrarOcultarParcelas("recorrencia-recebimentos", "parcelas-section-recebimentos", "parcelas-recebimentos");
+function mostrarParcelasPagamentos() {
+  var select = document.getElementById('recorrencia-pagamentos');
+  var section = document.getElementById('parcelas-section-pagamentos');
+  var input = document.getElementById('parcelas-pagamentos');
+
+  if (select.value === 'sim') {
+      section.style.display = 'block';
+      input.value = '';  // Removido o valor '1' aqui
+  } else {
+      section.style.display = 'none';
+      input.value = '1';
+  }
 }
 
-function mostrarParcelasPagamentos() {
-  mostrarOcultarParcelas("recorrencia-pagamentos", "parcelas-section-pagamentos", "parcelas-pagamentos");
-}
-  
 // Função para formatar o valor de um campo como moeda brasileira
-function formatarCampoValor(input) {
+function formatarCampoValorRecebimentos(input) {
   // Obtém apenas os dígitos do valor atual
   var valorNumerico = input.value.replace(/\D/g, '');
 
@@ -154,7 +156,24 @@ function formatarCampoValor(input) {
   input.value = "R$ " + (isNaN(valorDecimal) ? "0,00" : valorFormatado.replace('R$', '').trim());
 
   // Atualizar o valor do campo number
-  document.getElementById('valor_number').value = valorNumerico / 100;
+  document.getElementById('valor_formatado_recebimentos').value = valorNumerico / 100;
+}
+
+function formatarCampoValorPagamentos(input) {
+  // Obtém apenas os dígitos do valor atual
+  var valorNumerico = input.value.replace(/\D/g, '');
+
+  // Converte o valor para número
+  var valorDecimal = parseFloat(valorNumerico) / 100;
+
+  // Formata o valor como moeda brasileira
+  var valorFormatado = valorDecimal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+  // Adiciona o "R$" ao valor formatado e atualiza o campo
+  input.value = "R$ " + (isNaN(valorDecimal) ? "0,00" : valorFormatado.replace('R$', '').trim());
+
+  // Atualizar o valor do campo number
+  document.getElementById('valor_formatado_pagamentos').value = valorNumerico / 100;
 
 }
 

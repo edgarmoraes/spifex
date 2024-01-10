@@ -180,8 +180,8 @@
             
             <section class="modal-flex">
                 <label for="valor">Valor</label>
-                <input class="modal-valor" id="" type="text" name="" oninput="formatarCampoValor(this)" value="R$ 0,00" required><br>
-                <input type="number" name="valor" id="valor_number" hidden>
+                <input class="modal-valor" id="valor" type="text" name="valor" oninput="formatarCampoValorRecebimentos(this)" value="R$ 0,00" required><br>
+                <input type="number" name="valor" id="valor_formatado_recebimentos" hidden>
             </section>
         
             <section class="modal-flex">
@@ -195,7 +195,7 @@
         
             <section class="modal-flex" id="recorrencia-section">
                 <label for="recorrencia">Recorrência</label>
-                <select class="modal-recorrencia" id="recorrencia-recebimentos" type="text" name="recorrencia" onchange="mostrarParcelasRecebimentos()" required>
+                <select class="modal-recorrencia" name="recorrencia" id="recorrencia-recebimentos" required onchange="mostrarParcelasRecebimentos()">
                     <option value="nao">Não</option>
                     <option value="sim">Sim</option>
                 </select><br>
@@ -203,7 +203,7 @@
         
             <section class="modal-flex mesclar-2" id="parcelas-section-recebimentos" style="display:none;">
                 <label for="parcelas">Número de Parcelas</label>
-                <input class="modal-parcelas" id="parcelas-recebimentos" min="1" type="number" name="parcelas" value="1"><br>
+                <input class="modal-parcelas" type="number" id="parcelas-recebimentos" name="parcelas" min="1" value="1"><br>
             </section>
 
             <section class="modal-flex mesclar-2">
@@ -214,7 +214,7 @@
                   <input type="hidden" id="tagsHiddenInput-recebimentos" name="tags">
             </section>
             <section class="modal-botoes">
-                <input class="modal-salvar" type="submit" value="Salvar">
+                <input class="modal-salvar" id="salvar_recebimento" type="submit" value="Salvar">
                 <button class="modal-fechar-recebimentos">Cancelar</button>
             </section>
         </form>
@@ -243,8 +243,8 @@
             
             <section class="modal-flex">
                 <label for="valor">Valor</label>
-                <input class="modal-valor" type="text" id="" name="" oninput="formatarCampoValor(this)" value="R$ 0,00" required><br>
-                <input type="number" name="valor" id="valor_number" hidden>
+                <input class="modal-valor" type="text" id="" name="" oninput="formatarCampoValorPagamentos(this)" value="R$ 0,00" required><br>
+                <input type="number" name="valor" id="valor_formatado_pagamentos" hidden>
             </section>
         
             <section class="modal-flex">
@@ -258,12 +258,12 @@
         
             <section class="modal-flex">
                 <label for="recorrencia">Recorrência</label>
-                <select class="modal-recorrencia" name="recorrencia" id="recorrencia-pagamentos" type="text" name="recorrencia" onchange="mostrarParcelasPagamentos()" required>
-                  <option value="nao">Não</option>
-                  <option value="sim">Sim</option>
+                <select class="modal-recorrencia" name="recorrencia" id="recorrencia-pagamentos" required onchange="mostrarParcelasPagamentos()">
+                    <option value="nao">Não</option>
+                    <option value="sim">Sim</option>
                 </select><br>
             </section>
-
+        
             <section class="modal-flex mesclar-2" id="parcelas-section-pagamentos" style="display:none;">
                 <label for="parcelas">Número de Parcelas</label>
                 <input class="modal-parcelas" type="number" id="parcelas-pagamentos" name="parcelas" min="1" value="1"><br>
@@ -277,7 +277,7 @@
                   <input type="hidden" id="tagsHiddenInput-pagamentos" name="tags">
             </section>
             <section class="modal-botoes">
-                <input class="modal-salvar" type="submit" value="Salvar">
+                <input class="modal-salvar" id="salvar_pagamento" type="submit" value="Salvar">
                 <button class="modal-fechar-pagamentos">Cancelar</button>
             </section>
         </form>

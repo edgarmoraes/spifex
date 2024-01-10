@@ -22,6 +22,13 @@ def fluxo_de_caixa(request):
         parcelas = request.POST.get('parcelas')
         tags = request.POST.get('tags')
 
+        natureza = 'Crédito'  # Valor padrão
+
+        # Verificar o botão submit
+        submit_button = request.POST.get('submit_button')
+        if submit_button == 'salvar_pagamento':
+            natureza = 'Débito'
+
         recebimento = recebimentos(
             vencimento=vencimento,
             descricao=descricao,
@@ -30,8 +37,8 @@ def fluxo_de_caixa(request):
             conta_contabil=conta_contabil,
             parcelas=parcelas,
             tags=tags,
-            natureza='Crédito',
-            data_criacao=datetime,
+            natureza=natureza,
+            data_criacao=datetime.now(),
         )
 
         recebimento.save()
