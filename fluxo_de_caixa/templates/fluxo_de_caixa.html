@@ -342,16 +342,26 @@
                 </tr>
             </thead>
             <tbody>
+                {% for recebimento in recebimentos_list %}
                 <tr class="row-lancamentos" scope="row">
                     <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado" type="checkbox"><span class="checkmark"></span></label></td>
-                    <td class="vencimento-row">31/12/2023</td>
-                    <td class="descricao-row">Conta de Luz</td>
-                    <td class="obs-row">Ref. Nov23<small class="d-block">Empresa: Light; Operação: PIX</small></td>
-                    <td class="parcela-row">11/12</td>
-                    <td class="debito-row">000.000.000.000,00</td>
-                    <td class="credito-row">000.000.000.000,00</td>
-                    <td class="saldo-row">000.000.000.000,00</td>
+                    <td class="vencimento-row">{{ recebimento.vencimento|date:"d/m/Y" }}</td>
+                    <td class="descricao-row">{{ recebimento.descricao }}</td>
+                    <td class="obs-row">
+                        {{ recebimento.observacao }}
+                        <small class="d-block">Tags: {{ recebimento.tags }}</small>
+                    </td>
+                    <td class="parcela-row">{{ recebimento.parcelas }}</td>
+                    {% if recebimento.natureza == 'Débito' %}
+                        <td class="debito-row">{{ recebimento.valor }}</td>
+                        <td class="credito-row"></td>
+                    {% else %}
+                        <td class="debito-row"></td>
+                        <td class="credito-row">{{ recebimento.valor }}</td>
+                    {% endif %}
+                    <td class="saldo-row">{{ recebimento.saldo }}</td>
                 </tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>

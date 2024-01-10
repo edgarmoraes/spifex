@@ -8,4 +8,5 @@ class recebimentos(models.Model):
     conta_contabil = models.CharField(max_length = 100)
     parcelas = models.IntegerField()
     tags = models.CharField(max_length = 100)
+    natureza = models.CharField(max_length=50)
     data_criacao = models.DateTimeField()
