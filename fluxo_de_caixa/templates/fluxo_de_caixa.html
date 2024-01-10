@@ -181,7 +181,7 @@
             <section class="modal-flex">
                 <label for="valor">Valor</label>
                 <input class="modal-valor" id="valor" type="text" name="" oninput="formatarCampoValor(this)" value="R$ 0,00" required><br>
-                <input type="number" name="valor" id="valor_number" hidden>
+                <input type="number" name="valor" id="valor_number_recebimento" hidden>
             </section>
         
             <section class="modal-flex">
@@ -195,7 +195,7 @@
         
             <section class="modal-flex" id="recorrencia-section">
                 <label for="recorrencia">Recorrência</label>
-                <select class="modal-recorrencia" id="recorrencia-recebimentos" type="text" name="recorrencia" required onchange="mostrarParcelasRecebimentos()">
+                <select class="modal-recorrencia" id="recorrencia-recebimentos" type="text" name="recorrencia" onchange="mostrarParcelasRecebimentos()" required>
                     <option value="nao">Não</option>
                     <option value="sim">Sim</option>
                 </select><br>
@@ -225,30 +225,31 @@
 
         <h1 class="modal-titulo">Pagamentos</h1>
         
-        <form class="modal-form-pagamentos" action="#" method="post">
+        <form class="modal-form-pagamentos" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
             <section class="modal-flex">
                 <label for="data">Data</label>
-                <input class="modal-data" type="date" id="data-pagamentos" name="data" required><br>
+                <input class="modal-data" type="date" id="data-pagamentos" name="vencimento" required><br>
             </section>
         
             <section class="modal-flex">
                 <label for="descricao">Descrição</label>
-                <input class="modal-descricao" id="descricao-pagamentos" type="text" name="descricao" required><br>
+                <input class="modal-descricao" id="descricao-pagamentos" maxlength="100" type="text" name="descricao" required><br>
             </section>
         
             <section class="modal-flex">
                 <label for="observacao">Observação</label>
-                <input class="modal-obs" name="observacao"></input><br>
+                <input class="modal-obs" maxlength="100" type="text" name="observacao"></input><br>
             </section>
             
             <section class="modal-flex">
                 <label for="valor">Valor</label>
                 <input class="modal-valor" type="text" id="valor" name="valor" oninput="formatarCampoValor(this)" value="R$ 0,00" required><br>
+                <input type="number" name="valor" id="valor_number" hidden>
             </section>
         
             <section class="modal-flex">
                 <label for="contaContabil">Conta Contábil</label>
-                <select class="modal-conta-contabil" name="contaContabil" required>
+                <select class="modal-conta-contabil" type="text" name="conta_contabil" required>
                   <option value="conta1">Conta 1</option>
                   <option value="conta2">Conta 2</option>
                   <option value="conta3">Conta 3</option>
@@ -257,7 +258,7 @@
         
             <section class="modal-flex">
                 <label for="recorrencia">Recorrência</label>
-                <select class="modal-recorrencia" name="recorrencia" id="recorrencia-pagamentos" required onchange="mostrarParcelasPagamentos()">
+                <select class="modal-recorrencia" name="recorrencia" id="recorrencia-pagamentos" type="text" name="recorrencia" onchange="mostrarParcelasPagamentos()" required>
                   <option value="nao">Não</option>
                   <option value="sim">Sim</option>
                 </select><br>
@@ -273,7 +274,7 @@
                     <!-- Tags will be dynamically added here -->
                   </div>
                   <input type="text" id="tagInput-pagamentos" class="tagInput" placeholder="Adicione uma tag">
-                  <input type="hidden" id="tagsHiddenInput-pagamentos">
+                  <input type="hidden" id="tagsHiddenInput-pagamentos" name="tags">
             </section>
             <section class="modal-botoes">
                 <input class="modal-salvar" type="submit" value="Salvar">

@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import recebimentos
 from datetime import datetime
 from django.shortcuts import render
+from .models import recebimentos
 
 # Create your views here.
 def fluxo_de_caixa(request):
@@ -31,7 +31,7 @@ def fluxo_de_caixa(request):
             parcelas=parcelas,
             tags=tags,
             natureza='Crédito',
-            data_criacao=datetime.now(),
+            data_criacao=datetime,
         )
 
         recebimento.save()

@@ -150,7 +150,7 @@ function formatarCampoValor(input) {
   input.value = "R$ " + (isNaN(valorDecimal) ? "0,00" : valorFormatado.replace('R$', '').trim());
 
   // Atualizar o valor do campo number
-  document.getElementById('valor_number').value = valorNumerico / 100;
+  document.getElementById('valor_number_recebimento').value = valorNumerico / 100;
 
 }
 

@@ -9,4 +9,4 @@ class recebimentos(models.Model):
     parcelas = models.IntegerField()
     tags = models.CharField(max_length = 100)
     natureza = models.CharField(max_length=50)
-    data_criacao = models.DateTimeField()
+    data_criacao = models.DateTimeField(auto_now_add=True)
