@@ -1,9 +1,65 @@
+// Apagar lançamentos da tabela
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('apagar-button').addEventListener('click', function() {
+      var idsSelecionados = [];
+      var checkboxesSelecionadas = document.querySelectorAll('.checkbox-personalizado:checked');
+      checkboxesSelecionadas.forEach(function(checkbox) {
+          idsSelecionados.push(checkbox.getAttribute('data-id'));
+      });
+
+        fetch('/fluxo_de_caixa/deletar-entradas/', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': getCsrfToken()
+          },
+          body: JSON.stringify({ids: idsSelecionados})
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.status === 'success') {
+              checkboxesSelecionadas.forEach(function(checkbox) {
+                  var linhaParaRemover = checkbox.closest('tr');
+                  linhaParaRemover.remove();
+              });
+          }
+      })
+      .catch(error => console.error('Erro:', error));
+  });
+});
+
+function getCsrfToken() {
+  return document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+}
+
+// Selecionar checkboxes com o shift clicado
+let ultimoCheckboxClicado;
+
+document.addEventListener('click', function(e) {
+    if (!e.target.classList.contains('checkbox-personalizado')) return;
+    let checkboxAtual = e.target;
+
+    if (e.shiftKey && ultimoCheckboxClicado) {
+        let checkboxes = Array.from(document.querySelectorAll('.checkbox-personalizado'));
+        let startIndex = checkboxes.indexOf(ultimoCheckboxClicado);
+        let endIndex = checkboxes.indexOf(checkboxAtual);
+        let inverterSelecao = checkboxAtual.checked;
+
+        for (let i = Math.min(startIndex, endIndex); i <= Math.max(startIndex, endIndex); i++) {
+            checkboxes[i].checked = inverterSelecao;
+        }
+    }
+
+    ultimoCheckboxClicado = checkboxAtual;
+});
+
 // Aparecer barra de botões
 document.addEventListener('DOMContentLoaded', function () {
   const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     const botoesAcoes = document.querySelector('.botoes-acoes');
     const tabelaLancamentos = document.querySelector('.conteudo-tabela-lancamentos');
     const cancelarButton = document.querySelector('.cancelar-button');
+    const apagarButton = document.querySelector('.apagar-button');
     
     checkboxes.forEach(function (checkbox) {
       checkbox.addEventListener('change', function () {
@@ -30,6 +86,11 @@ document.addEventListener('DOMContentLoaded', function () {
           // Ocultar os botões e remover a margem
           botoesAcoes.classList.remove('mostrar');
           tabelaLancamentos.style.marginBottom = '0';
+        });
+
+          apagarButton.addEventListener('click', function () {
+            botoesAcoes.classList.remove('mostrar');
+            tabelaLancamentos.style.marginBottom = '0';
         });
       });
       
@@ -111,6 +172,74 @@ fecharModal(closeModalPagamentos, modalPagamentos, ".modal-form-pagamentos", 'ta
 
 abrirModal(openModalTransferencias, modalTransferencias, ".modal-form-transferencias");
 fecharModal(closeModalTransferencias, modalTransferencias, ".modal-form-transferencias");
+
+// Funções para preencher os modais
+// Editar recebimento
+function preencherModalRecebimento(creditValue, row) {
+  const idValorRecebimento = 'valor-recebimentos';
+  const idDataRecebimento = 'data-recebimentos';
+  const idDescricaoRecebimento = 'descricao-recebimentos';
+  const idObservacaoRecebimento = 'observacao-recebimentos';
+  const idTagContainerRecebimento = 'tagInput-recebimentos';
+
+  document.getElementById('recorrencia-recebimentos').style.display = 'none';
+  document.querySelector('.recorrencia-label').style.display = 'none';
+
+  document.getElementById(idValorRecebimento).value = creditValue;
+  document.getElementById(idDataRecebimento).value = row.querySelector('.vencimento-row').textContent.trim();
+  document.getElementById(idDescricaoRecebimento).value = row.querySelector('.descricao-row').textContent.trim();
+  document.getElementById(idObservacaoRecebimento).value = row.querySelector('.obs-row').textContent.trim();
+  document.getElementById(idTagContainerRecebimento).value = row.querySelector('.d-block').textContent.trim();
+
+  abrirModalEdicaoLancamento('modal-recebimentos');
+}
+
+// Editar pagamento
+function preencherModalPagamento(debitValue, row) {
+  const idValorPagamento = 'valor-pagamentos';
+  const idDataPagamento = 'data-pagamentos';
+  const idDescricaoPagamento = 'descricao-pagamentos';
+  const idObservacaoPagamento = 'observacao-pagamentos';
+  const idTagContainerPagamento = 'tagInput-pagamentos';
+
+  // Ocultar elemento de recorrência
+  document.getElementById('recorrencia-pagamentos').style.display = 'none';
+  document.querySelector('.recorrencia-label').style.display = 'none';
+
+  document.getElementById(idValorPagamento).value = debitValue;
+  document.getElementById(idDataPagamento).value = row.querySelector('.vencimento-row').textContent.trim();
+  document.getElementById(idDescricaoPagamento).value = row.querySelector('.descricao-row').textContent.trim();
+  document.getElementById(idObservacaoPagamento).value = row.querySelector('.obs-row').textContent.trim();
+  document.getElementById(idTagContainerPagamento).value = row.querySelector('.d-block').textContent.trim();
+
+  abrirModalEdicaoLancamento('modal-pagamentos');
+}
+
+// Event listener para cliques duplos nas linhas da tabela
+document.querySelectorAll('.tabela-lancamentos .row-lancamentos').forEach(row => {
+  row.addEventListener('dblclick', function() {
+    const debitElement = this.querySelector('.debito-row');
+    const creditElement = this.querySelector('.credito-row');
+    const debitValue = debitElement.textContent.trim();
+    const creditValue = creditElement.textContent.trim();
+
+    if (debitValue) {
+      preencherModalPagamento(debitValue, this);
+    } else if (creditValue) {
+      preencherModalRecebimento(creditValue, this);
+    }
+  });
+});
+
+// Função para abrir os modais
+function abrirModalEdicaoLancamento(idModal) {
+  const modal = document.getElementById(idModal);
+  if (modal) {
+    modal.showModal();
+    // Adicione mais lógica se necessário
+  }
+}
+
 
 // Função para mostrar campo de recorrência
 function mostrarParcelasRecebimentos() {
