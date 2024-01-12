@@ -174,6 +174,27 @@ abrirModal(openModalTransferencias, modalTransferencias, ".modal-form-transferen
 fecharModal(closeModalTransferencias, modalTransferencias, ".modal-form-transferencias");
 
 // Funções para preencher os modais
+function removerTextoSmall(row, idObservacao) {
+  // Clona o elemento de observação para evitar alterá-lo diretamente na tabela
+  const obsElement = row.querySelector('.obs-row').cloneNode(true);
+  // Seleciona o elemento <small> dentro da observação
+  const smallElement = obsElement.querySelector('small');
+  // Se o elemento <small> existir, remove-o do elemento clonado
+  if (smallElement) {
+    obsElement.removeChild(smallElement);
+  }
+  // Atualiza o campo de observação no modal com o texto restante
+  document.getElementById(idObservacao).value = obsElement.textContent.trim();
+}
+
+function formatarData(dataStr) {
+  var partesData = dataStr.split('/');
+  if (partesData.length === 3) {
+    return partesData[2] + '-' + partesData[1].padStart(2, '0') + '-' + partesData[0].padStart(2, '0'); // Converte para "YYYY-MM-DD"
+  }
+  return ''; // Retorna string vazia se a data não estiver no formato esperado
+}
+
 // Editar recebimento
 function preencherModalRecebimento(creditValue, row) {
   const idValorRecebimento = 'valor-recebimentos';
@@ -181,6 +202,10 @@ function preencherModalRecebimento(creditValue, row) {
   const idDescricaoRecebimento = 'descricao-recebimentos';
   const idObservacaoRecebimento = 'observacao-recebimentos';
   const idTagContainerRecebimento = 'tagInput-recebimentos';
+
+  removerTextoSmall(row, 'observacao-recebimentos');
+
+  document.getElementById(idDataRecebimento).value = formatarData(row.querySelector('.vencimento-row').textContent.trim());
 
   document.getElementById('recorrencia-recebimentos').style.display = 'none';
   document.querySelector('.recorrencia-label').style.display = 'none';
@@ -201,6 +226,10 @@ function preencherModalPagamento(debitValue, row) {
   const idDescricaoPagamento = 'descricao-pagamentos';
   const idObservacaoPagamento = 'observacao-pagamentos';
   const idTagContainerPagamento = 'tagInput-pagamentos';
+
+  removerTextoSmall(row, 'observacao-pagamentos');
+
+  document.getElementById(idDataRecebimento).value = formatarData(row.querySelector('.vencimento-row').textContent.trim());
 
   // Ocultar elemento de recorrência
   document.getElementById('recorrencia-pagamentos').style.display = 'none';
