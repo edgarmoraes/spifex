@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
               checkboxesSelecionadas.forEach(function(checkbox) {
                   var linhaParaRemover = checkbox.closest('tr');
                   linhaParaRemover.remove();
+                  window.location.reload();
               });
           }
       })
@@ -174,128 +175,110 @@ abrirModal(openModalTransferencias, modalTransferencias, ".modal-form-transferen
 fecharModal(closeModalTransferencias, modalTransferencias, ".modal-form-transferencias");
 
 
-
-
-
-
-// Lógica de Abertura Condicional dos Modais
-document.querySelectorAll('.row-lancamentos').forEach(row => {
-  row.addEventListener('dblclick', function() {
-      const credito = row.querySelector('.credito-row').textContent.trim();
-      const debito = row.querySelector('.debito-row').textContent.trim();
-
-      if (credito && !debito) {
-          abrirModalRecebimentosEdicao(this);
-      } else if (!credito && debito) {
-          abrirModalPagamentosEdicao(this);
-      }
+// Evento para editar lançamentos ao clicar duas vezes nas células da tabela
+document.querySelectorAll('.row-lancamentos td:not(.checkbox-row)').forEach(cell => {
+  cell.addEventListener('dblclick', function() {
+      handleCellDoubleClick(cell);
   });
 });
 
-
-document.addEventListener('keydown', (event) => {
+// Fecha os modais ao pressionar a tecla Escape
+document.addEventListener('keydown', event => {
   if (event.key === 'Escape') {
-      if (document.getElementById('modal-recebimentos').open) {
-          fecharModalRecebimentosEdicao();
-      } else if (document.getElementById('modal-pagamentos').open) {
-          fecharModalPagamentosEdicao();
-      }
+      fecharModais();
   }
 });
 
+function handleCellDoubleClick(cell) {
+  const row = cell.closest('.row-lancamentos');
+  abrirModalEdicao(row);
+}
+
+function abrirModalEdicao(row) {
+  const credito = row.querySelector('.credito-row').textContent.trim();
+  const debito = row.querySelector('.debito-row').textContent.trim();
+
+  if (credito && !debito) {
+      abrirModalRecebimentosEdicao(row);
+  } else if (!credito && debito) {
+      abrirModalPagamentosEdicao(row);
+  }
+}
+
+function fecharModais() {
+  if (document.getElementById('modal-recebimentos').open) {
+      fecharModalRecebimentosEdicao();
+  } else if (document.getElementById('modal-pagamentos').open) {
+      fecharModalPagamentosEdicao();
+  }
+}
 
 function abrirModalRecebimentosEdicao(row) {
-  // Preenchendo os campos com os dados da linha
-  const vencimento = row.querySelector('.vencimento-row').textContent.trim();
-  document.getElementById('data-recebimentos').value = formatarDataParaInput(vencimento);
-
-  document.getElementById('descricao-recebimentos').value = row.querySelector('.descricao-row').textContent.trim();
-
-  const observacao = row.querySelector('.obs-row').childNodes[0].textContent.trim();
-  document.getElementById('observacao-recebimentos').value = observacao;
-
-  const tagsTexto = row.querySelector('.d-block').textContent.trim();
-  const tags = tagsTexto.replace("Tags: ", ""); // Remove o texto "Tags: "
-  document.getElementById('tagInput-recebimentos').value = tags;
-
-  // Simulando o enter
-  const event = new KeyboardEvent('keydown', {'key': 'Enter'});
-  document.getElementById('tagInput-recebimentos').dispatchEvent(event);
-
-  // Código para os demais campos...
-
+  // Preenchendo os campos com os dados da linha para o modal de recebimentos
+  preencherDadosModal(row, 'recebimentos');
   document.getElementById('modal-recebimentos').showModal();
 }
 
-
-function fecharModalRecebimentosEdicao() {
-  // Limpando os campos do modal
-  document.querySelectorAll('.modal-form-recebimentos input').forEach(input => input.value = '');
-  
-  // Mostrar Recorrência
-  document.querySelectorAll('.modal-recorrencia, .recorrencia-label').forEach(element => {
-      element.style.display = 'block';
-  });
-
-  document.getElementById('modal-recebimentos').close();
-}
-
-function formatarDataParaInput(data) {
-  const partes = data.split('/');
-  return partes.reverse().join('-');
-}
-
-
 function abrirModalPagamentosEdicao(row) {
-  // Preenchendo os campos com os dados da linha
-  const vencimento = row.querySelector('.vencimento-row').textContent.trim();
-  document.getElementById('data-pagamentos').value = formatarDataParaInput(vencimento);
-
-  document.getElementById('descricao-pagamentos').value = row.querySelector('.descricao-row').textContent.trim();
-
-  const observacao = row.querySelector('.obs-row').childNodes[0].textContent.trim();
-  document.getElementById('observacao-pagamentos').value = observacao;
-
-  const tagsTexto = row.querySelector('.d-block').textContent.trim();
-  const tags = tagsTexto.replace("Tags: ", ""); // Remove o texto "Tags: "
-  document.getElementById('tagInput-pagamentos').value = tags;
-
-  // Simulando o enter
-  const event = new KeyboardEvent('keydown', {'key': 'Enter'});
-  document.getElementById('tagInput-pagamentos').dispatchEvent(event);
-
-  // Código para os demais campos...
-
+  // Preenchendo os campos com os dados da linha para o modal de pagamentos
+  preencherDadosModal(row, 'pagamentos');
   document.getElementById('modal-pagamentos').showModal();
 }
 
+function preencherDadosModal(row, tipo) {
+  const vencimento = row.querySelector('.vencimento-row').textContent.trim();
+  document.getElementById(`data-${tipo}`).value = formatarDataParaInput(vencimento);
+
+  const valor = row.querySelector(`.${tipo === 'recebimentos' ? 'credito' : 'debito'}-row`).textContent.trim();
+  document.getElementById(`valor-${tipo}`).value = valor.replace(',', '.');
+
+  document.getElementById(`descricao-${tipo}`).value = row.querySelector('.descricao-row').textContent.trim();
+  document.getElementById(`observacao-${tipo}`).value = row.querySelector('.obs-row').childNodes[0].textContent.trim();
+
+  const tags = extrairTags(row);
+  document.getElementById(`tagInput-${tipo}`).value = tags;
+
+  document.getElementById(`conta-contabil-${tipo}`).value = row.dataset.contaContabil;
+
+  const parcelas = row.querySelector('.parcela-row').textContent.trim();
+  document.getElementById(`parcelas-${tipo}`).type = 'text';
+  document.getElementById(`parcelas-${tipo}`).value = parcelas;
+
+  const lancamentoId = row.querySelector('.checkbox-personalizado').getAttribute('data-id');
+  document.querySelector(`[name="lancamento_id"]`).value = lancamentoId;
+
+  simularEnter(`tagInput-${tipo}`);
+}
+
+function extrairTags(row) {
+  const tagsContainer = row.querySelector('.d-block');
+  return tagsContainer ? tagsContainer.textContent.trim().replace(/^Tags:\s*/, '') : '';
+}
+
+function simularEnter(elementId) {
+  const event = new KeyboardEvent('keydown', {'key': 'Enter'});
+  document.getElementById(elementId).dispatchEvent(event);
+}
+
+function fecharModalRecebimentosEdicao() {
+  limparCamposModal('recebimentos');
+  document.getElementById('modal-recebimentos').close();
+}
+
 function fecharModalPagamentosEdicao() {
-  // Limpando os campos do modal
-  document.querySelectorAll('.modal-form-pagamentos input').forEach(input => input.value = '');
-  
+  limparCamposModal('pagamentos');
   document.getElementById('modal-pagamentos').close();
 }
 
+function limparCamposModal(tipo) {
+  document.querySelectorAll(`.modal-form-${tipo} input`).forEach(input => input.value = '');
+}
+
 function formatarDataParaInput(data) {
+  // Formata a data para o formato apropriado para input[type="date"]
   const partes = data.split('/');
   return partes.reverse().join('-');
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // Função para mostrar campo de recorrência
@@ -326,6 +309,7 @@ function mostrarParcelasPagamentos() {
       input.value = '1';
   }
 }
+
 
 // Função para formatar o valor de um campo como moeda brasileira
 function formatarCampoValorRecebimentos(input) {
@@ -380,6 +364,7 @@ document.addEventListener('keydown', function(event) {
         preencherDataEFocus();
     }
 });
+
 
 // Função para preencher os campos de data e mover o foco para o campo de descrição
 function preencherDataEFocus() {
@@ -493,3 +478,47 @@ function initializeTagInputs(inputId, containerId, hiddenInputId) {
   
   // Initialize for pagamentos
   initializeTagInputs('tagInput-pagamentos', 'tag-container-pagamentos', 'tagsHiddenInput-pagamentos');
+
+
+// Soma de valores no campo de liquidar
+function calcularTotal() {
+  let total = 0;
+
+  // Somar os valores apenas das linhas com checkboxes selecionadas
+  document.querySelectorAll('.row-lancamentos').forEach(row => {
+      const checkbox = row.querySelector('.checkbox-personalizado');
+
+      if (checkbox && checkbox.checked) {
+          const credito = row.querySelector('.credito-row').textContent.trim();
+          const debito = row.querySelector('.debito-row').textContent.trim();
+
+          if (credito) {
+              total += formatarValor(credito);
+          }
+
+          if (debito) {
+              total -= formatarValor(debito);
+          }
+      }
+  });
+
+  // Atualizar o campo de total a liquidar
+  const totalFormatado = total.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+  });
+  document.querySelector('.total-liquidar-row label').textContent = totalFormatado;
+}
+
+function formatarValor(valorTexto) {
+  // Remove pontos e substitui vírgula por ponto para conversão para número
+  return parseFloat(valorTexto.replace(/\./g, '').replace(',', '.'));
+}
+
+// Adicionar evento listener para as checkboxes para recalcular o total quando uma checkbox é alterada
+document.querySelectorAll('.checkbox-personalizado').forEach(checkbox => {
+  checkbox.addEventListener('change', calcularTotal);
+});
+
+// Chamar a função calcularTotal inicialmente
+calcularTotal();

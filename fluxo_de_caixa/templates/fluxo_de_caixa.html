@@ -163,6 +163,7 @@
         <h1 class="modal-titulo">Recebimentos</h1>
         
         <form class="modal-form-recebimentos" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
+            <input type="hidden" name="lancamento_id" value="{{ fluxo_de_caixa.id }}">
             <section class="modal-flex">
                 <label for="data">Data</label>
                 <input class="modal-data" id="data-recebimentos" type="date" name="vencimento" required><br>
@@ -224,6 +225,7 @@
         <h1 class="modal-titulo">Pagamentos</h1>
         
         <form class="modal-form-pagamentos" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
+            <input type="hidden" name="lancamento_id" value="{{ fluxo_de_caixa.id }}">
             <section class="modal-flex">
                 <label for="data">Data</label>
                 <input class="modal-data" type="date" id="data-pagamentos" name="vencimento" required><br>
@@ -340,7 +342,7 @@
             </thead>
             <tbody>
                 {% for fluxo_de_caixa in Tabela_fluxo_list %}
-                <tr class="row-lancamentos" scope="row">
+                <tr class="row-lancamentos" data-conta-contabil="{{ fluxo_de_caixa.conta_contabil }}" scope="row">
                     <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado" type="checkbox" data-id="{{ fluxo_de_caixa.id }}"><span class="checkmark"></span></label></td>
                     <td class="vencimento-row">{{ fluxo_de_caixa.vencimento|date:"d/m/Y" }}</td>
                     <td class="descricao-row">{{ fluxo_de_caixa.descricao }}</td>
@@ -356,7 +358,7 @@
                         <td class="debito-row"></td>
                         <td class="credito-row">{{ fluxo_de_caixa.valor }}</td>
                     {% endif %}
-                    <td class="saldo-row">{{ fluxo_de_caixa.saldo }}</td>
+                    <td class="saldo-row" id = "saldo-row">{{ fluxo_de_caixa.saldo }}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -405,7 +407,7 @@
                 </button>
             </div>
             <div class="total-liquidar-row mesclar-3">
-                Total a Liquidar:<label>R$ 000.000.000.000,00</label>
+                Total a Liquidar:&nbsp;<label></label>
             </div>
         </div>
     </div>
