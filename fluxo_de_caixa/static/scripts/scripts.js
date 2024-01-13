@@ -173,101 +173,129 @@ fecharModal(closeModalPagamentos, modalPagamentos, ".modal-form-pagamentos", 'ta
 abrirModal(openModalTransferencias, modalTransferencias, ".modal-form-transferencias");
 fecharModal(closeModalTransferencias, modalTransferencias, ".modal-form-transferencias");
 
-// Funções para preencher os modais
-function removerTextoSmall(row, idObservacao) {
-  // Clona o elemento de observação para evitar alterá-lo diretamente na tabela
-  const obsElement = row.querySelector('.obs-row').cloneNode(true);
-  // Seleciona o elemento <small> dentro da observação
-  const smallElement = obsElement.querySelector('small');
-  // Se o elemento <small> existir, remove-o do elemento clonado
-  if (smallElement) {
-    obsElement.removeChild(smallElement);
-  }
-  // Atualiza o campo de observação no modal com o texto restante
-  document.getElementById(idObservacao).value = obsElement.textContent.trim();
-}
 
-function formatarData(dataStr) {
-  var partesData = dataStr.split('/');
-  if (partesData.length === 3) {
-    return partesData[2] + '-' + partesData[1].padStart(2, '0') + '-' + partesData[0].padStart(2, '0'); // Converte para "YYYY-MM-DD"
-  }
-  return ''; // Retorna string vazia se a data não estiver no formato esperado
-}
 
-// Editar recebimento
-function preencherModalRecebimento(creditValue, row) {
-  const idValorRecebimento = 'valor-recebimentos';
-  const idDataRecebimento = 'data-recebimentos';
-  const idDescricaoRecebimento = 'descricao-recebimentos';
-  const idObservacaoRecebimento = 'observacao-recebimentos';
-  const idTagContainerRecebimento = 'tagInput-recebimentos';
 
-  removerTextoSmall(row, 'observacao-recebimentos');
 
-  document.getElementById(idDataRecebimento).value = formatarData(row.querySelector('.vencimento-row').textContent.trim());
 
-  document.getElementById('recorrencia-recebimentos').style.display = 'none';
-  document.querySelector('.recorrencia-label').style.display = 'none';
-
-  document.getElementById(idValorRecebimento).value = creditValue;
-  document.getElementById(idDataRecebimento).value = row.querySelector('.vencimento-row').textContent.trim();
-  document.getElementById(idDescricaoRecebimento).value = row.querySelector('.descricao-row').textContent.trim();
-  document.getElementById(idObservacaoRecebimento).value = row.querySelector('.obs-row').textContent.trim();
-  document.getElementById(idTagContainerRecebimento).value = row.querySelector('.d-block').textContent.trim();
-
-  abrirModalEdicaoLancamento('modal-recebimentos');
-}
-
-// Editar pagamento
-function preencherModalPagamento(debitValue, row) {
-  const idValorPagamento = 'valor-pagamentos';
-  const idDataPagamento = 'data-pagamentos';
-  const idDescricaoPagamento = 'descricao-pagamentos';
-  const idObservacaoPagamento = 'observacao-pagamentos';
-  const idTagContainerPagamento = 'tagInput-pagamentos';
-
-  removerTextoSmall(row, 'observacao-pagamentos');
-
-  document.getElementById(idDataRecebimento).value = formatarData(row.querySelector('.vencimento-row').textContent.trim());
-
-  // Ocultar elemento de recorrência
-  document.getElementById('recorrencia-pagamentos').style.display = 'none';
-  document.querySelector('.recorrencia-label').style.display = 'none';
-
-  document.getElementById(idValorPagamento).value = debitValue;
-  document.getElementById(idDataPagamento).value = row.querySelector('.vencimento-row').textContent.trim();
-  document.getElementById(idDescricaoPagamento).value = row.querySelector('.descricao-row').textContent.trim();
-  document.getElementById(idObservacaoPagamento).value = row.querySelector('.obs-row').textContent.trim();
-  document.getElementById(idTagContainerPagamento).value = row.querySelector('.d-block').textContent.trim();
-
-  abrirModalEdicaoLancamento('modal-pagamentos');
-}
-
-// Event listener para cliques duplos nas linhas da tabela
-document.querySelectorAll('.tabela-lancamentos .row-lancamentos').forEach(row => {
+// Lógica de Abertura Condicional dos Modais
+document.querySelectorAll('.row-lancamentos').forEach(row => {
   row.addEventListener('dblclick', function() {
-    const debitElement = this.querySelector('.debito-row');
-    const creditElement = this.querySelector('.credito-row');
-    const debitValue = debitElement.textContent.trim();
-    const creditValue = creditElement.textContent.trim();
+      const credito = row.querySelector('.credito-row').textContent.trim();
+      const debito = row.querySelector('.debito-row').textContent.trim();
 
-    if (debitValue) {
-      preencherModalPagamento(debitValue, this);
-    } else if (creditValue) {
-      preencherModalRecebimento(creditValue, this);
-    }
+      if (credito && !debito) {
+          abrirModalRecebimentosEdicao(this);
+      } else if (!credito && debito) {
+          abrirModalPagamentosEdicao(this);
+      }
   });
 });
 
-// Função para abrir os modais
-function abrirModalEdicaoLancamento(idModal) {
-  const modal = document.getElementById(idModal);
-  if (modal) {
-    modal.showModal();
-    // Adicione mais lógica se necessário
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+      if (document.getElementById('modal-recebimentos').open) {
+          fecharModalRecebimentosEdicao();
+      } else if (document.getElementById('modal-pagamentos').open) {
+          fecharModalPagamentosEdicao();
+      }
   }
+});
+
+
+function abrirModalRecebimentosEdicao(row) {
+  // Preenchendo os campos com os dados da linha
+  const vencimento = row.querySelector('.vencimento-row').textContent.trim();
+  document.getElementById('data-recebimentos').value = formatarDataParaInput(vencimento);
+
+  document.getElementById('descricao-recebimentos').value = row.querySelector('.descricao-row').textContent.trim();
+
+  const observacao = row.querySelector('.obs-row').childNodes[0].textContent.trim();
+  document.getElementById('observacao-recebimentos').value = observacao;
+
+  const tagsTexto = row.querySelector('.d-block').textContent.trim();
+  const tags = tagsTexto.replace("Tags: ", ""); // Remove o texto "Tags: "
+  document.getElementById('tagInput-recebimentos').value = tags;
+
+  // Simulando o enter
+  const event = new KeyboardEvent('keydown', {'key': 'Enter'});
+  document.getElementById('tagInput-recebimentos').dispatchEvent(event);
+
+  // Código para os demais campos...
+
+  document.getElementById('modal-recebimentos').showModal();
 }
+
+
+function fecharModalRecebimentosEdicao() {
+  // Limpando os campos do modal
+  document.querySelectorAll('.modal-form-recebimentos input').forEach(input => input.value = '');
+  
+  // Mostrar Recorrência
+  document.querySelectorAll('.modal-recorrencia, .recorrencia-label').forEach(element => {
+      element.style.display = 'block';
+  });
+
+  document.getElementById('modal-recebimentos').close();
+}
+
+function formatarDataParaInput(data) {
+  const partes = data.split('/');
+  return partes.reverse().join('-');
+}
+
+
+function abrirModalPagamentosEdicao(row) {
+  // Preenchendo os campos com os dados da linha
+  const vencimento = row.querySelector('.vencimento-row').textContent.trim();
+  document.getElementById('data-pagamentos').value = formatarDataParaInput(vencimento);
+
+  document.getElementById('descricao-pagamentos').value = row.querySelector('.descricao-row').textContent.trim();
+
+  const observacao = row.querySelector('.obs-row').childNodes[0].textContent.trim();
+  document.getElementById('observacao-pagamentos').value = observacao;
+
+  const tagsTexto = row.querySelector('.d-block').textContent.trim();
+  const tags = tagsTexto.replace("Tags: ", ""); // Remove o texto "Tags: "
+  document.getElementById('tagInput-pagamentos').value = tags;
+
+  // Simulando o enter
+  const event = new KeyboardEvent('keydown', {'key': 'Enter'});
+  document.getElementById('tagInput-pagamentos').dispatchEvent(event);
+
+  // Código para os demais campos...
+
+  document.getElementById('modal-pagamentos').showModal();
+}
+
+function fecharModalPagamentosEdicao() {
+  // Limpando os campos do modal
+  document.querySelectorAll('.modal-form-pagamentos input').forEach(input => input.value = '');
+  
+  document.getElementById('modal-pagamentos').close();
+}
+
+function formatarDataParaInput(data) {
+  const partes = data.split('/');
+  return partes.reverse().join('-');
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Função para mostrar campo de recorrência
