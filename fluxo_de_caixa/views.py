@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.dispatch import receiver
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, timedelta
 from django.views.decorators.csrf import csrf_exempt
 import json
-from django.views.decorators.http import require_POST
+from django.db.models.signals import post_save, post_delete
 from dateutil.relativedelta import relativedelta
-from .models import Tabela_fluxo, TabelaTemporaria
+from django.db.models import Sum
+from .models import Tabela_fluxo, TabelaTemporaria, TotaisMes
 
 def fluxo_de_caixa(request):
     if request.method == "GET":
@@ -29,7 +31,7 @@ def calcular_saldo_acumulado(tabela_fluxo_list):
 
 def exibir_fluxo_de_caixa(request):
     """ Exibe a lista de fluxos de caixa """
-    Tabela_fluxo_list = Tabela_fluxo.objects.all()
+    Tabela_fluxo_list = Tabela_fluxo.objects.all().order_by('vencimento')
     calcular_saldo_acumulado(Tabela_fluxo_list)
     context = {'Tabela_fluxo_list': Tabela_fluxo_list}
     return render(request, 'fluxo_de_caixa.html', context)
@@ -124,3 +126,42 @@ def criar_registro_temporario(objeto):
         natureza=objeto.natureza,
         data_criacao=objeto.data_criacao
     )
+
+# Sinal para atualizar TotaisMes quando um FluxoDeCaixa for salvo
+def atualizar_totais_mes(data_formatada):
+    """ Cria um registro único de cada mês, calculando o total de crédito e débito e saldo """
+    inicio_mes = datetime.strptime(data_formatada, '%b/%Y').replace(day=1)
+    fim_mes = inicio_mes + relativedelta(months=1, days=-1)
+
+    total_credito = Tabela_fluxo.objects.filter(
+        vencimento__range=(inicio_mes, fim_mes), 
+        natureza='Crédito'
+    ).aggregate(Sum('valor'))['valor__sum'] or 0
+
+    total_debito = Tabela_fluxo.objects.filter(
+        vencimento__range=(inicio_mes, fim_mes), 
+        natureza='Débito'
+    ).aggregate(Sum('valor'))['valor__sum'] or 0
+
+    obj, created = TotaisMes.objects.get_or_create(data_formatada=data_formatada)
+    obj.total_credito = total_credito
+    obj.total_debito = total_debito
+    obj.saldo_mensal = total_credito - total_debito
+    obj.save()
+
+@receiver(post_save, sender=Tabela_fluxo)
+def save_update_data_unica(sender, instance, **kwargs):
+    data_formatada = instance.vencimento.strftime('%b/%Y')
+    atualizar_totais_mes(data_formatada)
+
+@receiver(post_delete, sender=Tabela_fluxo)
+def delete_update_data_unica(sender, instance, **kwargs):
+    data_formatada = instance.vencimento.strftime('%b/%Y')
+
+    # Verificar se ainda existem lançamentos para esse mês
+    if not Tabela_fluxo.objects.filter(vencimento__year=instance.vencimento.year, vencimento__month=instance.vencimento.month).exists():
+        # Se não existirem, excluir o registro de TotaisMes
+        TotaisMes.objects.filter(data_formatada=data_formatada).delete()
+    else:
+        # Caso contrário, atualizar os totais
+        atualizar_totais_mes(data_formatada)
