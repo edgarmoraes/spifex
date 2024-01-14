@@ -110,6 +110,8 @@ function abrirModal(openBtn, modal, formSelector, tagInputId, tagsHiddenInputId,
     modalAberto = modal;
     modal.showModal();
     document.body.style.overflow = 'hidden';
+    document.body.style.marginRight = '17px';
+    document.querySelector('.nav-bar').style.marginRight = '17px';
   });
 }
 
@@ -132,6 +134,8 @@ function fecharModal(closeBtn, modal, formSelector, tagInputId, tagsHiddenInputI
 function fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId, parcelasId) {
   modal.close();
   document.body.style.overflow = '';
+  document.body.style.marginRight = '';
+  document.querySelector('.nav-bar').style.marginRight = '';
   document.querySelector(formSelector).reset();
   
   const tagContainer = document.getElementById(tagContainerId);
