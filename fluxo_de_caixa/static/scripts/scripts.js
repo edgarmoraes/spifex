@@ -21,8 +21,8 @@ document.addEventListener('DOMContentLoaded', function() {
               checkboxesSelecionadas.forEach(function(checkbox) {
                   var linhaParaRemover = checkbox.closest('tr');
                   linhaParaRemover.remove();
-                  window.location.reload();
               });
+              window.location.reload();
           }
       })
       .catch(error => console.error('Erro:', error));
