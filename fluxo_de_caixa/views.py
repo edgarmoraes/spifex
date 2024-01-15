@@ -30,10 +30,18 @@ def calcular_saldo_acumulado(tabela_fluxo_list):
         fluxo_de_caixa.saldo = saldo_total
 
 def exibir_fluxo_de_caixa(request):
-    """ Exibe a lista de fluxos de caixa """
+    """ Exibe a lista de fluxos de caixa junto com os totais de cada mês """
     Tabela_fluxo_list = Tabela_fluxo.objects.all().order_by('vencimento')
     calcular_saldo_acumulado(Tabela_fluxo_list)
-    context = {'Tabela_fluxo_list': Tabela_fluxo_list}
+
+    # Obter os totais de cada mês
+    totais_mes = TotaisMes.objects.all()
+
+    # Adicionar os totais ao contexto
+    context = {
+        'Tabela_fluxo_list': Tabela_fluxo_list,
+        'totais_mes': totais_mes
+    }
     return render(request, 'fluxo_de_caixa.html', context)
 
 def processar_fluxo_de_caixa(request):
@@ -165,3 +173,37 @@ def delete_update_data_unica(sender, instance, **kwargs):
     else:
         # Caso contrário, atualizar os totais
         atualizar_totais_mes(data_formatada)
+
+def meses_filtro(request):
+    totais_mes = TotaisMes.objects.all()
+    context = {'totais_mes': totais_mes}
+    return render(request, 'fluxo_de_caixa.html', context)
+
+def filtrar_lancamentos(request):
+    contas_contabeis = request.GET.get('contas_contabeis')
+    meses = request.GET.get('meses')
+    bancos = request.GET.get('bancos')
+    data_inicio = request.GET.get('data_inicio')
+    data_fim = request.GET.get('data_fim')
+    natureza = request.GET.get('natureza')
+    caixa_pesquisa = request.GET.get('caixa_pesquisa')
+    caixa_pesquisa_tags = request.GET.get('caixa_pesquisa_tags')
+
+    Tabela_fluxo_list = Tabela_fluxo.objects.all().order_by('vencimento')
+
+    if contas_contabeis:
+        Tabela_fluxo_list = Tabela_fluxo_list.filter(conta_contabil=contas_contabeis)
+
+    if bancos:
+        Tabela_fluxo_list = Tabela_fluxo_list.filter(bancos=bancos)
+
+    if contas_contabeis:
+        Tabela_fluxo_list = Tabela_fluxo_list.filter(conta_contabil=contas_contabeis)
+
+    if data_inicio:
+        Tabela_fluxo_list = Tabela_fluxo_list.filter(vencimento__gte=datetime.strptime(data_inicio, '%Y-%m-%d'))
+
+    if data_fim:
+        Tabela_fluxo_list = Tabela_fluxo_list.filter(vencimento__lte=datetime.strptime(data_fim, '%Y-%m-%d'))
+
+    return render(request, 'fluxo_de_caixa.html', {'Tabela_fluxo_list': Tabela_fluxo_list})

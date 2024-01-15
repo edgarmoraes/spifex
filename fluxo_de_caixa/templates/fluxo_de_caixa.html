@@ -13,7 +13,7 @@
     <header class="header">
         <!-- ############### Barra de Navegação Fixa ############### -->
         <nav class="nav-bar">
-            <a class="logo" href="#">WAYEASI</a>
+            <a class="logo" href="/fluxo_de_caixa/">WAYEASI</a>
             <ul class="nav-list">
                 <li class="nav-fluxo-de-caixa"><a href="/fluxo_de_caixa/">FLUXO DE CAIXA</a></li>
                 <li class="nav-realizado"><a href="realizado.html">REALIZADO</a></li>
@@ -27,103 +27,98 @@
     <!-- ############### Metade Superior da Página ############### -->
     <main class="main">
         <!-- ############### Caixa com Filtros à Esquerda ############### -->
-        <div class="box-grid">
+        <form action="{% url 'filtrar_lancamentos' %}" method="get"> 
+            <div class="box-grid">
             <!-- ############### Filtro Contas Contábeis ############### -->
-            <section class="flex">
-                <label for="contas-contabeis">Contas Contábeis</label>
-                <select id="contas-contabeis">
-                    <option value="" disabled selected hidden>Selecione</option>
-                    <option value="opcao1">Receita 1</option>
-                    <option value="opcao2">Receita 2</option>
-                    <option value="opcao3">Despesa 1</option>
-                    <option value="opcao3">Despesa 2</option>
-                </select>
-            </section>
-            <!-- ############### Filtro Meses ############### -->
-            <section class="flex">
-                <label for="meses">Meses</label>
-                <select id="meses">
-                    <option value="" disabled selected hidden>Selecione</option>
-                    <option value="opcao1">Jan/23</option>
-                    <option value="opcao2">Fev/23</option>
-                    <option value="opcao3">Mar/23</option>
-                </select>
-            </section>
-            <!-- ############### Filtro Bancos ############### -->
-            <section class="flex">
-                <label for="bancos">Bancos</label>
-                <select id="bancos">
-                    <option value="" disabled selected hidden>Selecione</option>
-                    <option value="opcao1">Itaú</option>
-                    <option value="opcao2">Sicoob</option>
-                    <option value="opcao3">Nubank</option>
-                </select>
-            </section>
-            <!-- ############### Filtro Data Início ############### -->
-            <section class="flex">
-                <label for="data-inicio">De</label>
-                <input class="data" type="date" id="data-inicio">
-            </section>
-            <!-- ############### Filtro Data Fim ############### -->
-            <section class="flex">
-                <label for="data-fim">Até</label>
-                <input class="data" type="date" id="data-fim">
-            </section>
-            <!-- ############### Filtro Natureza ############### -->
-            <section class="flex">
-                <label for="natureza">Natureza</label>
-                <select id="natureza">
-                    <option value="" disabled selected hidden>Selecione</option>
-                    <option value="opcao1">Crédito</option>
-                    <option value="opcao2">Débito</option>
-                </select>
-            </section>
-            <!-- ############### Filtro Caixa de Pesquisa ############### -->
-            <div class="pesquisa mesclar-2">
-                <input type="text" class="caixa-pesquisa" placeholder="Pesquisar">
-                <button class="botao-pesquisa">
-                    <svg class="icon-pesquisa" aria-hidden="true" viewBox="0 0 24 24">
-                        <g>
-                            <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
-                        </g>
-                    </svg>
-                </button>
+                <section class="flex">
+                    <label for="contas-contabeis">Contas Contábeis</label>
+                    <select id="contas-contabeis" name = "contas_contabeis">
+                        <option value="" disabled selected hidden>Selecione</option>
+                        <option value="Receita 1">Receita 1</option>
+                        <option value="Receita 2">Receita 2</option>
+                        <option value="Receita 3">Despesa 1</option>
+                        <option value="Receita 4">Despesa 2</option>
+                    </select>
+                </section>
+                <!-- ############### Filtro Meses ############### -->
+                <section class="flex">
+                    <label for="meses">Meses</label>
+                    <select id="meses" name="meses">
+                        <option value="" disabled selected hidden>Selecione</option>
+                        {% for total in totais_mes %}
+                        <option value="{{ total.data_formatada }}">{{ total.data_formatada }}</option>
+                        {% endfor %}
+                    </select>
+                </section>
+                <!-- ############### Filtro Bancos ############### -->
+                <section class="flex">
+                    <label for="bancos">Bancos</label>
+                    <select id="bancos" name = "bancos">
+                        <option value="" disabled selected hidden>Selecione</option>
+                        <option value="opcao1">Itaú</option>
+                        <option value="opcao2">Sicoob</option>
+                        <option value="opcao3">Nubank</option>
+                    </select>
+                </section>
+                <!-- ############### Filtro Data Início ############### -->
+                <section class="flex">
+                    <label for="data-inicio">De</label>
+                    <input class="data" type="date" id="data-inicio" name = "data_inicio">
+                </section>
+                <!-- ############### Filtro Data Fim ############### -->
+                <section class="flex">
+                    <label for="data-fim">Até</label>
+                    <input class="data" type="date" id="data-fim" name = "data_fim">
+                </section>
+                <!-- ############### Filtro Natureza ############### -->
+                <section class="flex">
+                    <label for="natureza">Natureza</label>
+                    <select id="natureza" name = "natureza">
+                        <option value="" disabled selected hidden>Selecione</option>
+                        <option value="opcao1">Crédito</option>
+                        <option value="opcao2">Débito</option>
+                    </select>
+                </section>
+                <!-- ############### Filtro Caixa de Pesquisa ############### -->
+                <div class="pesquisa mesclar-2">
+                    <input type="text" class="caixa-pesquisa" id="caixa-pesquisa" name = "caixa_pesquisa" placeholder="Pesquisar">
+                    <button class="botao-pesquisa">
+                        <svg class="icon-pesquisa" aria-hidden="true" viewBox="0 0 24 24">
+                            <g>
+                                <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+                            </g>
+                        </svg>
+                    </button>
+                </div>
+                <div class="pesquisa-tags">
+                    <input type="text" class="caixa-pesquisa-tags" id="caixa-pesquisa-tags"  name = "caixa_pesquisa_tags" placeholder="Tags">
+                </div>
+                <!-- ############### Botões da Caixa com Filtros ############### -->
+                <!-- ############### Botão de Recebimentos ############### -->
+                <section>
+                    <button class="botao recebimentos" type="button">
+                        <svg class="svgIcon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
+                            <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13V1m0 0L1 5m4-4 4 4"/>
+                        </svg>
+                    </button>
+                </section>
+                <!-- ############### Botão de Pagamentos ############### -->
+                <section>
+                    <button class="botao pagamentos" type="button">
+                        <svg class="svgIcon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
+                            <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1v12m0 0 4-4m-4 4L1 9"/>
+                        </svg>
+                </section>
+                <!-- ############### Botão de Transferências ############### -->
+                <section>
+                    <button class="botao transferencias" type="button">
+                        <svg class="svgIcon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 20">
+                            <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6v13m0 0 3-3m-3 3-3-3m11-2V1m0 0L9 4m3-3 3 3"/>
+                        </svg>
+                    </button>
+                </section>
             </div>
-            <div class="pesquisa-tags">
-                <input type="text" class="caixa-pesquisa-tags" placeholder="Tags">
-                <button class="botao-pesquisa-tags">
-                    <svg class="icon-pesquisa-tags" aria-hidden="true" viewBox="0 0 24 24">
-                        <g>
-                            <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
-                        </g>
-                    </svg>
-                </button>
-            </div>
-            <!-- ############### Botões da Caixa com Filtros ############### -->
-            <!-- ############### Botão de Recebimentos ############### -->
-            <section>
-                <button class="botao recebimentos">
-                    <svg class="svgIcon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
-                        <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13V1m0 0L1 5m4-4 4 4"/>
-                    </svg>
-                </button>
-            </section>
-            <!-- ############### Botão de Pagamentos ############### -->
-            <section>
-                <button class="botao pagamentos">
-                    <svg class="svgIcon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
-                        <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1v12m0 0 4-4m-4 4L1 9"/>
-                    </svg>
-            </section>
-            <!-- ############### Botão de Transferências ############### -->
-            <section>
-                <button class="botao transferencias">
-                    <svg class="svgIcon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 20">
-                        <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6v13m0 0 3-3m-3 3-3-3m11-2V1m0 0L9 4m3-3 3 3"/>
-                    </svg>
-                </button>
-            </section>
-        </div>
+        </form>
         <!-- ############### Tabela de Bancos ############### -->
         <div class="box-grid-bancos">
             <div class="conteudo-tabela-bancos">
@@ -187,9 +182,9 @@
             <section class="modal-flex">
                 <label for="contaContabil">Conta Contábil</label>
                 <select class="modal-conta-contabil" type="text" id="conta-contabil-recebimentos" name="conta_contabil" required>
-                  <option value="conta1">Conta 1</option>
-                  <option value="conta2">Conta 2</option>
-                  <option value="conta3">Conta 3</option>
+                  <option value="Receita 1">Receita 1</option>
+                  <option value="Receita 2">Receita 2</option>
+                  <option value="Receita 3">Receita 3</option>
                 </select><br>
             </section>
         
