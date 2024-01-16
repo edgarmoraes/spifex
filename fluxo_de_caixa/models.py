@@ -31,7 +31,6 @@ class TabelaTemporaria(models.Model):
     tags = models.CharField(max_length = 100)
     natureza = models.CharField(max_length=50)
     data_criacao = models.DateTimeField(auto_now_add=True)
-    # Campo para rastrear quando a entrada foi movida
     movido_em = models.DateTimeField(auto_now_add=True)
     
     @staticmethod
@@ -39,3 +38,10 @@ class TabelaTemporaria(models.Model):
         # Define o limite de tempo em 1 hora
         limite_tempo = datetime.now() - timedelta(hours=1)
         TabelaTemporaria.objects.filter(movido_em__lt=limite_tempo).delete()
+
+class Bancos(models.Model):
+    banco = models.CharField(max_length = 100)
+    agencia = models.CharField(max_length = 100)
+    conta = models.CharField(max_length = 100)
+    saldo_inicial = models.DecimalField(max_digits=13, decimal_places=2)
+    status = models.BooleanField(default=True)

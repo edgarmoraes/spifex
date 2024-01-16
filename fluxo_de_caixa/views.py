@@ -5,9 +5,10 @@ from datetime import datetime, timedelta
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.db.models.signals import post_save, post_delete
+from dateutil import parser
 from dateutil.relativedelta import relativedelta
 from django.db.models import Sum
-from .models import Tabela_fluxo, TabelaTemporaria, TotaisMes
+from .models import Tabela_fluxo, TabelaTemporaria, TotaisMes, Bancos
 
 def fluxo_de_caixa(request):
     if request.method == "GET":
@@ -15,13 +16,13 @@ def fluxo_de_caixa(request):
     elif request.method == "POST":
         return processar_fluxo_de_caixa(request)
     
-def calcular_saldo_acumulado(tabela_fluxo_list):
+def calcular_saldo_acumulado(tabela_fluxo_list, saldo_inicial):
     """
     Calcula o saldo acumulado para cada entrada em uma lista de fluxos de caixa.
     :param tabela_fluxo_list: QuerySet de objetos Tabela_fluxo.
     :return: None. Modifica cada objeto Tabela_fluxo adicionando um atributo 'saldo'.
     """
-    saldo_total = 0
+    saldo_total = saldo_inicial
     for fluxo_de_caixa in tabela_fluxo_list:
         if fluxo_de_caixa.natureza == 'Débito':
             saldo_total -= fluxo_de_caixa.valor
@@ -31,16 +32,16 @@ def calcular_saldo_acumulado(tabela_fluxo_list):
 
 def exibir_fluxo_de_caixa(request):
     """ Exibe a lista de fluxos de caixa junto com os totais de cada mês """
+    bancos_ativos = Bancos.objects.filter(status=True)
+    saldo_total_bancos = bancos_ativos.aggregate(Sum('saldo_inicial'))['saldo_inicial__sum'] or 0
     Tabela_fluxo_list = Tabela_fluxo.objects.all().order_by('vencimento')
-    calcular_saldo_acumulado(Tabela_fluxo_list)
-
-    # Obter os totais de cada mês
+    calcular_saldo_acumulado(Tabela_fluxo_list, saldo_total_bancos)
     totais_mes = TotaisMes.objects.all()
-
-    # Adicionar os totais ao contexto
     context = {
         'Tabela_fluxo_list': Tabela_fluxo_list,
-        'totais_mes': totais_mes
+        'totais_mes': totais_mes,
+        'bancos': bancos_ativos,
+        'saldo_total_bancos': saldo_total_bancos
     }
     return render(request, 'fluxo_de_caixa.html', context)
 
@@ -194,11 +195,11 @@ def filtrar_lancamentos(request):
     if contas_contabeis:
         Tabela_fluxo_list = Tabela_fluxo_list.filter(conta_contabil=contas_contabeis)
 
-    if bancos:
-        Tabela_fluxo_list = Tabela_fluxo_list.filter(bancos=bancos)
-
-    if contas_contabeis:
-        Tabela_fluxo_list = Tabela_fluxo_list.filter(conta_contabil=contas_contabeis)
+    if meses:
+        criterio_data = meses
+        inicio_mes  = parser.parse(criterio_data).replace(day=1)
+        fim_mes  = inicio_mes  + relativedelta(months=1, days=-1)
+        Tabela_fluxo_list = Tabela_fluxo_list.filter(vencimento__range=(inicio_mes, fim_mes))
 
     if data_inicio:
         Tabela_fluxo_list = Tabela_fluxo_list.filter(vencimento__gte=datetime.strptime(data_inicio, '%Y-%m-%d'))
@@ -207,3 +208,7 @@ def filtrar_lancamentos(request):
         Tabela_fluxo_list = Tabela_fluxo_list.filter(vencimento__lte=datetime.strptime(data_fim, '%Y-%m-%d'))
 
     return render(request, 'fluxo_de_caixa.html', {'Tabela_fluxo_list': Tabela_fluxo_list})
+
+def exibir_bancos(request):
+    bancos = Bancos.objects.all()
+    return render(request, 'fluxo_de_caixa.html', {'bancos': bancos})
