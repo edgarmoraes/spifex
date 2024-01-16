@@ -31,7 +31,7 @@ def calcular_saldo_acumulado(tabela_fluxo_list, saldo_inicial):
         fluxo_de_caixa.saldo = saldo_total
 
 def exibir_fluxo_de_caixa(request):
-    """ Exibe a lista de fluxos de caixa junto com os totais de cada mês """
+    """ Exibe a lista de fluxos de caixa junto com os totais de cada mês e bancos """
     bancos_ativos = Bancos.objects.filter(status=True)
     saldo_total_bancos = bancos_ativos.aggregate(Sum('saldo_inicial'))['saldo_inicial__sum'] or 0
     Tabela_fluxo_list = Tabela_fluxo.objects.all().order_by('vencimento')
@@ -95,13 +95,13 @@ def criar_novos_fluxos(dados):
 
 @csrf_exempt
 def deletar_entradas(request):
-    # Somente aceita solicitações POST
     if request.method == 'POST':
         ids_para_apagar = extrair_ids_para_apagar(request)
         processar_ids(ids_para_apagar)
 
         Tabela_fluxo_list = Tabela_fluxo.objects.all()
-        calcular_saldo_acumulado(Tabela_fluxo_list)
+        saldo_total_bancos = Bancos.objects.filter(status=True).aggregate(Sum('saldo_inicial'))['saldo_inicial__sum'] or 0
+        calcular_saldo_acumulado(Tabela_fluxo_list, saldo_total_bancos)
 
         return JsonResponse({'status': 'success'})
 
@@ -178,6 +178,11 @@ def delete_update_data_unica(sender, instance, **kwargs):
 def meses_filtro(request):
     totais_mes = TotaisMes.objects.all()
     context = {'totais_mes': totais_mes}
+    return render(request, 'fluxo_de_caixa.html', context)
+
+def bancos_filtro(request):
+    totais_bancos = Bancos.objects.all()
+    context = {'totais_bancos': totais_bancos}
     return render(request, 'fluxo_de_caixa.html', context)
 
 def filtrar_lancamentos(request):

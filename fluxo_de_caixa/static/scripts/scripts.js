@@ -1,4 +1,4 @@
-// Apagar lançamentos da tabela
+// Apagar lançamentos da Tabela
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('apagar-button').addEventListener('click', function() {
       var idsSelecionados = [];
@@ -133,6 +133,7 @@ function fecharModal(closeBtn, modal, formSelector, tagInputId, tagsHiddenInputI
 
 function fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId, parcelasId) {
   modal.close();
+  modalAberto = null;
   document.body.style.overflow = '';
   document.body.style.marginRight = '';
   document.querySelector('.nav-bar').style.marginRight = '';
@@ -363,10 +364,10 @@ function formatarCampoValorPagamentos(input) {
 
 // Adiciona um evento de teclado para detectar 'Shift + D'
 document.addEventListener('keydown', function(event) {
-    if (event.shiftKey && event.key === 'D') {
-        event.preventDefault(); // Evita a inserção da tecla no campo
-        preencherDataEFocus();
-    }
+  if (modalAberto && event.shiftKey && event.key === 'D') {
+      event.preventDefault();
+      preencherDataEFocus();
+  }
 });
 
 
@@ -526,3 +527,5 @@ document.querySelectorAll('.checkbox-personalizado').forEach(checkbox => {
 
 // Chamar a função calcularTotal inicialmente
 calcularTotal();
+
+
