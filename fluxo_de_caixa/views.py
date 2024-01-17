@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.serializers import serialize
 from django.dispatch import receiver
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, timedelta
@@ -138,25 +139,32 @@ def criar_registro_temporario(objeto):
 
 # Sinal para atualizar TotaisMes quando um FluxoDeCaixa for salvo
 def atualizar_totais_mes(data_formatada):
-    """ Cria um registro único de cada mês, calculando o total de crédito e débito e saldo """
+    # Calculando as datas de início e fim do mês
     inicio_mes = datetime.strptime(data_formatada, '%b/%Y').replace(day=1)
     fim_mes = inicio_mes + relativedelta(months=1, days=-1)
 
+    # Calculando totais de crédito e débito
     total_credito = Tabela_fluxo.objects.filter(
-        vencimento__range=(inicio_mes, fim_mes), 
+        vencimento__range=(inicio_mes, fim_mes),
         natureza='Crédito'
     ).aggregate(Sum('valor'))['valor__sum'] or 0
 
     total_debito = Tabela_fluxo.objects.filter(
-        vencimento__range=(inicio_mes, fim_mes), 
+        vencimento__range=(inicio_mes, fim_mes),
         natureza='Débito'
     ).aggregate(Sum('valor'))['valor__sum'] or 0
 
-    obj, created = TotaisMes.objects.get_or_create(data_formatada=data_formatada)
-    obj.total_credito = total_credito
-    obj.total_debito = total_debito
-    obj.saldo_mensal = total_credito - total_debito
-    obj.save()
+    # Atualizar ou criar registro em TotaisMes
+    TotaisMes.objects.update_or_create(
+        data_formatada=data_formatada,
+        defaults={
+            'inicio_mes': inicio_mes,
+            'fim_mes': fim_mes,
+            'total_credito': total_credito,
+            'total_debito': total_debito,
+            'saldo_mensal': total_credito - total_debito
+        }
+    )
 
 @receiver(post_save, sender=Tabela_fluxo)
 def save_update_data_unica(sender, instance, **kwargs):
@@ -166,17 +174,13 @@ def save_update_data_unica(sender, instance, **kwargs):
 @receiver(post_delete, sender=Tabela_fluxo)
 def delete_update_data_unica(sender, instance, **kwargs):
     data_formatada = instance.vencimento.strftime('%b/%Y')
-
-    # Verificar se ainda existem lançamentos para esse mês
     if not Tabela_fluxo.objects.filter(vencimento__year=instance.vencimento.year, vencimento__month=instance.vencimento.month).exists():
-        # Se não existirem, excluir o registro de TotaisMes
         TotaisMes.objects.filter(data_formatada=data_formatada).delete()
     else:
-        # Caso contrário, atualizar os totais
         atualizar_totais_mes(data_formatada)
 
 def meses_filtro(request):
-    totais_mes = TotaisMes.objects.all()
+    totais_mes = TotaisMes.objects.all().order_by('data_formatada')
     context = {'totais_mes': totais_mes}
     return render(request, 'fluxo_de_caixa.html', context)
 
@@ -186,31 +190,10 @@ def bancos_filtro(request):
     return render(request, 'fluxo_de_caixa.html', context)
 
 def filtrar_lancamentos(request):
-    contas_contabeis = request.GET.get('contas_contabeis')
-    meses = request.GET.get('meses')
-    bancos = request.GET.get('bancos')
-    data_inicio = request.GET.get('data_inicio')
-    data_fim = request.GET.get('data_fim')
-    natureza = request.GET.get('natureza')
-    caixa_pesquisa = request.GET.get('caixa_pesquisa')
-    caixa_pesquisa_tags = request.GET.get('caixa_pesquisa_tags')
-
-    Tabela_fluxo_list = Tabela_fluxo.objects.all().order_by('vencimento')
-
-    if contas_contabeis:
-        Tabela_fluxo_list = Tabela_fluxo_list.filter(conta_contabil=contas_contabeis)
-
-    if meses:
-        criterio_data = meses
-        inicio_mes  = parser.parse(criterio_data).replace(day=1)
-        fim_mes  = inicio_mes  + relativedelta(months=1, days=-1)
-        Tabela_fluxo_list = Tabela_fluxo_list.filter(vencimento__range=(inicio_mes, fim_mes))
-
-    if data_inicio:
-        Tabela_fluxo_list = Tabela_fluxo_list.filter(vencimento__gte=datetime.strptime(data_inicio, '%Y-%m-%d'))
-
-    if data_fim:
-        Tabela_fluxo_list = Tabela_fluxo_list.filter(vencimento__lte=datetime.strptime(data_fim, '%Y-%m-%d'))
+    Tabela_fluxo_list = Tabela_fluxo.objects.all() 
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        dados = serialize('json', Tabela_fluxo_list, fields=('id', 'vencimento', 'descricao', 'observacao', 'tags', 'parcelas', 'natureza', 'valor', 'saldo'))
+        return JsonResponse({'dados': dados})
 
     return render(request, 'fluxo_de_caixa.html', {'Tabela_fluxo_list': Tabela_fluxo_list})
 

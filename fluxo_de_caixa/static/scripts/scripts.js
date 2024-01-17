@@ -34,24 +34,26 @@ function getCsrfToken() {
 }
 
 // Selecionar checkboxes com o shift clicado
-let ultimoCheckboxClicado;
-
 document.addEventListener('click', function(e) {
-    if (!e.target.classList.contains('checkbox-personalizado')) return;
-    let checkboxAtual = e.target;
+  if (!e.target.classList.contains('checkbox-personalizado')) return;
+  let checkboxAtual = e.target;
 
-    if (e.shiftKey && ultimoCheckboxClicado) {
-        let checkboxes = Array.from(document.querySelectorAll('.checkbox-personalizado'));
-        let startIndex = checkboxes.indexOf(ultimoCheckboxClicado);
-        let endIndex = checkboxes.indexOf(checkboxAtual);
-        let inverterSelecao = checkboxAtual.checked;
+  if (e.shiftKey && ultimoCheckboxClicado) {
+      let checkboxes = Array.from(document.querySelectorAll('.checkbox-personalizado'));
+      let startIndex = checkboxes.indexOf(ultimoCheckboxClicado);
+      let endIndex = checkboxes.indexOf(checkboxAtual);
+      let inverterSelecao = checkboxAtual.checked;
 
-        for (let i = Math.min(startIndex, endIndex); i <= Math.max(startIndex, endIndex); i++) {
-            checkboxes[i].checked = inverterSelecao;
-        }
-    }
+      for (let i = Math.min(startIndex, endIndex); i <= Math.max(startIndex, endIndex); i++) {
+          // Verificar se a linha da tabela onde o checkbox está localizado é visível
+          let tr = checkboxes[i].closest('tr');
+          if (tr && tr.style.display !== 'none') {
+              checkboxes[i].checked = inverterSelecao;
+          }
+      }
+  }
 
-    ultimoCheckboxClicado = checkboxAtual;
+  ultimoCheckboxClicado = checkboxAtual;
 });
 
 // Aparecer barra de botões
@@ -529,3 +531,81 @@ document.querySelectorAll('.checkbox-personalizado').forEach(checkbox => {
 calcularTotal();
 
 
+document.getElementById('formulario-filtros').addEventListener('submit', function(e) {
+  e.preventDefault();  // Previne a submissão normal do formulário
+
+  // Captura os valores do formulário
+  var formData = new FormData(this);
+  var url = '{% url "filtrar_lancamentos" %}' + '?' + new URLSearchParams(formData).toString();
+
+  fetch(url, {
+      method: 'GET',
+      headers: {
+          'X-Requested-With': 'XMLHttpRequest',  // Importante para a view reconhecer como Ajax
+      }
+  })
+  .then(response => response.json())
+  .then(data => {
+      atualizarTabela(data.dados);
+  })
+  .catch(error => console.error('Erro:', error));
+});
+
+
+// Filtros
+function buscarDatasDoMes(mesSelecionado, callback) {
+  if (!mesSelecionado) {
+      callback(null, null);
+      return;
+  }
+
+  fetch(`/meses_filtro/${mesSelecionado}`)
+      .then(response => response.json())
+      .then(data => {
+          callback(data.inicio_mes, data.fim_mes);
+      })
+      .catch(error => {
+          console.error('Erro ao buscar datas:', error);
+          callback(null, null);
+      });
+}
+
+function filtrarTabela() {
+  var filtroMes = document.getElementById("meses").value;
+
+  buscarDatasDoMes(filtroMes, function(inicioMes, fimMes) {
+      var inicioMesDate = inicioMes ? new Date(inicioMes) : null;
+      var fimMesDate = fimMes ? new Date(fimMes) : null;
+
+      var filtroDescricao = document.getElementById("caixa-pesquisa").value.toUpperCase();
+      var filtroTags = document.getElementById("caixa-pesquisa-tags").value.toUpperCase();
+      var filtroContaContabil = document.getElementById("contas-contabeis").value.toUpperCase();
+
+      var tabela = document.getElementById("tabela-lancamentos");
+      var tr = tabela.getElementsByTagName("tr");
+
+      for (var i = 0; i < tr.length; i++) {
+          var tdDescricao = tr[i].getElementsByClassName("descricao-row")[0];
+          var tdObservacao = tr[i].getElementsByClassName("obs-row")[0];
+          var contaContabil = tr[i].getAttribute('data-conta-contabil').toUpperCase();
+          var tdVencimento = tr[i].getElementsByClassName("vencimento-row")[0];
+          var dataVencimento = new Date(tdVencimento.textContent.split('/').reverse().join('-'));
+
+          var txtDescricao = tdDescricao ? tdDescricao.textContent || tdDescricao.innerText : "";
+          var txtObservacao = tdObservacao ? tdObservacao.textContent.split("Tags:")[0].trim() : "";
+
+          var descricaoObservacaoMatch = (txtDescricao.toUpperCase().indexOf(filtroDescricao) > -1 || txtObservacao.toUpperCase().indexOf(filtroDescricao) > -1);
+          var tagMatch = filtroTags === "" || tr[i].textContent.toUpperCase().indexOf(filtroTags) > -1;
+          var contaContabilMatch = filtroContaContabil === "" || contaContabil.toUpperCase().indexOf(filtroContaContabil) > -1;
+          var mesMatch = (!inicioMesDate && !fimMesDate) || (dataVencimento >= inicioMesDate && dataVencimento <= fimMesDate);
+
+          tr[i].style.display = descricaoObservacaoMatch && tagMatch && contaContabilMatch && mesMatch ? "" : "none";
+      }
+  });
+}
+
+// Adiciona ouvintes de evento para as caixas de pesquisa e seleção de conta contábil
+document.getElementById('caixa-pesquisa').addEventListener('keyup', filtrarTabela);
+document.getElementById('caixa-pesquisa-tags').addEventListener('keyup', filtrarTabela);
+document.getElementById('contas-contabeis').addEventListener('change', filtrarTabela);
+document.getElementById('meses').addEventListener('change', filtrarTabela);

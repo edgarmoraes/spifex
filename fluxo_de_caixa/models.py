@@ -13,7 +13,9 @@ class Tabela_fluxo(models.Model):
     data_criacao = models.DateTimeField(auto_now_add=True)
 
 class TotaisMes(models.Model):
-    data_formatada = models.CharField(max_length=8, unique=True)
+    inicio_mes = models.DateField(null=True, blank=True)
+    fim_mes = models.DateField(null=True, blank=True)
+    data_formatada = models.CharField(max_length=255, unique=True)
     total_credito = models.DecimalField(max_digits=13, decimal_places=2, default=0)
     total_debito = models.DecimalField(max_digits=13, decimal_places=2, default=0)
     saldo_mensal = models.DecimalField(max_digits=13, decimal_places=2, default=0)
