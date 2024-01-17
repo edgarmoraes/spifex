@@ -553,55 +553,40 @@ document.getElementById('formulario-filtros').addEventListener('submit', functio
 
 
 // Filtros
-function buscarDatasDoMes(mesSelecionado, callback) {
-  if (!mesSelecionado) {
-      callback(null, null);
-      return;
-  }
-
-  fetch(`/meses_filtro/${mesSelecionado}`)
-      .then(response => response.json())
-      .then(data => {
-          callback(data.inicio_mes, data.fim_mes);
-      })
-      .catch(error => {
-          console.error('Erro ao buscar datas:', error);
-          callback(null, null);
-      });
-}
-
 function filtrarTabela() {
-  var filtroMes = document.getElementById("meses").value;
+  var selectMeses = document.getElementById("meses");
+  var optionSelecionada = selectMeses.options[selectMeses.selectedIndex];
 
-  buscarDatasDoMes(filtroMes, function(inicioMes, fimMes) {
-      var inicioMesDate = inicioMes ? new Date(inicioMes) : null;
-      var fimMesDate = fimMes ? new Date(fimMes) : null;
+  var inicioMesDate = optionSelecionada.getAttribute('data-inicio-mes') ? new Date(optionSelecionada.getAttribute('data-inicio-mes')) : null;
+  var fimMesDate = optionSelecionada.getAttribute('data-fim-mes') ? new Date(optionSelecionada.getAttribute('data-fim-mes')) : null;
 
-      var filtroDescricao = document.getElementById("caixa-pesquisa").value.toUpperCase();
-      var filtroTags = document.getElementById("caixa-pesquisa-tags").value.toUpperCase();
-      var filtroContaContabil = document.getElementById("contas-contabeis").value.toUpperCase();
+  var filtroDescricao = document.getElementById("caixa-pesquisa").value.toUpperCase();
+  var filtroTags = document.getElementById("caixa-pesquisa-tags").value.toUpperCase();
+  var filtroContaContabil = document.getElementById("contas-contabeis").value.toUpperCase();
+  var filtroNatureza = document.getElementById("natureza").value;
 
-      var tabela = document.getElementById("tabela-lancamentos");
-      var tr = tabela.getElementsByTagName("tr");
+  var tabela = document.getElementById("tabela-lancamentos");
+  var tr = tabela.getElementsByTagName("tr");
 
-      for (var i = 0; i < tr.length; i++) {
-          var tdDescricao = tr[i].getElementsByClassName("descricao-row")[0];
-          var tdObservacao = tr[i].getElementsByClassName("obs-row")[0];
-          var contaContabil = tr[i].getAttribute('data-conta-contabil').toUpperCase();
-          var tdVencimento = tr[i].getElementsByClassName("vencimento-row")[0];
-          var dataVencimento = new Date(tdVencimento.textContent.split('/').reverse().join('-'));
+  for (var i = 0; i < tr.length; i++) {
+      var tdDescricao = tr[i].getElementsByClassName("descricao-row")[0];
+      var tdObservacao = tr[i].getElementsByClassName("obs-row")[0];
+      var contaContabil = tr[i].getAttribute('data-conta-contabil').toUpperCase();
+      var tdVencimento = tr[i].getElementsByClassName("vencimento-row")[0];
+      var dataVencimento = new Date(tdVencimento.textContent.split('/').reverse().join('-'));
 
-          var txtDescricao = tdDescricao ? tdDescricao.textContent || tdDescricao.innerText : "";
-          var txtObservacao = tdObservacao ? tdObservacao.textContent.split("Tags:")[0].trim() : "";
+      var txtDescricao = tdDescricao ? tdDescricao.textContent || tdDescricao.innerText : "";
+      var txtObservacao = tdObservacao ? tdObservacao.textContent.split("Tags:")[0].trim() : "";
+      var naturezaLancamento = tr[i].getElementsByClassName("credito-row")[0].textContent.trim() ? 'credito' : 'debito';
 
-          var descricaoObservacaoMatch = (txtDescricao.toUpperCase().indexOf(filtroDescricao) > -1 || txtObservacao.toUpperCase().indexOf(filtroDescricao) > -1);
-          var tagMatch = filtroTags === "" || tr[i].textContent.toUpperCase().indexOf(filtroTags) > -1;
-          var contaContabilMatch = filtroContaContabil === "" || contaContabil.toUpperCase().indexOf(filtroContaContabil) > -1;
-          var mesMatch = (!inicioMesDate && !fimMesDate) || (dataVencimento >= inicioMesDate && dataVencimento <= fimMesDate);
+      var descricaoObservacaoMatch = (txtDescricao.toUpperCase().indexOf(filtroDescricao) > -1 || txtObservacao.toUpperCase().indexOf(filtroDescricao) > -1);
+      var tagMatch = filtroTags === "" || tr[i].textContent.toUpperCase().indexOf(filtroTags) > -1;
+      var contaContabilMatch = filtroContaContabil === "" || contaContabil.toUpperCase().indexOf(filtroContaContabil) > -1;
+      var mesMatch = (!inicioMesDate && !fimMesDate) || (dataVencimento >= inicioMesDate && dataVencimento <= fimMesDate);
+      var naturezaMatch = filtroNatureza === "" || filtroNatureza === naturezaLancamento;
 
-          tr[i].style.display = descricaoObservacaoMatch && tagMatch && contaContabilMatch && mesMatch ? "" : "none";
-      }
-  });
+      tr[i].style.display = descricaoObservacaoMatch && tagMatch && contaContabilMatch && mesMatch && naturezaMatch ? "" : "none";
+  }
 }
 
 // Adiciona ouvintes de evento para as caixas de pesquisa e seleção de conta contábil
@@ -609,3 +594,4 @@ document.getElementById('caixa-pesquisa').addEventListener('keyup', filtrarTabel
 document.getElementById('caixa-pesquisa-tags').addEventListener('keyup', filtrarTabela);
 document.getElementById('contas-contabeis').addEventListener('change', filtrarTabela);
 document.getElementById('meses').addEventListener('change', filtrarTabela);
+document.getElementById('natureza').addEventListener('change', filtrarTabela);
