@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
           idsSelecionados.push(checkbox.getAttribute('data-id'));
       });
 
-        fetch('/fluxo_de_caixa/deletar-entradas/', {
+        fetch('/fluxo_de_caixa/deletar_entradas/', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -183,6 +183,11 @@ fecharModal(closeModalTransferencias, modalTransferencias, ".modal-form-transfer
 
 
 // Evento para editar lançamentos ao clicar duas vezes nas células da tabela
+function desformatarNumero(valorFormatado) {
+  // Remove os separadores de milhar e substitui vírgula por ponto
+  return valorFormatado.replace(/\./g, '').replace(',', '.');
+}
+
 document.querySelectorAll('.row-lancamentos td:not(.checkbox-row)').forEach(cell => {
   cell.addEventListener('dblclick', function() {
       handleCellDoubleClick(cell);
@@ -237,7 +242,7 @@ function preencherDadosModal(row, tipo) {
   document.getElementById(`data-${tipo}`).value = formatarDataParaInput(vencimento);
 
   const valor = row.querySelector(`.${tipo === 'recebimentos' ? 'credito' : 'debito'}-row`).textContent.trim();
-  document.getElementById(`valor-${tipo}`).value = valor.replace(',', '.');
+  document.getElementById(`valor-${tipo}`).value = desformatarNumero(valor);
 
   document.getElementById(`descricao-${tipo}`).value = row.querySelector('.descricao-row').textContent.trim();
   document.getElementById(`observacao-${tipo}`).value = row.querySelector('.obs-row').childNodes[0].textContent.trim();
@@ -552,14 +557,47 @@ document.getElementById('formulario-filtros').addEventListener('submit', functio
 });
 
 
+// Cálculo de Saldo Inicial
+function calcularSaldoAcumulado() {
+  var trs = document.querySelectorAll("#tabela-lancamentos tr");
+  saldoAcumulado = saldoInicialBancos; // Começa com o saldo inicial dos bancos
+
+  trs.forEach(tr => {
+      // Verifica se a linha está visível
+      if (tr.style.display !== 'none') {
+          var debito = tr.querySelector(".debito-row").textContent || '0';
+          var credito = tr.querySelector(".credito-row").textContent || '0';
+          debito = parseFloat(debito.replace(/\./g, '').replace(',', '.')) || 0;
+          credito = parseFloat(credito.replace(/\./g, '').replace(',', '.')) || 0;
+          saldoAcumulado += credito - debito;
+      }
+  });
+
+  
+  // Atualiza o saldo em todas as linhas visíveis
+  var saldoVisivel = saldoInicialBancos;
+  trs.forEach((tr, index) => {
+      if (tr.style.display !== 'none') {
+          var debito = tr.querySelector(".debito-row").textContent || '0';
+          var credito = tr.querySelector(".credito-row").textContent || '0';
+          debito = parseFloat(debito.replace(/\./g, '').replace(',', '.')) || 0;
+          credito = parseFloat(credito.replace(/\./g, '').replace(',', '.')) || 0;
+          saldoVisivel += credito - debito;
+          tr.querySelector('.saldo-row').textContent = saldoVisivel.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+  });
+}
+
+
 // Filtros
 function filtrarTabela() {
   var selectMeses = document.getElementById("meses");
   var optionSelecionada = selectMeses.options[selectMeses.selectedIndex];
-
   var inicioMesDate = optionSelecionada.getAttribute('data-inicio-mes') ? new Date(optionSelecionada.getAttribute('data-inicio-mes')) : null;
   var fimMesDate = optionSelecionada.getAttribute('data-fim-mes') ? new Date(optionSelecionada.getAttribute('data-fim-mes')) : null;
 
+  var dataInicio = document.getElementById("data-inicio").value;
+  var dataFim = document.getElementById("data-fim").value;
   var filtroDescricao = document.getElementById("caixa-pesquisa").value.toUpperCase();
   var filtroTags = document.getElementById("caixa-pesquisa-tags").value.toUpperCase();
   var filtroContaContabil = document.getElementById("contas-contabeis").value.toUpperCase();
@@ -567,6 +605,9 @@ function filtrarTabela() {
 
   var tabela = document.getElementById("tabela-lancamentos");
   var tr = tabela.getElementsByTagName("tr");
+
+  var dataInicioObj = dataInicio ? new Date(dataInicio) : null;
+  var dataFimObj = dataFim ? new Date(dataFim) : null;
 
   for (var i = 0; i < tr.length; i++) {
       var tdDescricao = tr[i].getElementsByClassName("descricao-row")[0];
@@ -577,16 +618,18 @@ function filtrarTabela() {
 
       var txtDescricao = tdDescricao ? tdDescricao.textContent || tdDescricao.innerText : "";
       var txtObservacao = tdObservacao ? tdObservacao.textContent.split("Tags:")[0].trim() : "";
-      var naturezaLancamento = tr[i].getElementsByClassName("credito-row")[0].textContent.trim() ? 'credito' : 'debito';
+      var naturezaLancamento = tr[i].querySelector(".credito-row").textContent.trim() ? 'credito' : 'debito';
 
-      var descricaoObservacaoMatch = (txtDescricao.toUpperCase().indexOf(filtroDescricao) > -1 || txtObservacao.toUpperCase().indexOf(filtroDescricao) > -1);
+      var descricaoObservacaoMatch = txtDescricao.toUpperCase().indexOf(filtroDescricao) > -1 || txtObservacao.toUpperCase().indexOf(filtroDescricao) > -1;
       var tagMatch = filtroTags === "" || tr[i].textContent.toUpperCase().indexOf(filtroTags) > -1;
       var contaContabilMatch = filtroContaContabil === "" || contaContabil.toUpperCase().indexOf(filtroContaContabil) > -1;
       var mesMatch = (!inicioMesDate && !fimMesDate) || (dataVencimento >= inicioMesDate && dataVencimento <= fimMesDate);
       var naturezaMatch = filtroNatureza === "" || filtroNatureza === naturezaLancamento;
+      var dataMatch = (!dataInicioObj || dataVencimento >= dataInicioObj) && (!dataFimObj || dataVencimento <= dataFimObj);
 
-      tr[i].style.display = descricaoObservacaoMatch && tagMatch && contaContabilMatch && mesMatch && naturezaMatch ? "" : "none";
+      tr[i].style.display = descricaoObservacaoMatch && tagMatch && contaContabilMatch && mesMatch && naturezaMatch && dataMatch ? "" : "none";
   }
+  calcularSaldoAcumulado();
 }
 
 // Adiciona ouvintes de evento para as caixas de pesquisa e seleção de conta contábil
@@ -595,3 +638,8 @@ document.getElementById('caixa-pesquisa-tags').addEventListener('keyup', filtrar
 document.getElementById('contas-contabeis').addEventListener('change', filtrarTabela);
 document.getElementById('meses').addEventListener('change', filtrarTabela);
 document.getElementById('natureza').addEventListener('change', filtrarTabela);
+document.getElementById('data-inicio').addEventListener('change', filtrarTabela);
+document.getElementById('data-fim').addEventListener('change', filtrarTabela);
+
+// Calcula o saldo acumulado quando a página carregar
+document.addEventListener('DOMContentLoaded', calcularSaldoAcumulado);

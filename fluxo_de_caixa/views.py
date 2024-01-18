@@ -192,7 +192,7 @@ def bancos_filtro(request):
 def filtrar_lancamentos(request):
     Tabela_fluxo_list = Tabela_fluxo.objects.all() 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        dados = serialize('json', Tabela_fluxo_list, fields=('id', 'vencimento', 'descricao', 'observacao', 'tags', 'parcelas', 'natureza', 'valor', 'saldo'))
+        dados = serialize('json', Tabela_fluxo_list, fields=('id', 'vencimento', 'descricao', 'observacao', 'tags', 'natureza', 'valor', 'saldo'))
         return JsonResponse({'dados': dados})
 
     return render(request, 'fluxo_de_caixa.html', {'Tabela_fluxo_list': Tabela_fluxo_list})
