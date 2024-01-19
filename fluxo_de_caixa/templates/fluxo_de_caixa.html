@@ -29,7 +29,7 @@
     <!-- ############### Metade Superior da Página ############### -->
     <main class="main">
         <!-- ############### Caixa com Filtros à Esquerda ############### -->
-        <form id="formulario-filtros" action="{% url 'filtrar_lancamentos' %}" method="get"> 
+        <form id="formulario-filtros" method="get"> 
             <div class="box-grid">
             <!-- ############### Filtro Contas Contábeis ############### -->
                 <section class="flex">
@@ -55,7 +55,7 @@
                 <!-- ############### Filtro Bancos ############### -->
                 <section class="flex">
                     <label for="bancos">Bancos</label>
-                    <select id="bancos" name = "bancos">
+                    <select id="bancos" name ="bancos">
                         <option value="" disabled selected hidden>Selecione</option>
                         {% for bancos in bancos %}
                         <option value="{{ bancos.banco }}">{{ bancos.banco }}</option>
@@ -202,7 +202,7 @@
         
             <section class="modal-flex mesclar-2" id="parcelas-section-recebimentos" style="display:none;">
                 <label for="parcelas">Número de Parcelas</label>
-                <input class="modal-parcelas" type="number" id="parcelas-recebimentos" name="parcelas" min="1" value="1"><br>
+                <input class="modal-parcelas" type="number" id="parcelas-recebimentos" name="parcelas" parcela-atual="{{ fluxo_de_caixa.parcela_atual }}" parcelas-total="{{ fluxo_de_caixa.parcelas_total }}" min="1" value="1"><br>
             </section>
 
             <section class="modal-flex mesclar-2">
@@ -212,7 +212,7 @@
                   <input type="hidden" id="tagsHiddenInput-recebimentos" name="tags">
             </section>
             <section class="modal-botoes">
-                <input type="submit" class="modal-salvar" name="salvar_recebimento" value="Salvar">
+                <input type="submit" class="modal-salvar" name="salvar_recebimento" value="Salvar">{% csrf_token %}
                 <button class="modal-fechar-recebimentos">Cancelar</button>
             </section>
         </form>
@@ -264,7 +264,7 @@
         
             <section class="modal-flex mesclar-2" id="parcelas-section-pagamentos" style="display:none;">
                 <label for="parcelas">Número de Parcelas</label>
-                <input class="modal-parcelas" type="number" id="parcelas-pagamentos" name="parcelas" min="1" value="1"><br>
+                <input class="modal-parcelas" type="number" id="parcelas-pagamentos" name="parcelas" parcela-atual="{{ fluxo_de_caixa.parcela_atual }}" parcelas-total="{{ fluxo_de_caixa.parcelas_total }}" min="1" value="1"><br>
             </section>
 
             <section class="modal-flex mesclar-2">
@@ -274,7 +274,7 @@
                   <input type="hidden" id="tagsHiddenInput-pagamentos" name="tags">
             </section>
             <section class="modal-botoes">
-                <input type="submit" class="modal-salvar" name="salvar_pagamentos" value="Salvar">
+                <input type="submit" class="modal-salvar" name="salvar_pagamentos" value="Salvar">{% csrf_token %}
                 <button class="modal-fechar-pagamentos">Cancelar</button>
             </section>
         </form>
@@ -341,7 +341,7 @@
             </thead>
             <tbody id="tabela-lancamentos">
                 {% for fluxo_de_caixa in Tabela_fluxo_list %}
-                <tr class="row-lancamentos" id="row-lancamentos" data-conta-contabil="{{ fluxo_de_caixa.conta_contabil }}" scope="row">
+                <tr class="row-lancamentos" id="row-lancamentos" data-conta-contabil="{{ fluxo_de_caixa.conta_contabil }}" parcela-atual="{{ fluxo_de_caixa.parcela_atual }}" parcelas-total="{{ fluxo_de_caixa.parcelas_total }}" scope="row">
                     <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado" type="checkbox" data-id="{{ fluxo_de_caixa.id }}"><span class="checkmark"></span></label></td>
                     <td class="vencimento-row">{{ fluxo_de_caixa.vencimento|date:"d/m/Y" }}</td>
                     <td class="descricao-row">{{ fluxo_de_caixa.descricao }}</td>
@@ -349,7 +349,7 @@
                         {{ fluxo_de_caixa.observacao }}
                         <small class="d-block">Tags: {{ fluxo_de_caixa.tags }}</small>
                     </td>
-                    <td class="parcela-row">{{ fluxo_de_caixa.parcelas }}</td>
+                    <td class="parcela-row">{{ fluxo_de_caixa.parcela_atual }}/{{ fluxo_de_caixa.parcelas_total }}</td>
                     {% if fluxo_de_caixa.natureza == 'Débito' %}
                         <td class="debito-row">{{ fluxo_de_caixa.valor|format_number }}</td>
                         <td class="credito-row"></td>

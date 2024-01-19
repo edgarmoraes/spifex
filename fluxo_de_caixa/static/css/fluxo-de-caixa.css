@@ -151,6 +151,7 @@
   box-shadow: var(--box-shadow1);
   transition: var(--transition-duration1);
   font-family: 'Open Sans', sans-serif;
+  outline: none;
 }
 
 .modal-transferencias {

@@ -16,20 +16,6 @@ def fluxo_de_caixa(request):
         return exibir_fluxo_de_caixa(request)
     elif request.method == "POST":
         return processar_fluxo_de_caixa(request)
-    
-def calcular_saldo_acumulado(tabela_fluxo_list, saldo_inicial):
-    """
-    Calcula o saldo acumulado para cada entrada em uma lista de fluxos de caixa.
-    :param tabela_fluxo_list: QuerySet de objetos Tabela_fluxo.
-    :return: None. Modifica cada objeto Tabela_fluxo adicionando um atributo 'saldo'.
-    """
-    saldo_total = saldo_inicial
-    for fluxo_de_caixa in tabela_fluxo_list:
-        if fluxo_de_caixa.natureza == 'Débito':
-            saldo_total -= fluxo_de_caixa.valor
-        else:
-            saldo_total += fluxo_de_caixa.valor
-        fluxo_de_caixa.saldo = saldo_total
 
 def exibir_fluxo_de_caixa(request):
     """ Exibe a lista de fluxos de caixa junto com os totais de cada mês e bancos """
@@ -45,6 +31,18 @@ def exibir_fluxo_de_caixa(request):
         'saldo_total_bancos': saldo_total_bancos
     }
     return render(request, 'fluxo_de_caixa.html', context)
+
+def calcular_saldo_acumulado(tabela_fluxo_list, saldo_inicial):
+    """ Calcula o saldo acumulado para cada entrada em uma lista de fluxos de caixa.
+    :param tabela_fluxo_list: QuerySet de objetos Tabela_fluxo.
+    :return: None. Modifica cada objeto Tabela_fluxo adicionando um atributo 'saldo' """
+    saldo_total = saldo_inicial
+    for fluxo_de_caixa in tabela_fluxo_list:
+        if fluxo_de_caixa.natureza == 'Débito':
+            saldo_total -= fluxo_de_caixa.valor
+        else:
+            saldo_total += fluxo_de_caixa.valor
+        fluxo_de_caixa.saldo = saldo_total
 
 def processar_fluxo_de_caixa(request):
     """ Processa o formulário de fluxo de caixa """
@@ -63,11 +61,10 @@ def extrair_dados_formulario(request):
         'observacao': request.POST.get('observacao'),
         'valor': request.POST.get('valor'),
         'conta_contabil': request.POST.get('conta_contabil'),
-        'parcelas': request.POST.get('parcelas', '1'),
+        'parcelas_total': int(request.POST.get('parcelas', '1')) if request.POST.get('parcelas', '1').isdigit() else 1,
         'tags': request.POST.get('tags'),
         'lancamento_id': request.POST.get('lancamento_id'),
         'natureza': 'Crédito' if 'salvar_recebimento' in request.POST else 'Débito',
-        'total_parcelas': int(request.POST.get('parcelas', '1')) if request.POST.get('parcelas', '1').isdigit() else 1
     }
 
 def atualizar_fluxo_existente(dados):
@@ -79,16 +76,16 @@ def atualizar_fluxo_existente(dados):
 
 def criar_novos_fluxos(dados):
     """ Cria novos registros de fluxo de caixa """
-    for i in range(dados['total_parcelas']):
+    for i in range(dados['parcelas_total']):
         vencimento_parcela = dados['vencimento'] + relativedelta(months=i)
-        formato_parcela = f"{i + 1}/{dados['total_parcelas']}" if dados['total_parcelas'] > 1 else str(i + 1)
         Tabela_fluxo.objects.create(
             vencimento=vencimento_parcela,
             descricao=dados['descricao'],
             observacao=dados['observacao'],
             valor=dados['valor'],
             conta_contabil=dados['conta_contabil'],
-            parcelas=formato_parcela,
+            parcela_atual=i + 1,
+            parcelas_total=dados['parcelas_total'],
             tags=dados['tags'],
             natureza=dados['natureza'],
             data_criacao=datetime.now()
@@ -131,14 +128,31 @@ def criar_registro_temporario(objeto):
         observacao=objeto.observacao,
         valor=objeto.valor,
         conta_contabil=objeto.conta_contabil,
-        parcelas=objeto.parcelas,
+        parcela_atual=objeto.parcela_atual,
+        parcelas_total=objeto.parcelas_total,
         tags=objeto.tags,
         natureza=objeto.natureza,
         data_criacao=objeto.data_criacao
     )
 
-# Sinal para atualizar TotaisMes quando um FluxoDeCaixa for salvo
+
+# SIGNAL HANDLERS ############################################################################
+
+@receiver(post_save, sender=Tabela_fluxo)
+def save_update_data_unica(sender, instance, **kwargs):
+    data_formatada = instance.vencimento.strftime('%b/%Y')
+    atualizar_totais_mes(data_formatada)
+
+@receiver(post_delete, sender=Tabela_fluxo)
+def delete_update_data_unica(sender, instance, **kwargs):
+    data_formatada = instance.vencimento.strftime('%b/%Y')
+    if not Tabela_fluxo.objects.filter(vencimento__year=instance.vencimento.year, vencimento__month=instance.vencimento.month).exists():
+        TotaisMes.objects.filter(data_formatada=data_formatada).delete()
+    else:
+        atualizar_totais_mes(data_formatada)
+
 def atualizar_totais_mes(data_formatada):
+    """ Sinal para atualizar TotaisMes quando um FluxoDeCaixa for salvo """
     # Calculando as datas de início e fim do mês
     inicio_mes = datetime.strptime(data_formatada, '%b/%Y').replace(day=1)
     fim_mes = inicio_mes + relativedelta(months=1, days=-1)
@@ -166,36 +180,12 @@ def atualizar_totais_mes(data_formatada):
         }
     )
 
-@receiver(post_save, sender=Tabela_fluxo)
-def save_update_data_unica(sender, instance, **kwargs):
-    data_formatada = instance.vencimento.strftime('%b/%Y')
-    atualizar_totais_mes(data_formatada)
-
-@receiver(post_delete, sender=Tabela_fluxo)
-def delete_update_data_unica(sender, instance, **kwargs):
-    data_formatada = instance.vencimento.strftime('%b/%Y')
-    if not Tabela_fluxo.objects.filter(vencimento__year=instance.vencimento.year, vencimento__month=instance.vencimento.month).exists():
-        TotaisMes.objects.filter(data_formatada=data_formatada).delete()
-    else:
-        atualizar_totais_mes(data_formatada)
+# FUNÇÕES ÚNICAS ############################################################################
 
 def meses_filtro(request):
     totais_mes = TotaisMes.objects.all().order_by('data_formatada')
     context = {'totais_mes': totais_mes}
     return render(request, 'fluxo_de_caixa.html', context)
-
-def bancos_filtro(request):
-    totais_bancos = Bancos.objects.all()
-    context = {'totais_bancos': totais_bancos}
-    return render(request, 'fluxo_de_caixa.html', context)
-
-def filtrar_lancamentos(request):
-    Tabela_fluxo_list = Tabela_fluxo.objects.all() 
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        dados = serialize('json', Tabela_fluxo_list, fields=('id', 'vencimento', 'descricao', 'observacao', 'tags', 'natureza', 'valor', 'saldo'))
-        return JsonResponse({'dados': dados})
-
-    return render(request, 'fluxo_de_caixa.html', {'Tabela_fluxo_list': Tabela_fluxo_list})
 
 def exibir_bancos(request):
     bancos = Bancos.objects.all()

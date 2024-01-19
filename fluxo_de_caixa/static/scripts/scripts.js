@@ -154,8 +154,9 @@ function fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainer
 
   // Adicionar o código para redefinir e ocultar o campo de parcelas
   const parcelasInput = document.getElementById(parcelasId);
-  parcelasInput.value = ''; // Define o valor padrão para 1
+  parcelasInput.value = '1'; // Define o valor padrão para 1
   parcelasInput.style.display = 'none'; // Oculta o campo de parcelas
+  parcelasInput.disabled = false; // Habilita o campo de parcelas
 }
 
 // Elementos do DOM
@@ -183,128 +184,139 @@ fecharModal(closeModalTransferencias, modalTransferencias, ".modal-form-transfer
 
 
 // Evento para editar lançamentos ao clicar duas vezes nas células da tabela
-function desformatarNumero(valorFormatado) {
-  // Remove os separadores de milhar e substitui vírgula por ponto
-  return valorFormatado.replace(/\./g, '').replace(',', '.');
-}
+// Variáveis Globais
+let estaEditando = false;
 
-document.querySelectorAll('.row-lancamentos td:not(.checkbox-row)').forEach(cell => {
-  cell.addEventListener('dblclick', function() {
-      handleCellDoubleClick(cell);
-  });
+// Event Listeners Principais
+document.addEventListener('DOMContentLoaded', function() {
+    configurarEventosModais();
+    configurarEventosTabela();
 });
 
-// Fecha os modais ao pressionar a tecla Escape
-document.addEventListener('keydown', event => {
-  if (event.key === 'Escape') {
-      fecharModais();
-  }
-});
+function configurarEventosModais() {
+    // Fechar modais ao pressionar a tecla Escape
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+            fecharModais();
+        }
+    });
 
-function handleCellDoubleClick(cell) {
-  const row = cell.closest('.row-lancamentos');
-  abrirModalEdicao(row);
+    // Configuração do fechamento do modal
+    document.getElementById('modal-recebimentos').onclose = function() {
+        onModalClose('recebimentos');
+    };
+    document.getElementById('modal-pagamentos').onclose = function() {
+        onModalClose('pagamentos');
+    };
 }
 
+function configurarEventosTabela() {
+    // Evento para editar lançamentos ao clicar duas vezes nas células da tabela
+    document.querySelectorAll('.row-lancamentos td:not(.checkbox-row)').forEach(cell => {
+        cell.addEventListener('dblclick', function() {
+            handleCellDoubleClick(cell);
+        });
+    });
+}
+
+// Funções de Manipulação de Modais
 function abrirModalEdicao(row) {
-  const credito = row.querySelector('.credito-row').textContent.trim();
-  const debito = row.querySelector('.debito-row').textContent.trim();
+    const credito = row.querySelector('.credito-row').textContent.trim();
+    const debito = row.querySelector('.debito-row').textContent.trim();
 
-  if (credito && !debito) {
-      abrirModalRecebimentosEdicao(row);
-  } else if (!credito && debito) {
-      abrirModalPagamentosEdicao(row);
-  }
+    if (credito && !debito) {
+        abrirModalRecebimentosEdicao(row);
+    } else if (!credito && debito) {
+        abrirModalPagamentosEdicao(row);
+    }
 }
 
 function fecharModais() {
-  if (document.getElementById('modal-recebimentos').open) {
-      fecharModalRecebimentosEdicao();
-  } else if (document.getElementById('modal-pagamentos').open) {
-      fecharModalPagamentosEdicao();
-  }
+    if (document.getElementById('modal-recebimentos').open) {
+        document.getElementById('modal-recebimentos').close();
+    }
+    if (document.getElementById('modal-pagamentos').open) {
+        document.getElementById('modal-pagamentos').close();
+    }
 }
 
 function abrirModalRecebimentosEdicao(row) {
-  // Preenchendo os campos com os dados da linha para o modal de recebimentos
-  preencherDadosModal(row, 'recebimentos');
-  document.getElementById('modal-recebimentos').showModal();
+    estaEditando = true;
+    preencherDadosModal(row, 'recebimentos');
+    mostrarParcelasRecebimentos(row);
+    document.getElementById('modal-recebimentos').showModal();
 }
 
 function abrirModalPagamentosEdicao(row) {
-  // Preenchendo os campos com os dados da linha para o modal de pagamentos
-  preencherDadosModal(row, 'pagamentos');
-  document.getElementById('modal-pagamentos').showModal();
+    estaEditando = true;
+    preencherDadosModal(row, 'pagamentos');
+    mostrarParcelasPagamentos(row);
+    document.getElementById('modal-pagamentos').showModal();
 }
 
+function onModalClose(tipo) {
+    estaEditando = false;
+    limparCamposModal(tipo);
+    redefinirCampoParcelas(tipo);
+}
+
+// Funções Auxiliares de Modais
 function preencherDadosModal(row, tipo) {
-  const vencimento = row.querySelector('.vencimento-row').textContent.trim();
-  document.getElementById(`data-${tipo}`).value = formatarDataParaInput(vencimento);
+    const vencimento = row.querySelector('.vencimento-row').textContent.trim();
+    document.getElementById(`data-${tipo}`).value = formatarDataParaInput(vencimento);
 
-  const valor = row.querySelector(`.${tipo === 'recebimentos' ? 'credito' : 'debito'}-row`).textContent.trim();
-  document.getElementById(`valor-${tipo}`).value = desformatarNumero(valor);
+    const valor = row.querySelector(`.${tipo === 'recebimentos' ? 'credito' : 'debito'}-row`).textContent.trim();
+    document.getElementById(`valor-${tipo}`).value = desformatarNumero(valor);
 
-  document.getElementById(`descricao-${tipo}`).value = row.querySelector('.descricao-row').textContent.trim();
-  document.getElementById(`observacao-${tipo}`).value = row.querySelector('.obs-row').childNodes[0].textContent.trim();
+    document.getElementById(`descricao-${tipo}`).value = row.querySelector('.descricao-row').textContent.trim();
+    document.getElementById(`observacao-${tipo}`).value = row.querySelector('.obs-row').childNodes[0].textContent.trim();
 
-  const tags = extrairTags(row);
-  document.getElementById(`tagInput-${tipo}`).value = tags;
+    const tags = extrairTags(row);
+    document.getElementById(`tagInput-${tipo}`).value = tags;
 
-  document.getElementById(`conta-contabil-${tipo}`).value = row.dataset.contaContabil;
+    document.getElementById(`conta-contabil-${tipo}`).value = row.dataset.contaContabil;
 
-  const parcelas = row.querySelector('.parcela-row').textContent.trim();
-  document.getElementById(`parcelas-${tipo}`).type = 'text';
-  document.getElementById(`parcelas-${tipo}`).value = parcelas;
+    const lancamentoId = row.querySelector('.checkbox-personalizado').getAttribute('data-id');
+    document.querySelector(`[name="lancamento_id"]`).value = lancamentoId;
 
-  const lancamentoId = row.querySelector('.checkbox-personalizado').getAttribute('data-id');
-  document.querySelector(`[name="lancamento_id"]`).value = lancamentoId;
-
-  simularEnter(`tagInput-${tipo}`);
-}
-
-function extrairTags(row) {
-  const tagsContainer = row.querySelector('.d-block');
-  return tagsContainer ? tagsContainer.textContent.trim().replace(/^Tags:\s*/, '') : '';
-}
-
-function simularEnter(elementId) {
-  const event = new KeyboardEvent('keydown', {'key': 'Enter'});
-  document.getElementById(elementId).dispatchEvent(event);
-}
-
-function fecharModalRecebimentosEdicao() {
-  limparCamposModal('recebimentos');
-  document.getElementById('modal-recebimentos').close();
-}
-
-function fecharModalPagamentosEdicao() {
-  limparCamposModal('pagamentos');
-  document.getElementById('modal-pagamentos').close();
+    simularEnter(`tagInput-${tipo}`);
 }
 
 function limparCamposModal(tipo) {
-  document.querySelectorAll(`.modal-form-${tipo} input`).forEach(input => input.value = '');
+    const inputs = document.querySelectorAll(`.modal-form-${tipo} input`);
+    inputs.forEach(input => {
+        if (input.type !== 'submit' && input.name !== 'csrfmiddlewaretoken') {
+            input.value = '';
+        }
+    });
 }
 
-function formatarDataParaInput(data) {
-  // Formata a data para o formato apropriado para input[type="date"]
-  const partes = data.split('/');
-  return partes.reverse().join('-');
-}
+function redefinirCampoParcelas(tipo) {
+    var select = document.getElementById(`recorrencia-${tipo}`);
+    var input = document.getElementById(`parcelas-${tipo}`);
+    var section = document.getElementById(`parcelas-section-${tipo}`);
 
+    section.style.display = select.value === 'sim' ? 'block' : 'none';
+    input.value = select.value === 'sim' ? '' : '1';
+    input.disabled = false;
+}
 
 // Função para mostrar campo de recorrência
-function mostrarParcelasRecebimentos() {
+function mostrarParcelasRecebimentos(row) {
   var select = document.getElementById('recorrencia-recebimentos');
   var section = document.getElementById('parcelas-section-recebimentos');
   var input = document.getElementById('parcelas-recebimentos');
 
-  if (select.value === 'sim') {
-      section.style.display = 'block';
-      input.value = '';  // Removido o valor '1' aqui
+  section.style.display = select.value === 'sim' ? 'block' : 'none';
+  if (estaEditando) {
+      var parcelasTotal = row.getAttribute('parcelas-total') ? parseInt(row.getAttribute('parcelas-total')) : 1;
+      var parcelaAtual = row.getAttribute('parcela-atual') ? parseInt(row.getAttribute('parcela-atual')) : 1;
+
+      input.value = parcelaAtual;
+      input.disabled = parcelasTotal > 1;
   } else {
-      section.style.display = 'none';
-      input.value = '1';
+      input.value = select.value === 'sim' ? '' : '1';
+      input.disabled = false;
   }
 }
 
@@ -313,13 +325,43 @@ function mostrarParcelasPagamentos() {
   var section = document.getElementById('parcelas-section-pagamentos');
   var input = document.getElementById('parcelas-pagamentos');
 
-  if (select.value === 'sim') {
-      section.style.display = 'block';
-      input.value = '';  // Removido o valor '1' aqui
+  section.style.display = select.value === 'sim' ? 'block' : 'none';
+  if (estaEditando) {
+      var parcelasTotal = row.getAttribute('parcelas-total') ? parseInt(row.getAttribute('parcelas-total')) : 1;
+      var parcelaAtual = row.getAttribute('parcela-atual') ? parseInt(row.getAttribute('parcela-atual')) : 1;
+
+      input.value = parcelaAtual;
+      input.disabled = parcelasTotal > 1;
   } else {
-      section.style.display = 'none';
-      input.value = '1';
+      input.value = select.value === 'sim' ? '' : '1';
+      input.disabled = false;
   }
+}
+
+// Funções de Eventos de Tabela
+function handleCellDoubleClick(cell) {
+  const row = cell.closest('.row-lancamentos');
+  abrirModalEdicao(row);
+}
+
+// Funções de Formatação e Utilidades
+function desformatarNumero(valorFormatado) {
+  return valorFormatado.replace(/\./g, '').replace(',', '.');
+}
+
+function formatarDataParaInput(data) {
+  const partes = data.split('/');
+  return partes.reverse().join('-');
+}
+
+function simularEnter(elementId) {
+  const event = new KeyboardEvent('keydown', {'key': 'Enter'});
+  document.getElementById(elementId).dispatchEvent(event);
+}
+
+function extrairTags(row) {
+  const tagsContainer = row.querySelector('.d-block');
+  return tagsContainer ? tagsContainer.textContent.trim().replace(/^Tags:\s*/, '') : '';
 }
 
 
@@ -536,27 +578,6 @@ document.querySelectorAll('.checkbox-personalizado').forEach(checkbox => {
 calcularTotal();
 
 
-document.getElementById('formulario-filtros').addEventListener('submit', function(e) {
-  e.preventDefault();  // Previne a submissão normal do formulário
-
-  // Captura os valores do formulário
-  var formData = new FormData(this);
-  var url = '{% url "filtrar_lancamentos" %}' + '?' + new URLSearchParams(formData).toString();
-
-  fetch(url, {
-      method: 'GET',
-      headers: {
-          'X-Requested-With': 'XMLHttpRequest',  // Importante para a view reconhecer como Ajax
-      }
-  })
-  .then(response => response.json())
-  .then(data => {
-      atualizarTabela(data.dados);
-  })
-  .catch(error => console.error('Erro:', error));
-});
-
-
 // Cálculo de Saldo Inicial
 function calcularSaldoAcumulado() {
   var trs = document.querySelectorAll("#tabela-lancamentos tr");
@@ -643,3 +664,48 @@ document.getElementById('data-fim').addEventListener('change', filtrarTabela);
 
 // Calcula o saldo acumulado quando a página carregar
 document.addEventListener('DOMContentLoaded', calcularSaldoAcumulado);
+
+function filtrarTabelaBancos() {
+  var filtroBanco = document.getElementById("bancos").value.toUpperCase();
+  var tabela = document.querySelector(".tabela-bancos");
+  var tr = tabela.getElementsByClassName("row-bancos");
+
+  for (var i = 0; i < tr.length; i++) {
+      var tdBanco = tr[i].getElementsByClassName("banco-row")[0];
+      if (tdBanco) {
+          var nomeBanco = tdBanco.textContent || tdBanco.innerText;
+          if (nomeBanco.toUpperCase().indexOf(filtroBanco) > -1 || filtroBanco === "") {
+              tr[i].style.display = "";
+          } else {
+              tr[i].style.display = "none";
+          }
+      }
+  }
+}
+
+// Adiciona o ouvinte de evento para o filtro de bancos
+document.getElementById('bancos').addEventListener('change', filtrarTabelaBancos);
+
+function filtrarBancos() {
+  const filtroBanco = document.getElementById('bancos').value;
+  const rows = document.querySelectorAll('.row-bancos');
+  let saldoTotal = 0;
+
+  rows.forEach(row => {
+      const banco = row.querySelector('.banco-row').textContent;
+      const saldoTexto = row.querySelector('.saldo-banco-row').textContent;
+      const saldo = parseFloat(saldoTexto.replace(/\./g, '').replace(',', '.'));
+
+      if (banco === filtroBanco || filtroBanco === '') {
+          row.style.display = '';
+          saldoTotal += saldo;
+      } else {
+          row.style.display = 'none';
+      }
+  });
+  const saldoTotalFormatado = saldoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const saldoTotalElement = document.querySelector('.saldo-total-banco-row');
+  saldoTotalElement.textContent = saldoTotalFormatado;
+}
+
+document.getElementById('bancos').addEventListener('change', filtrarBancos);
