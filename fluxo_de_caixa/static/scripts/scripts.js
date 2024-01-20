@@ -262,6 +262,9 @@ function onModalClose(tipo) {
 
 // Funções Auxiliares de Modais
 function preencherDadosModal(row, tipo) {
+    const parcelasTotalOriginais = row.getAttribute('parcelas-total');
+    document.getElementById(`parcelas-total-originais-${tipo}`).value = parcelasTotalOriginais;
+
     const vencimento = row.querySelector('.vencimento-row').textContent.trim();
     document.getElementById(`data-${tipo}`).value = formatarDataParaInput(vencimento);
 
@@ -581,33 +584,24 @@ calcularTotal();
 // Cálculo de Saldo Inicial
 function calcularSaldoAcumulado() {
   var trs = document.querySelectorAll("#tabela-lancamentos tr");
-  saldoAcumulado = saldoInicialBancos; // Começa com o saldo inicial dos bancos
+  var saldoAcumulado = saldoTotalFiltrado; // Usa o saldo total filtrado dos bancos
 
   trs.forEach(tr => {
-      // Verifica se a linha está visível
       if (tr.style.display !== 'none') {
           var debito = tr.querySelector(".debito-row").textContent || '0';
           var credito = tr.querySelector(".credito-row").textContent || '0';
           debito = parseFloat(debito.replace(/\./g, '').replace(',', '.')) || 0;
           credito = parseFloat(credito.replace(/\./g, '').replace(',', '.')) || 0;
           saldoAcumulado += credito - debito;
-      }
-  });
-
-  
-  // Atualiza o saldo em todas as linhas visíveis
-  var saldoVisivel = saldoInicialBancos;
-  trs.forEach((tr, index) => {
-      if (tr.style.display !== 'none') {
-          var debito = tr.querySelector(".debito-row").textContent || '0';
-          var credito = tr.querySelector(".credito-row").textContent || '0';
-          debito = parseFloat(debito.replace(/\./g, '').replace(',', '.')) || 0;
-          credito = parseFloat(credito.replace(/\./g, '').replace(',', '.')) || 0;
-          saldoVisivel += credito - debito;
-          tr.querySelector('.saldo-row').textContent = saldoVisivel.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          tr.querySelector('.saldo-row').textContent = saldoAcumulado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       }
   });
 }
+
+// Garanta que a função calcularSaldoAcumulado é chamada ao carregar a página
+document.addEventListener('DOMContentLoaded', () => {
+  filtrarBancos(); // Isso também chamará calcularSaldoAcumulado
+});
 
 
 // Filtros
@@ -684,8 +678,6 @@ function filtrarTabelaBancos() {
 }
 
 // Adiciona o ouvinte de evento para o filtro de bancos
-document.getElementById('bancos').addEventListener('change', filtrarTabelaBancos);
-
 function filtrarBancos() {
   const filtroBanco = document.getElementById('bancos').value;
   const rows = document.querySelectorAll('.row-bancos');
@@ -696,16 +688,22 @@ function filtrarBancos() {
       const saldoTexto = row.querySelector('.saldo-banco-row').textContent;
       const saldo = parseFloat(saldoTexto.replace(/\./g, '').replace(',', '.'));
 
-      if (banco === filtroBanco || filtroBanco === '') {
+      if (!filtroBanco || banco.includes(filtroBanco)) {
           row.style.display = '';
           saldoTotal += saldo;
       } else {
           row.style.display = 'none';
       }
   });
-  const saldoTotalFormatado = saldoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
   const saldoTotalElement = document.querySelector('.saldo-total-banco-row');
-  saldoTotalElement.textContent = saldoTotalFormatado;
+  saldoTotalElement.textContent = saldoTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+  // Atualiza o saldoTotalFiltrado
+  saldoTotalFiltrado = saldoTotal;
+
+  // Recalcule o saldo acumulado
+  calcularSaldoAcumulado();
 }
 
 document.getElementById('bancos').addEventListener('change', filtrarBancos);

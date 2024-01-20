@@ -45,16 +45,26 @@ def calcular_saldo_acumulado(tabela_fluxo_list, saldo_inicial):
         fluxo_de_caixa.saldo = saldo_total
 
 def processar_fluxo_de_caixa(request):
-    """ Processa o formulário de fluxo de caixa """
     dados = extrair_dados_formulario(request)
+
     if dados['lancamento_id']:
-        atualizar_fluxo_existente(dados)
+        if dados['parcelas_total'] > 1:
+            if dados['parcelas_total_originais'] > 1:
+                atualizar_fluxo_existente(dados)  # Manter parcelas_total se for uma série de parcelas
+            else:
+                # Criar novos fluxos se o número de parcelas foi alterado para mais de um
+                Tabela_fluxo.objects.filter(id=dados['lancamento_id']).delete()
+                criar_novos_fluxos(dados)
+        else:
+            atualizar_fluxo_existente(dados)  # Atualização normal para lançamentos de uma única parcela
     else:
         criar_novos_fluxos(dados)
     return redirect(request.path)
 
 def extrair_dados_formulario(request):
     """ Extrai e retorna os dados do formulário """
+    lancamento_id = request.POST.get('lancamento_id')
+    lancamento_id = None if lancamento_id == '' else lancamento_id
     return {
         'vencimento': datetime.strptime(request.POST.get('vencimento'), '%Y-%m-%d'),
         'descricao': request.POST.get('descricao'),
@@ -62,30 +72,37 @@ def extrair_dados_formulario(request):
         'valor': request.POST.get('valor'),
         'conta_contabil': request.POST.get('conta_contabil'),
         'parcelas_total': int(request.POST.get('parcelas', '1')) if request.POST.get('parcelas', '1').isdigit() else 1,
+        'parcelas_total_originais': int(request.POST.get('parcelas_total_originais', '1')),
         'tags': request.POST.get('tags'),
-        'lancamento_id': request.POST.get('lancamento_id'),
+        'lancamento_id': lancamento_id,
         'natureza': 'Crédito' if 'salvar_recebimento' in request.POST else 'Débito',
     }
 
 def atualizar_fluxo_existente(dados):
-    """ Atualiza um fluxo de caixa existente """
     fluxo_de_caixa = get_object_or_404(Tabela_fluxo, id=dados['lancamento_id'])
+    parcelas_total_originais = fluxo_de_caixa.parcelas_total  # Obter o valor original de parcelas_total
+
     for campo, valor in dados.items():
+        # Não atualizar parcelas_total se for um lançamento de múltiplas parcelas
+        if campo == 'parcelas_total' and parcelas_total_originais > 1:
+            continue
         setattr(fluxo_de_caixa, campo, valor)
     fluxo_de_caixa.save()
 
-def criar_novos_fluxos(dados):
-    """ Cria novos registros de fluxo de caixa """
-    for i in range(dados['parcelas_total']):
-        vencimento_parcela = dados['vencimento'] + relativedelta(months=i)
+def criar_novos_fluxos(dados, iniciar_desde_o_atual=False):
+    parcela_inicial = dados.get('parcela_atual', 1)
+    total_parcelas = dados['parcelas_total']
+
+    for i in range(parcela_inicial, total_parcelas + 1):
+        vencimento_parcela = dados['vencimento'] + relativedelta(months=i - parcela_inicial)
         Tabela_fluxo.objects.create(
             vencimento=vencimento_parcela,
             descricao=dados['descricao'],
             observacao=dados['observacao'],
             valor=dados['valor'],
             conta_contabil=dados['conta_contabil'],
-            parcela_atual=i + 1,
-            parcelas_total=dados['parcelas_total'],
+            parcela_atual=i,
+            parcelas_total=total_parcelas,
             tags=dados['tags'],
             natureza=dados['natureza'],
             data_criacao=datetime.now()

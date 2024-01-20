@@ -350,6 +350,8 @@
                         <small class="d-block">Tags: {{ fluxo_de_caixa.tags }}</small>
                     </td>
                     <td class="parcela-row">{{ fluxo_de_caixa.parcela_atual }}/{{ fluxo_de_caixa.parcelas_total }}</td>
+                    <input type="hidden" id="parcelas-total-originais-recebimentos" name="parcelas_total_originais">
+                    <input type="hidden" id="parcelas-total-originais-pagamentos" name="parcelas_total_originais">
                     {% if fluxo_de_caixa.natureza == 'Débito' %}
                         <td class="debito-row">{{ fluxo_de_caixa.valor|format_number }}</td>
                         <td class="credito-row"></td>
