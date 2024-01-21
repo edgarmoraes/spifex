@@ -140,23 +140,34 @@ function fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainer
   document.body.style.marginRight = '';
   document.querySelector('.nav-bar').style.marginRight = '';
   document.querySelector(formSelector).reset();
-  
-  const tagContainer = document.getElementById(tagContainerId);
-  while (tagContainer.firstChild) {
-      tagContainer.removeChild(tagContainer.firstChild);
-  }
-  
-  const tagInput = document.getElementById(tagInputId);
-  const tagsHiddenInput = document.getElementById(tagsHiddenInputId);
-  
-  tagInput.value = '';
-  tagsHiddenInput.value = '';
 
-  // Adicionar o código para redefinir e ocultar o campo de parcelas
+  // Verifica se o tagContainer existe antes de tentar manipulá-lo
+  const tagContainer = document.getElementById(tagContainerId);
+  if (tagContainer) {
+      while (tagContainer.firstChild) {
+          tagContainer.removeChild(tagContainer.firstChild);
+      }
+  }
+
+  // Verifica se o tagInput existe antes de tentar manipulá-lo
+  const tagInput = document.getElementById(tagInputId);
+  if (tagInput) {
+      tagInput.value = '';
+  }
+
+  // Verifica se o tagsHiddenInput existe antes de tentar manipulá-lo
+  const tagsHiddenInput = document.getElementById(tagsHiddenInputId);
+  if (tagsHiddenInput) {
+      tagsHiddenInput.value = '';
+  }
+
+  // Verifica se o parcelasInput existe antes de tentar manipulá-lo
   const parcelasInput = document.getElementById(parcelasId);
-  parcelasInput.value = '1'; // Define o valor padrão para 1
-  parcelasInput.style.display = 'none'; // Oculta o campo de parcelas
-  parcelasInput.disabled = false; // Habilita o campo de parcelas
+  if (parcelasInput) {
+      parcelasInput.value = '1'; // Define o valor padrão para 1
+      parcelasInput.style.display = 'none'; // Oculta o campo de parcelas
+      parcelasInput.disabled = false; // Habilita o campo de parcelas
+  }
 }
 
 // Elementos do DOM
@@ -233,9 +244,13 @@ function abrirModalEdicao(row) {
 
 function fecharModais() {
     if (document.getElementById('modal-recebimentos').open) {
+        var form = document.querySelector(".modal-form-recebimentos"); // Adapte o seletor conforme necessário
+        form.reset(); // Reseta o formulário
         document.getElementById('modal-recebimentos').close();
     }
     if (document.getElementById('modal-pagamentos').open) {
+        var form = document.querySelector(".modal-form-pagamentos"); // Adapte o seletor conforme necessário
+        form.reset(); // Reseta o formulário
         document.getElementById('modal-pagamentos').close();
     }
 }
@@ -323,7 +338,7 @@ function mostrarParcelasRecebimentos(row) {
   }
 }
 
-function mostrarParcelasPagamentos() {
+function mostrarParcelasPagamentos(row) {
   var select = document.getElementById('recorrencia-pagamentos');
   var section = document.getElementById('parcelas-section-pagamentos');
   var input = document.getElementById('parcelas-pagamentos');
