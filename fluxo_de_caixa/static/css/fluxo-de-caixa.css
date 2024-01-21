@@ -9,15 +9,22 @@
 
 /* Compartilhado */
 .box-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-direction: column;
   width: 700px;
-  height: 338px;
+  height: auto;
   margin: 4.5rem auto 1rem auto;
-  padding: 1rem 1rem;
   background-color: var(--branco);
   border-radius: 1rem;
   box-shadow: var(--box-shadow1);
+}
+
+.box-grid-filters {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 700px;
+  padding: 1rem;
+  padding-bottom: 0rem;
 }
 
 /* Botões para Lançamentos */
@@ -36,6 +43,11 @@
   transition-duration: var(--transition-duration1);
   overflow: hidden;
   position: relative;
+}
+
+.botoes-filtros {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .recebimentos {
@@ -134,7 +146,7 @@
 
 /* Compartilhado */
 .conteudo-tabela-bancos {
-  max-height: 286px; /* Ajuste conforme necessário */
+  max-height: 286px;
   overflow: auto;
 }
 
@@ -314,4 +326,52 @@ input:focus {
 input#tagInput {
   padding: 8px;
   font-size: 16px;
+}
+
+
+@media screen and (max-width: 768px) {
+  .box-grid,
+  .box-grid-filters,
+  .box-grid-bancos {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: calc(100% - 2rem);
+    margin: 1rem;
+    padding: 1rem;
+    height: auto;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  
+  .box-grid {
+    background-color: none;
+    box-shadow: none;
+    padding: 0rem;
+    margin: 0rem 1rem;
+  }
+  
+  .box-grid-filters {
+    border-radius: 1rem;
+    background-color: var(--branco);
+    box-shadow: var(--box-shadow1);
+  }
+
+  .modal-recebimentos,
+  .modal-pagamentos,
+  .modal-transferencias {
+    width: 100%; /* Ocupa toda a largura em dispositivos móveis */
+  }
+
+  .modal-transferencias > form,
+  dialog > form {
+    grid-template-columns: 1fr; /* Coloca todos os itens em uma única coluna */
+  }
+
+  .mesclar-2 {
+    grid-column: 1 / -1; /* Faz com que ocupem toda a largura disponível da grid */
+  }
+
+  .modal-botoes {
+    margin-top: 1rem;
+  }
 }

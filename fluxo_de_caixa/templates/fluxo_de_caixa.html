@@ -13,6 +13,7 @@
 </head>
 <body>
     <header class="header">
+        <button class="openbtn" onclick="toggleNav()">☰</button>
         <!-- ############### Barra de Navegação Fixa ############### -->
         <nav class="nav-bar">
             <a class="logo" href="/fluxo_de_caixa/">WAYEASI</a>
@@ -20,7 +21,7 @@
                 <li class="nav-fluxo-de-caixa"><a href="/fluxo_de_caixa/">FLUXO DE CAIXA</a></li>
                 <li class="nav-realizado"><a href="realizado.html">REALIZADO</a></li>
                 <li class="nav-relatorios"><a href="#">RELATÓRIOS</a></li>
-                <li><div class="line"></div></li>
+                <li class="nav-line"><div class="line"></div></li>
                 <li class="nav-configuracoes"><a href="configuracoes.html">CONFIGURAÇÕES</a></li>
                 <li class="nav-meu-perfil"><a href="meu-perfil.html">MEU PERFIL</a></li>
             </ul>
@@ -28,10 +29,12 @@
     </header>
     <!-- ############### Metade Superior da Página ############### -->
     <main class="main">
+        <button class="toggle-filters-btn" onclick="toggleFilters()">Filtros</button>
         <!-- ############### Caixa com Filtros à Esquerda ############### -->
+    <div class="box-grid">
         <form id="formulario-filtros" method="get"> 
-            <div class="box-grid">
-            <!-- ############### Filtro Contas Contábeis ############### -->
+            <div class="box-grid-filters">
+                <!-- ############### Filtro Contas Contábeis ############### -->
                 <section class="flex">
                     <label for="contas-contabeis">Contas Contábeis</label>
                     <select id="contas-contabeis" name = "contas_contabeis">
@@ -95,40 +98,44 @@
                 <div class="pesquisa-tags">
                     <input type="text" class="caixa-pesquisa-tags" id="caixa-pesquisa-tags"  name ="caixa_pesquisa_tags" placeholder="Tags">
                 </div>
-                <!-- ############### Botões da Caixa com Filtros ############### -->
-                <!-- ############### Botão de Recebimentos ############### -->
-                <section>
-                    <button class="botao recebimentos" type="button">
-                        <svg class="svgIcon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
-                            <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13V1m0 0L1 5m4-4 4 4"/>
-                        </svg>
-                    </button>
-                </section>
-                <!-- ############### Botão de Pagamentos ############### -->
-                <section>
-                    <button class="botao pagamentos" type="button">
-                        <svg class="svgIcon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
-                            <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1v12m0 0 4-4m-4 4L1 9"/>
-                        </svg>
-                </section>
-                <!-- ############### Botão de Transferências ############### -->
-                <section>
-                    <button class="botao transferencias" type="button">
-                        <svg class="svgIcon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 20">
-                            <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6v13m0 0 3-3m-3 3-3-3m11-2V1m0 0L9 4m3-3 3 3"/>
-                        </svg>
-                    </button>
-                </section>
             </div>
         </form>
+                <!-- ############### Botões da Caixa com Filtros ############### -->
+                <div class="botoes-filtros mesclar-3">
+                    <!-- ############### Botão de Recebimentos ############### -->
+                    <section>
+                        <button class="botao recebimentos" type="button">
+                            <svg class="svgIcon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
+                                <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13V1m0 0L1 5m4-4 4 4"/>
+                            </svg>
+                        </button>
+                    </section>
+                    <!-- ############### Botão de Pagamentos ############### -->
+                    <section>
+                        <button class="botao pagamentos" type="button">
+                            <svg class="svgIcon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
+                                <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1v12m0 0 4-4m-4 4L1 9"/>
+                            </svg>
+                    </section>
+                    <!-- ############### Botão de Transferências ############### -->
+                    <section>
+                        <button class="botao transferencias" type="button">
+                            <svg class="svgIcon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 20">
+                                <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6v13m0 0 3-3m-3 3-3-3m11-2V1m0 0L9 4m3-3 3 3"/>
+                            </svg>
+                        </button>
+                    </section>
+                </div>
+    </div>
         <!-- ############### Tabela de Bancos ############### -->
-        <div class="box-grid-bancos">
+        <button class="toggle-banks-btn" onclick="toggleBanks()">Bancos</button>
+        <div class="box-grid-bancos" id="box-grid-bancos">
             <div class="conteudo-tabela-bancos">
                 <table class="tabela-bancos">
                     <thead class="cabecalho-bancos">
                         <tr class="linha-cabecalho-bancos">
                             <th class="contas-bancos-col" scope="col">Contas</th>
-                            <th class="ag-bancos-col" scope="col">Ag.</th>
+                            <th class="ag-bancos-col" scope="col">Agência</th>
                             <th class="conta-bancos-col" scope="col">Conta</th>
                             <th class="saldo-bancos-col" scope="col">Saldo</th>
                         </tr>

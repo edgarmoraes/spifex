@@ -1,3 +1,24 @@
+function toggleFilters() {
+  var formulario = document.getElementById('formulario-filtros');
+  formulario.classList.toggle('show-filters');
+}
+
+function toggleBanks() {
+  var formulario = document.getElementById('box-grid-bancos');
+  formulario.classList.toggle('show-filters');
+}
+
+function toggleNav() {
+  var navBar = document.querySelector('.nav-bar');
+  if (navBar.style.left === '0px') {
+      navBar.style.left = '-100%';
+  } else {
+      navBar.style.left = '0px';
+  }
+}
+
+
+
 // Apagar lançamentos da Tabela
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('apagar-button').addEventListener('click', function() {

@@ -17,8 +17,9 @@
   --color4: #3D3D40;
   --color5: #006919;
   --color6: #740000;
-  --color7: #9BB8CD;
+  --color7: #7F4FFF;
   --color8: #F87C7C;
+  --color9: #FFEB24;
 }
 
 * {
@@ -47,6 +48,22 @@ a:hover {
 }
 
 /* Barra de Navegação Fixa */
+
+.openbtn {
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--color9);
+  background-color: #3d3d40bf;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  display: none;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+}
+
 .logo {
   font-size: 24px;
   letter-spacing: 4px;
@@ -134,6 +151,75 @@ nav {
 .flex select, input:focus {
   outline: none;
   background-color: var(--color1);
+}
+
+.toggle-filters-btn,
+.toggle-banks-btn {
+  display: none;
+  margin: 10px auto;
+  padding: 0.8em 1.7em;
+  width: 300px;
+  color: var(--color7);
+  background-color: transparent;
+  border-radius: 30px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: .5s;
+  font-weight: 700;
+  font-size: 20px;
+  border: 1px solid;
+  font-family: var(--primary-font);
+  text-transform: uppercase;
+  z-index: 1;
+  box-shadow: var(--box-shadow2);
+}
+
+.toggle-filters-btn::before,
+.toggle-filters-btn::after,
+.toggle-banks-btn::before,
+.toggle-banks-btn::after {
+  content: '';
+  display: block;
+  width: 50px;
+  height: 50px;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  border-radius: 50%;
+  z-index: -1;
+  background-color: var(--color7);
+  transition: .5s ease;
+}
+
+.toggle-filters-btn::before,
+.toggle-banks-btn::before {
+  top: -1em;
+  left: -1em;
+}
+
+.toggle-filters-btn::after,
+.toggle-banks-btn::after {
+  left: calc(100% + 1em);
+  top: calc(100% + 1em);
+}
+
+.toggle-filters-btn:hover::before,
+.toggle-filters-btn:hover::after,
+.toggle-banks-btn:hover::before,
+.toggle-banks-btn:hover::after {
+  height: 410px;
+  width: 410px;
+}
+
+.toggle-filters-btn:hover,
+.toggle-banks-btn:hover {
+  color: var(--color9);
+  border-color: var(--color7);
+}
+
+.toggle-filters-btn:active,
+.toggle-banks-btn:active {
+  filter: brightness(.8);
 }
 
 /* Caixa de Pesquisa */
@@ -280,14 +366,6 @@ nav {
   width: 100%;
 }
 
-.tabela-lancamentos0 th,
-.tabela-lancamentos0 td {
-  padding: 5px 10px;
-  overflow: hidden; /* Oculta o conteúdo excedente */
-  white-space: nowrap; /* Impede a quebra de texto */
-  text-overflow: ellipsis; /* Adiciona reticências (...) para indicar que há mais texto */
-}
-
 .tabela-lancamentos th {
   padding: 0;
   font-size: 15px;
@@ -356,9 +434,9 @@ nav {
 .credito-row,
 .saldo-row {
   text-align: center;
-  overflow: hidden; /* Oculta o conteúdo excedente */
-  white-space: nowrap; /* Impede a quebra de texto */
-  text-overflow: ellipsis; /* Adiciona reticências (...) para indicar que há mais texto */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .descricao-row,
@@ -440,16 +518,16 @@ nav {
   position: sticky;
   top: 0;
   height: 35px;
-  background-color: var(--color2); /* Adicione uma cor de fundo para destacar o cabeçalho */
-  z-index: 1; /* Certifique-se de que o cabeçalho esteja acima do restante do conteúdo */
+  background-color: var(--color2);
+  z-index: 1;
 }
 
 .totais-row {
   position: sticky;
   bottom: 0;
   height: 35px;
-  background-color: var(--color2); /* Adicione uma cor de fundo para destacar o cabeçalho */
-  z-index: 1; /* Certifique-se de que o cabeçalho esteja acima do restante do conteúdo */
+  background-color: var(--color2);
+  z-index: 1;
 }
 .tabela-bancos {
   width: 100%;
@@ -513,24 +591,24 @@ td.saldo-total-banco-row {
 
 /* Botões da Checkbox */
 .botoes-acoes {
-  opacity: 0; /* Inicialmente transparente */
+  opacity: 0;
   grid-template-columns: repeat(3, 1fr);
   position: fixed;
   justify-content: center;
   bottom: 0;
   left: 50%;
-  transform: translateX(-50%) translateY(100%); /* Inicialmente escondido abaixo */
+  transform: translateX(-50%) translateY(100%);
   background-color: #3d3d40bf;
   backdrop-filter: blur(5px);
   padding: 10px;
   width: 100%;
   box-shadow: 0px -2px 5px 0px #0000001a;
-  transition: transform 0.5s ease, opacity 0.5s ease; /* Adiciona uma transição suave para as propriedades transform e opacity */
+  transition: transform 0.5s ease, opacity 0.5s ease;
 }
 
 .botoes-acoes.mostrar {
-  opacity: 1; /* Quando mostrar, torna totalmente visível */
-  transform: translateX(-50%) translateY(0); /* Quando mostrar, move para translateY(0) para aparecer de baixo para cima */
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 .btn-areas {
@@ -708,4 +786,296 @@ td.saldo-total-banco-row {
 .cancelar-button:hover > .x-svg path {
   fill: var(--color4);
   cursor: pointer;
+}
+
+/* Media Queries para telas de dispositivos móveis */
+@media screen and (max-width: 768px) {
+  .main {
+      grid-template-columns: 1fr;
+  }
+
+  .nav-list li {
+      margin-left: 24px;
+  }
+
+  .pesquisa, .pesquisa-tags {
+      justify-content: center;
+  }
+
+  .tabela-lancamentos, .tabela-bancos {
+      min-width: 0;
+      overflow-x: auto;
+  }
+
+  .conteudo-tabela-lancamentos {
+      display: block;
+  }
+
+  .flex > select, .flex > input, .caixa-pesquisa, .caixa-pesquisa-tags {
+      width: 90%;
+  }
+
+  .botoes-acoes {
+      width: 90%;
+      bottom: 10px;
+      left: 5%;
+      transform: translateX(0) translateY(100%);
+  }
+
+  /* Barra Lateral */
+  .header {
+    height: auto;
+    position: relative;
+  }
+
+  .openbtn {
+      display: block;
+      box-shadow: var(--box-shadow2);
+      transition: var(--transition-effect1) var(--transition-duration1);
+  }
+
+  .openbtn:hover {
+      background-color: var(--color7);
+      color: var(--color9);
+      transition: var(--transition-effect1) var(--transition-duration1);
+  }
+
+  .nav-bar {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 80%;
+    height: 100%;
+    overflow-y: auto;
+    background-color: #3d3d40bf;
+    transition: 0.3s;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .nav-bar .logo {
+    display: block;
+    margin-bottom: 20px;
+    font-size: 34px;
+    letter-spacing: 4px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .nav-bar .nav-list {
+    display: block;
+    width: 100%;
+  }
+
+  .nav-bar .nav-list li {
+    text-align: center;
+    margin-left: 0;
+    margin-top: 30px;
+    font-size: 20px;
+  }
+
+  .nav-bar .line, .nav-line {
+    display: none;
+  }
+
+
+  .toggle-filters-btn,
+  .toggle-banks-btn {
+    display: inline-block;
+  }
+
+  /* Inicialmente oculta o formulário em dispositivos móveis */
+  #formulario-filtros,
+  #box-grid-bancos {
+      display: none;
+  }
+
+  /* Quando a classe .show-filters é adicionada via JavaScript, o formulário será exibido */
+  #formulario-filtros.show-filters,
+  #box-grid-bancos.show-filters {
+      display: block;
+  }
+
+  .mesclar-2,
+  .mesclar-3 {
+    grid-column: 1 / -1;
+  }
+
+  .flex,
+  .pesquisa,
+  .pesquisa-tags {
+    margin: 0.5rem 0;
+  }
+
+  .flex > select,
+  .flex > input,
+  .caixa-pesquisa,
+  .caixa-pesquisa-tags {
+    width: calc(100% - 2rem);
+    margin: 10px 1rem;
+  }
+
+  .botao-pesquisa,
+  .botao-pesquisa-tags {
+    display: none; /* Oculta os botões de pesquisa */
+    position: static;
+    margin: 10px 1rem;
+  }
+
+  .conteudo-tabela-bancos {
+    max-height: none;
+  }
+  
+  .botoes-filtros {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+  }
+  
+  .botoes-filtros section {
+    flex: 1;
+  }
+  
+  /* Tabela Lançamentos */
+  .tabela-lancamentos {
+    min-width: 0;
+    width: 100%;
+    table-layout: auto;
+    margin: 0px
+  }
+  
+  /* Reduz o tamanho da fonte para as células da tabela */
+  .tabela-lancamentos th,
+  .tabela-lancamentos td {
+    font-size: 10px;
+      padding: 5px;
+  }
+
+  /* Oculta as colunas Observação e Parcela */
+  .obs-col,
+  .parcela-col,
+  .obs-row,
+  .parcela-row {
+      display: none;
+  }
+
+  .checkbox-container {
+    padding: 10px;
+    margin: 12px 0px 20px 5px
+  }
+  
+  .checkbox-col {
+    width: 10px;
+  }
+  
+  .vencimento-col {
+      width: 80px;
+  }
+
+  .descricao-col {
+      width: 200px;
+  }
+
+  .debito-col,
+  .credito-col,
+  .saldo-col {
+      width: 100px;
+  }
+
+  /* Ajustes para as células para melhor visualização */
+  .vencimento-row,
+  .debito-row,
+  .credito-row,
+  .saldo-row {
+      white-space: normal;
+      text-overflow: clip;
+  }
+
+  .vencimento-row {
+    letter-spacing: -.9px;
+  }
+
+  .row-lancamentos {
+      height: auto;
+  }
+
+/* Tabela Bancos */
+  .box-grid-bancos {
+    width: calc(100% - 2rem);
+    margin: 1rem;
+  }
+
+  .tabela-bancos {
+    font-size: 10px;
+    width: 100%;
+    table-layout: auto;
+  }
+
+  .tabela-bancos th, .tabela-bancos td {
+      padding: 5px;
+  }
+
+  .tabela-bancos th {
+    padding: 0;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .tabela-bancos td {
+    font-size: 10px;
+    font-weight: 300;
+  }
+
+  .banco-row {
+    text-align: left;
+  }
+
+  .ag-row,
+  .conta-row,
+  .saldo-banco-row,
+  .total-row,
+  .saldo-total-banco-row {
+    text-align: center;
+    white-space: normal;
+  }
+
+  .saldo-banco-row,
+  .saldo-total-banco-row {
+    text-align: center;
+  }
+
+  .row-bancos,
+  .totais-row {
+      height: auto;
+  }
+
+  .contas-bancos-col {
+    width: 40.75%;
+  }
+
+  .ag-bancos-col {
+    width: 16.85%;
+  }
+
+  .conta-bancos-col {
+    width: 16.85%;
+  }
+
+  td.total-row {
+    text-align: center;
+    font-weight: 900;
+  }
+
+  td.saldo-total-banco-row {
+    text-align: center;
+    font-weight: 900;
+  }
+
 }
