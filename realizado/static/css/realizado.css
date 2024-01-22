@@ -1,0 +1,78 @@
+/* Específicos Realizado */
+
+/* Compartilhado */
+.nav-realizado a {
+  color: var(--color9);
+}
+
+/* Componentes da Caixa de Filtros */
+
+/* Compartilhado */
+.box-grid {
+  display: flex;
+  flex-direction: column;
+  width: 700px;
+  height: auto;
+  margin: 4.5rem auto 1rem auto;
+  background-color: var(--branco);
+  border-radius: 1rem;
+  box-shadow: var(--box-shadow1);
+}
+
+.box-grid-filters {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 700px;
+  padding: 1rem;
+  padding-bottom: 0rem;
+}
+
+/* Tabela Bancos */
+
+/* Compartilhado */
+.box-grid-bancos {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  width: 700px;
+  height: 268px;
+  margin: 4.5rem auto 1rem auto;
+  padding: 1.625rem 1.625rem;
+  background-color: var(--branco);
+  border-radius: 1rem;
+  box-shadow: var(--box-shadow1);
+}
+
+/* Compartilhado */
+.conteudo-tabela-bancos {
+  max-height: 216px; /* Ajuste conforme necessário */
+  overflow: auto;
+}
+
+
+@media screen and (max-width: 768px) {
+  .box-grid,
+  .box-grid-filters,
+  .box-grid-bancos {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: calc(100% - 2rem);
+    margin: 1rem;
+    padding: 1rem;
+    height: auto;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  
+  .box-grid {
+    background-color: none;
+    box-shadow: none;
+    padding: 0rem;
+    margin: 0rem 1rem;
+  }
+  
+  .box-grid-filters {
+    border-radius: 1rem;
+    background-color: var(--branco);
+    box-shadow: var(--box-shadow1);
+  }
+}

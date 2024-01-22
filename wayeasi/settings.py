@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'fluxo_de_caixa',
+    'realizado',
 ]
 
 MIDDLEWARE = [
@@ -120,6 +121,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'fluxo_de_caixa', 'static'),
+    os.path.join(BASE_DIR, 'realizado', 'static'),
 ]
 
 # Default primary key field type

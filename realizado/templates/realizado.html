@@ -1,0 +1,217 @@
+{% load static %}
+{% load currency_filters %}
+{% load number_filters %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/realizado.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <link rel="icon" href="{% static 'wayeasi-favicon.png' %}" type="image/x-icon">
+    <title>WayEasi | Realizado</title>
+</head>
+<body>
+    <header class="header">
+        <!-- ############### Barra de Navegação Fixa ############### -->
+        <nav class="nav-bar">
+            <a class="logo" href="{% url 'realizado:realizado' %}">WAYEASI</a>
+            <ul class="nav-list">
+                <li class="nav-fluxo-de-caixa"><a href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">FLUXO DE CAIXA</a></li>
+                <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">REALIZADO</a></li>
+                <li class="nav-relatorios"><a href="#">RELATÓRIOS</a></li>
+                <li><div class="line"></div></li>
+                <li class="nav-configuracoes"><a href="configuracoes.html">CONFIGURAÇÕES</a></li>
+                <li class="nav-meu-perfil"><a href="meu-perfil.html">MEU PERFIL</a></li>
+            </ul>
+        </nav>
+    </header>
+    <!-- ############### Metade Superior da Página ############### -->
+    <main class="main">
+        <button class="toggle-filters-btn" onclick="toggleFilters()">Filtros</button>
+        <!-- ############### Caixa com Filtros à Esquerda ############### -->
+        <div class="box-grid">
+            <form id="formulario-filtros" method="get">
+                <div class="box-grid-filters">
+                    <!-- ############### Filtro Contas Contábeis ############### -->
+                    <section class="flex">
+                        <label for="contas-contabeis">Contas Contábeis</label>
+                        <select id="contas-contabeis">
+                            <option value="" disabled selected hidden>Selecione</option>
+                            <option value="opcao1">Receita 1</option>
+                            <option value="opcao2">Receita 2</option>
+                            <option value="opcao3">Despesa 1</option>
+                            <option value="opcao3">Despesa 2</option>
+                        </select>
+                    </section>
+                    <!-- ############### Filtro Meses ############### -->
+                    <section class="flex">
+                        <label for="meses">Meses</label>
+                        <select id="meses">
+                            <option value="" disabled selected hidden>Selecione</option>
+                            <option value="opcao1">Jan/23</option>
+                            <option value="opcao2">Fev/23</option>
+                            <option value="opcao3">Mar/23</option>
+                        </select>
+                    </section>
+                    <!-- ############### Filtro Bancos ############### -->
+                    <section class="flex">
+                        <label for="bancos">Bancos</label>
+                        <select id="bancos" name ="bancos">
+                            <option value="" disabled selected hidden>Selecione</option>
+                            {% for bancos in bancos %}
+                            <option value="{{ bancos.banco }}">{{ bancos.banco }}</option>
+                            {% endfor %}
+                        </select>
+                    </section>
+                    <!-- ############### Filtro Data Início ############### -->
+                    <section class="flex">
+                        <label for="data-inicio">De</label>
+                        <input class="data" type="date" id="data-inicio">
+                    </section>
+                    <!-- ############### Filtro Data Fim ############### -->
+                    <section class="flex">
+                        <label for="data-fim">Até</label>
+                        <input class="data" type="date" id="data-fim">
+                    </section>
+                    <!-- ############### Filtro Natureza ############### -->
+                    <section class="flex">
+                        <label for="natureza">Natureza</label>
+                        <select id="natureza">
+                            <option value="" disabled selected hidden>Selecione</option>
+                            <option value="opcao1">Crédito</option>
+                            <option value="opcao2">Débito</option>
+                        </select>
+                    </section>
+                    <!-- ############### Filtro Caixa de Pesquisa ############### -->
+                    <div class="pesquisa mesclar-2">
+                        <input type="text" class="caixa-pesquisa" placeholder="Pesquisar">
+                        <button class="botao-pesquisa">
+                            <svg class="icon-pesquisa" aria-hidden="true" viewBox="0 0 24 24">
+                                <g>
+                                    <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+                                </g>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="pesquisa-tags">
+                        <input type="text" class="caixa-pesquisa-tags" id="caixa-pesquisa-tags"  name ="caixa_pesquisa_tags" placeholder="Tags">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- ############### Tabela de Bancos ############### -->
+        <button class="toggle-banks-btn" onclick="toggleBanks()">Bancos</button>
+        <div class="box-grid-bancos">
+            <div class="conteudo-tabela-bancos">
+                <table class="tabela-bancos">
+                    <thead class="cabecalho-bancos">
+                        <tr class="linha-cabecalho-bancos">
+                            <th class="contas-bancos-col" scope="col">Contas</th>
+                            <th class="ag-bancos-col" scope="col">Ag.</th>
+                            <th class="conta-bancos-col" scope="col">Conta</th>
+                            <th class="saldo-bancos-col" scope="col">Saldo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for banco in bancos %}
+                        <tr class="row-bancos" scope="row">
+                            <td class="banco-row" name="banco">{{ banco.banco }}</td>
+                            <td class="ag-row" name="agencia">{{ banco.agencia }}</td>
+                            <td class="conta-row" name="conta">{{ banco.conta }}</td>
+                            <td class="saldo-banco-row" name="saldo_inicial">{{ banco.saldo_inicial|format_number }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="totais-row" scope="row">
+                            <td class=""></td>
+                            <td class=""></td>
+                            <td class="total-row">Total</td>
+                            <td class="saldo-total-banco-row" name="saldo-total-banco-row">{{ saldo_total_bancos|currency_br }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- ############### Tabela com Lançamentos ############### -->
+    <div class="conteudo-tabela-lancamentos">
+        <table class="tabela-lancamentos">
+            <thead class="cabecalho-lancamentos">
+                <tr class="linha-cabecalho-lancamentos">
+                    <th class="checkbox-col" scope="col"></th>
+                    <th class="vencimento-col" scope="col">Vencimento</th>
+                    <th class="descricao-col" scope="col">Descrição</th>
+                    <th class="obs-col" scope="col">Observação</th>
+                    <th class="parcela-col" scope="col">Parcela</th>
+                    <th class="debito-col" scope="col">Débito</th>
+                    <th class="credito-col" scope="col">Crédito</th>
+                    <th class="saldo-col" scope="col">Saldo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="row-lancamentos" scope="row">
+                    <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado" type="checkbox"><span class="checkmark"></span></label></td>
+                    <td class="vencimento-row">31/12/2023</td>
+                    <td class="descricao-row">Conta de Luz</td>
+                    <td class="obs-row">Ref. Nov23<small class="d-block">Empresa: Light; Operação: PIX</small></td>
+                    <td class="parcela-row">11/12</td>
+                    <td class="debito-row">000.000.000.000,00</td>
+                    <td class="credito-row">000.000.000.000,00</td>
+                    <td class="saldo-row">000.000.000.000,00</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ############### Botões da Checkbox ############### -->
+    <div class="botoes-acoes">
+        <!-- ############### Botão de Liquidar ############### -->
+        <div class="btn-areas">
+            <div class="btn-coluna">
+                <label for="">Liquidar</label>
+                <button class="btn-acoes liquidar-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 1 24 24" width="30" height="30" class="nuvem">
+                        <path d="M22,15.04C22,17.23 20.24,19 18.07,19H5.93C3.76,19 2,17.23 2,15.04C2,13.07 3.43,11.44 5.31,11.14C5.28,11 5.27,10.86 5.27,10.71C5.27,9.33 6.38,8.2 7.76,8.2C8.37,8.2 8.94,8.43 9.37,8.8C10.14,7.05 11.13,5.44 13.91,5.44C17.28,5.44 18.87,8.06 18.87,10.83C18.87,10.94 18.87,11.06 18.86,11.17C20.65,11.54 22,13.13 22,15.04Z"></path>
+                    </svg>
+                </button>
+            </div>
+            <!-- ############### Botão de Apagar ############### -->
+            <div class="btn-coluna">
+                <label for="">Apagar</label>
+                <button class="btn-acoes apagar-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 39 7" class="topo-lixeira">
+                        <line stroke-width="4" stroke="white" y2="5" x2="39" y1="5"></line>
+                        <line stroke-width="3" stroke="white" y2="1.5" x2="26.0357" y1="1.5" x1="12"></line>
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 33 39" class="fundo-lixeira">
+                        <mask fill="white" id="path-1-inside-1_8_19">
+                        <path d="M0 0H33V35C33 37.2091 31.2091 39 29 39H4C1.79086 39 0 37.2091 0 35V0Z"></path>
+                        </mask>
+                        <path mask="url(#path-1-inside-1_8_19)" fill="white" d="M0 0H33H0ZM37 35C37 39.4183 33.4183 43 29 43H4C-0.418278 43 -4 39.4183 -4 35H4H29H37ZM4 43C-0.418278 43 -4 39.4183 -4 35V0H4V35V43ZM37 0V35C37 39.4183 33.4183 43 29 43V35V0H37Z"></path>
+                        <path stroke-width="4" stroke="white" d="M12 6L12 29"></path>
+                        <path stroke-width="4" stroke="white" d="M21 6V29"></path>
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 89 80" class="lixeira">
+                        <path fill="white" d="M20.5 10.5L37.5 15.5L42.5 11.5L51.5 12.5L68.75 0L72 11.5L79.5 12.5H88.5L87 22L68.75 31.5L75.5066 25L86 26L87 35.5L77.5 48L70.5 49.5L80 50L77.5 71.5L63.5 58.5L53.5 68.5L65.5 70.5L45.5 73L35.5 79.5L28 67L16 63L12 51.5L0 48L16 25L22.5 17L20.5 10.5Z"></path>
+                    </svg>
+                </button>
+            </div>
+            <!-- ############### Botão de Cancelar ############### -->
+            <div class="btn-coluna">
+                <label for="">Cancelar</label>
+                <button class="btn-acoes cancelar-button">
+                    <svg class="x-svg" fill="#000000" height="800px" width="800px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 460.775 460.775" xml:space="preserve"><path d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55 c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55 c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505 c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55 l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719 c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="total-liquidar-row mesclar-3">
+                Total a Liquidar:<label>R$ 000.000.000.000,00</label>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'scripts/scripts.js' %}"></script>
+</body>
+</html>

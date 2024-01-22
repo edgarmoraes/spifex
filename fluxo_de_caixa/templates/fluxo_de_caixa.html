@@ -16,10 +16,10 @@
         <button class="openbtn" onclick="toggleNav()">☰</button>
         <!-- ############### Barra de Navegação Fixa ############### -->
         <nav class="nav-bar">
-            <a class="logo" href="/fluxo_de_caixa/">WAYEASI</a>
+            <a class="logo" href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">WAYEASI</a>
             <ul class="nav-list">
-                <li class="nav-fluxo-de-caixa"><a href="/fluxo_de_caixa/">FLUXO DE CAIXA</a></li>
-                <li class="nav-realizado"><a href="realizado.html">REALIZADO</a></li>
+                <li class="nav-fluxo-de-caixa"><a href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">FLUXO DE CAIXA</a></li>
+                <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">REALIZADO</a></li>
                 <li class="nav-relatorios"><a href="#">RELATÓRIOS</a></li>
                 <li class="nav-line"><div class="line"></div></li>
                 <li class="nav-configuracoes"><a href="configuracoes.html">CONFIGURAÇÕES</a></li>
@@ -31,75 +31,75 @@
     <main class="main">
         <button class="toggle-filters-btn" onclick="toggleFilters()">Filtros</button>
         <!-- ############### Caixa com Filtros à Esquerda ############### -->
-    <div class="box-grid">
-        <form id="formulario-filtros" method="get"> 
-            <div class="box-grid-filters">
-                <!-- ############### Filtro Contas Contábeis ############### -->
-                <section class="flex">
-                    <label for="contas-contabeis">Contas Contábeis</label>
-                    <select id="contas-contabeis" name = "contas_contabeis">
-                        <option value="" disabled selected hidden>Selecione</option>
-                        <option value="Receita 1">Receita 1</option>
-                        <option value="Receita 2">Receita 2</option>
-                        <option value="Receita 3">Despesa 1</option>
-                        <option value="Receita 4">Despesa 2</option>
-                    </select>
-                </section>
-                <!-- ############### Filtro Meses ############### -->
-                <section class="flex">
-                    <label for="meses">Meses</label>
-                    <select id="meses" name="meses" inicio-mes="{{ total.inicio_mes }}" data-fim="{{ total.fim_mes }}">
-                        <option value="" disabled selected hidden>Selecione</option>
-                        {% for total in totais_mes %}
-                        <option value="{{ total.data_formatada }}" data-inicio-mes="{{ total.inicio_mes|date:'Y-m-d' }}" data-fim-mes="{{ total.fim_mes|date:'Y-m-d' }}">{{ total.data_formatada }}</option>
-                        {% endfor %}
-                    </select>
-                </section>
-                <!-- ############### Filtro Bancos ############### -->
-                <section class="flex">
-                    <label for="bancos">Bancos</label>
-                    <select id="bancos" name ="bancos">
-                        <option value="" disabled selected hidden>Selecione</option>
-                        {% for bancos in bancos %}
-                        <option value="{{ bancos.banco }}">{{ bancos.banco }}</option>
-                        {% endfor %}
-                    </select>
-                </section>
-                <!-- ############### Filtro Data Início ############### -->
-                <section class="flex">
-                    <label for="data-inicio">De</label>
-                    <input class="data" type="date" id="data-inicio" name = "data_inicio">
-                </section>
-                <!-- ############### Filtro Data Fim ############### -->
-                <section class="flex">
-                    <label for="data-fim">Até</label>
-                    <input class="data" type="date" id="data-fim" name = "data_fim">
-                </section>
-                <!-- ############### Filtro Natureza ############### -->
-                <section class="flex">
-                    <label for="natureza">Natureza</label>
-                    <select id="natureza" name = "natureza">
-                        <option value="" disabled selected hidden>Selecione</option>
-                        <option value="credito">Crédito</option>
-                        <option value="debito">Débito</option>
-                    </select>
-                </section>
-                <!-- ############### Filtro Caixa de Pesquisa ############### -->
-                <div class="pesquisa mesclar-2">
-                    <input type="text" class="caixa-pesquisa" id="caixa-pesquisa" name ="caixa_pesquisa" placeholder="Pesquisar">
-                    <button class="botao-pesquisa">
-                        <svg class="icon-pesquisa" aria-hidden="true" viewBox="0 0 24 24">
-                            <g>
-                                <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
-                            </g>
-                        </svg>
-                    </button>
+        <div class="box-grid">
+            <form id="formulario-filtros" method="get"> 
+                <div class="box-grid-filters">
+                    <!-- ############### Filtro Contas Contábeis ############### -->
+                    <section class="flex">
+                        <label for="contas-contabeis">Contas Contábeis</label>
+                        <select id="contas-contabeis" name = "contas_contabeis">
+                            <option value="" disabled selected hidden>Selecione</option>
+                            <option value="Receita 1">Receita 1</option>
+                            <option value="Receita 2">Receita 2</option>
+                            <option value="Receita 3">Despesa 1</option>
+                            <option value="Receita 4">Despesa 2</option>
+                        </select>
+                    </section>
+                    <!-- ############### Filtro Meses ############### -->
+                    <section class="flex">
+                        <label for="meses">Meses</label>
+                        <select id="meses" name="meses" inicio-mes="{{ total.inicio_mes }}" data-fim="{{ total.fim_mes }}">
+                            <option value="" disabled selected hidden>Selecione</option>
+                            {% for total in totais_mes %}
+                            <option value="{{ total.data_formatada }}" data-inicio-mes="{{ total.inicio_mes|date:'Y-m-d' }}" data-fim-mes="{{ total.fim_mes|date:'Y-m-d' }}">{{ total.data_formatada }}</option>
+                            {% endfor %}
+                        </select>
+                    </section>
+                    <!-- ############### Filtro Bancos ############### -->
+                    <section class="flex">
+                        <label for="bancos">Bancos</label>
+                        <select id="bancos" name ="bancos">
+                            <option value="" disabled selected hidden>Selecione</option>
+                            {% for bancos in bancos %}
+                            <option value="{{ bancos.banco }}">{{ bancos.banco }}</option>
+                            {% endfor %}
+                        </select>
+                    </section>
+                    <!-- ############### Filtro Data Início ############### -->
+                    <section class="flex">
+                        <label for="data-inicio">De</label>
+                        <input class="data" type="date" id="data-inicio" name = "data_inicio">
+                    </section>
+                    <!-- ############### Filtro Data Fim ############### -->
+                    <section class="flex">
+                        <label for="data-fim">Até</label>
+                        <input class="data" type="date" id="data-fim" name = "data_fim">
+                    </section>
+                    <!-- ############### Filtro Natureza ############### -->
+                    <section class="flex">
+                        <label for="natureza">Natureza</label>
+                        <select id="natureza" name = "natureza">
+                            <option value="" disabled selected hidden>Selecione</option>
+                            <option value="credito">Crédito</option>
+                            <option value="debito">Débito</option>
+                        </select>
+                    </section>
+                    <!-- ############### Filtro Caixa de Pesquisa ############### -->
+                    <div class="pesquisa mesclar-2">
+                        <input type="text" class="caixa-pesquisa" id="caixa-pesquisa" name ="caixa_pesquisa" placeholder="Pesquisar">
+                        <button class="botao-pesquisa">
+                            <svg class="icon-pesquisa" aria-hidden="true" viewBox="0 0 24 24">
+                                <g>
+                                    <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+                                </g>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="pesquisa-tags">
+                        <input type="text" class="caixa-pesquisa-tags" id="caixa-pesquisa-tags"  name ="caixa_pesquisa_tags" placeholder="Tags">
+                    </div>
                 </div>
-                <div class="pesquisa-tags">
-                    <input type="text" class="caixa-pesquisa-tags" id="caixa-pesquisa-tags"  name ="caixa_pesquisa_tags" placeholder="Tags">
-                </div>
-            </div>
-        </form>
+            </form>
                 <!-- ############### Botões da Caixa com Filtros ############### -->
                 <div class="botoes-filtros mesclar-3">
                     <!-- ############### Botão de Recebimentos ############### -->
@@ -126,7 +126,7 @@
                         </button>
                     </section>
                 </div>
-    </div>
+        </div>
         <!-- ############### Tabela de Bancos ############### -->
         <button class="toggle-banks-btn" onclick="toggleBanks()">Bancos</button>
         <div class="box-grid-bancos" id="box-grid-bancos">
