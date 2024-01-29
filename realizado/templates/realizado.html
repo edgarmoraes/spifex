@@ -48,11 +48,11 @@
                     <!-- ############### Filtro Meses ############### -->
                     <section class="flex">
                         <label for="meses">Meses</label>
-                        <select id="meses">
+                        <select id="meses" name="meses">
                             <option value="" disabled selected hidden>Selecione</option>
-                            <option value="opcao1">Jan/23</option>
-                            <option value="opcao2">Fev/23</option>
-                            <option value="opcao3">Mar/23</option>
+                            {% for total in totais_mes_realizado %}
+                            <option value="{{ total.data_formatada }}" data-inicio-mes="{{ total.inicio_mes|date:'Y-m-d' }}" data-fim-mes="{{ total.fim_mes|date:'Y-m-d' }}">{{ total.data_formatada }}</option>
+                            {% endfor %}
                         </select>
                     </section>
                     <!-- ############### Filtro Bancos ############### -->
@@ -109,7 +109,7 @@
                     <thead class="cabecalho-bancos">
                         <tr class="linha-cabecalho-bancos">
                             <th class="contas-bancos-col" scope="col">Contas</th>
-                            <th class="ag-bancos-col" scope="col">Ag.</th>
+                            <th class="ag-bancos-col" scope="col">Agência</th>
                             <th class="conta-bancos-col" scope="col">Conta</th>
                             <th class="saldo-bancos-col" scope="col">Saldo</th>
                         </tr>
@@ -150,17 +150,29 @@
                     <th class="saldo-col" scope="col">Saldo</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr class="row-lancamentos" scope="row">
-                    <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado" type="checkbox"><span class="checkmark"></span></label></td>
-                    <td class="vencimento-row">31/12/2023</td>
-                    <td class="descricao-row">Conta de Luz</td>
-                    <td class="obs-row">Ref. Nov23<small class="d-block">Empresa: Light; Operação: PIX</small></td>
-                    <td class="parcela-row">11/12</td>
-                    <td class="debito-row">000.000.000.000,00</td>
-                    <td class="credito-row">000.000.000.000,00</td>
-                    <td class="saldo-row">000.000.000.000,00</td>
+            <tbody id="tabela-lancamentos">
+                {% for realizado in Tabela_realizado_list %}
+                <tr class="row-lancamentos" id="row-lancamentos" data-conta-contabil="{{ realizado.conta_contabil }}" parcela-atual="{{ realizado.parcela_atual }}" parcelas-total="{{ realizado.parcelas_total }}" scope="row">
+                    <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado" type="checkbox" data-id="{{ realizado.id }}"><span class="checkmark"></span></label></td>
+                    <td class="vencimento-row">{{ realizado.vencimento|date:"d/m/Y" }}</td>
+                    <td class="descricao-row">{{ realizado.descricao }}</td>
+                    <td class="obs-row">
+                        {{ realizado.observacao }}
+                        <small class="d-block">Tags: {{ realizado.tags }}</small>
+                    </td>
+                    <td class="parcela-row">{{ realizado.parcela_atual }}/{{ realizado.parcelas_total }}</td>
+                    <input type="hidden" id="parcelas-total-originais-recebimentos" name="parcelas_total_originais">
+                    <input type="hidden" id="parcelas-total-originais-pagamentos" name="parcelas_total_originais">
+                    {% if realizado.natureza == 'Débito' %}
+                        <td class="debito-row">{{ realizado.valor|format_number }}</td>
+                        <td class="credito-row"></td>
+                    {% else %}
+                        <td class="debito-row"></td>
+                        <td class="credito-row">{{ realizado.valor|format_number }}</td>
+                    {% endif %}
+                    <td class="saldo-row" id = "saldo-row">{{ realizado.saldo|format_number }}</td>
                 </tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>

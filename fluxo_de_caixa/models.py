@@ -13,7 +13,7 @@ class Tabela_fluxo(models.Model):
     natureza = models.CharField(max_length=50)
     data_criacao = models.DateTimeField(auto_now_add=True)
 
-class TotaisMes(models.Model):
+class Totais_mes_fluxo(models.Model):
     inicio_mes = models.DateField(null=True, blank=True)
     fim_mes = models.DateField(null=True, blank=True)
     data_formatada = models.CharField(max_length=255, unique=True)

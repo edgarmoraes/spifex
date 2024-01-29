@@ -50,7 +50,7 @@
                         <label for="meses">Meses</label>
                         <select id="meses" name="meses" inicio-mes="{{ total.inicio_mes }}" data-fim="{{ total.fim_mes }}">
                             <option value="" disabled selected hidden>Selecione</option>
-                            {% for total in totais_mes %}
+                            {% for total in totais_mes_fluxo %}
                             <option value="{{ total.data_formatada }}" data-inicio-mes="{{ total.inicio_mes|date:'Y-m-d' }}" data-fim-mes="{{ total.fim_mes|date:'Y-m-d' }}">{{ total.data_formatada }}</option>
                             {% endfor %}
                         </select>

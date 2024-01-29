@@ -1,3 +1,38 @@
+document.getElementById('liquidar-button').addEventListener('click', function() {
+  let selectedRows = document.querySelectorAll('.checkbox-personalizado:checked');
+  let dataToSend = [];
+  
+  selectedRows.forEach(function(checkbox) {
+      let row = checkbox.closest('.row-lancamentos');
+      dataToSend.push({
+          id: checkbox.getAttribute('data-id'),
+          vencimento: row.querySelector('.vencimento-row').textContent,
+          descricao: row.querySelector('.descricao-row').textContent,
+          valor: row.querySelector('.debito-row').textContent || row.querySelector('.credito-row').textContent,
+          conta_contabil: row.getAttribute('data-conta-contabil'),
+          parcela_atual: row.getAttribute('parcela-atual'),
+          parcelas_total: row.getAttribute('parcelas-total'),
+          natureza: row.querySelector('.debito-row').textContent ? 'Débito' : 'Crédito'
+      });
+  });
+
+  fetch('/realizado/processar_liquidacao/', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(dataToSend)
+}).then(response => response.json())
+  .then(data => {
+      if(data.status === 'success') {
+          selectedRows.forEach(checkbox => {
+              let row = checkbox.closest('.row-lancamentos');
+              row.remove(); // Remove a linha da tabela
+          });
+          window.location.reload();
+  }});
+});
+
+
+// Mobile Buttons
 function toggleFilters() {
   var formulario = document.getElementById('formulario-filtros');
   formulario.classList.toggle('show-filters');
@@ -16,8 +51,6 @@ function toggleNav() {
       navBar.style.left = '0px';
   }
 }
-
-
 
 // Apagar lançamentos da Tabela
 document.addEventListener('DOMContentLoaded', function() {

@@ -1,15 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.core.serializers import serialize
 from django.dispatch import receiver
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, timedelta
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.db.models.signals import post_save, post_delete
-from dateutil import parser
 from dateutil.relativedelta import relativedelta
 from django.db.models import Sum
-from .models import Tabela_fluxo, TabelaTemporaria, TotaisMes, Bancos
+from .models import Tabela_fluxo, TabelaTemporaria, Totais_mes_fluxo, Bancos
 
 def fluxo_de_caixa(request):
     if request.method == "GET":
@@ -23,10 +21,10 @@ def exibir_fluxo_de_caixa(request):
     saldo_total_bancos = bancos_ativos.aggregate(Sum('saldo_inicial'))['saldo_inicial__sum'] or 0
     Tabela_fluxo_list = Tabela_fluxo.objects.all().order_by('vencimento')
     calcular_saldo_acumulado(Tabela_fluxo_list, saldo_total_bancos)
-    totais_mes = TotaisMes.objects.all()
+    totais_mes_fluxo = Totais_mes_fluxo.objects.all()
     context = {
         'Tabela_fluxo_list': Tabela_fluxo_list,
-        'totais_mes': totais_mes,
+        'totais_mes_fluxo': totais_mes_fluxo,
         'bancos': bancos_ativos,
         'saldo_total_bancos': saldo_total_bancos
     }
@@ -164,12 +162,12 @@ def save_update_data_unica(sender, instance, **kwargs):
 def delete_update_data_unica(sender, instance, **kwargs):
     data_formatada = instance.vencimento.strftime('%b/%Y')
     if not Tabela_fluxo.objects.filter(vencimento__year=instance.vencimento.year, vencimento__month=instance.vencimento.month).exists():
-        TotaisMes.objects.filter(data_formatada=data_formatada).delete()
+        Totais_mes_fluxo.objects.filter(data_formatada=data_formatada).delete()
     else:
         atualizar_totais_mes(data_formatada)
 
 def atualizar_totais_mes(data_formatada):
-    """ Sinal para atualizar TotaisMes quando um FluxoDeCaixa for salvo """
+    """ Sinal para atualizar Totais_mes_fluxo quando um FluxoDeCaixa for salvo """
     # Calculando as datas de início e fim do mês
     inicio_mes = datetime.strptime(data_formatada, '%b/%Y').replace(day=1)
     fim_mes = inicio_mes + relativedelta(months=1, days=-1)
@@ -185,8 +183,8 @@ def atualizar_totais_mes(data_formatada):
         natureza='Débito'
     ).aggregate(Sum('valor'))['valor__sum'] or 0
 
-    # Atualizar ou criar registro em TotaisMes
-    TotaisMes.objects.update_or_create(
+    # Atualizar ou criar registro em Totais_mes_fluxo
+    Totais_mes_fluxo.objects.update_or_create(
         data_formatada=data_formatada,
         defaults={
             'inicio_mes': inicio_mes,
@@ -200,8 +198,8 @@ def atualizar_totais_mes(data_formatada):
 # FUNÇÕES ÚNICAS ############################################################################
 
 def meses_filtro(request):
-    totais_mes = TotaisMes.objects.all().order_by('data_formatada')
-    context = {'totais_mes': totais_mes}
+    totais_mes_fluxo = Totais_mes_fluxo.objects.all().order_by('data_formatada')
+    context = {'totais_mes_fluxo': totais_mes_fluxo}
     return render(request, 'fluxo_de_caixa.html', context)
 
 def exibir_bancos(request):
