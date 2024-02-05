@@ -1,3 +1,4 @@
+// Botão de Liquidar
 document.getElementById('liquidar-button').addEventListener('click', function() {
   let selectedRows = document.querySelectorAll('.checkbox-personalizado:checked');
   let dataToSend = [];
