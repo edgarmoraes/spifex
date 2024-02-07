@@ -48,6 +48,55 @@
   overflow: auto;
 }
 
+/* Botões da Checkbox */
+
+/* Compartilhado */
+
+/* Botão de Liquidar */
+.retornar-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background-color: var(--color9);
+  cursor: pointer;
+  border: 2px solid var(--color9);
+  transition-duration: 0.3s;
+  position: relative;
+  overflow: hidden;
+  transform: scale(0.7);
+}
+
+.retornar-button:hover {
+  background-color: #fff267;
+  border: 2px solid #fff267;
+}
+
+.retornar-button:active {
+  transform: scale(0.8);
+}
+
+.btn-areas-realizado {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.retornar {
+  transform: scale(0.6);
+  transition: 200ms linear;
+  fill: var(--preto);
+}
+
+.retornar-button:hover > .retornar {
+  transform: scale(0.75);
+}
+
+.retornar-button:hover > .retornar path {
+  fill: var(--preto);
+  cursor: pointer;
+}
 
 @media screen and (max-width: 768px) {
   .box-grid,
