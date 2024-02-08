@@ -61,10 +61,21 @@ def processar_fluxo_de_caixa(request):
 
 def extrair_dados_formulario(request):
     """ Extrai e retorna os dados do formulário """
+    natureza = 'Crédito' if 'salvar_recebimento' in request.POST else 'Débito'
+    
+    # Escolhe o campo de ID correto com base na natureza da transação
     lancamento_id_recebimentos = request.POST.get('lancamento_id_recebimentos')
     lancamento_id_pagamentos = request.POST.get('lancamento_id_pagamentos')
-    lancamento_id = lancamento_id_recebimentos or lancamento_id_pagamentos
-    lancamento_id = None if lancamento_id == '' else int(lancamento_id)
+    
+    # Inicialmente definido como None para garantir que int() não seja chamado com None
+    lancamento_id = None
+    
+    # Converte para int se um valor válido foi fornecido
+    if natureza == 'Crédito' and lancamento_id_recebimentos:
+        lancamento_id = int(lancamento_id_recebimentos)
+    elif natureza == 'Débito' and lancamento_id_pagamentos:
+        lancamento_id = int(lancamento_id_pagamentos)
+
     return {
         'vencimento': datetime.strptime(request.POST.get('vencimento'), '%Y-%m-%d'),
         'descricao': request.POST.get('descricao'),
