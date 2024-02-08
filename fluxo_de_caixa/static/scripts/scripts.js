@@ -350,7 +350,7 @@ function preencherDadosModal(row, tipo) {
     document.getElementById(`conta-contabil-${tipo}`).value = row.dataset.contaContabil;
 
     const lancamentoId = row.querySelector('.checkbox-personalizado').getAttribute('data-id');
-    document.querySelector(`[name="lancamento_id"]`).value = lancamentoId;
+    document.querySelector(`[name="lancamento_id_${tipo}"]`).value = lancamentoId;
 
     simularEnter(`tagInput-${tipo}`);
 }

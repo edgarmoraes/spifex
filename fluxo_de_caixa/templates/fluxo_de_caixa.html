@@ -169,7 +169,7 @@
         <h1 class="modal-titulo">Recebimentos</h1>
         
         <form class="modal-form-recebimentos" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
-            <input type="hidden" name="lancamento_id" value="{{ fluxo_de_caixa.id }}">
+            <input type="hidden" name="lancamento_id_recebimentos" value="{{ fluxo_de_caixa.id }}">
             <section class="modal-flex">
                 <label for="data-recebimentos">Data</label>
                 <input class="modal-data" id="data-recebimentos" type="date" name="vencimento" required><br>
@@ -231,7 +231,7 @@
         <h1 class="modal-titulo">Pagamentos</h1>
         
         <form class="modal-form-pagamentos" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
-            <input type="hidden" name="lancamento_id" value="{{ fluxo_de_caixa.id }}">
+            <input type="hidden" name="lancamento_id_pagamentos" value="{{ fluxo_de_caixa.id }}">
             <section class="modal-flex">
                 <label for="data-pagamentos">Data</label>
                 <input class="modal-data" type="date" id="data-pagamentos" name="vencimento" required><br>

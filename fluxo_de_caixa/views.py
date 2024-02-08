@@ -19,7 +19,7 @@ def exibir_fluxo_de_caixa(request):
     """ Exibe a lista de fluxos de caixa junto com os totais de cada mês e bancos """
     bancos_ativos = Bancos.objects.filter(status=True)
     saldo_total_bancos = bancos_ativos.aggregate(Sum('saldo_inicial'))['saldo_inicial__sum'] or 0
-    Tabela_fluxo_list = Tabela_fluxo.objects.all().order_by('vencimento')
+    Tabela_fluxo_list = Tabela_fluxo.objects.all().order_by('vencimento', '-valor', 'descricao')
     calcular_saldo_acumulado(Tabela_fluxo_list, saldo_total_bancos)
     totais_mes_fluxo = Totais_mes_fluxo.objects.all()
     context = {
@@ -61,8 +61,10 @@ def processar_fluxo_de_caixa(request):
 
 def extrair_dados_formulario(request):
     """ Extrai e retorna os dados do formulário """
-    lancamento_id = request.POST.get('lancamento_id')
-    lancamento_id = None if lancamento_id == '' else lancamento_id
+    lancamento_id_recebimentos = request.POST.get('lancamento_id_recebimentos')
+    lancamento_id_pagamentos = request.POST.get('lancamento_id_pagamentos')
+    lancamento_id = lancamento_id_recebimentos or lancamento_id_pagamentos
+    lancamento_id = None if lancamento_id == '' else int(lancamento_id)
     return {
         'vencimento': datetime.strptime(request.POST.get('vencimento'), '%Y-%m-%d'),
         'descricao': request.POST.get('descricao'),

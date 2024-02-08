@@ -18,7 +18,7 @@ def exibir_realizado(request):
     """ Exibe a lista de fluxos de caixa junto com os totais de cada mês e bancos """
     bancos_ativos = Bancos.objects.filter(status=True)
     saldo_total_bancos = bancos_ativos.aggregate(Sum('saldo_inicial'))['saldo_inicial__sum'] or 0
-    Tabela_realizado_list = Tabela_realizado.objects.all().order_by('vencimento')
+    Tabela_realizado_list = Tabela_realizado.objects.all().order_by('vencimento', '-valor', 'descricao')
     calcular_saldo_acumulado(Tabela_realizado_list, saldo_total_bancos)
     totais_mes_realizado = Totais_mes_realizado.objects.all()
     context = {
@@ -52,9 +52,10 @@ def processar_liquidacao(request):
         ids_para_excluir = []
 
         for item in dados:
+            # Mova a busca do registro_original para dentro deste loop
             registro_original = Tabela_fluxo.objects.get(id=item['id'])
 
-        for item in dados:
+            # Agora, registro_original é específico para cada item em dados
             novo_registro = Tabela_realizado.objects.create(
                 fluxo_id=registro_original.id,
                 vencimento=datetime.strptime(item['vencimento'], '%d/%m/%Y').date(),
@@ -72,6 +73,7 @@ def processar_liquidacao(request):
             if novo_registro:
                 ids_para_excluir.append(item['id'])
 
+        # Após criar os registros em Tabela_realizado, exclua os originais em Tabela_fluxo
         Tabela_fluxo.objects.filter(id__in=ids_para_excluir).delete()
 
         return JsonResponse({'status': 'success'})
@@ -122,3 +124,39 @@ def meses_filtro_realizado(request):
     totais_mes_realizado = Totais_mes_realizado.objects.all().order_by('data_formatada')
     context = {'totais_mes_realizado': totais_mes_realizado}
     return render(request, 'realizado.html', context)
+
+
+@csrf_exempt
+def processar_retorno(request):
+    if request.method == 'POST':
+        dados = json.loads(request.body)
+        ids_para_excluir = []
+
+        # Itera sobre os dados recebidos para criar novos registros em Tabela_fluxo
+        for item in dados:
+            # Busca o registro original em Tabela_realizado usando o ID fornecido
+            registro_original = Tabela_realizado.objects.get(id=item['id'])
+
+            # Cria um novo registro em Tabela_fluxo com os dados de Tabela_realizado
+            novo_registro_fluxo = Tabela_fluxo.objects.create(
+                vencimento=registro_original.vencimento,
+                descricao=registro_original.descricao,
+                observacao=registro_original.observacao,
+                valor=registro_original.valor,
+                conta_contabil=registro_original.conta_contabil,
+                parcela_atual=registro_original.parcela_atual,
+                parcelas_total=registro_original.parcelas_total,
+                tags=registro_original.tags,
+                natureza=registro_original.natureza,
+                data_criacao=registro_original.original_data_criacao  # Supondo que há este campo para manter a data de criação original
+            )
+
+            # Adiciona o ID do registro original à lista de IDs para exclusão
+            if novo_registro_fluxo:
+                ids_para_excluir.append(item['id'])
+
+        # Exclui os registros originais em Tabela_realizado
+        Tabela_realizado.objects.filter(id__in=ids_para_excluir).delete()
+
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'invalid method'}, status=405)

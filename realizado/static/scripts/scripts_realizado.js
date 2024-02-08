@@ -1,4 +1,4 @@
-// Botão de Liquidar
+// Botão de Retornar
 document.getElementById('retornar-button').addEventListener('click', function() {
   let selectedRows = document.querySelectorAll('.checkbox-personalizado:checked');
   let dataToSend = [];
@@ -17,7 +17,7 @@ document.getElementById('retornar-button').addEventListener('click', function() 
       });
   });
 
-  fetch('/realizado/processar_liquidacao/', {
+  fetch('/realizado/processar_retorno/', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(dataToSend)
