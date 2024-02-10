@@ -51,6 +51,27 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
+// Selecionar uma checkbox de cada vez no modal de liquidação
+document.addEventListener('DOMContentLoaded', function() {
+  // Seleciona todas as checkboxes dentro da tabela de bancos para liquidação
+  const checkboxes = document.querySelectorAll('.checkbox-personalizado-liquidacao');
+
+  // Adiciona um ouvinte de eventos a cada checkbox
+  checkboxes.forEach(function(checkbox) {
+      checkbox.addEventListener('change', function() {
+          // Quando uma checkbox é marcada, desmarca todas as outras
+          if (this.checked) {
+              checkboxes.forEach(function(box) {
+                  // Desmarca todas as checkboxes exceto a que acionou o evento
+                  if (box !== checkbox) {
+                      box.checked = false;
+                  }
+              });
+          }
+      });
+  });
+});
+
 
 
 
@@ -197,7 +218,7 @@ document.addEventListener('click', function(e) {
 
 // Aparecer barra de botões
 document.addEventListener('DOMContentLoaded', function () {
-  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  const checkboxes = document.querySelectorAll('.checkbox-personalizado');
     const botoesAcoes = document.querySelector('.botoes-acoes');
     const tabelaLancamentos = document.querySelector('.conteudo-tabela-lancamentos');
     const cancelarButton = document.querySelector('.cancelar-button');

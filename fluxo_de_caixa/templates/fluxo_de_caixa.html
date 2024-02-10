@@ -445,11 +445,11 @@
                             <tbody>
                                 {% for banco in bancos %}
                                 <tr class="row-bancos" scope="row">
-                                    <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado" type="checkbox"><span class="checkmark-liquidacao"></span></label></td>
+                                    <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado-liquidacao" type="checkbox"><span class="checkmark-liquidacao"></span></label></td>
                                     <td class="banco-row" name="banco">{{ banco.banco }}</td>
                                     <td class="ag-row" name="agencia">{{ banco.agencia }}</td>
                                     <td class="conta-row" name="conta">{{ banco.conta }}</td>
-                                    <td class="saldo-banco-row" name="saldo_inicial">{{ banco.saldo_inicial|format_number }}</td>
+                                    <td class="saldo-banco-liquidacao-row" name="saldo_inicial">{{ banco.saldo_inicial|format_number }}</td>
                                 </tr>
                                 {% endfor %}
                                 <tr class="totais-row" scope="row">

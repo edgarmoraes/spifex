@@ -466,6 +466,14 @@ nav {
   width: 0;
 }
 
+.checkbox-personalizado-liquidacao {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
 .checkmark {
   position: absolute;
   top: 0;
@@ -516,12 +524,12 @@ nav {
   transform: rotate(45deg);
 }
 
-.checkbox-personalizado:checked ~ .checkmark-liquidacao {
+.checkbox-personalizado-liquidacao:checked ~ .checkmark-liquidacao {
   background-color: var(--color7);
   box-shadow: 0 3px 7px #2196f34d;
 }
 
-.checkbox-personalizado:checked ~ .checkmark-liquidacao:after {
+.checkbox-personalizado-liquidacao:checked ~ .checkmark-liquidacao:after {
   display: block;
 }
 .checkbox-personalizado:checked ~ .checkmark {
@@ -543,7 +551,7 @@ nav {
   }
 }
 
-.checkbox-personalizado:checked ~ .checkmark-liquidacao:after {
+.checkbox-personalizado-liquidacao:checked ~ .checkmark-liquidacao:after {
   animation: checkAnim 0.2s forwards;
 }
 
