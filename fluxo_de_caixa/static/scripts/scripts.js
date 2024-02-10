@@ -1,3 +1,23 @@
+    // Seleciona o botão pelo ID
+    const botaoTeste = document.getElementById('botao-teste');
+
+    // Seleciona o modal pelo ID
+    const modalLiquidacao = document.getElementById('modal-liquidacao');
+
+    // Adiciona um ouvinte de eventos ao botão para abrir o modal
+    botaoTeste.addEventListener('click', function() {
+        modalLiquidacao.showModal(); // Abre o modal
+    });
+
+    // Opcional: Adiciona um ouvinte de eventos para fechar o modal no botão de cancelar, se houver
+    const botaoFechar = modalLiquidacao.querySelector('.modal-fechar-recebimentos');
+    if (botaoFechar) {
+        botaoFechar.addEventListener('click', function() {
+            modalLiquidacao.close(); // Fecha o modal
+        });
+    }
+
+
 // Botão de Liquidar
 document.getElementById('liquidar-button').addEventListener('click', function() {
   let selectedRows = document.querySelectorAll('.checkbox-personalizado:checked');
