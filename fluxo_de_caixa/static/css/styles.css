@@ -491,6 +491,39 @@ nav {
   transform: rotate(45deg);
 }
 
+.checkmark-liquidacao {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: var(--color2);
+  border-radius: 4px;
+  transition: background-color var(--transition-duration1);
+  box-shadow: 0 2px 5px #00000033;
+}
+
+.checkmark-liquidacao:after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 7.2px;
+  top: 2.5px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--branco);
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-personalizado:checked ~ .checkmark-liquidacao {
+  background-color: var(--color7);
+  box-shadow: 0 3px 7px #2196f34d;
+}
+
+.checkbox-personalizado:checked ~ .checkmark-liquidacao:after {
+  display: block;
+}
 .checkbox-personalizado:checked ~ .checkmark {
   background-color: var(--color7);
   box-shadow: 0 3px 7px #2196f34d;
@@ -508,6 +541,10 @@ nav {
   100% {
     height: 10px;
   }
+}
+
+.checkbox-personalizado:checked ~ .checkmark-liquidacao:after {
+  animation: checkAnim 0.2s forwards;
 }
 
 .checkbox-personalizado:checked ~ .checkmark:after {
@@ -530,6 +567,7 @@ nav {
   background-color: var(--color2);
   z-index: 1;
 }
+
 .tabela-bancos {
   width: 100%;
   font-family: var(--primary-font);
@@ -558,6 +596,34 @@ nav {
   transition: .3s all ease;
 }
 
+.tabela-bancos-liquidacao {
+  width: 100%;
+  font-family: var(--primary-font);
+  color: var(--color4);
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.tabela-bancos-liquidacao th {
+  padding: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.tabela-bancos-liquidacao td {
+  font-size: 12px;
+  font-weight: 300;
+}
+
+.tabela-bancos-liquidacao tbody tr:hover,
+.tabela-bancos-liquidacao tbody tr:focus {
+  background: var(--color1);
+}
+
+.tabela-bancos-liquidacao tbody tr {
+  transition: .3s all ease;
+}
+
 .row-bancos {
   height: 35px;
   text-align: center;
@@ -572,6 +638,22 @@ nav {
 }
 
 .conta-bancos-col {
+  width: 100px;
+}
+
+.contas-bancos-liquidacao-col {
+  width: 100px;
+}
+
+.ag-bancos-liquidacao-col {
+  width: 100px;
+}
+
+.conta-bancos-liquidacao-col {
+  width: 100px;
+}
+
+.saldo-bancos-liquidacao-col {
   width: 100px;
 }
 

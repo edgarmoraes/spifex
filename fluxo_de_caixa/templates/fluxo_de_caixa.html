@@ -423,11 +423,49 @@
     <button id="botao-teste">Teste</button>
     <!-- Modal Liquidação -->
     <dialog class="modal-liquidacao" id="modal-liquidacao">
-
         <h1 class="modal-titulo">Liquidar</h1>
         
-        <form class="modal-form-liquidacao" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
-            <section class="modal-flex">
+        <form class="modal-form-liquidacao" action="/fluxo_de_caixa/" method="POST">
+            {% csrf_token %}
+    
+            <!-- Inclusão da tabela de contas bancárias -->
+            <section class="mesclar-3">
+                <div class="" id="box-grid-bancos">
+                    <div class="conteudo-tabela-bancos-liquidacao">
+                        <table class="tabela-bancos-liquidacao">
+                            <thead class="cabecalho-bancos">
+                                <tr class="linha-cabecalho-bancos">
+                                    <th class="checkbox-col" scope="col"></th>
+                                    <th class="contas-bancos-liquidacao-col" scope="col">Contas</th>
+                                    <th class="ag-bancos-liquidacao-col" scope="col">Agência</th>
+                                    <th class="conta-bancos-liquidacao-col" scope="col">Conta</th>
+                                    <th class="saldo-bancos-liquidacao-col" scope="col">Saldo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for banco in bancos %}
+                                <tr class="row-bancos" scope="row">
+                                    <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado" type="checkbox"><span class="checkmark-liquidacao"></span></label></td>
+                                    <td class="banco-row" name="banco">{{ banco.banco }}</td>
+                                    <td class="ag-row" name="agencia">{{ banco.agencia }}</td>
+                                    <td class="conta-row" name="conta">{{ banco.conta }}</td>
+                                    <td class="saldo-banco-row" name="saldo_inicial">{{ banco.saldo_inicial|format_number }}</td>
+                                </tr>
+                                {% endfor %}
+                                <tr class="totais-row" scope="row">
+                                    <td class=""></td>
+                                    <td class=""></td>
+                                    <td class=""></td>
+                                    <td class="total-row">Total</td>
+                                    <td class="saldo-total-banco-row" name="saldo-total-banco-row">{{ saldo_total_bancos|currency_br }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            {% comment %} <section class="modal-flex">
                 <label for="data-liquidacao">Data de Liquidação</label>
                 <input class="modal-data" id="data-liquidacao" type="date" name="data-liquidacao" required><br>
             </section>
@@ -440,14 +478,27 @@
             <section class="modal-flex">
                 <label for="valor-liquidacao">Valor</label>
                 <input class="modal-valor" id="valor-liquidacao" type="text" name="valor" oninput="formatarCampoValorRecebimentos(this)" value="" required><br>
-            </section>
+            </section> {% endcomment %}
 
-            <section class="modal-botoes">
+            <!-- Contêiner para os lançamentos selecionados -->
+            <div class="label-lancamentos-selecionados mesclar-3">
+                <label for="data-liquidacao">Data de Liquidação</label>
+                <label for="descricao-liquidacao">Descrição</label>
+                <label for="observacao-liquidacao">Observação</label>
+                <label for="valor-liquidacao">Valor</label>
+                <label for="natureza-liquidacao">Natureza</label>
+            </div>
+            <div class="lista-lancamentos-selecionados mesclar-3" id="lancamentos-selecionados">
+                <!-- Itens dinâmicos serão adicionados aqui -->
+            </div>
+    
+            <section class="modal-botoes mesclar-3">
                 <input type="submit" class="modal-salvar" name="salvar_recebimento" value="Salvar">
                 <button type="button" class="modal-fechar-recebimentos">Cancelar</button>
             </section>
         </form>
     </dialog>
+    
 
     <script src="{% static 'scripts/scripts.js' %}"></script>
 </body>

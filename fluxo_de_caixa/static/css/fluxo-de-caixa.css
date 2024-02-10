@@ -150,6 +150,17 @@
   overflow: auto;
 }
 
+.conteudo-tabela-bancos-liquidacao {
+  max-height: 180px;
+  overflow: auto;
+  margin-bottom: 10px;
+}
+
+.lista-lancamentos-selecionados{
+  max-height: 265px;
+  overflow: auto;
+}
+
 /* Modais */
 .modal-recebimentos,
 .modal-pagamentos,
@@ -165,6 +176,10 @@
   transition: var(--transition-duration1);
   font-family: 'Open Sans', sans-serif;
   outline: none;
+}
+
+.box-grid-bancos-liquidacao {
+  margin-bottom: 2rem;
 }
 
 .modal-transferencias {
@@ -191,18 +206,39 @@ dialog > form {
   grid-template-columns: repeat(3, 1fr);
 }
 
+.lancamentos-selecionados {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+}
+
 .modal-transferencias > form {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
 }
 
-dialog > form  > section {
+dialog > form > section {
   display: flex;
   flex-direction: column;
   margin: 0 5px;
   font-family: 'Open Sans', sans-serif;
   font-weight: 700;
   font-size: 13px;
+}
+
+section.modal-flex {
+  margin: 0px 5px;
+}
+
+.label-lancamentos-selecionados {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.label-lancamentos-selecionados > label {
+  margin: 0px 5px;
 }
 
 .modal-flex > select,
@@ -243,7 +279,7 @@ input:focus {
   flex-direction: row;
   justify-content: flex-end;
   align-items: flex-end;
-  margin: 0px 5px;
+  margin: 10px 5px;
   gap: 1.5rem;
 }
 

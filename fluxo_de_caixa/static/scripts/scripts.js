@@ -1,21 +1,85 @@
-    // Seleciona o botão pelo ID
-    const botaoTeste = document.getElementById('botao-teste');
+// Passa informações do fluxo para o modal de liquidação
+document.addEventListener('DOMContentLoaded', function() {
+  // Função para atualizar os lançamentos selecionados
+  function atualizarLancamentosSelecionados() {
+      const contêiner = document.getElementById('lancamentos-selecionados');
+      contêiner.innerHTML = ''; // Limpa o contêiner atual
 
-    // Seleciona o modal pelo ID
-    const modalLiquidacao = document.getElementById('modal-liquidacao');
+      const checkboxesMarcadas = document.querySelectorAll('.tabela-lancamentos .checkbox-personalizado:checked');
 
-    // Adiciona um ouvinte de eventos ao botão para abrir o modal
-    botaoTeste.addEventListener('click', function() {
-        modalLiquidacao.showModal(); // Abre o modal
+      checkboxesMarcadas.forEach(function(checkbox, index) {
+          const row = checkbox.closest('.row-lancamentos');
+          const descricao = row.querySelector('.descricao-row').textContent;
+          const vencimento = row.querySelector('.vencimento-row').textContent;
+          const observacao = row.querySelector('.obs-row').childNodes[0].textContent.trim();
+          const valor = row.querySelector('.debito-row').textContent || row.querySelector('.credito-row').textContent;
+          const natureza = row.querySelector('.debito-row').textContent ? "Débito" : "Crédito";
+
+          // Cria os campos dinamicamente para cada lançamento selecionado
+          const div = document.createElement('div');
+          div.classList.add('lancamentos-selecionados'); // Adiciona a classe à div
+          div.innerHTML = `
+              <section class="modal-flex">
+                  <input class="modal-data" id="data-liquidacao-${index}" type="date" name="data-liquidacao-${index}" value="${formatarDataParaInput(vencimento)}" required>
+              </section>
+              <section class="modal-flex">
+                  <input class="modal-descricao" id="descricao-liquidacao-${index}" maxlength="100" type="text" name="descricao-liquidacao-${index}" value="${descricao}" required readonly>
+              </section>
+              <section class="modal-flex">
+                  <input class="modal-obs" id="observacao-liquidacao-${index}" maxlength="100" type="text" name="observacao-liquidacao-${index}" value="${observacao}" required>
+              </section>
+              <section class="modal-flex">
+                  <input class="modal-valor" id="valor-liquidacao-${index}" type="text" name="valor-liquidacao-${index}" value="${valor}" required>
+              </section>
+              <section class="modal-flex">
+              <input class="modal-natureza" id="natureza-liquidacao-${index}" type="text" name="natureza-liquidacao-${index}" value="${natureza}" required readonly>
+          </section>
+          `;
+          contêiner.appendChild(div);
+      });
+  }
+
+  // Função auxiliar para formatar a data para o input do tipo date
+  function formatarDataParaInput(data) {
+      const partes = data.split('/');
+      return `${partes[2]}-${partes[1]}-${partes[0]}`; // Formato aaaa-mm-dd
+  }
+
+  // Adiciona um ouvinte de eventos a cada checkbox para atualizar os lançamentos selecionados quando a seleção mudar
+  document.querySelectorAll('.tabela-lancamentos .checkbox-personalizado').forEach(function(checkbox) {
+      checkbox.addEventListener('change', atualizarLancamentosSelecionados);
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+// Seleciona o botão pelo ID
+const botaoTeste = document.getElementById('botao-teste');
+
+// Seleciona o modal pelo ID
+const modalLiquidacao = document.getElementById('modal-liquidacao');
+
+// Adiciona um ouvinte de eventos ao botão para abrir o modal
+botaoTeste.addEventListener('click', function() {
+    modalLiquidacao.showModal(); // Abre o modal
+});
+
+// Opcional: Adiciona um ouvinte de eventos para fechar o modal no botão de cancelar, se houver
+const botaoFechar = modalLiquidacao.querySelector('.modal-fechar-recebimentos');
+if (botaoFechar) {
+    botaoFechar.addEventListener('click', function() {
+        modalLiquidacao.close(); // Fecha o modal
     });
-
-    // Opcional: Adiciona um ouvinte de eventos para fechar o modal no botão de cancelar, se houver
-    const botaoFechar = modalLiquidacao.querySelector('.modal-fechar-recebimentos');
-    if (botaoFechar) {
-        botaoFechar.addEventListener('click', function() {
-            modalLiquidacao.close(); // Fecha o modal
-        });
-    }
+}
 
 
 // Botão de Liquidar
@@ -335,6 +399,9 @@ function abrirModalRecebimentosEdicao(row) {
     preencherDadosModal(row, 'recebimentos');
     mostrarParcelasRecebimentos(row);
     document.getElementById('modal-recebimentos').showModal();
+    document.body.style.overflow = 'hidden';
+    document.body.style.marginRight = '17px';
+    document.querySelector('.nav-bar').style.marginRight = '17px';
 }
 
 function abrirModalPagamentosEdicao(row) {
@@ -342,6 +409,9 @@ function abrirModalPagamentosEdicao(row) {
     preencherDadosModal(row, 'pagamentos');
     mostrarParcelasPagamentos(row);
     document.getElementById('modal-pagamentos').showModal();
+    document.body.style.overflow = 'hidden';
+    document.body.style.marginRight = '17px';
+    document.querySelector('.nav-bar').style.marginRight = '17px';
 }
 
 function onModalClose(tipo) {
