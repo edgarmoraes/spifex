@@ -3,6 +3,7 @@ from django.db.models import Sum
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from django.db.models.signals import post_save, post_delete
@@ -56,10 +57,11 @@ def processar_liquidacao(request):
         for item in dados:
             try:
                 registro_original = Tabela_fluxo.objects.get(id=item['id'])
-
-                # Converte o valor para Decimal e a data para datetime
                 valor_decimal = Decimal(item['valor'])
-                data_liquidacao = datetime.strptime(item['data_liquidacao'], '%Y-%m-%d')
+                
+                # Converte a data para datetime aware
+                data_liquidacao_naive = datetime.strptime(item['data_liquidacao'], '%Y-%m-%d')
+                data_liquidacao_aware = timezone.make_aware(data_liquidacao_naive, timezone.get_default_timezone())
 
                 novo_registro = Tabela_realizado.objects.create(
                     fluxo_id=registro_original.id,
@@ -73,7 +75,7 @@ def processar_liquidacao(request):
                     tags=registro_original.tags,
                     natureza=registro_original.natureza,
                     original_data_criacao=registro_original.data_criacao,
-                    data_liquidacao=data_liquidacao,  # Usa a data convertida
+                    data_liquidacao=data_liquidacao_aware,  # Usa a data convertida
                     # Você não forneceu o campo banco_liquidacao no dataToSend, verifique se isso é necessário
                     banco_liquidacao=item.get('banco_liquidacao', '')  # Use um valor default ou ajuste seu JS para enviar este dado
                 )

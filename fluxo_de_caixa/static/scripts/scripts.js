@@ -112,21 +112,70 @@ document.addEventListener('DOMContentLoaded', function() {
   function formatarValorDecimal(valor) {
     // Substitui pontos por vazio e vírgula por ponto
     valor = valor.replace(/\./g, '').replace(',', '.');
-
+    
     // Converte para número e formata para duas casas decimais
     const numero = parseFloat(valor);
     if (!isNaN(numero)) {
         return numero.toFixed(2); // Assegura duas casas decimais
     } else {
         return '0.00'; // Retorna zero se o valor não for um número válido
-    }
+      }
 }
 
-  document.querySelectorAll('.tabela-lancamentos .checkbox-personalizado').forEach(function(checkbox) {
-      checkbox.addEventListener('change', atualizarLancamentosSelecionados);
-  });
+document.querySelectorAll('.tabela-lancamentos .checkbox-personalizado').forEach(function(checkbox) {
+  checkbox.addEventListener('change', atualizarLancamentosSelecionados);
+});
 });
 
+
+// Botão de Liquidar
+document.getElementById('salvar-liquidacao').addEventListener('click', async function() {
+  let selectedRows = document.querySelectorAll('.checkbox-personalizado:checked');
+  let dataToSend = [];
+  
+  selectedRows.forEach(function(checkbox) {
+    let row = checkbox.closest('.row-lancamentos');
+    let id = checkbox.getAttribute('data-id');
+    
+    // Encontra os campos de data, observação e valor no modal de liquidação
+    let campoData = document.getElementById(`data-liquidacao-${id}`);
+    let campoObservacao = document.getElementById(`observacao-liquidacao-${id}`);
+    let campoValor = document.getElementById(`valor-liquidacao-${id}`);
+    
+    dataToSend.push({
+      id: id,
+      vencimento: row.querySelector('.vencimento-row').textContent,
+      descricao: row.querySelector('.descricao-row').textContent,
+      observacao: campoObservacao ? campoObservacao.value : '',
+      valor: campoValor ? campoValor.value : '',
+      conta_contabil: row.getAttribute('data-conta-contabil'),
+      parcela_atual: row.getAttribute('parcela-atual'),
+      parcelas_total: row.getAttribute('parcelas-total'),
+      natureza: row.querySelector('.debito-row').textContent ? 'Débito' : 'Crédito',
+      data_liquidacao: campoData ? campoData.value : ''
+    });
+  });
+
+  try {
+    const response = await fetch('/realizado/processar_liquidacao/', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(dataToSend)
+    });
+    const data = await response.json();
+    
+    if(data.status === 'success') {
+      // Operação foi um sucesso, recarregue a página
+      window.location.reload();
+    } else {
+      // Trate o caso de falha conforme necessário
+      console.error('Operação não foi bem-sucedida:', data);
+    }
+  } catch (error) {
+    console.error('Erro na operação:', error);
+    // Trate o erro conforme necessário
+  }
+});
 
 
 // Selecionar uma checkbox de cada vez no modal de liquidação
@@ -171,52 +220,6 @@ if (botaoFechar) {
         modalLiquidacao.close(); // Fecha o modal
     });
 }
-
-
-// Botão de Liquidar
-document.getElementById('salvar-liquidacao').addEventListener('click', function() {
-  let selectedRows = document.querySelectorAll('.checkbox-personalizado:checked');
-  let dataToSend = [];
-  
-  selectedRows.forEach(function(checkbox) {
-      let row = checkbox.closest('.row-lancamentos');
-      let id = checkbox.getAttribute('data-id');
-      
-      // Encontra os campos de data, observação e valor no modal de liquidação
-      let campoData = document.getElementById(`data-liquidacao-${id}`);
-      let campoObservacao = document.getElementById(`observacao-liquidacao-${id}`);
-      let campoValor = document.getElementById(`valor-liquidacao-${id}`);
-      
-      dataToSend.push({
-          id: id,
-          vencimento: row.querySelector('.vencimento-row').textContent,
-          descricao: row.querySelector('.descricao-row').textContent,
-          observacao: campoObservacao ? campoObservacao.value : '',
-          valor: campoValor ? campoValor.value : '',
-          conta_contabil: row.getAttribute('data-conta-contabil'),
-          parcela_atual: row.getAttribute('parcela-atual'),
-          parcelas_total: row.getAttribute('parcelas-total'),
-          natureza: row.querySelector('.debito-row').textContent ? 'Débito' : 'Crédito',
-          data_liquidacao: campoData ? campoData.value : ''
-      });
-  });
-
-  console.log(JSON.stringify(dataToSend, null, 2));
-  fetch('/realizado/processar_liquidacao/', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(dataToSend)
-  }).then(response => response.json())
-    .then(data => {
-        if(data.status === 'success') {
-            selectedRows.forEach(checkbox => {
-                let row = checkbox.closest('.row-lancamentos');
-                row.remove(); // Remove a linha da tabela
-            });
-            window.location.reload();
-        }
-  });
-});
 
 
 // Mobile Buttons
