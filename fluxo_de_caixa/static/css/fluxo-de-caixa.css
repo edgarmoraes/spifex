@@ -286,6 +286,7 @@ input:focus {
 .modal-fechar-recebimentos,
 .modal-fechar-pagamentos,
 .modal-fechar-transferencias,
+.modal-fechar-liquidacoes,
 .modal-salvar {
   border: none;
   height: 45px;
@@ -299,20 +300,23 @@ input:focus {
 .modal-fechar-recebimentos:focus,
 .modal-fechar-pagamentos:focus,
 .modal-fechar-transferencias:focus,
+.modal-fechar-liquidacoes,:focus,
 .modal-salvar:focus {
   outline: none;
 }
 
 .modal-fechar-recebimentos:hover,
 .modal-fechar-pagamentos:hover,
-.modal-fechar-transferencias:hover {
+.modal-fechar-transferencias:hover,
+.modal-fechar-liquidacoes:hover {
   background-color: var(--color8);
   box-shadow: var(--box-shadow2);
 }
 
 .modal-fechar-recebimentos,
 .modal-fechar-pagamentos,
-.modal-fechar-transferencias {
+.modal-fechar-transferencias,
+.modal-fechar-liquidacoes {
   background-color: var(--color6);
 }
 

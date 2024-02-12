@@ -420,7 +420,6 @@
         </div>
     </div>
 
-    <button id="botao-teste">Teste</button>
     <!-- Modal Liquidação -->
     <dialog class="modal-liquidacao" id="modal-liquidacao">
         <h1 class="modal-titulo">Liquidar</h1>
@@ -465,21 +464,6 @@
                 </div>
             </section>
 
-            {% comment %} <section class="modal-flex">
-                <label for="data-liquidacao">Data de Liquidação</label>
-                <input class="modal-data" id="data-liquidacao" type="date" name="data-liquidacao" required><br>
-            </section>
-        
-            <section class="modal-flex">
-                <label for="observacao-liquidacao">Observação</label>
-                <input class="modal-obs" id="observacao-liquidacao" maxlength="100" type="text" name="observacao"></input><br>
-            </section>
-            
-            <section class="modal-flex">
-                <label for="valor-liquidacao">Valor</label>
-                <input class="modal-valor" id="valor-liquidacao" type="text" name="valor" oninput="formatarCampoValorRecebimentos(this)" value="" required><br>
-            </section> {% endcomment %}
-
             <!-- Contêiner para os lançamentos selecionados -->
             <div class="label-lancamentos-selecionados mesclar-3">
                 <label for="data-liquidacao">Data de Liquidação</label>
@@ -493,12 +477,13 @@
             </div>
     
             <section class="modal-botoes mesclar-3">
-                <input type="submit" class="modal-salvar" name="salvar_recebimento" value="Salvar">
-                <button type="button" class="modal-fechar-recebimentos">Cancelar</button>
+                <label for="saldo-liquidacao">Saldo:</label>
+                <div class="saldo-liquidacao" name="saldo-liquidacao">{{ saldo_total_bancos|currency_br }}</div>
+                <input type="submit" class="modal-salvar" id="salvar-liquidacao" name="salvar_liquidacao" value="Liquidar">
+                <button type="button" class="modal-fechar-liquidacoes">Cancelar</button>
             </section>
         </form>
     </dialog>
-    
 
     <script src="{% static 'scripts/scripts.js' %}"></script>
 </body>

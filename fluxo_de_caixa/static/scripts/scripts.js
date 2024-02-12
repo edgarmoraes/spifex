@@ -1,3 +1,64 @@
+// Função para formatar o valor de texto para número
+function formatarValor(valorTexto) {
+  // Remove pontos e substitui vírgula por ponto para conversão para número
+  // Garante que o valorTexto é uma string antes de fazer as substituições
+  valorTexto = valorTexto.toString();
+  var valorNumerico = valorTexto.replace(/\./g, '').replace(',', '.');
+  return parseFloat(valorNumerico);
+}
+
+// Função para atualizar o saldo do banco selecionado
+function atualizarSaldoBanco() {
+  // Inicializar o valor total a liquidar
+  let valorTotalLiquidar = 0;
+  
+  // Obter o valor total a liquidar dos lançamentos selecionados
+  document.querySelectorAll('.row-lancamentos').forEach(row => {
+    const checkbox = row.querySelector('.checkbox-personalizado');
+    if (checkbox && checkbox.checked) {
+      const credito = row.querySelector('.credito-row').textContent.trim();
+      const debito = row.querySelector('.debito-row').textContent.trim();
+
+      if (credito) {
+        valorTotalLiquidar += formatarValor(credito);
+      }
+      if (debito) {
+        valorTotalLiquidar -= formatarValor(debito);
+      }
+    }
+  });
+
+  // Iterar por todos os checkboxes dos bancos
+  document.querySelectorAll('.checkbox-personalizado-liquidacao').forEach(checkbox => {
+    if (checkbox.checked) {
+      // Encontrar o elemento de saldo inicial do banco correspondente
+      let saldoInicialEl = checkbox.closest('.row-bancos').querySelector('[name="saldo_inicial"]');
+      let saldoInicial = formatarValor(saldoInicialEl.textContent);
+      
+      // Calcular o novo saldo
+      let novoSaldo = saldoInicial + valorTotalLiquidar;
+
+      // Atualizar o elemento do saldo no formulário
+      document.querySelector('[name="saldo-liquidacao"]').textContent = novoSaldo.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      });
+    }
+  });
+}
+
+// Adicionar evento listener para as checkboxes dos bancos para atualizar o saldo quando uma checkbox é alterada
+document.querySelectorAll('.checkbox-personalizado-liquidacao').forEach(checkbox => {
+  checkbox.addEventListener('change', function() {
+    atualizarSaldoBanco();
+    calcularTotal(); // Recalcular o total a liquidar se necessário
+  });
+});
+
+// Chamar a função atualizarSaldoBanco inicialmente para definir o saldo correto
+atualizarSaldoBanco();
+
+
 // Passa informações do fluxo para o modal de liquidação
 document.addEventListener('DOMContentLoaded', function() {
   // Função para atualizar os lançamentos selecionados
@@ -20,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
           div.classList.add('lancamentos-selecionados'); // Adiciona a classe à div
           div.innerHTML = `
               <section class="modal-flex">
-                  <input class="modal-data" id="data-liquidacao-${index}" type="date" name="data-liquidacao-${index}" value="${formatarDataParaInput(vencimento)}" required>
+                  <input class="modal-data data-liquidacao" id="data-liquidacao-${index}" type="date" name="data-liquidacao-${index}" value="${formatarDataParaInput(vencimento)}" required>
               </section>
               <section class="modal-flex">
                   <input class="modal-descricao" id="descricao-liquidacao-${index}" maxlength="100" type="text" name="descricao-liquidacao-${index}" value="${descricao}" required readonly>
@@ -29,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   <input class="modal-obs" id="observacao-liquidacao-${index}" maxlength="100" type="text" name="observacao-liquidacao-${index}" value="${observacao}" required>
               </section>
               <section class="modal-flex">
-                  <input class="modal-valor" id="valor-liquidacao-${index}" type="text" name="valor-liquidacao-${index}" value="${valor}" required>
+                  <input class="modal-valor" id="valor-liquidacao-${index}" type="text" name="valor-liquidacao-${index}" oninput="formatarCampoValorLiquidacao(this)" value="${valor}" required>
               </section>
               <section class="modal-flex">
               <input class="modal-natureza" id="natureza-liquidacao-${index}" type="text" name="natureza-liquidacao-${index}" value="${natureza}" required readonly>
@@ -42,10 +103,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Função auxiliar para formatar a data para o input do tipo date
   function formatarDataParaInput(data) {
       const partes = data.split('/');
-      return `${partes[2]}-${partes[1]}-${partes[0]}`; // Formato aaaa-mm-dd
+      return `${partes[2]}-${partes[1]}-${partes[0]}`;
   }
 
-  // Adiciona um ouvinte de eventos a cada checkbox para atualizar os lançamentos selecionados quando a seleção mudar
   document.querySelectorAll('.tabela-lancamentos .checkbox-personalizado').forEach(function(checkbox) {
       checkbox.addEventListener('change', atualizarLancamentosSelecionados);
   });
@@ -67,24 +127,16 @@ document.addEventListener('DOMContentLoaded', function() {
                       box.checked = false;
                   }
               });
+              // Após ajustar as checkboxes, atualiza o saldo
+              atualizarSaldoBanco();
           }
       });
   });
 });
 
 
-
-
-
-
-
-
-
-
-
-
 // Seleciona o botão pelo ID
-const botaoTeste = document.getElementById('botao-teste');
+const botaoTeste = document.getElementById('liquidar-button');
 
 // Seleciona o modal pelo ID
 const modalLiquidacao = document.getElementById('modal-liquidacao');
@@ -95,7 +147,7 @@ botaoTeste.addEventListener('click', function() {
 });
 
 // Opcional: Adiciona um ouvinte de eventos para fechar o modal no botão de cancelar, se houver
-const botaoFechar = modalLiquidacao.querySelector('.modal-fechar-recebimentos');
+const botaoFechar = modalLiquidacao.querySelector('.modal-fechar-liquidacoes');
 if (botaoFechar) {
     botaoFechar.addEventListener('click', function() {
         modalLiquidacao.close(); // Fecha o modal
@@ -104,7 +156,7 @@ if (botaoFechar) {
 
 
 // Botão de Liquidar
-document.getElementById('liquidar-button').addEventListener('click', function() {
+document.getElementById('salvar-liquidacao').addEventListener('click', function() {
   let selectedRows = document.querySelectorAll('.checkbox-personalizado:checked');
   let dataToSend = [];
   
@@ -573,6 +625,28 @@ function formatarCampoValorRecebimentos(input) {
 }
 
 function formatarCampoValorPagamentos(input) {
+  // Remover caracteres não numéricos
+  let valor = input.value.replace(/\D/g, '');
+
+  // Remover zeros à esquerda
+  valor = valor.replace(/^0+/, '');
+
+  // Adicionar o ponto decimal nas duas últimas casas decimais
+  if (valor.length > 2) {
+      valor = valor.slice(0, -2) + '.' + valor.slice(-2);
+  } else if (valor.length === 2) {
+      valor = '0.' + valor;
+  } else if (valor.length === 1) {
+      valor = '0.0' + valor;
+  } else {
+      valor = '0.00';
+  }
+
+  // Atualizar o valor do campo
+  input.value = valor;
+}
+
+function formatarCampoValorLiquidacao(input) {
   // Remover caracteres não numéricos
   let valor = input.value.replace(/\D/g, '');
 
