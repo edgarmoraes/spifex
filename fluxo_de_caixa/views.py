@@ -60,33 +60,46 @@ def processar_fluxo_de_caixa(request):
     return redirect(request.path)
 
 def extrair_dados_formulario(request):
-    """ Extrai e retorna os dados do formulário """
+    """Extrai e retorna os dados do formulário."""
     natureza = 'Crédito' if 'salvar_recebimento' in request.POST else 'Débito'
     
     # Escolhe o campo de ID correto com base na natureza da transação
     lancamento_id_recebimentos = request.POST.get('lancamento_id_recebimentos')
     lancamento_id_pagamentos = request.POST.get('lancamento_id_pagamentos')
     
-    # Inicialmente definido como None para garantir que int() não seja chamado com None
-    lancamento_id = None
+    lancamento_id = None  # Inicialmente definido como None
     
-    # Converte para int se um valor válido foi fornecido
     if natureza == 'Crédito' and lancamento_id_recebimentos:
         lancamento_id = int(lancamento_id_recebimentos)
     elif natureza == 'Débito' and lancamento_id_pagamentos:
         lancamento_id = int(lancamento_id_pagamentos)
+    
+    # Verifica e processa o campo 'vencimento'
+    vencimento_str = request.POST.get('vencimento')
+    vencimento = datetime.strptime(vencimento_str, '%Y-%m-%d') if vencimento_str else None
 
+    # Processa outros campos com segurança
+    descricao = request.POST.get('descricao', '')
+    observacao = request.POST.get('observacao', '')
+    valor = request.POST.get('valor', '0.00')
+    conta_contabil = request.POST.get('conta_contabil', '')
+    parcelas = request.POST.get('parcelas', '1')
+    parcelas_total = int(parcelas) if parcelas.isdigit() else 1
+    parcelas_total_originais = int(request.POST.get('parcelas_total_originais', '1'))
+    tags = request.POST.get('tags', '')
+
+    # Retorna um dicionário com os dados processados
     return {
-        'vencimento': datetime.strptime(request.POST.get('vencimento'), '%Y-%m-%d'),
-        'descricao': request.POST.get('descricao'),
-        'observacao': request.POST.get('observacao'),
-        'valor': request.POST.get('valor'),
-        'conta_contabil': request.POST.get('conta_contabil'),
-        'parcelas_total': int(request.POST.get('parcelas', '1')) if request.POST.get('parcelas', '1').isdigit() else 1,
-        'parcelas_total_originais': int(request.POST.get('parcelas_total_originais', '1')),
-        'tags': request.POST.get('tags'),
+        'vencimento': vencimento,
+        'descricao': descricao,
+        'observacao': observacao,
+        'valor': valor,
+        'conta_contabil': conta_contabil,
+        'parcelas_total': parcelas_total,
+        'parcelas_total_originais': parcelas_total_originais,
+        'tags': tags,
         'lancamento_id': lancamento_id,
-        'natureza': 'Crédito' if 'salvar_recebimento' in request.POST else 'Débito',
+        'natureza': natureza,
     }
 
 def atualizar_fluxo_existente(dados):
@@ -101,11 +114,23 @@ def atualizar_fluxo_existente(dados):
     fluxo_de_caixa.save()
 
 def criar_novos_fluxos(dados, iniciar_desde_o_atual=False):
+    if 'vencimento' not in dados or dados['vencimento'] is None:
+        # Trata o caso onde 'vencimento' não é fornecido ou é None
+        # Você pode definir uma data padrão ou retornar um erro
+        return JsonResponse({'error': 'Data de vencimento é necessária.'}, status=400)
+
     parcela_inicial = dados.get('parcela_atual', 1)
     total_parcelas = dados['parcelas_total']
 
+    # Verifica se 'vencimento' já é um objeto datetime.datetime
+    if isinstance(dados['vencimento'], datetime):
+        vencimento_base = dados['vencimento'].date()
+    else:
+        # Converte de string para datetime.datetime se 'vencimento' for uma string
+        vencimento_base = datetime.strptime(dados['vencimento'], '%Y-%m-%d').date()
+
     for i in range(parcela_inicial, total_parcelas + 1):
-        vencimento_parcela = dados['vencimento'] + relativedelta(months=i - parcela_inicial)
+        vencimento_parcela = vencimento_base + relativedelta(months=i - parcela_inicial)
         Tabela_fluxo.objects.create(
             vencimento=vencimento_parcela,
             descricao=dados['descricao'],
@@ -168,45 +193,44 @@ def criar_registro_temporario(objeto):
 
 @receiver(post_save, sender=Tabela_fluxo)
 def save_update_data_unica(sender, instance, **kwargs):
-    data_formatada = instance.vencimento.strftime('%b/%Y')
-    atualizar_totais_mes(data_formatada)
+    recalcular_totais()
 
 @receiver(post_delete, sender=Tabela_fluxo)
 def delete_update_data_unica(sender, instance, **kwargs):
-    data_formatada = instance.vencimento.strftime('%b/%Y')
-    if not Tabela_fluxo.objects.filter(vencimento__year=instance.vencimento.year, vencimento__month=instance.vencimento.month).exists():
-        Totais_mes_fluxo.objects.filter(data_formatada=data_formatada).delete()
-    else:
-        atualizar_totais_mes(data_formatada)
+    recalcular_totais()
 
-def atualizar_totais_mes(data_formatada):
+def recalcular_totais():
     """ Sinal para atualizar Totais_mes_fluxo quando um FluxoDeCaixa for salvo """
-    # Calculando as datas de início e fim do mês
-    inicio_mes = datetime.strptime(data_formatada, '%b/%Y').replace(day=1)
-    fim_mes = inicio_mes + relativedelta(months=1, days=-1)
+    # Apaga todos os registros existentes em Totais_mes_fluxo
+    Totais_mes_fluxo.objects.all().delete()
 
-    # Calculando totais de crédito e débito
-    total_credito = Tabela_fluxo.objects.filter(
-        vencimento__range=(inicio_mes, fim_mes),
-        natureza='Crédito'
-    ).aggregate(Sum('valor'))['valor__sum'] or 0
+    # Encontra todas as datas únicas de vencimento em Tabela_fluxo
+    datas_unicas = Tabela_fluxo.objects.dates('vencimento', 'month', order='ASC')
 
-    total_debito = Tabela_fluxo.objects.filter(
-        vencimento__range=(inicio_mes, fim_mes),
-        natureza='Débito'
-    ).aggregate(Sum('valor'))['valor__sum'] or 0
+    for data_unica in datas_unicas:
+        inicio_mes = data_unica
+        fim_mes = inicio_mes + relativedelta(months=1, days=-1)
 
-    # Atualizar ou criar registro em Totais_mes_fluxo
-    Totais_mes_fluxo.objects.update_or_create(
-        data_formatada=data_formatada,
-        defaults={
-            'inicio_mes': inicio_mes,
-            'fim_mes': fim_mes,
-            'total_credito': total_credito,
-            'total_debito': total_debito,
-            'saldo_mensal': total_credito - total_debito
-        }
-    )
+        # Calcula os totais de crédito e débito para cada mês
+        total_credito = Tabela_fluxo.objects.filter(
+            vencimento__range=(inicio_mes, fim_mes),
+            natureza='Crédito'
+        ).aggregate(Sum('valor'))['valor__sum'] or 0
+
+        total_debito = Tabela_fluxo.objects.filter(
+            vencimento__range=(inicio_mes, fim_mes),
+            natureza='Débito'
+        ).aggregate(Sum('valor'))['valor__sum'] or 0
+
+        # Cria um novo registro em Totais_mes_fluxo para cada mês
+        Totais_mes_fluxo.objects.create(
+            data_formatada=inicio_mes.strftime('%b/%Y'),
+            inicio_mes=inicio_mes,
+            fim_mes=fim_mes,
+            total_credito=total_credito,
+            total_debito=total_debito,
+            saldo_mensal=total_credito - total_debito
+        )
 
 # FUNÇÕES ÚNICAS ############################################################################
 

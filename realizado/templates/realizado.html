@@ -154,7 +154,7 @@
                 {% for realizado in Tabela_realizado_list %}
                 <tr class="row-lancamentos" id="row-lancamentos" data-conta-contabil="{{ realizado.conta_contabil }}" parcela-atual="{{ realizado.parcela_atual }}" parcelas-total="{{ realizado.parcelas_total }}" scope="row">
                     <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado" type="checkbox" data-id="{{ realizado.id }}"><span class="checkmark"></span></label></td>
-                    <td class="vencimento-row">{{ realizado.vencimento|date:"d/m/Y" }}</td>
+                    <td class="vencimento-row">{{ realizado.data_liquidacao|date:"d/m/Y" }}</td>
                     <td class="descricao-row">{{ realizado.descricao }}</td>
                     <td class="obs-row">
                         {{ realizado.observacao }}

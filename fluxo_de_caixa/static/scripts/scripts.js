@@ -68,48 +68,66 @@ document.addEventListener('DOMContentLoaded', function() {
 
       const checkboxesMarcadas = document.querySelectorAll('.tabela-lancamentos .checkbox-personalizado:checked');
 
-      checkboxesMarcadas.forEach(function(checkbox, index) {
+      checkboxesMarcadas.forEach(function(checkbox) {
           const row = checkbox.closest('.row-lancamentos');
+          const id = checkbox.getAttribute('data-id');
           const descricao = row.querySelector('.descricao-row').textContent;
           const vencimento = row.querySelector('.vencimento-row').textContent;
-          const observacao = row.querySelector('.obs-row').childNodes[0].textContent.trim();
+          let observacao = row.querySelector('.obs-row').textContent.trim();
+          // Exclui a parte que contém "Tags:" do texto da observação
+          observacao = observacao.split('Tags:')[0].trim();
           const valor = row.querySelector('.debito-row').textContent || row.querySelector('.credito-row').textContent;
           const natureza = row.querySelector('.debito-row').textContent ? "Débito" : "Crédito";
 
           // Cria os campos dinamicamente para cada lançamento selecionado
           const div = document.createElement('div');
-          div.classList.add('lancamentos-selecionados'); // Adiciona a classe à div
+          div.classList.add('lancamentos-selecionados');
           div.innerHTML = `
               <section class="modal-flex">
-                  <input class="modal-data data-liquidacao" id="data-liquidacao-${index}" type="date" name="data-liquidacao-${index}" value="${formatarDataParaInput(vencimento)}" required>
+                  <input class="modal-data data-liquidacao" id="data-liquidacao-${id}" type="date" name="data-liquidacao-${id}" value="${formatarDataParaInput(vencimento)}" required>
               </section>
               <section class="modal-flex">
-                  <input class="modal-descricao" id="descricao-liquidacao-${index}" maxlength="100" type="text" name="descricao-liquidacao-${index}" value="${descricao}" required readonly>
+                  <input class="modal-descricao" id="descricao-liquidacao-${id}" maxlength="100" type="text" name="descricao-liquidacao-${id}" value="${descricao}" required readonly>
               </section>
               <section class="modal-flex">
-                  <input class="modal-obs" id="observacao-liquidacao-${index}" maxlength="100" type="text" name="observacao-liquidacao-${index}" value="${observacao}" required>
+                  <input class="modal-obs" id="observacao-liquidacao-${id}" maxlength="100" type="text" name="observacao-liquidacao-${id}" value="${observacao}" required>
               </section>
               <section class="modal-flex">
-                  <input class="modal-valor" id="valor-liquidacao-${index}" type="text" name="valor-liquidacao-${index}" oninput="formatarCampoValorLiquidacao(this)" value="${valor}" required>
+                  <input class="modal-valor" id="valor-liquidacao-${id}" type="text" name="valor-liquidacao-${id}" oninput="formatarCampoValorLiquidacao(this)" value="${formatarValorDecimal(valor)}" required>
               </section>
               <section class="modal-flex">
-              <input class="modal-natureza" id="natureza-liquidacao-${index}" type="text" name="natureza-liquidacao-${index}" value="${natureza}" required readonly>
-          </section>
+                  <input class="modal-natureza" id="natureza-liquidacao-${id}" type="text" name="natureza-liquidacao-${id}" value="${natureza}" required readonly>
+              </section>
           `;
           contêiner.appendChild(div);
       });
   }
-
+  
   // Função auxiliar para formatar a data para o input do tipo date
   function formatarDataParaInput(data) {
       const partes = data.split('/');
       return `${partes[2]}-${partes[1]}-${partes[0]}`;
   }
 
+  function formatarValorDecimal(valor) {
+    // Substitui pontos por vazio e vírgula por ponto
+    valor = valor.replace(/\./g, '').replace(',', '.');
+
+    // Converte para número e formata para duas casas decimais
+    const numero = parseFloat(valor);
+    if (!isNaN(numero)) {
+        return numero.toFixed(2); // Assegura duas casas decimais
+    } else {
+        return '0.00'; // Retorna zero se o valor não for um número válido
+    }
+}
+
   document.querySelectorAll('.tabela-lancamentos .checkbox-personalizado').forEach(function(checkbox) {
       checkbox.addEventListener('change', atualizarLancamentosSelecionados);
   });
 });
+
+
 
 // Selecionar uma checkbox de cada vez no modal de liquidação
 document.addEventListener('DOMContentLoaded', function() {
@@ -162,31 +180,42 @@ document.getElementById('salvar-liquidacao').addEventListener('click', function(
   
   selectedRows.forEach(function(checkbox) {
       let row = checkbox.closest('.row-lancamentos');
+      let id = checkbox.getAttribute('data-id');
+      
+      // Encontra os campos de data, observação e valor no modal de liquidação
+      let campoData = document.getElementById(`data-liquidacao-${id}`);
+      let campoObservacao = document.getElementById(`observacao-liquidacao-${id}`);
+      let campoValor = document.getElementById(`valor-liquidacao-${id}`);
+      
       dataToSend.push({
-          id: checkbox.getAttribute('data-id'),
+          id: id,
           vencimento: row.querySelector('.vencimento-row').textContent,
           descricao: row.querySelector('.descricao-row').textContent,
-          valor: row.querySelector('.debito-row').textContent || row.querySelector('.credito-row').textContent,
+          observacao: campoObservacao ? campoObservacao.value : '',
+          valor: campoValor ? campoValor.value : '',
           conta_contabil: row.getAttribute('data-conta-contabil'),
           parcela_atual: row.getAttribute('parcela-atual'),
           parcelas_total: row.getAttribute('parcelas-total'),
-          natureza: row.querySelector('.debito-row').textContent ? 'Débito' : 'Crédito'
+          natureza: row.querySelector('.debito-row').textContent ? 'Débito' : 'Crédito',
+          data_liquidacao: campoData ? campoData.value : ''
       });
   });
 
+  console.log(JSON.stringify(dataToSend, null, 2));
   fetch('/realizado/processar_liquidacao/', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(dataToSend)
-}).then(response => response.json())
-  .then(data => {
-      if(data.status === 'success') {
-          selectedRows.forEach(checkbox => {
-              let row = checkbox.closest('.row-lancamentos');
-              row.remove(); // Remove a linha da tabela
-          });
-          window.location.reload();
-  }});
+  }).then(response => response.json())
+    .then(data => {
+        if(data.status === 'success') {
+            selectedRows.forEach(checkbox => {
+                let row = checkbox.closest('.row-lancamentos');
+                row.remove(); // Remove a linha da tabela
+            });
+            window.location.reload();
+        }
+  });
 });
 
 

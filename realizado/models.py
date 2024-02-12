@@ -12,7 +12,7 @@ class Tabela_realizado(models.Model):
     tags = models.CharField(max_length = 100)
     natureza = models.CharField(max_length=50)
     original_data_criacao = models.DateTimeField(null=True, blank=True)
-    data_liquidacao = models.DateTimeField(auto_now_add=True)
+    data_liquidacao = models.DateTimeField()
     banco_liquidacao = models.CharField(max_length = 100)
 
 class Totais_mes_realizado(models.Model):

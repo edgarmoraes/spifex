@@ -7,6 +7,8 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
+from django.core.exceptions import ObjectDoesNotExist
+from decimal import Decimal
 from fluxo_de_caixa.models import Tabela_fluxo, Bancos
 from .models import Tabela_realizado, Totais_mes_realizado
 
@@ -52,73 +54,81 @@ def processar_liquidacao(request):
         ids_para_excluir = []
 
         for item in dados:
-            # Mova a busca do registro_original para dentro deste loop
-            registro_original = Tabela_fluxo.objects.get(id=item['id'])
+            try:
+                registro_original = Tabela_fluxo.objects.get(id=item['id'])
 
-            # Agora, registro_original é específico para cada item em dados
-            novo_registro = Tabela_realizado.objects.create(
-                fluxo_id=registro_original.id,
-                vencimento=datetime.strptime(item['vencimento'], '%d/%m/%Y').date(),
-                descricao=registro_original.descricao,
-                observacao=registro_original.observacao,
-                valor=registro_original.valor,
-                conta_contabil=registro_original.conta_contabil,
-                parcela_atual=registro_original.parcela_atual,
-                parcelas_total=registro_original.parcelas_total,
-                tags=registro_original.tags,
-                natureza=registro_original.natureza,
-                original_data_criacao=registro_original.data_criacao,
-                data_liquidacao=datetime.now(),
-            )
-            if novo_registro:
-                ids_para_excluir.append(item['id'])
+                # Converte o valor para Decimal e a data para datetime
+                valor_decimal = Decimal(item['valor'])
+                data_liquidacao = datetime.strptime(item['data_liquidacao'], '%Y-%m-%d')
 
-        # Após criar os registros em Tabela_realizado, exclua os originais em Tabela_fluxo
+                novo_registro = Tabela_realizado.objects.create(
+                    fluxo_id=registro_original.id,
+                    vencimento=registro_original.vencimento,
+                    descricao=registro_original.descricao,
+                    observacao=item['observacao'],  # Usa o valor de observacao recebido
+                    valor=valor_decimal,  # Usa o valor convertido para Decimal
+                    conta_contabil=registro_original.conta_contabil,
+                    parcela_atual=registro_original.parcela_atual,
+                    parcelas_total=registro_original.parcelas_total,
+                    tags=registro_original.tags,
+                    natureza=registro_original.natureza,
+                    original_data_criacao=registro_original.data_criacao,
+                    data_liquidacao=data_liquidacao,  # Usa a data convertida
+                    # Você não forneceu o campo banco_liquidacao no dataToSend, verifique se isso é necessário
+                    banco_liquidacao=item.get('banco_liquidacao', '')  # Use um valor default ou ajuste seu JS para enviar este dado
+                )
+                if novo_registro:
+                    ids_para_excluir.append(item['id'])
+            except ObjectDoesNotExist:
+                continue  # Se o objeto não existir, simplesmente continue para o próximo item
+
+        # Exclui os registros originais em Tabela_fluxo
         Tabela_fluxo.objects.filter(id__in=ids_para_excluir).delete()
 
         return JsonResponse({'status': 'success'})
-    return JsonResponse({'status': 'invalid method'}, status=405)
+    else:
+        return JsonResponse({'status': 'invalid method'}, status=405)
 
 
 @receiver(post_save, sender=Tabela_realizado)
 def save_update_data_unica_realizado(sender, instance, **kwargs):
-    data_formatada = instance.vencimento.strftime('%b/%Y')
-    atualizar_totais_mes_realizado(data_formatada)
+    recalcular_totais_realizado()
 
 @receiver(post_delete, sender=Tabela_realizado)
 def delete_update_data_unica_realizado(sender, instance, **kwargs):
-    data_formatada = instance.vencimento.strftime('%b/%Y')
-    if not Tabela_realizado.objects.filter(vencimento__year=instance.vencimento.year, vencimento__month=instance.vencimento.month).exists():
-        Totais_mes_realizado.objects.filter(data_formatada=data_formatada).delete()
-    else:
-        atualizar_totais_mes_realizado(data_formatada)
+    recalcular_totais_realizado()
 
-def atualizar_totais_mes_realizado(data_formatada):
-    inicio_mes = datetime.strptime(data_formatada, '%b/%Y').replace(day=1)
-    fim_mes = inicio_mes + relativedelta(months=1, days=-1)
+def recalcular_totais_realizado():
+    # Apaga todos os registros existentes em Totais_mes_realizado
+    Totais_mes_realizado.objects.all().delete()
 
-    total_credito = Tabela_realizado.objects.filter(
-        vencimento__range=[inicio_mes, fim_mes],
-        natureza='Crédito'
-    ).aggregate(Sum('valor'))['valor__sum'] or 0
+    # Encontra todas as datas únicas de vencimento em Tabela_realizado
+    datas_unicas = Tabela_realizado.objects.dates('data_liquidacao', 'month', order='ASC')
 
-    total_debito = Tabela_realizado.objects.filter(
-        vencimento__range=[inicio_mes, fim_mes],
-        natureza='Débito'
-    ).aggregate(Sum('valor'))['valor__sum'] or 0
+    for data_unica in datas_unicas:
+        inicio_mes = data_unica
+        fim_mes = inicio_mes + relativedelta(months=1, days=-1)
 
-    saldo_mensal = total_credito - total_debito
+        # Calcula os totais de crédito e débito para cada mês
+        total_credito = Tabela_realizado.objects.filter(
+            vencimento__range=(inicio_mes, fim_mes),
+            natureza='Crédito'
+        ).aggregate(Sum('valor'))['valor__sum'] or 0
 
-    Totais_mes_realizado.objects.update_or_create(
-        data_formatada=data_formatada,
-        defaults={
-            'inicio_mes': inicio_mes,
-            'fim_mes': fim_mes,
-            'total_credito': total_credito,
-            'total_debito': total_debito,
-            'saldo_mensal': total_credito - total_debito
-        }
-    )
+        total_debito = Tabela_realizado.objects.filter(
+            vencimento__range=(inicio_mes, fim_mes),
+            natureza='Débito'
+        ).aggregate(Sum('valor'))['valor__sum'] or 0
+
+        # Cria um novo registro em Totais_mes_realizado para cada mês
+        Totais_mes_realizado.objects.create(
+            data_formatada=inicio_mes.strftime('%b/%Y'),
+            inicio_mes=inicio_mes,
+            fim_mes=fim_mes,
+            total_credito=total_credito,
+            total_debito=total_debito,
+            saldo_mensal=total_credito - total_debito
+        )
 
 def meses_filtro_realizado(request):
     totais_mes_realizado = Totais_mes_realizado.objects.all().order_by('data_formatada')
