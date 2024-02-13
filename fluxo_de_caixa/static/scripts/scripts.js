@@ -120,11 +120,11 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         return '0.00'; // Retorna zero se o valor não for um número válido
       }
-}
+  }
 
-document.querySelectorAll('.tabela-lancamentos .checkbox-personalizado').forEach(function(checkbox) {
-  checkbox.addEventListener('change', atualizarLancamentosSelecionados);
-});
+  document.querySelectorAll('.tabela-lancamentos .checkbox-personalizado').forEach(function(checkbox) {
+    checkbox.addEventListener('change', atualizarLancamentosSelecionados);
+  });
 });
 
 
