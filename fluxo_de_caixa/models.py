@@ -48,4 +48,16 @@ class Bancos(models.Model):
     agencia = models.CharField(max_length = 100)
     conta = models.CharField(max_length = 100)
     saldo_inicial = models.DecimalField(max_digits=13, decimal_places=2)
+    saldo_atual = models.DecimalField(max_digits=13, decimal_places=2, default=0)
+    saldo_total = models.DecimalField(max_digits=13, decimal_places=2, default=0) 
     status = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        # No momento da criação do objeto, isso garantirá que saldo_total = saldo_inicial
+        if not self.pk:  # Checa se é uma nova instância
+            self.saldo_atual = self.saldo_inicial  # Opcionalmente, inicia saldo_atual com saldo_inicial
+            self.saldo_total = self.saldo_inicial
+        else:
+            # Para instâncias existentes, atualiza saldo_total com base no saldo_atual
+            self.saldo_total = self.saldo_inicial + self.saldo_atual
+        super().save(*args, **kwargs)

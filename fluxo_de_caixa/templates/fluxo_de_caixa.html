@@ -146,7 +146,7 @@
                             <td class="banco-row" name="banco">{{ banco.banco }}</td>
                             <td class="ag-row" name="agencia">{{ banco.agencia }}</td>
                             <td class="conta-row" name="conta">{{ banco.conta }}</td>
-                            <td class="saldo-banco-row" name="saldo_inicial">{{ banco.saldo_inicial|format_number }}</td>
+                            <td class="saldo-banco-row" name="saldo_inicial">{{ banco.saldo_inicial|add:banco.saldo_atual|format_number }}</td>
                         </tr>
                         {% endfor %}
                         <tr class="totais-row" scope="row">
@@ -445,10 +445,10 @@
                                 {% for banco in bancos %}
                                 <tr class="row-bancos" scope="row">
                                     <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado-liquidacao" type="checkbox"><span class="checkmark-liquidacao"></span></label></td>
-                                    <td class="banco-row" name="banco">{{ banco.banco }}</td>
+                                    <td class="banco-row banco-liquidacao" name="banco" data-nome-banco="{{ banco.banco }}">{{ banco.banco }}</td>
                                     <td class="ag-row" name="agencia">{{ banco.agencia }}</td>
                                     <td class="conta-row" name="conta">{{ banco.conta }}</td>
-                                    <td class="saldo-banco-liquidacao-row" name="saldo_inicial">{{ banco.saldo_inicial|format_number }}</td>
+                                    <td class="saldo-banco-liquidacao-row" name="saldo_inicial">{{ banco.saldo_inicial|add:banco.saldo_atual|format_number }}</td>
                                 </tr>
                                 {% endfor %}
                                 <tr class="totais-row" scope="row">
@@ -466,18 +466,18 @@
 
             <!-- Contêiner para os lançamentos selecionados -->
             <div class="label-lancamentos-selecionados mesclar-3">
-                <label for="data-liquidacao">Data de Liquidação</label>
-                <label for="descricao-liquidacao">Descrição</label>
-                <label for="observacao-liquidacao">Observação</label>
-                <label for="valor-liquidacao">Valor</label>
-                <label for="natureza-liquidacao">Natureza</label>
+                <label>Data de Liquidação</label>
+                <label>Descrição</label>
+                <label>Observação</label>
+                <label>Valor</label>
+                <label>Natureza</label>
             </div>
             <div class="lista-lancamentos-selecionados mesclar-3" id="lancamentos-selecionados">
                 <!-- Itens dinâmicos serão adicionados aqui -->
             </div>
     
             <section class="modal-botoes mesclar-3">
-                <label for="saldo-liquidacao">Saldo:</label>
+                <label>Saldo:</label>
                 <div class="saldo-liquidacao" name="saldo-liquidacao">{{ saldo_total_bancos|currency_br }}</div>
                 <input type="submit" class="modal-salvar" id="salvar-liquidacao" name="salvar_liquidacao" value="Liquidar">
                 <button type="button" class="modal-fechar-liquidacoes">Cancelar</button>

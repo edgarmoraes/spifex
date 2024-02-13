@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from django.db.models.signals import post_save, post_delete
 from dateutil.relativedelta import relativedelta
-from django.db.models import Sum
+from django.db.models import Sum, F
 from .models import Tabela_fluxo, TabelaTemporaria, Totais_mes_fluxo, Bancos
 
 def fluxo_de_caixa(request):
@@ -18,9 +18,17 @@ def fluxo_de_caixa(request):
 def exibir_fluxo_de_caixa(request):
     """ Exibe a lista de fluxos de caixa junto com os totais de cada mês e bancos """
     bancos_ativos = Bancos.objects.filter(status=True)
-    saldo_total_bancos = bancos_ativos.aggregate(Sum('saldo_inicial'))['saldo_inicial__sum'] or 0
+    
+    # Calcula o saldo total como a soma dos saldos iniciais e atuais
+    saldo_total_bancos = bancos_ativos.aggregate(
+        total=Sum(F('saldo_inicial') + F('saldo_atual'))
+    )['total'] or 0
+    
     Tabela_fluxo_list = Tabela_fluxo.objects.all().order_by('vencimento', '-valor', 'descricao')
+    
+    # Aqui você passa o saldo total calculado, que já inclui os saldos atuais
     calcular_saldo_acumulado(Tabela_fluxo_list, saldo_total_bancos)
+    
     totais_mes_fluxo = Totais_mes_fluxo.objects.all()
     context = {
         'Tabela_fluxo_list': Tabela_fluxo_list,

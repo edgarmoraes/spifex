@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.db.models import Sum
+from django.db.models import Sum, F
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -18,11 +18,19 @@ def realizado(request):
         return exibir_realizado(request)
 
 def exibir_realizado(request):
-    """ Exibe a lista de fluxos de caixa junto com os totais de cada mês e bancos """
+    """ Exibe a lista de realizados junto com os totais de cada mês e bancos """
     bancos_ativos = Bancos.objects.filter(status=True)
-    saldo_total_bancos = bancos_ativos.aggregate(Sum('saldo_inicial'))['saldo_inicial__sum'] or 0
-    Tabela_realizado_list = Tabela_realizado.objects.all().order_by('vencimento', '-valor', 'descricao')
+    
+    # Calcula o saldo total dos bancos, somando saldo_inicial e saldo_atual
+    saldo_total_bancos = bancos_ativos.aggregate(
+        total=Sum(F('saldo_inicial') + F('saldo_atual'))
+    )['total'] or 0
+    
+    Tabela_realizado_list = Tabela_realizado.objects.all().order_by('data_liquidacao', '-valor', 'descricao')
+    
+    # Aqui você passa o novo saldo total calculado para a função
     calcular_saldo_acumulado(Tabela_realizado_list, saldo_total_bancos)
+    
     totais_mes_realizado = Totais_mes_realizado.objects.all()
     context = {
         'Tabela_realizado_list': Tabela_realizado_list,
@@ -59,7 +67,6 @@ def processar_liquidacao(request):
                 registro_original = Tabela_fluxo.objects.get(id=item['id'])
                 valor_decimal = Decimal(item['valor'])
                 
-                # Converte a data para datetime aware
                 data_liquidacao_naive = datetime.strptime(item['data_liquidacao'], '%Y-%m-%d')
                 data_liquidacao_aware = timezone.make_aware(data_liquidacao_naive, timezone.get_default_timezone())
 
@@ -67,17 +74,16 @@ def processar_liquidacao(request):
                     fluxo_id=registro_original.id,
                     vencimento=registro_original.vencimento,
                     descricao=registro_original.descricao,
-                    observacao=item['observacao'],  # Usa o valor de observacao recebido
-                    valor=valor_decimal,  # Usa o valor convertido para Decimal
+                    observacao=item['observacao'],
+                    valor=valor_decimal,
                     conta_contabil=registro_original.conta_contabil,
                     parcela_atual=registro_original.parcela_atual,
                     parcelas_total=registro_original.parcelas_total,
                     tags=registro_original.tags,
                     natureza=registro_original.natureza,
                     original_data_criacao=registro_original.data_criacao,
-                    data_liquidacao=data_liquidacao_aware,  # Usa a data convertida
-                    # Você não forneceu o campo banco_liquidacao no dataToSend, verifique se isso é necessário
-                    banco_liquidacao=item.get('banco_liquidacao', '')  # Use um valor default ou ajuste seu JS para enviar este dado
+                    data_liquidacao=data_liquidacao_aware,
+                    banco_liquidacao=item.get('banco_liquidacao', '')
                 )
                 if novo_registro:
                     ids_para_excluir.append(item['id'])
@@ -172,3 +178,15 @@ def processar_retorno(request):
 
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'invalid method'}, status=405)
+
+@receiver(post_delete, sender=Tabela_realizado)
+def atualizar_saldo_banco_apos_remocao(sender, instance, **kwargs):
+    try:
+        banco = Bancos.objects.get(banco=instance.banco_liquidacao)
+        if instance.natureza == 'Crédito':
+            banco.saldo_atual -= instance.valor  # Subtrai o valor do saldo atual para créditos
+        else:  # Débito
+            banco.saldo_atual += instance.valor  # Adiciona o valor ao saldo atual para débitos
+        banco.save()
+    except Bancos.DoesNotExist:
+        pass  # Tratar o caso em que o banco não é encontrado, se necessário

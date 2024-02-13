@@ -120,7 +120,7 @@
                             <td class="banco-row" name="banco">{{ banco.banco }}</td>
                             <td class="ag-row" name="agencia">{{ banco.agencia }}</td>
                             <td class="conta-row" name="conta">{{ banco.conta }}</td>
-                            <td class="saldo-banco-row" name="saldo_inicial">{{ banco.saldo_inicial|format_number }}</td>
+                            <td class="saldo-banco-row" name="saldo_inicial">{{ banco.saldo_inicial|add:banco.saldo_atual|format_number }}</td>
                         </tr>
                         {% endfor %}
                         <tr class="totais-row" scope="row">

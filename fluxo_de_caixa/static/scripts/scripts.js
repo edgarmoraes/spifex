@@ -130,6 +130,16 @@ document.querySelectorAll('.tabela-lancamentos .checkbox-personalizado').forEach
 
 // Botão de Liquidar
 document.getElementById('salvar-liquidacao').addEventListener('click', async function() {
+  const liquidacaoSelecionada = document.querySelector('.checkbox-personalizado-liquidacao:checked');
+  
+  if (!liquidacaoSelecionada) {
+    alert('Por favor, selecione um banco para a liquidação antes de prosseguir.');
+    return; // Impede a execução adicional se nenhum banco estiver selecionado
+  }
+
+  // Navega até o elemento pai mais próximo da linha e encontra o elemento com o nome do banco
+  const nomeBancoSelecionado = liquidacaoSelecionada.closest('.row-bancos').querySelector('.banco-liquidacao').getAttribute('data-nome-banco');
+
   let selectedRows = document.querySelectorAll('.checkbox-personalizado:checked');
   let dataToSend = [];
   
@@ -152,7 +162,8 @@ document.getElementById('salvar-liquidacao').addEventListener('click', async fun
       parcela_atual: row.getAttribute('parcela-atual'),
       parcelas_total: row.getAttribute('parcelas-total'),
       natureza: row.querySelector('.debito-row').textContent ? 'Débito' : 'Crédito',
-      data_liquidacao: campoData ? campoData.value : ''
+      data_liquidacao: campoData ? campoData.value : '',
+      banco_liquidacao: nomeBancoSelecionado // Inclui o nome do banco selecionado nos dados enviados
     });
   });
 
