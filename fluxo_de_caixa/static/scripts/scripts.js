@@ -102,16 +102,16 @@ document.addEventListener('DOMContentLoaded', function() {
                   <input class="modal-data data-liquidacao" id="data-liquidacao-${id}" type="date" name="data-liquidacao-${id}" value="${formatarDataParaInput(vencimento)}" required>
               </section>
               <section class="modal-flex">
-                  <input class="modal-descricao" id="descricao-liquidacao-${id}" maxlength="100" type="text" name="descricao-liquidacao-${id}" value="${descricao}" required readonly>
+                  <input class="modal-descricao" id="descricao-liquidacao-${id}" maxlength="100" type="text" name="descricao-liquidacao-${id}" value="${descricao}" readonly>
               </section>
               <section class="modal-flex">
-                  <input class="modal-obs" id="observacao-liquidacao-${id}" maxlength="100" type="text" name="observacao-liquidacao-${id}" value="${observacao}" required>
+                  <input class="modal-obs" id="observacao-liquidacao-${id}" maxlength="100" type="text" name="observacao-liquidacao-${id}" value="${observacao}">
               </section>
               <section class="modal-flex">
                   <input class="modal-valor" id="valor-liquidacao-${id}" type="text" name="valor-liquidacao-${id}" oninput="formatarCampoValorLiquidacao(this)" value="${formatarValorDecimal(valor)}" required>
               </section>
               <section class="modal-flex">
-                  <input class="modal-natureza" id="natureza-liquidacao-${id}" type="text" name="natureza-liquidacao-${id}" value="${natureza}" required readonly>
+                  <input class="modal-natureza" id="natureza-liquidacao-${id}" type="text" name="natureza-liquidacao-${id}" value="${natureza}" readonly>
               </section>
           `;
           contêiner.appendChild(div);
