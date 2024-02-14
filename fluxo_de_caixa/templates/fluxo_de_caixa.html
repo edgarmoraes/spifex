@@ -325,8 +325,8 @@
                 </section>
         
             <section class="modal-flex mesclar-2">
-                <label for="descricao-transferencia">Descrição</label>
-                <input class="modal-descricao" id="descricao-transferencia" type="text" name="descricao"><br>
+                <label for="observacao-transferencia">Observação</label>
+                <input class="modal-descricao" id="observacao-transferencia" type="text" name="observacao"><br>
             </section>
             <section class="modal-botoes mesclar-2">
                 <input class="modal-salvar" name="salvar_transferencias" type="submit" value="Salvar">
@@ -429,8 +429,8 @@
         <h1 class="modal-titulo">Liquidar</h1>
         
         <form class="modal-form-liquidacoes" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
-    
-            <!-- Inclusão da tabela de contas bancárias -->
+            <input type="hidden" name="liquidacoes" value="liquidacoes">
+
             <section class="mesclar-3">
                 <div class="" id="box-grid-bancos">
                     <div class="conteudo-tabela-bancos-liquidacao">

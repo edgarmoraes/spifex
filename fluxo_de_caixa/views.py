@@ -2,11 +2,14 @@ import json
 from decimal import Decimal
 from datetime import datetime
 from django.db.models import Sum
-from django.http import JsonResponse
+from django.utils import timezone
+from django.contrib import messages
 from django.dispatch import receiver
+from django.http import JsonResponse
 from realizado.models import Tabela_realizado
 from dateutil.relativedelta import relativedelta
 from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save, post_delete
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Tabela_fluxo, TabelaTemporaria, Totais_mes_fluxo, Bancos
@@ -178,15 +181,18 @@ def processar_transferencia(request):
     valor_transferencia = Decimal(request.POST.get('valor').replace(',', '.'))
     banco_saida = request.POST.get('banco_saida')
     banco_entrada = request.POST.get('banco_entrada')
-    descricao = request.POST.get('descricao')
+    observacao = request.POST.get('observacao')
     
     data_liquidacao = datetime.strptime(data_transferencia, '%Y-%m-%d')
 
+    if banco_saida == banco_entrada:
+        messages.error(request, "O banco de saída não pode ser igual ao banco de entrada. Por favor, selecione bancos diferentes.")
+        return redirect('fluxo_de_caixa')  # Substitua 'fluxo_de_caixa' pelo nome correto da sua URL, se necessário
     # Cria o lançamento de saída
     lancamento_saida = Tabela_realizado(
         vencimento=data_liquidacao,
-        descricao=descricao,
-        observacao='Transferência',
+        descricao='Transferência para '+banco_entrada,
+        observacao=observacao,
         valor=valor_transferencia,
         conta_contabil='Transferência Saída',
         parcela_atual=1,
@@ -202,8 +208,8 @@ def processar_transferencia(request):
     # Cria o lançamento de entrada
     lancamento_entrada = Tabela_realizado(
         vencimento=data_liquidacao,
-        descricao=descricao,
-        observacao='Transferência',
+        descricao='Transferência de '+banco_saida,
+        observacao=observacao,
         valor=valor_transferencia,
         conta_contabil='Transferência Entrada',
         parcela_atual=1,
@@ -217,6 +223,47 @@ def processar_transferencia(request):
     lancamento_entrada.save()
 
     return redirect(request.path)
+
+@csrf_exempt
+def processar_liquidacao(request):
+    if request.method == 'POST':
+        dados = json.loads(request.body)
+        ids_para_excluir = []
+
+        for item in dados:
+            try:
+                registro_original = Tabela_fluxo.objects.get(id=item['id'])
+                valor_decimal = Decimal(item['valor'])
+                
+                data_liquidacao_naive = datetime.strptime(item['data_liquidacao'], '%Y-%m-%d')
+                data_liquidacao_aware = timezone.make_aware(data_liquidacao_naive, timezone.get_default_timezone())
+
+                novo_registro = Tabela_realizado.objects.create(
+                    fluxo_id=registro_original.id,
+                    vencimento=registro_original.vencimento,
+                    descricao=registro_original.descricao,
+                    observacao=item['observacao'],
+                    valor=valor_decimal,
+                    conta_contabil=registro_original.conta_contabil,
+                    parcela_atual=registro_original.parcela_atual,
+                    parcelas_total=registro_original.parcelas_total,
+                    tags=registro_original.tags,
+                    natureza=registro_original.natureza,
+                    original_data_criacao=registro_original.data_criacao,
+                    data_liquidacao=data_liquidacao_aware,
+                    banco_liquidacao=item.get('banco_liquidacao', '')
+                )
+                if novo_registro:
+                    ids_para_excluir.append(item['id'])
+            except ObjectDoesNotExist:
+                continue  # Se o objeto não existir, simplesmente continue para o próximo item
+
+        # Exclui os registros originais em Tabela_fluxo
+        Tabela_fluxo.objects.filter(id__in=ids_para_excluir).delete()
+
+        return JsonResponse({'status': 'success'})
+    else:
+        return JsonResponse({'status': 'invalid method'}, status=405)
 
 
 # SIGNAL HANDLERS ############################################################################

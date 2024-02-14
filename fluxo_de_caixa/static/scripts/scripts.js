@@ -1,3 +1,4 @@
+// Evitar bancos iguais no processo de transferência
 document.addEventListener("DOMContentLoaded", function() {
   const formularioTransferencia = document.querySelector(".modal-form-transferencias");
 
@@ -182,7 +183,7 @@ document.getElementById('salvar-liquidacao').addEventListener('click', async fun
   });
 
   try {
-    const response = await fetch('/realizado/processar_liquidacao/', {
+    const response = await fetch('/fluxo_de_caixa/processar_liquidacao/', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(dataToSend)

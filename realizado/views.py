@@ -1,14 +1,10 @@
 import json
-from decimal import Decimal
-from datetime import datetime
 from django.db.models import Sum
-from django.utils import timezone
 from django.shortcuts import render
 from django.dispatch import receiver
 from django.http import JsonResponse
 from dateutil.relativedelta import relativedelta
 from django.views.decorators.csrf import csrf_exempt
-from django.core.exceptions import ObjectDoesNotExist
 from fluxo_de_caixa.models import Tabela_fluxo, Bancos
 from .models import Tabela_realizado, Totais_mes_realizado
 from django.db.models.signals import post_save, post_delete
@@ -35,47 +31,6 @@ def exibir_realizado(request):
 def exibir_bancos(request):
     bancos = Bancos.objects.all()
     return render(request, 'realizado.html', {'bancos': bancos})
-
-@csrf_exempt
-def processar_liquidacao(request):
-    if request.method == 'POST':
-        dados = json.loads(request.body)
-        ids_para_excluir = []
-
-        for item in dados:
-            try:
-                registro_original = Tabela_fluxo.objects.get(id=item['id'])
-                valor_decimal = Decimal(item['valor'])
-                
-                data_liquidacao_naive = datetime.strptime(item['data_liquidacao'], '%Y-%m-%d')
-                data_liquidacao_aware = timezone.make_aware(data_liquidacao_naive, timezone.get_default_timezone())
-
-                novo_registro = Tabela_realizado.objects.create(
-                    fluxo_id=registro_original.id,
-                    vencimento=registro_original.vencimento,
-                    descricao=registro_original.descricao,
-                    observacao=item['observacao'],
-                    valor=valor_decimal,
-                    conta_contabil=registro_original.conta_contabil,
-                    parcela_atual=registro_original.parcela_atual,
-                    parcelas_total=registro_original.parcelas_total,
-                    tags=registro_original.tags,
-                    natureza=registro_original.natureza,
-                    original_data_criacao=registro_original.data_criacao,
-                    data_liquidacao=data_liquidacao_aware,
-                    banco_liquidacao=item.get('banco_liquidacao', '')
-                )
-                if novo_registro:
-                    ids_para_excluir.append(item['id'])
-            except ObjectDoesNotExist:
-                continue  # Se o objeto não existir, simplesmente continue para o próximo item
-
-        # Exclui os registros originais em Tabela_fluxo
-        Tabela_fluxo.objects.filter(id__in=ids_para_excluir).delete()
-
-        return JsonResponse({'status': 'success'})
-    else:
-        return JsonResponse({'status': 'invalid method'}, status=405)
 
 
 @receiver(post_save, sender=Tabela_realizado)
