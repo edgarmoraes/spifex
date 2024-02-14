@@ -1,3 +1,17 @@
+document.addEventListener("DOMContentLoaded", function() {
+  const formularioTransferencia = document.querySelector(".modal-form-transferencias");
+
+  formularioTransferencia.addEventListener("submit", function(e) {
+      const bancoSaida = document.getElementById("banco-saida").value;
+      const bancoEntrada = document.getElementById("banco-entrada").value;
+
+      if (bancoSaida === bancoEntrada) {
+          e.preventDefault(); // Impede o envio do formulário
+          alert("O banco de saída não pode ser igual ao banco de entrada. Por favor, selecione bancos diferentes.");
+      }
+  });
+});
+
 // Função para formatar o valor de texto para número
 function formatarValor(valorTexto) {
   // Remove pontos e substitui vírgula por ponto para conversão para número
@@ -217,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
 const botaoTeste = document.getElementById('liquidar-button');
 
 // Seleciona o modal pelo ID
-const modalLiquidacao = document.getElementById('modal-liquidacao');
+const modalLiquidacao = document.getElementById('modal-liquidacoes');
 
 // Adiciona um ouvinte de eventos ao botão para abrir o modal
 botaoTeste.addEventListener('click', function() {
@@ -429,14 +443,17 @@ function fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainer
 const openModalRecebimentos = document.querySelector('.recebimentos');
 const openModalPagamentos = document.querySelector('.pagamentos');
 const openModalTransferencias = document.querySelector('.transferencias');
+const openModalLiquidacoes = document.querySelector('.liquidar-button');
 
 const closeModalRecebimentos = document.querySelector('.modal-fechar-recebimentos');
 const closeModalPagamentos = document.querySelector('.modal-fechar-pagamentos');
 const closeModalTransferencias = document.querySelector('.modal-fechar-transferencias');
+const closeModalLiquidacoes = document.querySelector('.modal-fechar-liquidacoes');
 
 const modalRecebimentos = document.querySelector('.modal-recebimentos');
 const modalPagamentos = document.querySelector('.modal-pagamentos');
 const modalTransferencias = document.querySelector('.modal-transferencias');
+const modalLiquidacoes = document.querySelector('.modal-liquidacoes');
 
 // Event Listeners
 abrirModal(openModalRecebimentos, modalRecebimentos, ".modal-form-recebimentos", 'tagInput-recebimentos', 'tagsHiddenInput-recebimentos', 'tag-container-recebimentos');
@@ -447,6 +464,9 @@ fecharModal(closeModalPagamentos, modalPagamentos, ".modal-form-pagamentos", 'ta
 
 abrirModal(openModalTransferencias, modalTransferencias, ".modal-form-transferencias");
 fecharModal(closeModalTransferencias, modalTransferencias, ".modal-form-transferencias");
+
+abrirModal(openModalLiquidacoes, modalLiquidacoes, ".modal-form-liquidacoes");
+fecharModal(closeModalLiquidacoes, modalLiquidacoes, ".modal-form-liquidacoes");
 
 
 // Evento para editar lançamentos ao clicar duas vezes nas células da tabela
@@ -668,6 +688,28 @@ function formatarCampoValorRecebimentos(input) {
 }
 
 function formatarCampoValorPagamentos(input) {
+  // Remover caracteres não numéricos
+  let valor = input.value.replace(/\D/g, '');
+
+  // Remover zeros à esquerda
+  valor = valor.replace(/^0+/, '');
+
+  // Adicionar o ponto decimal nas duas últimas casas decimais
+  if (valor.length > 2) {
+      valor = valor.slice(0, -2) + '.' + valor.slice(-2);
+  } else if (valor.length === 2) {
+      valor = '0.' + valor;
+  } else if (valor.length === 1) {
+      valor = '0.0' + valor;
+  } else {
+      valor = '0.00';
+  }
+
+  // Atualizar o valor do campo
+  input.value = valor;
+}
+
+function formatarCampoValorTransferencias(input) {
   // Remover caracteres não numéricos
   let valor = input.value.replace(/\D/g, '');
 

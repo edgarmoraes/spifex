@@ -293,7 +293,8 @@
 
         <h1 class="modal-titulo">Transferências</h1>
         
-        <form class="modal-form-transferencias" action="#" method="post">
+        <form class="modal-form-transferencias" action="/fluxo_de_caixa/" method="post">{% csrf_token %}
+            <input type="hidden" name="transferencias" value="transferencia">
             <section class="modal-flex">
                 <label for="data-transferencias">Data</label>
                 <input class="modal-data" id="data-transferencias" type="date" name="data" required><br>
@@ -301,32 +302,34 @@
             
             <section class="modal-flex">
                 <label for="valor-transferencias">Valor</label>
-                <input class="modal-valor" id="valor-transferencias" type="text" name="valor" oninput="formatarCampoValor(this)" value="R$ 0,00" required><br>
+                <input class="modal-valor" id="valor-transferencias" type="text" name="valor" oninput="formatarCampoValorTransferencias(this)" value="" required><br>
             </section>
             
                 <section class="modal-flex">
                     <label for="banco-saida">Do banco</label>
                     <select class="modal-banco-saida" id="banco-saida" name="banco_saida" required>
-                      <option value="banco1">Itaú</option>
-                      <option value="banco2">Santander</option>
-                      <option value="banco3">Sicoob</option>
+                        <option value="" disabled selected hidden>Selecione</option>
+                        {% for bancos in bancos %}
+                        <option value="{{ bancos.banco }}">{{ bancos.banco }}</option>
+                        {% endfor %}
                     </select><br>
                 </section>
                 <section class="modal-flex">
                     <label for="banco-entrada">Para o banco</label>
                     <select class="modal-banco-entrada" id="banco-entrada" name="banco_entrada" required>
-                      <option value="banco1">Itaú</option>
-                      <option value="banco2">Santander</option>
-                      <option value="banco3">Sicoob</option>
+                        <option value="" disabled selected hidden>Selecione</option>
+                        {% for bancos in bancos %}
+                        <option value="{{ bancos.banco }}">{{ bancos.banco }}</option>
+                        {% endfor %}
                     </select><br>
                 </section>
         
             <section class="modal-flex mesclar-2">
                 <label for="descricao-transferencia">Descrição</label>
-                <input class="modal-descricao" id="descricao-transferencia" type="text" name="descricao" required><br>
+                <input class="modal-descricao" id="descricao-transferencia" type="text" name="descricao"><br>
             </section>
             <section class="modal-botoes mesclar-2">
-                <input class="modal-salvar" type="submit" value="Salvar">
+                <input class="modal-salvar" name="salvar_transferencias" type="submit" value="Salvar">
                 <button type="button" class="modal-fechar-transferencias">Cancelar</button>
             </section>
         </form>
@@ -422,11 +425,10 @@
     </div>
 
     <!-- Modal Liquidação -->
-    <dialog class="modal-liquidacao" id="modal-liquidacao">
+    <dialog class="modal-liquidacoes" id="modal-liquidacoes">
         <h1 class="modal-titulo">Liquidar</h1>
         
-        <form class="modal-form-liquidacao" action="/fluxo_de_caixa/" method="POST">
-            {% csrf_token %}
+        <form class="modal-form-liquidacoes" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
     
             <!-- Inclusão da tabela de contas bancárias -->
             <section class="mesclar-3">

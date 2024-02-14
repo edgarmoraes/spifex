@@ -1,8 +1,10 @@
 import json
+from decimal import Decimal
 from datetime import datetime
 from django.db.models import Sum
 from django.http import JsonResponse
 from django.dispatch import receiver
+from realizado.models import Tabela_realizado
 from dateutil.relativedelta import relativedelta
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models.signals import post_save, post_delete
@@ -28,7 +30,10 @@ def exibir_fluxo_de_caixa(request):
     return render(request, 'fluxo_de_caixa.html', context)
 
 def processar_fluxo_de_caixa(request):
-    dados = extrair_dados_formulario(request)
+    if 'transferencias' in request.POST and request.POST['transferencias'] == 'transferencia':
+        return processar_transferencia(request)
+    else:
+        dados = extrair_dados_formulario(request)
     if dados['lancamento_id']:
         if dados['parcelas_total'] > 1:
             if dados['parcelas_total_originais'] > 1:
@@ -167,6 +172,51 @@ def criar_registro_temporario(objeto):
         natureza=objeto.natureza,
         data_criacao=objeto.data_criacao
     )
+
+def processar_transferencia(request):
+    data_transferencia = request.POST.get('data')
+    valor_transferencia = Decimal(request.POST.get('valor').replace(',', '.'))
+    banco_saida = request.POST.get('banco_saida')
+    banco_entrada = request.POST.get('banco_entrada')
+    descricao = request.POST.get('descricao')
+    
+    data_liquidacao = datetime.strptime(data_transferencia, '%Y-%m-%d')
+
+    # Cria o lançamento de saída
+    lancamento_saida = Tabela_realizado(
+        vencimento=data_liquidacao,
+        descricao=descricao,
+        observacao='Transferência',
+        valor=valor_transferencia,
+        conta_contabil='Transferência Saída',
+        parcela_atual=1,
+        parcelas_total=1,
+        tags='Transferência',
+        natureza='Débito',
+        original_data_criacao=datetime.now(),
+        data_liquidacao=data_liquidacao,
+        banco_liquidacao=banco_saida
+    )
+    lancamento_saida.save()
+
+    # Cria o lançamento de entrada
+    lancamento_entrada = Tabela_realizado(
+        vencimento=data_liquidacao,
+        descricao=descricao,
+        observacao='Transferência',
+        valor=valor_transferencia,
+        conta_contabil='Transferência Entrada',
+        parcela_atual=1,
+        parcelas_total=1,
+        tags='Transferência',
+        natureza='Crédito',
+        original_data_criacao=datetime.now(),
+        data_liquidacao=data_liquidacao,
+        banco_liquidacao=banco_entrada
+    )
+    lancamento_entrada.save()
+
+    return redirect(request.path)
 
 
 # SIGNAL HANDLERS ############################################################################
