@@ -1,6 +1,7 @@
 {% load static %}
 {% load currency_filters %}
 {% load number_filters %}
+{% load add_decimal %}
 
 <html lang="pt-br">
 <head>
@@ -146,7 +147,7 @@
                             <td class="banco-row" name="banco">{{ banco.banco }}</td>
                             <td class="ag-row" name="agencia">{{ banco.agencia }}</td>
                             <td class="conta-row" name="conta">{{ banco.conta }}</td>
-                            <td class="saldo-banco-row" name="saldo_inicial">{{ banco.saldo_inicial|add:banco.saldo_atual|format_number }}</td>
+                            <td class="saldo-banco-row" name="saldo_inicial">{{ banco.saldo_inicial|add_decimal:banco.saldo_atual|format_number }}</td>
                         </tr>
                         {% endfor %}
                         <tr class="totais-row" scope="row">
@@ -348,7 +349,7 @@
             </thead>
             <tbody id="tabela-lancamentos">
                 {% for fluxo_de_caixa in Tabela_fluxo_list %}
-                <tr class="row-lancamentos" id="row-lancamentos" data-conta-contabil="{{ fluxo_de_caixa.conta_contabil }}" parcela-atual="{{ fluxo_de_caixa.parcela_atual }}" parcelas-total="{{ fluxo_de_caixa.parcelas_total }}" scope="row">
+                <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ fluxo_de_caixa.id }}" data-conta-contabil="{{ fluxo_de_caixa.conta_contabil }}" parcela-atual="{{ fluxo_de_caixa.parcela_atual }}" parcelas-total="{{ fluxo_de_caixa.parcelas_total }}" scope="row">
                     <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado" type="checkbox" data-id="{{ fluxo_de_caixa.id }}"><span class="checkmark"></span></label></td>
                     <td class="vencimento-row">{{ fluxo_de_caixa.vencimento|date:"d/m/Y" }}</td>
                     <td class="descricao-row">{{ fluxo_de_caixa.descricao }}</td>
@@ -366,7 +367,7 @@
                         <td class="debito-row"></td>
                         <td class="credito-row">{{ fluxo_de_caixa.valor|format_number }}</td>
                     {% endif %}
-                    <td class="saldo-row" id = "saldo-row">{{ fluxo_de_caixa.saldo|format_number }}</td>
+                    <td class="saldo-row" id="saldo-row">{{ fluxo_de_caixa.saldo|format_number }}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -456,7 +457,7 @@
                                     <td class=""></td>
                                     <td class=""></td>
                                     <td class="total-row">Total</td>
-                                    <td class="saldo-total-banco-row2" name="saldo-total-banco-row2">{{ saldo_total_bancos|currency_br }}</td>
+                                    <td class="saldo-total-banco-liquidacao-row" name="saldo-total-banco-liquidacao-row">{{ saldo_total_bancos|currency_br }}</td>
                                 </tr>
                             </tbody>
                         </table>

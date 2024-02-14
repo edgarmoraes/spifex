@@ -878,30 +878,6 @@ document.querySelectorAll('.checkbox-personalizado').forEach(checkbox => {
 // Chamar a função calcularTotal inicialmente
 calcularTotal();
 
-
-// Cálculo de Saldo Inicial
-function calcularSaldoAcumulado() {
-  var trs = document.querySelectorAll("#tabela-lancamentos tr");
-  var saldoAcumulado = saldoTotalFiltrado; // Usa o saldo total filtrado dos bancos
-
-  trs.forEach(tr => {
-      if (tr.style.display !== 'none') {
-          var debito = tr.querySelector(".debito-row").textContent || '0';
-          var credito = tr.querySelector(".credito-row").textContent || '0';
-          debito = parseFloat(debito.replace(/\./g, '').replace(',', '.')) || 0;
-          credito = parseFloat(credito.replace(/\./g, '').replace(',', '.')) || 0;
-          saldoAcumulado += credito - debito;
-          tr.querySelector('.saldo-row').textContent = saldoAcumulado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      }
-  });
-}
-
-// Garanta que a função calcularSaldoAcumulado é chamada ao carregar a página
-document.addEventListener('DOMContentLoaded', () => {
-  filtrarBancos(); // Isso também chamará calcularSaldoAcumulado
-});
-
-
 // Filtros
 function filtrarTabela() {
   var selectMeses = document.getElementById("meses");
@@ -928,13 +904,15 @@ function filtrarTabela() {
       var contaContabil = tr[i].getAttribute('data-conta-contabil').toUpperCase();
       var tdVencimento = tr[i].getElementsByClassName("vencimento-row")[0];
       var dataVencimento = new Date(tdVencimento.textContent.split('/').reverse().join('-'));
+      var tdTags = tr[i].getElementsByClassName("d-block")[0];
 
       var txtDescricao = tdDescricao ? tdDescricao.textContent || tdDescricao.innerText : "";
       var txtObservacao = tdObservacao ? tdObservacao.textContent.split("Tags:")[0].trim() : "";
       var naturezaLancamento = tr[i].querySelector(".credito-row").textContent.trim() ? 'credito' : 'debito';
+      var txtTags = tdTags ? tdTags.textContent.toUpperCase() : "";
 
       var descricaoObservacaoMatch = txtDescricao.toUpperCase().indexOf(filtroDescricao) > -1 || txtObservacao.toUpperCase().indexOf(filtroDescricao) > -1;
-      var tagMatch = filtroTags === "" || tr[i].textContent.toUpperCase().indexOf(filtroTags) > -1;
+      var tagMatch = filtroTags === "" || txtTags.indexOf(filtroTags) > -1;
       var contaContabilMatch = filtroContaContabil === "" || contaContabil.toUpperCase().indexOf(filtroContaContabil) > -1;
       var mesMatch = (!inicioMesDate && !fimMesDate) || (dataVencimento >= inicioMesDate && dataVencimento <= fimMesDate);
       var naturezaMatch = filtroNatureza === "" || filtroNatureza === naturezaLancamento;
@@ -954,54 +932,135 @@ document.getElementById('natureza').addEventListener('change', filtrarTabela);
 document.getElementById('data-inicio').addEventListener('change', filtrarTabela);
 document.getElementById('data-fim').addEventListener('change', filtrarTabela);
 
-// Calcula o saldo acumulado quando a página carregar
-document.addEventListener('DOMContentLoaded', calcularSaldoAcumulado);
 
-function filtrarTabelaBancos() {
-  var filtroBanco = document.getElementById("bancos").value.toUpperCase();
-  var tabela = document.querySelector(".tabela-bancos");
-  var tr = tabela.getElementsByClassName("row-bancos");
+// Calcula o saldo total dos bancos, sem filtragem
+document.addEventListener("DOMContentLoaded", function() {
+  atualizarSaldoTotalBancos();
+});
 
-  for (var i = 0; i < tr.length; i++) {
-      var tdBanco = tr[i].getElementsByClassName("banco-row")[0];
-      if (tdBanco) {
-          var nomeBanco = tdBanco.textContent || tdBanco.innerText;
-          if (nomeBanco.toUpperCase().indexOf(filtroBanco) > -1 || filtroBanco === "") {
-              tr[i].style.display = "";
-          } else {
-              tr[i].style.display = "none";
-          }
+function atualizarSaldoTotalBancos() {
+  var linhasBanco = document.querySelectorAll(".row-bancos");
+  var saldoTotal = 0;
+
+  linhasBanco.forEach(function(linha) {
+    var celulaSaldo = linha.querySelector(".saldo-banco-row");
+    if (celulaSaldo) {
+      var saldo = parseSaldo(celulaSaldo.textContent);
+      saldoTotal += saldo;
+    }
+  });
+
+  // Formata o saldo total como moeda
+  var saldoFormatado = formatarComoMoeda(saldoTotal);
+
+  // Atualiza o saldo total na interface do usuário
+  var saldoTotalBancoRow = document.querySelector(".saldo-total-banco-row");
+  if (saldoTotalBancoRow) {
+    saldoTotalBancoRow.textContent = saldoFormatado;
+  }
+
+  // Atualiza o saldo total no campo de liquidação
+  var saldoTotalBancoLiquidacaoRow = document.querySelector(".saldo-total-banco-liquidacao-row");
+  if (saldoTotalBancoLiquidacaoRow) {
+    saldoTotalBancoLiquidacaoRow.textContent = saldoFormatado;
+  }
+
+  // Atualizar os saldos do fluxo de caixa com o novo saldo total
+  atualizarSaldosFluxoCaixa(saldoTotal);
+}
+
+// Função para atualizar os saldos do fluxo de caixa
+function atualizarSaldosFluxoCaixa(saldoInicial) {
+  var linhasFluxoCaixa = document.querySelectorAll("#tabela-lancamentos .row-lancamentos");
+  var saldoAtual = saldoInicial;
+
+  linhasFluxoCaixa.forEach(function(linha) {
+    var debitoCelula = linha.querySelector(".debito-row");
+    var creditoCelula = linha.querySelector(".credito-row");
+    var debito = debitoCelula && debitoCelula.textContent ? parseSaldo(debitoCelula.textContent) : 0;
+    var credito = creditoCelula && creditoCelula.textContent ? parseSaldo(creditoCelula.textContent) : 0;
+    
+    saldoAtual += credito - debito;
+    
+    var saldoCelula = linha.querySelector(".saldo-row");
+    if (saldoCelula) {
+      saldoCelula.textContent = formatarComoMoeda(saldoAtual);
+    }
+  });
+}
+
+// Calcular o saldo total dos bancos que estão sendo filtrados
+function filtrarBancos() {
+  var selectBancos = document.getElementById("bancos");
+  var bancoSelecionado = selectBancos.value; // O valor do banco selecionado
+  
+  var tabelaBancos = document.getElementById("box-grid-bancos").getElementsByTagName("tbody")[0];
+  var linhas = tabelaBancos.getElementsByTagName("tr");
+  
+  var saldoTotal = 0; // Inicializa o saldo total como 0
+  
+  for (var i = 0; i < linhas.length; i++) {
+    if (linhas[i].classList.contains("row-bancos")) {
+      var bancoLinha = linhas[i].getElementsByTagName("td")[0].textContent;
+      
+      if (bancoSelecionado === "Todos" || bancoLinha === bancoSelecionado) {
+        linhas[i].style.display = ""; // Mostra a linha se corresponder ao filtro
+        
+        // Adiciona o saldo do banco ao saldo total
+        var saldoBanco = linhas[i].getElementsByClassName("saldo-banco-row")[0].textContent;
+        saldoBanco = parseFloat(saldoBanco.replace('.', '').replace(',', '.'));
+        saldoTotal += saldoBanco;
+      } else {
+        linhas[i].style.display = "none"; // Esconde a linha se não corresponder ao filtro
       }
+      atualizarSaldosFluxoCaixa(saldoTotal);
+    }
+  }
+  
+  // Atualiza o saldo total na linha de totais
+  var saldoTotalBancoRow = document.querySelector(".saldo-total-banco-row");
+  if (saldoTotalBancoRow) {
+    saldoTotalBancoRow.textContent = saldoTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   }
 }
 
-// Adiciona o ouvinte de evento para o filtro de bancos
-function filtrarBancos() {
-  const filtroBanco = document.getElementById('bancos').value;
-  const rows = document.querySelectorAll('.row-bancos');
-  let saldoTotal = 0;
+document.getElementById('bancos').addEventListener('change', filtrarBancos);
 
-  rows.forEach(row => {
-      const banco = row.querySelector('.banco-row').textContent;
-      const saldoTexto = row.querySelector('.saldo-banco-row').textContent;
-      const saldo = parseFloat(saldoTexto.replace(/\./g, '').replace(',', '.'));
 
-      if (!filtroBanco || banco.includes(filtroBanco)) {
-          row.style.display = '';
-          saldoTotal += saldo;
-      } else {
-          row.style.display = 'none';
+
+function calcularSaldoAcumulado() {
+  // Obtem o saldo inicial total dos bancos.
+  var saldoTotalBancoRow = document.querySelector(".saldo-total-banco-row");
+  var saldoInicial = saldoTotalBancoRow ? parseSaldo(saldoTotalBancoRow.textContent) : 0;
+  var saldoAtual = saldoInicial;
+  
+  // Seleciona todas as linhas visíveis do fluxo de caixa.
+  var linhasFluxoCaixa = document.querySelectorAll("#tabela-lancamentos .row-lancamentos");
+  
+  linhasFluxoCaixa.forEach(function(linha) {
+    if (linha.style.display !== "none") {
+      var debitoCelula = linha.querySelector(".debito-row");
+      var creditoCelula = linha.querySelector(".credito-row");
+      var debito = debitoCelula && debitoCelula.textContent ? parseSaldo(debitoCelula.textContent) : 0;
+      var credito = creditoCelula && creditoCelula.textContent ? parseSaldo(creditoCelula.textContent) : 0;
+      
+      // Calcula o saldo atual baseado no saldo anterior, créditos e débitos.
+      saldoAtual += credito - debito;
+      
+      // Atualiza a célula de saldo da linha atual.
+      var saldoCelula = linha.querySelector(".saldo-row");
+      if (saldoCelula) {
+        saldoCelula.textContent = formatarComoMoeda(saldoAtual);
       }
+    }
   });
-
-  const saldoTotalElement = document.querySelector('.saldo-total-banco-row');
-  saldoTotalElement.textContent = saldoTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-  // Atualiza o saldoTotalFiltrado
-  saldoTotalFiltrado = saldoTotal;
-
-  // Recalcule o saldo acumulado
-  calcularSaldoAcumulado();
 }
 
-document.getElementById('bancos').addEventListener('change', filtrarBancos);
+function parseSaldo(valorSaldo) {
+  var numero = valorSaldo.replace('R$', '').trim().replace(/\./g, '').replace(',', '.');
+  return parseFloat(numero) || 0;
+}
+
+function formatarComoMoeda(valor) {
+  return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}

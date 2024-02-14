@@ -1,56 +1,36 @@
-from django.shortcuts import render
-from django.db.models import Sum, F
 import json
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.utils import timezone
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
-from django.db.models.signals import post_save, post_delete
-from django.dispatch import receiver
-from django.core.exceptions import ObjectDoesNotExist
 from decimal import Decimal
+from datetime import datetime
+from django.db.models import Sum
+from django.utils import timezone
+from django.shortcuts import render
+from django.dispatch import receiver
+from django.http import JsonResponse
+from dateutil.relativedelta import relativedelta
+from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ObjectDoesNotExist
 from fluxo_de_caixa.models import Tabela_fluxo, Bancos
 from .models import Tabela_realizado, Totais_mes_realizado
+from django.db.models.signals import post_save, post_delete
 
 def realizado(request):
     if request.method == "GET":
         return exibir_realizado(request)
 
 def exibir_realizado(request):
-    """ Exibe a lista de realizados junto com os totais de cada mês e bancos """
+    """ Exibe a lista de fluxos de caixa junto com os totais de cada mês """
     bancos_ativos = Bancos.objects.filter(status=True)
-    
-    # Calcula o saldo total dos bancos, somando saldo_inicial e saldo_atual
-    saldo_total_bancos = bancos_ativos.aggregate(
-        total=Sum(F('saldo_inicial') + F('saldo_atual'))
-    )['total'] or 0
-    
+
     Tabela_realizado_list = Tabela_realizado.objects.all().order_by('data_liquidacao', '-valor', 'descricao')
-    
-    # Aqui você passa o novo saldo total calculado para a função
-    calcular_saldo_acumulado(Tabela_realizado_list, saldo_total_bancos)
-    
+
     totais_mes_realizado = Totais_mes_realizado.objects.all()
     context = {
         'Tabela_realizado_list': Tabela_realizado_list,
         'totais_mes_realizado': totais_mes_realizado,
         'bancos': bancos_ativos,
-        'saldo_total_bancos': saldo_total_bancos
     }
     return render(request, 'realizado.html', context)
 
-def calcular_saldo_acumulado(Tabela_realizado_list, saldo_inicial):
-    """ Calcula o saldo acumulado para cada entrada em uma lista de fluxos de caixa.
-    :param Tabela_realizado_list: QuerySet de objetos Tabela_realizado.
-    :return: None. Modifica cada objeto Tabela_realizado adicionando um atributo 'saldo' """
-    saldo_total = saldo_inicial
-    for realizado in Tabela_realizado_list:
-        if realizado.natureza == 'Débito':
-            saldo_total -= realizado.valor
-        else:
-            saldo_total += realizado.valor
-        realizado.saldo = saldo_total
 
 def exibir_bancos(request):
     bancos = Bancos.objects.all()

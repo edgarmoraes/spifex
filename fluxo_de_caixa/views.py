@@ -1,12 +1,12 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.dispatch import receiver
-from django.http import HttpResponse, JsonResponse
-from datetime import datetime, timedelta
-from django.views.decorators.csrf import csrf_exempt
 import json
-from django.db.models.signals import post_save, post_delete
+from datetime import datetime
+from django.db.models import Sum
+from django.http import JsonResponse
+from django.dispatch import receiver
 from dateutil.relativedelta import relativedelta
-from django.db.models import Sum, F
+from django.views.decorators.csrf import csrf_exempt
+from django.db.models.signals import post_save, post_delete
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Tabela_fluxo, TabelaTemporaria, Totais_mes_fluxo, Bancos
 
 def fluxo_de_caixa(request):
@@ -16,43 +16,19 @@ def fluxo_de_caixa(request):
         return processar_fluxo_de_caixa(request)
 
 def exibir_fluxo_de_caixa(request):
-    """ Exibe a lista de fluxos de caixa junto com os totais de cada mês e bancos """
+    """ Exibe a lista de fluxos de caixa junto com os totais de cada mês """
     bancos_ativos = Bancos.objects.filter(status=True)
-    
-    # Calcula o saldo total como a soma dos saldos iniciais e atuais
-    saldo_total_bancos = bancos_ativos.aggregate(
-        total=Sum(F('saldo_inicial') + F('saldo_atual'))
-    )['total'] or 0
-    
     Tabela_fluxo_list = Tabela_fluxo.objects.all().order_by('vencimento', '-valor', 'descricao')
-    
-    # Aqui você passa o saldo total calculado, que já inclui os saldos atuais
-    calcular_saldo_acumulado(Tabela_fluxo_list, saldo_total_bancos)
-    
     totais_mes_fluxo = Totais_mes_fluxo.objects.all()
     context = {
         'Tabela_fluxo_list': Tabela_fluxo_list,
         'totais_mes_fluxo': totais_mes_fluxo,
         'bancos': bancos_ativos,
-        'saldo_total_bancos': saldo_total_bancos
     }
     return render(request, 'fluxo_de_caixa.html', context)
 
-def calcular_saldo_acumulado(tabela_fluxo_list, saldo_inicial):
-    """ Calcula o saldo acumulado para cada entrada em uma lista de fluxos de caixa.
-    :param tabela_fluxo_list: QuerySet de objetos Tabela_fluxo.
-    :return: None. Modifica cada objeto Tabela_fluxo adicionando um atributo 'saldo' """
-    saldo_total = saldo_inicial
-    for fluxo_de_caixa in tabela_fluxo_list:
-        if fluxo_de_caixa.natureza == 'Débito':
-            saldo_total -= fluxo_de_caixa.valor
-        else:
-            saldo_total += fluxo_de_caixa.valor
-        fluxo_de_caixa.saldo = saldo_total
-
 def processar_fluxo_de_caixa(request):
     dados = extrair_dados_formulario(request)
-
     if dados['lancamento_id']:
         if dados['parcelas_total'] > 1:
             if dados['parcelas_total_originais'] > 1:
@@ -157,10 +133,6 @@ def deletar_entradas(request):
     if request.method == 'POST':
         ids_para_apagar = extrair_ids_para_apagar(request)
         processar_ids(ids_para_apagar)
-
-        Tabela_fluxo_list = Tabela_fluxo.objects.all()
-        saldo_total_bancos = Bancos.objects.filter(status=True).aggregate(Sum('saldo_inicial'))['saldo_inicial__sum'] or 0
-        calcular_saldo_acumulado(Tabela_fluxo_list, saldo_total_bancos)
 
         return JsonResponse({'status': 'success'})
 

@@ -1132,13 +1132,15 @@ td.saldo-total-banco-row {
   .conta-row,
   .saldo-banco-row,
   .total-row,
-  .saldo-total-banco-row {
+  .saldo-total-banco-row,
+  .saldo-total-banco-liquidacao-row {
     text-align: center;
     white-space: normal;
   }
 
   .saldo-banco-row,
-  .saldo-total-banco-row {
+  .saldo-total-banco-row,
+  .saldo-total-banco-liquidacao-row {
     text-align: center;
   }
 

@@ -1,6 +1,7 @@
 {% load static %}
 {% load currency_filters %}
 {% load number_filters %}
+{% load add_decimal %}
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -37,12 +38,12 @@
                     <!-- ############### Filtro Contas Contábeis ############### -->
                     <section class="flex">
                         <label for="contas-contabeis">Contas Contábeis</label>
-                        <select id="contas-contabeis">
+                        <select id="contas-contabeis" name = "contas_contabeis">
                             <option value="" disabled selected hidden>Selecione</option>
-                            <option value="opcao1">Receita 1</option>
-                            <option value="opcao2">Receita 2</option>
-                            <option value="opcao3">Despesa 1</option>
-                            <option value="opcao3">Despesa 2</option>
+                            <option value="Receita 1">Receita 1</option>
+                            <option value="Receita 2">Receita 2</option>
+                            <option value="Receita 3">Despesa 1</option>
+                            <option value="Receita 4">Despesa 2</option>
                         </select>
                     </section>
                     <!-- ############### Filtro Meses ############### -->
@@ -68,25 +69,25 @@
                     <!-- ############### Filtro Data Início ############### -->
                     <section class="flex">
                         <label for="data-inicio">De</label>
-                        <input class="data" type="date" id="data-inicio">
+                        <input class="data" type="date" id="data-inicio" name = "data_inicio">
                     </section>
                     <!-- ############### Filtro Data Fim ############### -->
                     <section class="flex">
                         <label for="data-fim">Até</label>
-                        <input class="data" type="date" id="data-fim">
+                        <input class="data" type="date" id="data-fim" name = "data_fim">
                     </section>
                     <!-- ############### Filtro Natureza ############### -->
                     <section class="flex">
                         <label for="natureza">Natureza</label>
-                        <select id="natureza">
+                        <select id="natureza" name = "natureza">
                             <option value="" disabled selected hidden>Selecione</option>
-                            <option value="opcao1">Crédito</option>
-                            <option value="opcao2">Débito</option>
+                            <option value="credito">Crédito</option>
+                            <option value="debito">Débito</option>
                         </select>
                     </section>
                     <!-- ############### Filtro Caixa de Pesquisa ############### -->
                     <div class="pesquisa mesclar-2">
-                        <input type="text" class="caixa-pesquisa" placeholder="Pesquisar">
+                        <input type="text" class="caixa-pesquisa" id="caixa-pesquisa" name ="caixa_pesquisa" placeholder="Pesquisar">
                         <button class="botao-pesquisa">
                             <svg class="icon-pesquisa" aria-hidden="true" viewBox="0 0 24 24">
                                 <g>
@@ -120,7 +121,7 @@
                             <td class="banco-row" name="banco">{{ banco.banco }}</td>
                             <td class="ag-row" name="agencia">{{ banco.agencia }}</td>
                             <td class="conta-row" name="conta">{{ banco.conta }}</td>
-                            <td class="saldo-banco-row" name="saldo_inicial">{{ banco.saldo_inicial|add:banco.saldo_atual|format_number }}</td>
+                            <td class="saldo-banco-row" name="saldo_inicial">{{ banco.saldo_inicial|add_decimal:banco.saldo_atual|format_number }}</td>
                         </tr>
                         {% endfor %}
                         <tr class="totais-row" scope="row">
@@ -152,7 +153,7 @@
             </thead>
             <tbody id="tabela-lancamentos">
                 {% for realizado in Tabela_realizado_list %}
-                <tr class="row-lancamentos" id="row-lancamentos" data-conta-contabil="{{ realizado.conta_contabil }}" parcela-atual="{{ realizado.parcela_atual }}" parcelas-total="{{ realizado.parcelas_total }}" scope="row">
+                <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ realizado.id }}" data-banco-liquidacao="{{ realizado.banco_liquidacao }}" data-conta-contabil="{{ realizado.conta_contabil }}" parcela-atual="{{ realizado.parcela_atual }}" parcelas-total="{{ realizado.parcelas_total }}" scope="row">
                     <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado" type="checkbox" data-id="{{ realizado.id }}"><span class="checkmark"></span></label></td>
                     <td class="vencimento-row">{{ realizado.data_liquidacao|date:"d/m/Y" }}</td>
                     <td class="descricao-row">{{ realizado.descricao }}</td>
