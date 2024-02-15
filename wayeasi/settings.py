@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'fluxo_de_caixa',
     'realizado',
+    'configuracoes',
 ]
 
 MIDDLEWARE = [
@@ -122,6 +123,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'fluxo_de_caixa', 'static'),
     os.path.join(BASE_DIR, 'realizado', 'static'),
+    os.path.join(BASE_DIR, 'configuracoes', 'static'),
 ]
 
 # Default primary key field type

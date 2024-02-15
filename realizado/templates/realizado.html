@@ -3,7 +3,6 @@
 {% load number_filters %}
 {% load add_decimal %}
 
-<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -23,7 +22,7 @@
                 <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">REALIZADO</a></li>
                 <li class="nav-relatorios"><a href="#">RELATÓRIOS</a></li>
                 <li><div class="line"></div></li>
-                <li class="nav-configuracoes"><a href="configuracoes.html">CONFIGURAÇÕES</a></li>
+                <li class="nav-configuracoes"><a href="{% url 'configuracoes:configuracoes' %}">CONFIGURAÇÕES</a></li>
                 <li class="nav-meu-perfil"><a href="meu-perfil.html">MEU PERFIL</a></li>
             </ul>
         </nav>
