@@ -1,4 +1,7 @@
 {% load static %}
+{% load currency_filters %}
+{% load number_filters %}
+{% load add_decimal %}
 
 <html lang="pt-br">
 <head>
@@ -38,9 +41,11 @@
             <table class="tabela-bancos">
                 <thead class="cabecalho-bancos">
                     <tr class="linha-cabecalho-bancos">
-                        <th class="contas-bancos-col" scope="col">Contas</th>
-                        <th class="ag-bancos-col" scope="col">Agência</th>
-                        <th class="conta-bancos-col" scope="col">Conta</th>
+                        <th class="cadastro-contas-bancos-col" scope="col">Contas</th>
+                        <th class="cadastro-ag-bancos-col" scope="col">Agência</th>
+                        <th class="cadastro-conta-bancos-col" scope="col">Conta</th>
+                        <th class="cadastro-JPsaldo-bancos-col" scope="col">Saldo Inicial</th>
+                        <th class="cadastro-status-bancos-col" scope="col">Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,6 +54,13 @@
                         <td class="banco-row" name="banco">{{ banco.banco }}</td>
                         <td class="ag-row" name="agencia">{{ banco.agencia }}</td>
                         <td class="conta-row" name="conta">{{ banco.conta }}</td>
+                        <td class="saldo-banco-row" name="saldo_inicial">{{ banco.saldo_inicial|format_number }}</td>
+                        <td class="status-row" name="status_banco">
+                            {% if banco.status %}
+                            Ativo
+                            {% else %}
+                            Inativo
+                            {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -10,10 +10,10 @@ def configuracoes(request):
 
 def bancos_e_contas(request):
     if request.method =="GET":
-        bancos_ativos = Bancos.objects.filter(status=True)
+        lista_bancos = Bancos.objects.all().order_by('id')
 
         context = {
-            'bancos': bancos_ativos,
+            'bancos': lista_bancos,
         }
         return render(request, 'bancos_e_contas.html', context)
     

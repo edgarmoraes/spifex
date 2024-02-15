@@ -26,6 +26,7 @@ function fecharModal(closeBtn, modal, formSelector) {
 function fechar(modal, formSelector) {
   modal.close();
   document.body.style.overflow = '';
+  limparCamposModal()
   document.querySelector(formSelector).reset();
 }
 
@@ -35,6 +36,15 @@ const openModalBancos = document.querySelector('.adicionar-bancos');
 const closeModalBancos = document.querySelector('.modal-fechar-bancos');
 
 const modalBancos = document.querySelector('.modal-bancos');
+
+function limparCamposModal() {
+  const inputs = document.querySelectorAll(`.modal-bancos input`);
+  inputs.forEach(input => {
+      if (input.type !== 'submit' && input.name !== 'csrfmiddlewaretoken') {
+          input.value = '';
+      }
+  });
+}
 
 // Event Listeners
 abrirModal(openModalBancos, modalBancos, ".modal-form-bancos");
@@ -79,12 +89,16 @@ document.addEventListener('DOMContentLoaded', function () {
           const conta = linha.querySelector('.conta-row').textContent;
           const saldoInicial = linha.getAttribute('data-saldo-inicial').replace(',', '.');
           const idBanco = linha.getAttribute('data-id-banco');
+          const statusBanco = linha.querySelector('.status-row').textContent.trim(); // Use trim() para remover espaços em branco
 
           document.getElementById('descricao-bancos').value = banco;
           document.getElementById('agencia-banco').value = agencia;
           document.getElementById('conta-banco').value = conta;
           document.getElementById('saldo-inicial').value = saldoInicial;
           document.querySelector('[name="id_banco"]').value = idBanco;
+          // Corrige a seleção de elemento para o select de status e ajusta o valor baseado no texto
+          const selectStatusBanco = document.querySelector('#status-banco'); // Corrige a seleção para o ID correto
+          selectStatusBanco.value = statusBanco.toLowerCase() === 'ativo' ? 'ativo' : 'inativo'; // Ajusta o valor do select
       });
   });
 

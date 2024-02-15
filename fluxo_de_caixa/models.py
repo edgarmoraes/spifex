@@ -54,17 +54,10 @@ class Bancos(models.Model):
     status = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
-        # Verifica se a instância já existe (edição) ou é nova
-        if self.pk:
-            # Instância existente: Carrega o objeto atual do banco para comparação
-            obj_atual = Bancos.objects.get(pk=self.pk)
-            if self.saldo_inicial != obj_atual.saldo_inicial:
-                # Se o saldo_inicial foi alterado, atualiza apenas o saldo_consolidado
-                # saldo_atual não é modificado, mas recalcula saldo_consolidado
-                self.saldo_consolidado = Decimal(self.saldo_inicial) + Decimal(self.saldo_atual) - Decimal(obj_atual.saldo_inicial)
+        # No momento da criação do objeto, isso garantirá que saldo_consolidado = saldo_inicial
+        if not self.pk:  # Checa se é uma nova instância
+            self.saldo_consolidado = self.saldo_inicial
         else:
-            # Nova instância: Inicializa saldo_atual e saldo_consolidado com saldo_inicial
-            self.saldo_atual = Decimal(self.saldo_inicial)
-            self.saldo_consolidado = Decimal(self.saldo_inicial)
-
-        super(Bancos, self).save(*args, **kwargs)
+            # Para instâncias existentes, atualiza saldo_consolidado com base no saldo_atual
+            self.saldo_consolidado = self.saldo_inicial + self.saldo_atual
+        super().save(*args, **kwargs)

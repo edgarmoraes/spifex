@@ -163,45 +163,65 @@ input:focus {
 
 /* Botões dos Modais */
 .modal-botoes {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: center;
-    margin: 5px 5px;
-    gap: 1.5rem;
-  }
-  
-  .modal-fechar-bancos,
-  .modal-salvar-bancos {
-    border: none;
-    height: 45px;
-    color: var(--branco);
-    font-weight: 700;
-    padding: 0.7rem 1rem;
-    border-radius: 5px;
-    transition: var(--transition-effect1) var(--transition-duration2);
-  }
-  
-  .modal-fechar-bancos:focus,
-  .modal-salvar-bancos:focus {
-    outline: none;
-  }
-  
-  .modal-fechar-bancos:hover {
-    background-color: var(--color8);
-    box-shadow: var(--box-shadow2);
-  }
-  
-  .modal-fechar-bancos {
-    background-color: var(--color6);
-  }
-  
-  .modal-salvar-bancos {
-    background-color: var(--color5);
-  }
-  
-  .modal-salvar-bancos:hover {
-    background-color: var(--color3);
-    box-shadow: var(--box-shadow2);
-  }
-  
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 5px 5px;
+  gap: 1.5rem;
+}
+
+.modal-fechar-bancos,
+.modal-salvar-bancos {
+  border: none;
+  height: 45px;
+  color: var(--branco);
+  font-weight: 700;
+  padding: 0.7rem 1rem;
+  border-radius: 5px;
+  transition: var(--transition-effect1) var(--transition-duration2);
+}
+
+.modal-fechar-bancos:focus,
+.modal-salvar-bancos:focus {
+  outline: none;
+}
+
+.modal-fechar-bancos:hover {
+  background-color: var(--color8);
+  box-shadow: var(--box-shadow2);
+}
+
+.modal-fechar-bancos {
+  background-color: var(--color6);
+}
+
+.modal-salvar-bancos {
+  background-color: var(--color5);
+}
+
+.modal-salvar-bancos:hover {
+  background-color: var(--color3);
+  box-shadow: var(--box-shadow2);
+}
+
+/* Tabela Bancos */
+.cadastro-contas-bancos-col {
+  width: 20%;
+}
+
+.cadastro-ag-bancos-col {
+  width: 20%;
+}
+
+.cadastro-conta-bancos-col {
+  width: 20%;
+}
+
+.cadastro-saldo-bancos-col {
+  width: 20%;
+}
+
+.cadastro-status-bancos-col {
+  width: 20%;
+}
