@@ -369,7 +369,7 @@ document.addEventListener('DOMContentLoaded', function () {
       
       
 // Modais
-function abrirModal(openBtn, modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId) {
+function abrirModal(openBtn, modal) {
   openBtn.addEventListener('click', () => {
     modalAberto = modal;
     modal.showModal();

@@ -26,7 +26,7 @@
     </header>
     <h1>Configurações</h1>
     <section class="accordion-section">
-        <a class="accordion-title" href="bancos-e-contas.html">Bancos e Contas</a>
+        <a class="accordion-title" href="{% url 'configuracoes:bancos_e_contas' %}">Bancos e Contas</a>
     </section>
     <section class="accordion-section">
         <a class="accordion-title" href="#">Usuários e Permissões</a>
@@ -61,6 +61,6 @@
         <p>&copy; WayEasi</p>
     </footer>
 
-    <script src="{% static 'scripts/acordeao.js' %}"></script>
+    <script src="{% static 'scripts/scripts-configuracoes.js' %}"></script>
 </body>
 </html>
