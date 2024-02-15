@@ -365,15 +365,7 @@ document.addEventListener('DOMContentLoaded', function () {
             botoesAcoes.classList.remove('mostrar');
             tabelaLancamentos.style.marginBottom = '0';
         });
-      });
-      
-      function liquidar() {
-        alert('Ação de liquidar');
-      }
-      
-      function apagar() {
-        alert('Ação de apagar');
-      }
+});
       
       
 // Modais

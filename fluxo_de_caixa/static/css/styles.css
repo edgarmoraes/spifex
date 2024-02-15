@@ -675,8 +675,9 @@ td.total-row {
   font-weight: 900;
 }
 
-td.saldo-total-banco-row {
-  text-align: center;
+td.saldo-total-banco-row,
+td.saldo-total-banco-liquidacao-row {
+  text-align: center; 
   font-weight: 900;
 }
 
