@@ -83,22 +83,16 @@ def meses_filtro_realizado(request):
 def processar_retorno(request):
     if request.method == 'POST':
         dados = json.loads(request.body)
-        ids_para_excluir = []
-        correlacoes_para_excluir = set()
+        ids_para_excluir = [item['id'] for item in dados]  # IDs selecionados para retorno
+        uuids_e_valores = {}  # Dicionário para acumular valores por UUID
 
-        # Itera sobre os dados recebidos para identificar quais itens são transferências
         for item in dados:
             try:
-                # Busca o registro original em Tabela_realizado usando o ID fornecido
                 registro_original = Tabela_realizado.objects.get(id=item['id'])
+                uuid_correlacao = registro_original.uuid_correlacao
 
-                # Se o registro faz parte de uma transferência (tem um UUID de correlação),
-                # adiciona o UUID à lista de correlações para exclusão e pula a criação em Tabela_fluxo
-                if registro_original.uuid_correlacao:
-                    correlacoes_para_excluir.add(registro_original.uuid_correlacao)
-                    ids_para_excluir.append(item['id'])  # Marca também para exclusão direta, caso necessário
-                else:
-                    # Para registros que não são transferências, cria um novo registro em Tabela_fluxo
+                if not uuid_correlacao:
+                    # Cria em Tabela_fluxo e prepara para apagar em Tabela_realizado
                     Tabela_fluxo.objects.create(
                         vencimento=registro_original.vencimento,
                         descricao=registro_original.descricao,
@@ -111,21 +105,39 @@ def processar_retorno(request):
                         natureza=registro_original.natureza,
                         data_criacao=registro_original.original_data_criacao
                     )
-                    # Adiciona o ID do registro original à lista de IDs para exclusão
-                    ids_para_excluir.append(item['id'])
+                else:
+                    # Acumula os valores por UUID para processamento posterior
+                    if uuid_correlacao in uuids_e_valores:
+                        uuids_e_valores[uuid_correlacao] += registro_original.valor
+                    else:
+                        uuids_e_valores[uuid_correlacao] = registro_original.valor
+
             except Tabela_realizado.DoesNotExist:
-                continue  # Se o registro não existe, ignora e continua para o próximo item
+                continue  # Se o registro não existir, ignora e continua
 
-        # Exclui todos os registros que fazem parte das transferências correlacionadas
-        for correlacao_id in correlacoes_para_excluir:
-            Tabela_realizado.objects.filter(uuid_correlacao=correlacao_id).delete()
+        # Processamento dos valores acumulados por UUID
+        for uuid_correlacao, valor_total in uuids_e_valores.items():
+            registros_fluxo = Tabela_fluxo.objects.filter(uuid_correlacao=uuid_correlacao)
+            if registros_fluxo.exists():
+                registro_fluxo = registros_fluxo.first()
+                registro_fluxo.valor += valor_total
+                registro_fluxo.save()
 
-        # Exclui os registros originais em Tabela_realizado que não fazem parte das transferências
-        Tabela_realizado.objects.filter(id__in=ids_para_excluir, uuid_correlacao__isnull=True).delete()
+                # Verifica se há mais lançamentos com o mesmo UUID além dos já selecionados para retorno
+                outros_registros = Tabela_realizado.objects.filter(uuid_correlacao=uuid_correlacao).exclude(id__in=ids_para_excluir)
+                if not outros_registros.exists():
+                    # Remove o UUID de Tabela_fluxo se não houver outros lançamentos
+                    registros_fluxo.update(uuid_correlacao=None)
+            else:
+                # Se não houver correspondência em Tabela_fluxo, apaga todos os lançamentos em Tabela_realizado com o mesmo UUID
+                ids_para_excluir.extend(Tabela_realizado.objects.filter(uuid_correlacao=uuid_correlacao).values_list('id', flat=True))
+
+        # Apaga os registros selecionados para retorno em Tabela_realizado
+        Tabela_realizado.objects.filter(id__in=ids_para_excluir).delete()
 
         return JsonResponse({'status': 'success'})
     else:
-        return JsonResponse({'status': 'invalid method'}, status=405)
+        return JsonResponse({'status': 'method not allowed'}, status=405)
 
 @receiver(post_delete, sender=Tabela_realizado)
 def atualizar_saldo_banco_apos_remocao(sender, instance, **kwargs):

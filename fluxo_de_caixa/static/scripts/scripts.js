@@ -116,73 +116,80 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
   // Função para atualizar os lançamentos selecionados
   function atualizarLancamentosSelecionados() {
-      const contêiner = document.getElementById('lancamentos-selecionados');
-      contêiner.innerHTML = ''; // Limpa o contêiner atual
+    const contêiner = document.getElementById('lancamentos-selecionados');
+    contêiner.innerHTML = ''; // Limpa o contêiner atual
 
-      const checkboxesMarcadas = document.querySelectorAll('.tabela-lancamentos .checkbox-personalizado:checked');
+    const checkboxesMarcadas = document.querySelectorAll('.tabela-lancamentos .checkbox-personalizado:checked');
 
-      checkboxesMarcadas.forEach(function(checkbox) {
-          const row = checkbox.closest('.row-lancamentos');
-          const id = checkbox.getAttribute('data-id');
-          const descricao = row.querySelector('.descricao-row').textContent;
-          const vencimento = row.querySelector('.vencimento-row').textContent;
-          let observacao = row.querySelector('.obs-row').textContent.trim();
-          // Exclui a parte que contém "Tags:" do texto da observação
-          observacao = observacao.split('Tags:')[0].trim();
-          const valor = row.querySelector('.debito-row').textContent || row.querySelector('.credito-row').textContent;
-          const natureza = row.querySelector('.debito-row').textContent ? "Débito" : "Crédito";
+    checkboxesMarcadas.forEach(function(checkbox) {
+      const row = checkbox.closest('.row-lancamentos');
+      const id = checkbox.getAttribute('data-id');
+      const descricao = row.querySelector('.descricao-row').textContent;
+      const vencimento = row.querySelector('.vencimento-row').textContent;
+      let observacao = row.querySelector('.obs-row').textContent.trim();
+      // Exclui a parte que contém "Tags:" do texto da observação
+      observacao = observacao.split('Tags:')[0].trim();
+      const valor = row.querySelector('.debito-row').textContent || row.querySelector('.credito-row').textContent;
+      const natureza = row.querySelector('.debito-row').textContent ? "Débito" : "Crédito";
 
-          // Cria os campos dinamicamente para cada lançamento selecionado
-          const div = document.createElement('div');
-          div.classList.add('lancamentos-selecionados');
-          div.innerHTML = `
-              <section class="modal-flex data-liquidacao">
-                  <input class="modal-data" id="data-liquidacao-${id}" type="date" name="data-liquidacao-${id}" value="${formatarDataParaInput(vencimento)}" required>
-              </section>
-              <section class="modal-flex">
-                  <input class="modal-descricao" id="descricao-liquidacao-${id}" maxlength="100" type="text" name="descricao-liquidacao-${id}" value="${descricao}" readonly>
-              </section>
-              <section class="modal-flex">
-                  <input class="modal-obs" id="observacao-liquidacao-${id}" maxlength="100" type="text" name="observacao-liquidacao-${id}" value="${observacao}">
-              </section>
-              <section class="modal-flex">
-                  <input class="modal-valor" id="valor-liquidacao-${id}" type="text" name="valor-liquidacao-${id}" oninput="formatarCampoValorLiquidacao(this)" value="${formatarValorDecimal(valor)}" required>
-              </section>
-              <section class="modal-flex natureza-liquidacao">
-                  <input class="modal-natureza" id="natureza-liquidacao-${id}" type="text" name="natureza-liquidacao-${id}" value="${natureza}" readonly>
-              </section>
-              <section class="modal-botao-parcial">
-                <div>
-                <label class="form-switch"><input class="botao-parcial" type="checkbox"><i></i></label>
-                </div>
-              </section>
-              <section class="modal-flex valor-parcial-liquidacao" style="display:none;">
-              <input class="modal-valor" id="valor-parcial-liquidacao-${id}" type="text" name="valor-parcial-liquidacao-${id}" oninput="formatarCampoValorLiquidacao(this)" value="0.00" required>
-              </section>
-          `;
-          contêiner.appendChild(div);
+      // Cria os campos dinamicamente para cada lançamento selecionado
+      const div = document.createElement('div');
+      div.classList.add('lancamentos-selecionados');
+      div.innerHTML = `
+          <section class="modal-flex data-liquidacao">
+              <input class="modal-data" id="data-liquidacao-${id}" type="date" name="data-liquidacao-${id}" value="${formatarDataParaInput(vencimento)}" required>
+          </section>
+          <section class="modal-flex">
+              <input class="modal-descricao" id="descricao-liquidacao-${id}" maxlength="100" type="text" name="descricao-liquidacao-${id}" value="${descricao}" readonly>
+          </section>
+          <section class="modal-flex">
+              <input class="modal-obs" id="observacao-liquidacao-${id}" maxlength="100" type="text" name="observacao-liquidacao-${id}" value="${observacao}">
+          </section>
+          <section class="modal-flex">
+              <input class="modal-valor" id="valor-liquidacao-${id}" type="text" name="valor-liquidacao-${id}" oninput="formatarCampoValorLiquidacao(this)" value="${formatarValorDecimal(valor)}" required>
+          </section>
+          <section class="modal-flex natureza-liquidacao">
+              <input class="modal-natureza" id="natureza-liquidacao-${id}" type="text" name="natureza-liquidacao-${id}" value="${natureza}" readonly>
+          </section>
+          <section class="modal-botao-parcial">
+            <div>
+            <label class="form-switch"><input class="botao-parcial" type="checkbox"><i></i></label>
+            </div>
+          </section>
+          <section class="modal-flex valor-parcial-liquidacao" style="display:none;">
+          <input class="modal-valor" id="valor-parcial-liquidacao-${id}" type="text" name="valor-parcial-liquidacao-${id}" oninput="formatarCampoValorLiquidacao(this)" value="" required>
+          </section>
+      `;
+      contêiner.appendChild(div);
+
+      // Configura o estado inicial do campo de valor baseado na checkbox de liquidação parcial
+      const botaoParcial = div.querySelector('.botao-parcial');
+      const campoValor = div.querySelector('.modal-valor[id^="valor-liquidacao"]');
+      campoValor.readOnly = botaoParcial.checked;
+
+      // Adiciona evento para atualizar o estado de readonly do campo de valor e mostrar/esconder o campo de valor parcial
+      botaoParcial.addEventListener('change', function() {
+        campoValor.readOnly = botaoParcial.checked;
+        const campoValorParcial = div.querySelector('.valor-parcial-liquidacao');
+        campoValorParcial.style.display = botaoParcial.checked ? 'block' : 'none';
       });
+    });
   }
-  
+
   // Função auxiliar para formatar a data para o input do tipo date
   function formatarDataParaInput(data) {
-      const partes = data.split('/');
-      return `${partes[2]}-${partes[1]}-${partes[0]}`;
+    const partes = data.split('/');
+    return `${partes[2]}-${partes[1]}-${partes[0]}`;
   }
 
+  // Função auxiliar para formatar o valor decimal
   function formatarValorDecimal(valor) {
-    // Substitui pontos por vazio e vírgula por ponto
     valor = valor.replace(/\./g, '').replace(',', '.');
-    
-    // Converte para número e formata para duas casas decimais
     const numero = parseFloat(valor);
-    if (!isNaN(numero)) {
-        return numero.toFixed(2); // Assegura duas casas decimais
-    } else {
-        return '0.00'; // Retorna zero se o valor não for um número válido
-      }
+    return !isNaN(numero) ? numero.toFixed(2) : '0.00';
   }
 
+  // Adiciona o ouvinte de evento para atualizar os lançamentos selecionados quando uma checkbox é marcada ou desmarcada
   document.querySelectorAll('.tabela-lancamentos .checkbox-personalizado').forEach(function(checkbox) {
     checkbox.addEventListener('change', atualizarLancamentosSelecionados);
   });
@@ -190,63 +197,78 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // Botão de Liquidar
-document.getElementById('salvar-liquidacao').addEventListener('click', async function() {
-  const liquidacaoSelecionada = document.querySelector('.checkbox-personalizado-liquidacao:checked');
-  
-  if (!liquidacaoSelecionada) {
-    alert('Por favor, selecione um banco para a liquidação antes de prosseguir.');
-    return; // Impede a execução adicional se nenhum banco estiver selecionado
-  }
-
-  // Navega até o elemento pai mais próximo da linha e encontra o elemento com o nome do banco
-  const nomeBancoSelecionado = liquidacaoSelecionada.closest('.row-bancos').querySelector('.banco-liquidacao').getAttribute('data-nome-banco');
-
-  let selectedRows = document.querySelectorAll('.checkbox-personalizado:checked');
-  let dataToSend = [];
-  
-  selectedRows.forEach(function(checkbox) {
-    let row = checkbox.closest('.row-lancamentos');
-    let id = checkbox.getAttribute('data-id');
-    
-    // Encontra os campos de data, observação e valor no modal de liquidação
-    let campoData = document.getElementById(`data-liquidacao-${id}`);
-    let campoObservacao = document.getElementById(`observacao-liquidacao-${id}`);
-    let campoValor = document.getElementById(`valor-liquidacao-${id}`);
-    
-    dataToSend.push({
-      id: id,
-      vencimento: row.querySelector('.vencimento-row').textContent,
-      descricao: row.querySelector('.descricao-row').textContent,
-      observacao: campoObservacao ? campoObservacao.value : '',
-      valor: campoValor ? campoValor.value : '',
-      conta_contabil: row.getAttribute('data-conta-contabil'),
-      parcela_atual: row.getAttribute('parcela-atual'),
-      parcelas_total: row.getAttribute('parcelas-total'),
-      natureza: row.querySelector('.debito-row').textContent ? 'Débito' : 'Crédito',
-      data_liquidacao: campoData ? campoData.value : '',
-      banco_liquidacao: nomeBancoSelecionado // Inclui o nome do banco selecionado nos dados enviados
-    });
-  });
-
-  try {
-    const response = await fetch('/fluxo_de_caixa/processar_liquidacao/', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(dataToSend)
-    });
-    const data = await response.json();
-    
-    if(data.status === 'success') {
-      // Operação foi um sucesso, recarregue a página
-      window.location.reload();
-    } else {
-      // Trate o caso de falha conforme necessário
-      console.error('Operação não foi bem-sucedida:', data);
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('salvar-liquidacao').addEventListener('click', async function() {
+    const liquidacaoSelecionada = document.querySelector('.checkbox-personalizado-liquidacao:checked');
+    if (!liquidacaoSelecionada) {
+      alert('Por favor, selecione um banco para a liquidação antes de prosseguir.');
+      return; // Impede a execução adicional se nenhum banco estiver selecionado
     }
-  } catch (error) {
-    console.error('Erro na operação:', error);
-    // Trate o erro conforme necessário
-  }
+
+    const nomeBancoSelecionado = liquidacaoSelecionada.closest('.row-bancos').querySelector('.banco-liquidacao').getAttribute('data-nome-banco');
+    let selectedRows = document.querySelectorAll('.checkbox-personalizado:checked');
+    let dataToSend = [];
+
+    selectedRows.forEach(function(checkbox) {
+      let row = checkbox.closest('.row-lancamentos');
+      let id = checkbox.getAttribute('data-id');
+
+      let campoData = document.getElementById(`data-liquidacao-${id}`);
+      let campoObservacao = document.getElementById(`observacao-liquidacao-${id}`);
+      let campoValor = document.getElementById(`valor-liquidacao-${id}`);
+      let campoValorParcial = document.getElementById(`valor-parcial-liquidacao-${id}`);
+      let valorParcial = campoValorParcial ? parseFloat(campoValorParcial.value) : 0;
+
+      if (valorParcial === 0 && campoValorParcial && campoValorParcial.value !== '') {
+        alert('Por favor, preencha o valor parcial para realizar uma liquidação parcial.');
+        return;
+      }
+
+      let itemData = {
+        id: id,
+        vencimento: row.querySelector('.vencimento-row').textContent,
+        descricao: row.querySelector('.descricao-row').textContent,
+        observacao: campoObservacao ? campoObservacao.value : '',
+        valor: campoValor.value, // Envia sempre o valor total
+        conta_contabil: row.getAttribute('data-conta-contabil'),
+        parcela_atual: row.getAttribute('parcela-atual'),
+        parcelas_total: row.getAttribute('parcelas-total'),
+        natureza: row.querySelector('.debito-row').textContent ? 'Débito' : 'Crédito',
+        data_liquidacao: campoData ? campoData.value : '',
+        banco_liquidacao: nomeBancoSelecionado,
+      };
+
+      // Lógica para liquidação parcial ou total
+      if (valorParcial > 0) {
+        itemData.valor_parcial = campoValorParcial.value; // Envia valor parcial para liquidações parciais
+        itemData.gerar_uuid = true; // Indica ao backend para gerar UUID
+      }
+
+      dataToSend.push(itemData);
+    });
+
+    if (dataToSend.length === 0) {
+      // Interrompe a função se necessário
+      return;
+    }
+
+    try {
+      const response = await fetch('/fluxo_de_caixa/processar_liquidacao/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(dataToSend)
+      });
+      const data = await response.json();
+
+      if (data.status === 'success') {
+        window.location.reload();
+      } else {
+        console.error('Operação não foi bem-sucedida:', data);
+      }
+    } catch (error) {
+      console.error('Erro na operação:', error);
+    }
+  });
 });
 
 
@@ -640,6 +662,16 @@ function preencherDadosModal(row, tipo) {
 
     const lancamentoId = row.querySelector('.checkbox-personalizado').getAttribute('data-id');
     document.querySelector(`[name="lancamento_id_${tipo}"]`).value = lancamentoId;
+
+    const uuid = row.querySelector('.checkbox-personalizado').getAttribute('data-uuid-row');
+    document.querySelector(`[name="uuid_${tipo}"]`).value = uuid;
+
+      // Bloqueia a edição do campo 'valor' caso o 'data-uuid-row' seja diferente de 'none'
+    if (uuid !== 'None') {
+        document.getElementById(`valor-${tipo}`).readOnly = true;
+    } else {
+        document.getElementById(`valor-${tipo}`).readOnly = false;
+    }
 
     simularEnter(`tagInput-${tipo}`);
 }

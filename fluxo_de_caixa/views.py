@@ -232,22 +232,44 @@ def processar_transferencia(request):
 def processar_liquidacao(request):
     if request.method == 'POST':
         dados = json.loads(request.body)
-        ids_para_excluir = []
+        resposta = {'status': 'success', 'messages': []}
 
         for item in dados:
             try:
                 registro_original = Tabela_fluxo.objects.get(id=item['id'])
-                valor_decimal = Decimal(item['valor'])
-                
-                data_liquidacao_naive = datetime.strptime(item['data_liquidacao'], '%Y-%m-%d')
-                data_liquidacao_aware = timezone.make_aware(data_liquidacao_naive, timezone.get_default_timezone())
+                valor_total = Decimal(item['valor'])
+                valor_parcial = Decimal(item.get('valor_parcial', 0))
+                is_liquidacao_parcial = valor_parcial > 0 and valor_parcial < valor_total
 
-                novo_registro = Tabela_realizado.objects.create(
+                uuid_correlacao = None
+                if is_liquidacao_parcial:
+                    if registro_original.uuid_correlacao:
+                        # Usa o UUID existente se já houver um pagamento parcial relacionado
+                        uuid_correlacao = registro_original.uuid_correlacao
+                    else:
+                        # Gera um novo UUID se não houver pagamento parcial relacionado
+                        uuid_correlacao = uuid.uuid4()
+                        registro_original.uuid_correlacao = uuid_correlacao
+                        registro_original.save()
+
+                    # Atualiza o valor do registro original para refletir a liquidação parcial
+                    novo_valor = registro_original.valor - valor_parcial
+                    registro_original.valor = novo_valor if novo_valor > 0 else Decimal(0)
+                    registro_original.save()
+                else:
+                    # Para liquidações totais, verifica se há um UUID existente
+                    if registro_original.uuid_correlacao:
+                        uuid_correlacao = registro_original.uuid_correlacao
+
+                data_liquidacao_aware = timezone.make_aware(datetime.strptime(item['data_liquidacao'], '%Y-%m-%d'))
+
+                # Cria um novo registro em Tabela_realizado
+                Tabela_realizado.objects.create(
                     fluxo_id=registro_original.id,
                     vencimento=registro_original.vencimento,
                     descricao=registro_original.descricao,
                     observacao=item['observacao'],
-                    valor=valor_decimal,
+                    valor=valor_parcial if is_liquidacao_parcial else valor_total,
                     conta_contabil=registro_original.conta_contabil,
                     parcela_atual=registro_original.parcela_atual,
                     parcelas_total=registro_original.parcelas_total,
@@ -255,19 +277,21 @@ def processar_liquidacao(request):
                     natureza=registro_original.natureza,
                     original_data_criacao=registro_original.data_criacao,
                     data_liquidacao=data_liquidacao_aware,
-                    banco_liquidacao=item.get('banco_liquidacao', '')
+                    banco_liquidacao=item.get('banco_liquidacao', ''),
+                    uuid_correlacao=uuid_correlacao
                 )
-                if novo_registro:
-                    ids_para_excluir.append(item['id'])
-            except ObjectDoesNotExist:
-                continue  # Se o objeto não existir, simplesmente continue para o próximo item
 
-        # Exclui os registros originais em Tabela_fluxo
-        Tabela_fluxo.objects.filter(id__in=ids_para_excluir).delete()
+                # Remove o registro original apenas se for uma liquidação total e não houver UUID
+                if not is_liquidacao_parcial and not registro_original.uuid_correlacao:
+                    registro_original.delete()
 
-        return JsonResponse({'status': 'success'})
+            except Tabela_fluxo.DoesNotExist:
+                resposta['messages'].append(f'Registro {item["id"]} não encontrado.')
+                continue
+
+        return JsonResponse(resposta)
     else:
-        return JsonResponse({'status': 'invalid method'}, status=405)
+        return JsonResponse({'status': 'method not allowed'}, status=405)
 
 
 # SIGNAL HANDLERS ############################################################################
