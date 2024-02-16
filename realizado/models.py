@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from fluxo_de_caixa.models import Bancos
 
@@ -15,6 +16,7 @@ class Tabela_realizado(models.Model):
     original_data_criacao = models.DateTimeField(null=True, blank=True)
     data_liquidacao = models.DateTimeField()
     banco_liquidacao = models.CharField(max_length=255, null=True, blank=True)
+    uuid_correlacao = models.UUIDField(null=True, blank=True)  # Campo novo para agrupar transferências
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)  # Chama o método save original para salvar a transação

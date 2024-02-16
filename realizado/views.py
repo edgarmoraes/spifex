@@ -84,35 +84,48 @@ def processar_retorno(request):
     if request.method == 'POST':
         dados = json.loads(request.body)
         ids_para_excluir = []
+        correlacoes_para_excluir = set()
 
-        # Itera sobre os dados recebidos para criar novos registros em Tabela_fluxo
+        # Itera sobre os dados recebidos para identificar quais itens são transferências
         for item in dados:
-            # Busca o registro original em Tabela_realizado usando o ID fornecido
-            registro_original = Tabela_realizado.objects.get(id=item['id'])
+            try:
+                # Busca o registro original em Tabela_realizado usando o ID fornecido
+                registro_original = Tabela_realizado.objects.get(id=item['id'])
 
-            # Cria um novo registro em Tabela_fluxo com os dados de Tabela_realizado
-            novo_registro_fluxo = Tabela_fluxo.objects.create(
-                vencimento=registro_original.vencimento,
-                descricao=registro_original.descricao,
-                observacao=registro_original.observacao,
-                valor=registro_original.valor,
-                conta_contabil=registro_original.conta_contabil,
-                parcela_atual=registro_original.parcela_atual,
-                parcelas_total=registro_original.parcelas_total,
-                tags=registro_original.tags,
-                natureza=registro_original.natureza,
-                data_criacao=registro_original.original_data_criacao  # Supondo que há este campo para manter a data de criação original
-            )
+                # Se o registro faz parte de uma transferência (tem um UUID de correlação),
+                # adiciona o UUID à lista de correlações para exclusão e pula a criação em Tabela_fluxo
+                if registro_original.uuid_correlacao:
+                    correlacoes_para_excluir.add(registro_original.uuid_correlacao)
+                    ids_para_excluir.append(item['id'])  # Marca também para exclusão direta, caso necessário
+                else:
+                    # Para registros que não são transferências, cria um novo registro em Tabela_fluxo
+                    Tabela_fluxo.objects.create(
+                        vencimento=registro_original.vencimento,
+                        descricao=registro_original.descricao,
+                        observacao=registro_original.observacao,
+                        valor=registro_original.valor,
+                        conta_contabil=registro_original.conta_contabil,
+                        parcela_atual=registro_original.parcela_atual,
+                        parcelas_total=registro_original.parcelas_total,
+                        tags=registro_original.tags,
+                        natureza=registro_original.natureza,
+                        data_criacao=registro_original.original_data_criacao
+                    )
+                    # Adiciona o ID do registro original à lista de IDs para exclusão
+                    ids_para_excluir.append(item['id'])
+            except Tabela_realizado.DoesNotExist:
+                continue  # Se o registro não existe, ignora e continua para o próximo item
 
-            # Adiciona o ID do registro original à lista de IDs para exclusão
-            if novo_registro_fluxo:
-                ids_para_excluir.append(item['id'])
+        # Exclui todos os registros que fazem parte das transferências correlacionadas
+        for correlacao_id in correlacoes_para_excluir:
+            Tabela_realizado.objects.filter(uuid_correlacao=correlacao_id).delete()
 
-        # Exclui os registros originais em Tabela_realizado
-        Tabela_realizado.objects.filter(id__in=ids_para_excluir).delete()
+        # Exclui os registros originais em Tabela_realizado que não fazem parte das transferências
+        Tabela_realizado.objects.filter(id__in=ids_para_excluir, uuid_correlacao__isnull=True).delete()
 
         return JsonResponse({'status': 'success'})
-    return JsonResponse({'status': 'invalid method'}, status=405)
+    else:
+        return JsonResponse({'status': 'invalid method'}, status=405)
 
 @receiver(post_delete, sender=Tabela_realizado)
 def atualizar_saldo_banco_apos_remocao(sender, instance, **kwargs):

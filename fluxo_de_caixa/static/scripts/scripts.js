@@ -73,6 +73,44 @@ document.querySelectorAll('.checkbox-personalizado-liquidacao').forEach(checkbox
 // Chamar a função atualizarSaldoBanco inicialmente para definir o saldo correto
 atualizarSaldoBanco();
 
+// Campo de liquidação parcial
+document.addEventListener('DOMContentLoaded', function() {
+  const containerLancamentosSelecionados = document.getElementById('lancamentos-selecionados');
+
+  // Ouvinte de evento para capturar 'change' em checkboxes 'botao-parcial'
+  // dentro do contêiner de lançamentos selecionados
+  containerLancamentosSelecionados.addEventListener('change', function(event) {
+    if (event.target.classList.contains('botao-parcial')) {
+      // Manipula a visibilidade da seção 'valor-parcial-liquidacao' com base no estado do checkbox
+      const lancamentoSelecionado = event.target.closest('.lancamentos-selecionados');
+      const secaoValorParcial = lancamentoSelecionado.querySelector('.valor-parcial-liquidacao');
+      secaoValorParcial.style.display = event.target.checked ? 'block' : 'none';
+      
+      atualizarEstadoColunas();
+    }
+  });
+  
+  // Função para atualizar o estado das colunas baseada nos checkboxes 'botao-parcial'
+  function atualizarEstadoColunas() {
+    const todosBotoesParcial = document.querySelectorAll('.botao-parcial');
+    const algumAtivado = Array.from(todosBotoesParcial).some(checkbox => checkbox.checked);
+    const labelParcial = document.querySelector('.label-parcial');
+    
+    // Seleciona todos os elementos que devem ter suas colunas ajustadas
+    const elementosParaAjustar = document.querySelectorAll('.lancamentos-selecionados, .label-lancamentos-selecionados');
+
+    // Adiciona ou remove a classe 'ativo' com base no estado dos checkboxes
+    elementosParaAjustar.forEach(el => {
+      if (algumAtivado) {
+        el.classList.add('ativo');
+        if (labelParcial) labelParcial.style.display = 'block';
+      } else {
+        el.classList.remove('ativo');
+        if (labelParcial) labelParcial.style.display = 'none';
+      }
+    });
+  }
+});
 
 // Passa informações do fluxo para o modal de liquidação
 document.addEventListener('DOMContentLoaded', function() {
@@ -98,8 +136,8 @@ document.addEventListener('DOMContentLoaded', function() {
           const div = document.createElement('div');
           div.classList.add('lancamentos-selecionados');
           div.innerHTML = `
-              <section class="modal-flex">
-                  <input class="modal-data data-liquidacao" id="data-liquidacao-${id}" type="date" name="data-liquidacao-${id}" value="${formatarDataParaInput(vencimento)}" required>
+              <section class="modal-flex data-liquidacao">
+                  <input class="modal-data" id="data-liquidacao-${id}" type="date" name="data-liquidacao-${id}" value="${formatarDataParaInput(vencimento)}" required>
               </section>
               <section class="modal-flex">
                   <input class="modal-descricao" id="descricao-liquidacao-${id}" maxlength="100" type="text" name="descricao-liquidacao-${id}" value="${descricao}" readonly>
@@ -110,8 +148,16 @@ document.addEventListener('DOMContentLoaded', function() {
               <section class="modal-flex">
                   <input class="modal-valor" id="valor-liquidacao-${id}" type="text" name="valor-liquidacao-${id}" oninput="formatarCampoValorLiquidacao(this)" value="${formatarValorDecimal(valor)}" required>
               </section>
-              <section class="modal-flex">
+              <section class="modal-flex natureza-liquidacao">
                   <input class="modal-natureza" id="natureza-liquidacao-${id}" type="text" name="natureza-liquidacao-${id}" value="${natureza}" readonly>
+              </section>
+              <section class="modal-botao-parcial">
+                <div>
+                <label class="form-switch"><input class="botao-parcial" type="checkbox"><i></i></label>
+                </div>
+              </section>
+              <section class="modal-flex valor-parcial-liquidacao" style="display:none;">
+              <input class="modal-valor" id="valor-parcial-liquidacao-${id}" type="text" name="valor-parcial-liquidacao-${id}" oninput="formatarCampoValorLiquidacao(this)" value="0.00" required>
               </section>
           `;
           contêiner.appendChild(div);
@@ -430,7 +476,31 @@ function fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainer
       parcelasInput.style.display = 'none'; // Oculta o campo de parcelas
       parcelasInput.disabled = false; // Habilita o campo de parcelas
   }
+
+    // Oculta as seções de liquidação parcial e remove a classe 'ativo' dos elementos ajustáveis
+    const secoesValorParcial = document.querySelectorAll('.valor-parcial-liquidacao');
+    secoesValorParcial.forEach(secao => {
+      secao.style.display = 'none';
+    });
+  
+    const elementosParaAjustar = document.querySelectorAll('.lancamentos-selecionados, .label-lancamentos-selecionados');
+    elementosParaAjustar.forEach(el => {
+      el.classList.remove('ativo');
+    });
+  
+    const labelParcial = document.querySelector('.label-parcial');
+    if (labelParcial) labelParcial.style.display = 'none';
+  
+    // Desmarca todos os checkboxes 'botao-parcial'
+    const todosBotoesParcial = document.querySelectorAll('.botao-parcial');
+    todosBotoesParcial.forEach(checkbox => {
+      checkbox.checked = false;
+    });
+  
+    // Atualiza o estado das colunas para refletir a remoção da classe 'ativo'
+    atualizarEstadoColunas();
 }
+
 
 // Elementos do DOM
 const openModalRecebimentos = document.querySelector('.recebimentos');

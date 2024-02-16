@@ -13,6 +13,7 @@ class Tabela_fluxo(models.Model):
     tags = models.CharField(max_length = 100)
     natureza = models.CharField(max_length=50)
     data_criacao = models.DateTimeField(auto_now_add=True)
+    uuid_correlacao = models.UUIDField(null=True, blank=True)
 
 class Totais_mes_fluxo(models.Model):
     inicio_mes = models.DateField(null=True, blank=True)

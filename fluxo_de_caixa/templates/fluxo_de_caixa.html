@@ -474,14 +474,18 @@
                 <label>Observação</label>
                 <label>Valor</label>
                 <label>Natureza</label>
+                <label></label>
+                <label class="label-parcial" style="display:none;">Parcial</label>
             </div>
             <div class="lista-lancamentos-selecionados mesclar-3" id="lancamentos-selecionados">
                 <!-- Itens dinâmicos serão adicionados aqui -->
             </div>
     
             <section class="modal-botoes mesclar-3">
-                <label>Saldo:</label>
-                <div class="saldo-liquidacao" name="saldo-liquidacao">{{ saldo_total_bancos|currency_br }}</div>
+                <div class="saldo-liquidacao">
+                    <label class="label-saldo-liquidacao">Saldo:</label>
+                    <div class="saldo-liquidacao" name="saldo-liquidacao">R$ 0,00</div>
+                </div>
                 <input type="submit" class="modal-salvar" id="salvar-liquidacao" name="salvar_liquidacao" value="Liquidar">
                 <button type="button" class="modal-fechar-liquidacoes">Cancelar</button>
             </section>

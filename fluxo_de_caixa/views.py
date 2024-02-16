@@ -1,3 +1,4 @@
+import uuid
 import json
 from decimal import Decimal
 from datetime import datetime
@@ -182,6 +183,7 @@ def processar_transferencia(request):
     banco_saida = request.POST.get('banco_saida')
     banco_entrada = request.POST.get('banco_entrada')
     observacao = request.POST.get('observacao')
+    correlacao_id = uuid.uuid4()
     
     data_liquidacao = datetime.strptime(data_transferencia, '%Y-%m-%d')
 
@@ -201,7 +203,8 @@ def processar_transferencia(request):
         natureza='Débito',
         original_data_criacao=datetime.now(),
         data_liquidacao=data_liquidacao,
-        banco_liquidacao=banco_saida
+        banco_liquidacao=banco_saida,
+        uuid_correlacao=correlacao_id
     )
     lancamento_saida.save()
 
@@ -218,7 +221,8 @@ def processar_transferencia(request):
         natureza='Crédito',
         original_data_criacao=datetime.now(),
         data_liquidacao=data_liquidacao,
-        banco_liquidacao=banco_entrada
+        banco_liquidacao=banco_entrada,
+        uuid_correlacao=correlacao_id
     )
     lancamento_entrada.save()
 
