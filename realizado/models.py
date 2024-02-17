@@ -17,6 +17,7 @@ class Tabela_realizado(models.Model):
     data_liquidacao = models.DateTimeField()
     banco_liquidacao = models.CharField(max_length=255, null=True, blank=True)
     uuid_correlacao = models.UUIDField(null=True, blank=True)  # Campo novo para agrupar transferências
+    uuid_correlacao_parcelas = models.UUIDField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)  # Chama o método save original para salvar a transação

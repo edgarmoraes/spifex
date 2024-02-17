@@ -1,35 +1,42 @@
 // Botão de Retornar
 document.getElementById('retornar-button').addEventListener('click', function() {
-  let selectedRows = document.querySelectorAll('.checkbox-personalizado:checked');
-  let dataToSend = [];
-  
-  selectedRows.forEach(function(checkbox) {
-      let row = checkbox.closest('.row-lancamentos');
-      dataToSend.push({
-          id: checkbox.getAttribute('data-id'),
-          vencimento: row.querySelector('.vencimento-row').textContent,
-          descricao: row.querySelector('.descricao-row').textContent,
-          valor: row.querySelector('.debito-row').textContent || row.querySelector('.credito-row').textContent,
-          conta_contabil: row.getAttribute('data-conta-contabil'),
-          parcela_atual: row.getAttribute('parcela-atual'),
-          parcelas_total: row.getAttribute('parcelas-total'),
-          natureza: row.querySelector('.debito-row').textContent ? 'Débito' : 'Crédito'
-      });
-  });
+    let selectedRows = document.querySelectorAll('.checkbox-personalizado:checked');
+    let dataToSend = [];
+    
+    selectedRows.forEach(function(checkbox) {
+        let row = checkbox.closest('.row-lancamentos');
+        let debito = row.querySelector('.debito-row').textContent.trim();
+        let credito = row.querySelector('.credito-row').textContent.trim();
+        dataToSend.push({
+            id: checkbox.getAttribute('data-id'),
+            vencimento: row.querySelector('.vencimento-row').textContent,
+            descricao: row.querySelector('.descricao-row').textContent,
+            valor: debito || credito, // Usa débito se disponível, senão credito
+            conta_contabil: row.getAttribute('data-conta-contabil'),
+            parcela_atual: row.getAttribute('parcela-atual'),
+            parcelas_total: row.getAttribute('parcelas-total'),
+            natureza: debito ? 'Débito' : 'Crédito',
+            uuid_correlacao: row.getAttribute('data-uuid-correlacao'),
+            uuid_correlacao_parcelas: row.getAttribute('data-uuid-correlacao-parcelas')
+        });
+    });
 
-  fetch('/realizado/processar_retorno/', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(dataToSend)
-}).then(response => response.json())
-  .then(data => {
-      if(data.status === 'success') {
-          selectedRows.forEach(checkbox => {
-              let row = checkbox.closest('.row-lancamentos');
-              row.remove(); // Remove a linha da tabela
-          });
-          window.location.reload();
-  }});
+    fetch('/realizado/processar_retorno/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(dataToSend)
+    }).then(response => response.json())
+      .then(data => {
+          if(data.status === 'success') {
+              // Remove as linhas da tabela no frontend
+              selectedRows.forEach(checkbox => {
+                  let row = checkbox.closest('.row-lancamentos');
+                  row.remove();
+              });
+              // Recarrega a página para refletir as mudanças no backend
+              window.location.reload();
+          }
+      }).catch(error => console.error('Erro ao processar retorno:', error));
 });
 
 

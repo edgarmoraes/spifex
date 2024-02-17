@@ -83,7 +83,7 @@ nav {
   align-items: center;
   height: 8vh;
   font-family: var(--primary-font);
-  background-color: #3d3d40bf;
+  background-color: rgba(73, 4.5, 255, 0.7);
   backdrop-filter: blur(5px);
 }
 
@@ -106,6 +106,13 @@ nav {
 
 /* Componentes da Caixa de Filtros
 ... */
+
+.label-filtros {
+  background-color: var(--color7);
+  padding: 5px 30px;
+  border-radius: 0px 20px;
+  color: var(--branco);
+}
 
 .mesclar-2 {
   grid-column: span 2;
@@ -137,7 +144,7 @@ nav {
 .flex select, .flex input {
   background-color: var(--color2);
   border: none;
-  color: var(--color4);
+  color: var(--preto);
   padding: 0.7rem 1rem;
   border-radius: 5px;
   transition: var(--transition-effect1) var(--transition-duration1);
@@ -238,7 +245,7 @@ nav {
   padding: 0.7rem 2.5rem 0.7rem 1rem;
   width: 100%;
   font-family: var(--primary-font);
-  color: var(--color4);
+  color: var(--preto);
   background-color: var(--color2);
   font-size: 15px;
   border: none;
@@ -354,7 +361,7 @@ nav {
   font-family: var(--primary-font);
   background-color: var(--branco);
   font-weight: 300;
-  color: var(--color4);
+  color: var(--preto);
 }
 
 .tabela-lancamentos {
@@ -364,30 +371,34 @@ nav {
   border-collapse: collapse;
   border-spacing: 0;
   table-layout: fixed;
-  width: 100%;
+  width: 95%;
 }
 
 .tabela-lancamentos th {
   padding: 0;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
+  background-color: var(--color7);
+  height: 35px;
+  color: var(--branco);
 }
 
 .tabela-lancamentos td {
-  font-size: 12px;
-  font-weight: 300;
+  font-size: 13px;
+  font-weight: 400;
 }
 
 .tabela-lancamentos th small,
 .tabela-lancamentos td small {
   display: block;
-  color: var(--color4);
-  font-weight: 300;
+  color: var(--preto);
+  font-weight: 400;
+  padding-top: 2px;
 }
 
 .tabela-lancamentos tbody tr:hover,
 .tabela-lancamentos tbody tr:focus {
-  background: var(--color1);
+  background: #efeaff;
 }
 
 .tabela-lancamentos tbody tr {
@@ -423,6 +434,14 @@ nav {
 .credito-col,
 .saldo-col {
   width: 120px;
+}
+
+.saldo-col {
+  border-radius: 0px 20px 20px 0px;
+}
+
+.checkbox-col {
+  border-radius: 20px 0px 0px 20px;
 }
 
 .checkbox-row {
@@ -564,14 +583,24 @@ nav {
   position: sticky;
   top: 0;
   height: 35px;
-  background-color: var(--color2);
+  background-color: #7F4FFF;
   z-index: 1;
+  backdrop-filter: (5px);
+}
+
+.cabecalho-bancos-liquidacao {
+  position: sticky;
+  top: 0;
+  height: 25px;
+  background-color: #7F4FFF;
+  z-index: 1;
+  backdrop-filter: (5px);
 }
 
 .totais-row {
   position: sticky;
   bottom: 0;
-  height: 35px;
+  height: 25px;
   background-color: var(--color2);
   z-index: 1;
 }
@@ -579,35 +608,43 @@ nav {
 .tabela-bancos {
   width: 100%;
   font-family: var(--primary-font);
-  color: var(--color4);
+  color: var(--preto);
   border-collapse: collapse;
   border-spacing: 0;
 }
 
 .tabela-bancos th {
   padding: 0;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
+  color: var(--branco);
 }
 
 .tabela-bancos td {
   font-size: 12px;
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .tabela-bancos tbody tr:hover,
 .tabela-bancos tbody tr:focus {
-  background: var(--color1);
+  background: #efeaff;
 }
 
 .tabela-bancos tbody tr {
   transition: .3s all ease;
 }
 
+.tabela-bancos-liquidacao th {
+  padding: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--branco);
+}
+
 .tabela-bancos-liquidacao {
   width: 100%;
   font-family: var(--primary-font);
-  color: var(--color4);
+  color: var(--preto);
   border-collapse: collapse;
   border-spacing: 0;
 }
@@ -620,12 +657,12 @@ nav {
 
 .tabela-bancos-liquidacao td {
   font-size: 12px;
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .tabela-bancos-liquidacao tbody tr:hover,
 .tabela-bancos-liquidacao tbody tr:focus {
-  background: var(--color1);
+  background: #efeaff;
 }
 
 .tabela-bancos-liquidacao tbody tr {
@@ -639,10 +676,15 @@ nav {
 
 .contas-bancos-col {
   width: 200px;
+  border-radius: 20px 0px 0px 20px;
 }
 
 .ag-bancos-col {
   width: 100px;
+}
+
+.saldo-bancos-col {
+  border-radius: 0px 20px 20px 0px;
 }
 
 .contas-bancos-liquidacao-col {
@@ -659,6 +701,7 @@ nav {
 
 .saldo-bancos-liquidacao-col {
   width: 100px;
+  border-radius: 0px 20px 20px 0px;
 }
 
 .banco-row {
@@ -669,12 +712,14 @@ nav {
 td.total-row {
   text-align: center;
   font-weight: 900;
+  font-size: 14px;
 }
 
 td.saldo-total-banco-row,
 td.saldo-total-banco-liquidacao-row {
   text-align: center; 
   font-weight: 900;
+  font-size: 14px;
 }
 
 /* Botões da Checkbox */
@@ -692,23 +737,37 @@ td.saldo-total-banco-liquidacao-row {
   width: 100%;
   box-shadow: 0px -2px 5px 0px #0000001a;
   transition: transform 0.5s ease, opacity 0.5s ease;
+  border-radius: 20px 20px 0px 0px;
 }
 
 .botoes-acoes.mostrar {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+  border-radius: 20px 20px 0px 0px;
 }
 
 .btn-areas {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  backdrop-filter: blur(50%);
+  background-color: #3d3d4034;
+  padding: 5px;
+  border-radius: 20px;
+  box-shadow: 0px -2px 10px 0px #0000001a;
 }
 
-.btn-coluna, .total-liquidar-row {
+.btn-coluna {
   font-family: var(--primary-font);
   color: var(--branco);
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 500;
+}
+
+.total-liquidar-row {
+  font-family: var(--primary-font);
+  color: var(--branco);
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .btn-coluna {

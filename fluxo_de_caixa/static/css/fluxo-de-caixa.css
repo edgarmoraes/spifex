@@ -151,7 +151,7 @@
 }
 
 .conteudo-tabela-bancos-liquidacao {
-  max-height: 180px;
+  max-height: 200px;
   overflow: auto;
   margin-bottom: 10px;
 }
@@ -200,6 +200,7 @@
 
 .modal-titulo {
   margin-bottom: 1rem;
+  font-size: 20px;
 }
 
 dialog > form {
@@ -327,7 +328,7 @@ section.modal-flex {
 .modal-flex input {
 background-color: var(--color2);
   border: none;
-  color: var(--color4);
+  color: var(--preto);
   padding: 0.7rem 1rem;
   border-radius: 5px;
   transition: var(--transition-effect1) .5s;

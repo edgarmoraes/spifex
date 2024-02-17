@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
               <input class="modal-obs" id="observacao-liquidacao-${id}" maxlength="100" type="text" name="observacao-liquidacao-${id}" value="${observacao}">
           </section>
           <section class="modal-flex">
-              <input class="modal-valor" id="valor-liquidacao-${id}" type="text" name="valor-liquidacao-${id}" oninput="formatarCampoValorLiquidacao(this)" value="${formatarValorDecimal(valor)}" required>
+              <input class="modal-valor valor-liquidacao-total" id="valor-liquidacao-${id}" type="text" name="valor-liquidacao-${id}" oninput="formatarCampoValor(this)" value="${formatarValorDecimal(valor)}" readonly required>
           </section>
           <section class="modal-flex natureza-liquidacao">
               <input class="modal-natureza" id="natureza-liquidacao-${id}" type="text" name="natureza-liquidacao-${id}" value="${natureza}" readonly>
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
           </section>
           <section class="modal-flex valor-parcial-liquidacao" style="display:none;">
-          <input class="modal-valor" id="valor-parcial-liquidacao-${id}" type="text" name="valor-parcial-liquidacao-${id}" oninput="formatarCampoValorLiquidacao(this)" value="" required>
+          <input class="modal-valor valor-parcial" id="valor-parcial-liquidacao-${id}" type="text" name="valor-parcial-liquidacao-${id}" oninput="formatarCampoValor(this)" value="" required>
           </section>
       `;
       contêiner.appendChild(div);
@@ -165,11 +165,9 @@ document.addEventListener('DOMContentLoaded', function() {
       // Configura o estado inicial do campo de valor baseado na checkbox de liquidação parcial
       const botaoParcial = div.querySelector('.botao-parcial');
       const campoValor = div.querySelector('.modal-valor[id^="valor-liquidacao"]');
-      campoValor.readOnly = botaoParcial.checked;
 
       // Adiciona evento para atualizar o estado de readonly do campo de valor e mostrar/esconder o campo de valor parcial
       botaoParcial.addEventListener('change', function() {
-        campoValor.readOnly = botaoParcial.checked;
         const campoValorParcial = div.querySelector('.valor-parcial-liquidacao');
         campoValorParcial.style.display = botaoParcial.checked ? 'block' : 'none';
       });
@@ -345,7 +343,7 @@ document.addEventListener('DOMContentLoaded', function() {
           idsSelecionados.push(checkbox.getAttribute('data-id'));
       });
 
-        fetch('/fluxo_de_caixa/deletar_entradas/', {
+      fetch('/fluxo_de_caixa/deletar_entradas/', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -353,7 +351,12 @@ document.addEventListener('DOMContentLoaded', function() {
           },
           body: JSON.stringify({ids: idsSelecionados})
       })
-      .then(response => response.json())
+      .then(response => {
+          if (!response.ok) {
+              throw response;
+          }
+          return response.json();
+      })
       .then(data => {
           if (data.status === 'success') {
               checkboxesSelecionadas.forEach(function(checkbox) {
@@ -361,14 +364,32 @@ document.addEventListener('DOMContentLoaded', function() {
                   linhaParaRemover.remove();
               });
               window.location.reload();
+          } else {
+              // Trata casos em que a operação não é bem-sucedida
+              alert(data.message); // Exibe a mensagem de erro do servidor
+              // Desmarca todas as checkboxes selecionadas
+              desmarcarCheckboxes(checkboxesSelecionadas);
           }
       })
-      .catch(error => console.error('Erro:', error));
+      .catch(error => {
+          error.json().then(errorMessage => {
+              console.error('Erro:', errorMessage);
+              alert(errorMessage.message); // Exibe a mensagem de erro para o usuário
+              // Desmarca todas as checkboxes selecionadas
+              desmarcarCheckboxes(checkboxesSelecionadas);
+          });
+      });
   });
 });
 
 function getCsrfToken() {
   return document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+}
+
+function desmarcarCheckboxes(checkboxes) {
+  checkboxes.forEach(function(checkbox) {
+      checkbox.checked = false;
+  });
 }
 
 // Selecionar checkboxes com o shift clicado
@@ -760,73 +781,7 @@ function extrairTags(row) {
 
 
 // Função para formatar o valor de um campo como moeda brasileira
-function formatarCampoValorRecebimentos(input) {
-  // Remover caracteres não numéricos
-  let valor = input.value.replace(/\D/g, '');
-
-  // Remover zeros à esquerda
-  valor = valor.replace(/^0+/, '');
-
-  // Adicionar o ponto decimal nas duas últimas casas decimais
-  if (valor.length > 2) {
-      valor = valor.slice(0, -2) + '.' + valor.slice(-2);
-  } else if (valor.length === 2) {
-      valor = '0.' + valor;
-  } else if (valor.length === 1) {
-      valor = '0.0' + valor;
-  } else {
-      valor = '0.00';
-  }
-
-  // Atualizar o valor do campo
-  input.value = valor;
-}
-
-function formatarCampoValorPagamentos(input) {
-  // Remover caracteres não numéricos
-  let valor = input.value.replace(/\D/g, '');
-
-  // Remover zeros à esquerda
-  valor = valor.replace(/^0+/, '');
-
-  // Adicionar o ponto decimal nas duas últimas casas decimais
-  if (valor.length > 2) {
-      valor = valor.slice(0, -2) + '.' + valor.slice(-2);
-  } else if (valor.length === 2) {
-      valor = '0.' + valor;
-  } else if (valor.length === 1) {
-      valor = '0.0' + valor;
-  } else {
-      valor = '0.00';
-  }
-
-  // Atualizar o valor do campo
-  input.value = valor;
-}
-
-function formatarCampoValorTransferencias(input) {
-  // Remover caracteres não numéricos
-  let valor = input.value.replace(/\D/g, '');
-
-  // Remover zeros à esquerda
-  valor = valor.replace(/^0+/, '');
-
-  // Adicionar o ponto decimal nas duas últimas casas decimais
-  if (valor.length > 2) {
-      valor = valor.slice(0, -2) + '.' + valor.slice(-2);
-  } else if (valor.length === 2) {
-      valor = '0.' + valor;
-  } else if (valor.length === 1) {
-      valor = '0.0' + valor;
-  } else {
-      valor = '0.00';
-  }
-
-  // Atualizar o valor do campo
-  input.value = valor;
-}
-
-function formatarCampoValorLiquidacao(input) {
+function formatarCampoValor(input) {
   // Remover caracteres não numéricos
   let valor = input.value.replace(/\D/g, '');
 
@@ -1123,6 +1078,9 @@ function atualizarSaldosFluxoCaixa(saldoInicial) {
     if (saldoCelula) {
       saldoCelula.textContent = formatarComoMoeda(saldoAtual);
     }
+    else {
+      linha.style.display = "none"; 
+    }
   });
 }
 
@@ -1145,7 +1103,7 @@ function filtrarBancos() {
         
         // Adiciona o saldo do banco ao saldo total
         var saldoBanco = linhas[i].getElementsByClassName("saldo-banco-row")[0].textContent;
-        saldoBanco = parseFloat(saldoBanco.replace('.', '').replace(',', '.'));
+        saldoBanco = parseFloat(saldoBanco.replace(/\./g, '').replace(',', '.'));
         saldoTotal += saldoBanco;
       } else {
         linhas[i].style.display = "none"; // Esconde a linha se não corresponder ao filtro

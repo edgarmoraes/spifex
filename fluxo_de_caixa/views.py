@@ -141,8 +141,16 @@ def criar_novos_fluxos(dados, iniciar_desde_o_atual=False):
 def deletar_entradas(request):
     if request.method == 'POST':
         ids_para_apagar = extrair_ids_para_apagar(request)
-        processar_ids(ids_para_apagar)
 
+        # Verifica se algum dos lançamentos selecionados tem uuid_correlacao não nulo
+        lancamentos_com_dependencia = Tabela_fluxo.objects.filter(id__in=ids_para_apagar, uuid_correlacao__isnull=False)
+
+        if lancamentos_com_dependencia.exists():
+            # Retorna uma mensagem de erro se algum lançamento tem dependência
+            return JsonResponse({'status': 'error', 'message': 'Este lançamento tem dependências liquidadas.'}, status=400)
+        
+        # Procede com a exclusão se todos os lançamentos puderem ser excluídos
+        processar_ids(ids_para_apagar)
         return JsonResponse({'status': 'success'})
 
 def extrair_ids_para_apagar(request):
@@ -237,37 +245,35 @@ def processar_liquidacao(request):
         for item in dados:
             try:
                 registro_original = Tabela_fluxo.objects.get(id=item['id'])
-                valor_total = Decimal(item['valor'])
+                valor_total = registro_original.valor  # Utiliza o valor diretamente do registro para evitar discrepâncias
                 valor_parcial = Decimal(item.get('valor_parcial', 0))
-                is_liquidacao_parcial = valor_parcial > 0 and valor_parcial < valor_total
+                is_liquidacao_parcial = valor_parcial > 0 and valor_parcial <= valor_total
+                completando_liquidacao = valor_parcial == valor_total
 
-                uuid_correlacao = None
+                uuid_correlacao = registro_original.uuid_correlacao
                 if is_liquidacao_parcial:
-                    if registro_original.uuid_correlacao:
-                        # Usa o UUID existente se já houver um pagamento parcial relacionado
-                        uuid_correlacao = registro_original.uuid_correlacao
-                    else:
-                        # Gera um novo UUID se não houver pagamento parcial relacionado
+                    if not uuid_correlacao:
+                        # Caso seja a primeira liquidação parcial
                         uuid_correlacao = uuid.uuid4()
                         registro_original.uuid_correlacao = uuid_correlacao
                         registro_original.save()
-
-                    # Atualiza o valor do registro original para refletir a liquidação parcial
-                    novo_valor = registro_original.valor - valor_parcial
-                    registro_original.valor = novo_valor if novo_valor > 0 else Decimal(0)
-                    registro_original.save()
-                else:
-                    # Para liquidações totais, verifica se há um UUID existente
-                    if registro_original.uuid_correlacao:
-                        uuid_correlacao = registro_original.uuid_correlacao
+                    if valor_parcial < valor_total:
+                        novo_valor = valor_total - valor_parcial
+                        registro_original.valor = novo_valor
+                        registro_original.save()
+                    # Se for a última liquidação parcial, o UUID já está definido
 
                 data_liquidacao_aware = timezone.make_aware(datetime.strptime(item['data_liquidacao'], '%Y-%m-%d'))
+                numero_liquidacao = Tabela_realizado.objects.filter(uuid_correlacao=uuid_correlacao).count() + 1 if uuid_correlacao else 1
 
-                # Cria um novo registro em Tabela_realizado
+                descricao_atualizada = registro_original.descricao
+                if is_liquidacao_parcial:
+                    descricao_atualizada += f" | Parcela ({numero_liquidacao})"
+
                 Tabela_realizado.objects.create(
                     fluxo_id=registro_original.id,
                     vencimento=registro_original.vencimento,
-                    descricao=registro_original.descricao,
+                    descricao=descricao_atualizada,
                     observacao=item['observacao'],
                     valor=valor_parcial if is_liquidacao_parcial else valor_total,
                     conta_contabil=registro_original.conta_contabil,
@@ -278,11 +284,12 @@ def processar_liquidacao(request):
                     original_data_criacao=registro_original.data_criacao,
                     data_liquidacao=data_liquidacao_aware,
                     banco_liquidacao=item.get('banco_liquidacao', ''),
-                    uuid_correlacao=uuid_correlacao
+                    uuid_correlacao=uuid_correlacao,
+                    uuid_correlacao_parcelas=uuid_correlacao  # Aqui é adicionado o mesmo UUID a uuid_correlacao_parcelas
                 )
 
-                # Remove o registro original apenas se for uma liquidação total e não houver UUID
-                if not is_liquidacao_parcial and not registro_original.uuid_correlacao:
+                # Remove o registro original se for uma liquidação total ou a última liquidação parcial
+                if completando_liquidacao or not is_liquidacao_parcial:
                     registro_original.delete()
 
             except Tabela_fluxo.DoesNotExist:

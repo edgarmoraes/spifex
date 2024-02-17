@@ -81,63 +81,84 @@ def meses_filtro_realizado(request):
 
 @csrf_exempt
 def processar_retorno(request):
-    if request.method == 'POST':
-        dados = json.loads(request.body)
-        ids_para_excluir = [item['id'] for item in dados]  # IDs selecionados para retorno
-        uuids_e_valores = {}  # Dicionário para acumular valores por UUID
-
-        for item in dados:
-            try:
-                registro_original = Tabela_realizado.objects.get(id=item['id'])
-                uuid_correlacao = registro_original.uuid_correlacao
-
-                if not uuid_correlacao:
-                    # Cria em Tabela_fluxo e prepara para apagar em Tabela_realizado
-                    Tabela_fluxo.objects.create(
-                        vencimento=registro_original.vencimento,
-                        descricao=registro_original.descricao,
-                        observacao=registro_original.observacao,
-                        valor=registro_original.valor,
-                        conta_contabil=registro_original.conta_contabil,
-                        parcela_atual=registro_original.parcela_atual,
-                        parcelas_total=registro_original.parcelas_total,
-                        tags=registro_original.tags,
-                        natureza=registro_original.natureza,
-                        data_criacao=registro_original.original_data_criacao
-                    )
-                else:
-                    # Acumula os valores por UUID para processamento posterior
-                    if uuid_correlacao in uuids_e_valores:
-                        uuids_e_valores[uuid_correlacao] += registro_original.valor
-                    else:
-                        uuids_e_valores[uuid_correlacao] = registro_original.valor
-
-            except Tabela_realizado.DoesNotExist:
-                continue  # Se o registro não existir, ignora e continua
-
-        # Processamento dos valores acumulados por UUID
-        for uuid_correlacao, valor_total in uuids_e_valores.items():
-            registros_fluxo = Tabela_fluxo.objects.filter(uuid_correlacao=uuid_correlacao)
-            if registros_fluxo.exists():
-                registro_fluxo = registros_fluxo.first()
-                registro_fluxo.valor += valor_total
-                registro_fluxo.save()
-
-                # Verifica se há mais lançamentos com o mesmo UUID além dos já selecionados para retorno
-                outros_registros = Tabela_realizado.objects.filter(uuid_correlacao=uuid_correlacao).exclude(id__in=ids_para_excluir)
-                if not outros_registros.exists():
-                    # Remove o UUID de Tabela_fluxo se não houver outros lançamentos
-                    registros_fluxo.update(uuid_correlacao=None)
-            else:
-                # Se não houver correspondência em Tabela_fluxo, apaga todos os lançamentos em Tabela_realizado com o mesmo UUID
-                ids_para_excluir.extend(Tabela_realizado.objects.filter(uuid_correlacao=uuid_correlacao).values_list('id', flat=True))
-
-        # Apaga os registros selecionados para retorno em Tabela_realizado
-        Tabela_realizado.objects.filter(id__in=ids_para_excluir).delete()
-
-        return JsonResponse({'status': 'success'})
-    else:
+    if request.method != 'POST':
         return JsonResponse({'status': 'method not allowed'}, status=405)
+
+    dados = json.loads(request.body)
+    ids_selecionados = [item['id'] for item in dados]
+
+    for item in dados:
+        registro_original = Tabela_realizado.objects.filter(id=item['id']).first()
+        if not registro_original:
+            continue
+
+        uuid_correlacao = registro_original.uuid_correlacao
+        uuid_correlacao_parcelas = registro_original.uuid_correlacao_parcelas
+
+        if not uuid_correlacao:
+            criar_fluxo_com_registro(registro_original)
+        elif uuid_correlacao and uuid_correlacao_parcelas is None:
+            # Aqui é onde implementamos a lógica específica: Deletar todos os lançamentos em Tabela_realizado que compartilham o mesmo uuid_correlacao
+            Tabela_realizado.objects.filter(uuid_correlacao=uuid_correlacao).delete()
+        else:
+            processar_lancamentos_com_uuids_selecionados(uuid_correlacao, uuid_correlacao_parcelas, ids_selecionados, registro_original)
+
+    return JsonResponse({'status': 'success'})
+
+def criar_fluxo_com_registro(registro):
+    Tabela_fluxo.objects.create(
+        vencimento=registro.vencimento,
+        descricao=registro.descricao,
+        observacao=registro.observacao,
+        valor=registro.valor,
+        conta_contabil=registro.conta_contabil,
+        parcela_atual=registro.parcela_atual,
+        parcelas_total=registro.parcelas_total,
+        tags=registro.tags,
+        natureza=registro.natureza,
+        data_criacao=registro.original_data_criacao,
+    )
+    registro.delete()
+
+def processar_lancamentos_com_uuids_selecionados(uuid_correlacao, uuid_correlacao_parcelas, ids_selecionados, registro_original):
+    mais_registros = Tabela_realizado.objects.filter(uuid_correlacao=uuid_correlacao, uuid_correlacao_parcelas=uuid_correlacao_parcelas).exclude(id__in=ids_selecionados).exists()
+    existe_no_fluxo = Tabela_fluxo.objects.filter(uuid_correlacao=uuid_correlacao).exists()
+
+    registros_selecionados = Tabela_realizado.objects.filter(id__in=ids_selecionados, uuid_correlacao=uuid_correlacao, uuid_correlacao_parcelas=uuid_correlacao_parcelas)
+    valor_total_selecionados = registros_selecionados.aggregate(Sum('valor'))['valor__sum'] or 0
+
+    if mais_registros and existe_no_fluxo:
+        unificar_lancamentos_no_fluxo(uuid_correlacao, valor_total_selecionados)
+    elif not mais_registros and existe_no_fluxo:
+        unificar_lancamentos_no_fluxo(uuid_correlacao, valor_total_selecionados, excluir_uuid=True)
+    elif not mais_registros and not existe_no_fluxo:
+        criar_fluxo_com_registro_unificado(registros_selecionados.first(), valor_total_selecionados, manter_uuid=False)
+    elif mais_registros and not existe_no_fluxo:
+        criar_fluxo_com_registro_unificado(registros_selecionados.first(), valor_total_selecionados, manter_uuid=True)
+
+    registros_selecionados.delete()
+
+def unificar_lancamentos_no_fluxo(uuid_correlacao, valor_total, excluir_uuid=False):
+    fluxo = Tabela_fluxo.objects.get(uuid_correlacao=uuid_correlacao)
+    fluxo.valor += valor_total
+    if excluir_uuid:
+        fluxo.uuid_correlacao = None
+    fluxo.save()
+
+def criar_fluxo_com_registro_unificado(registro, valor_total, manter_uuid=False):
+    Tabela_fluxo.objects.create(
+        vencimento=registro.vencimento,
+        descricao=registro.descricao,
+        observacao=registro.observacao,
+        valor=valor_total,
+        conta_contabil=registro.conta_contabil,
+        parcela_atual=registro.parcela_atual,
+        parcelas_total=registro.parcelas_total,
+        tags=registro.tags,
+        natureza=registro.natureza,
+        data_criacao=registro.original_data_criacao,
+        uuid_correlacao=registro.uuid_correlacao if manter_uuid else None
+    )
 
 @receiver(post_delete, sender=Tabela_realizado)
 def atualizar_saldo_banco_apos_remocao(sender, instance, **kwargs):
