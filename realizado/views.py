@@ -163,11 +163,11 @@ def criar_fluxo_com_registro_unificado(registro, valor_total, manter_uuid=False)
 @receiver(post_delete, sender=Tabela_realizado)
 def atualizar_saldo_banco_apos_remocao(sender, instance, **kwargs):
     try:
-        banco = Bancos.objects.get(banco=instance.banco_liquidacao)
+        banco = Bancos.objects.get(id=instance.banco_id_liquidacao)  # Modificado para usar ID
         if instance.natureza == 'Crédito':
-            banco.saldo_atual -= instance.valor  # Subtrai o valor do saldo atual para créditos
+            banco.saldo_atual -= instance.valor  # Subtrai para créditos
         else:  # Débito
-            banco.saldo_atual += instance.valor  # Adiciona o valor ao saldo atual para débitos
+            banco.saldo_atual += instance.valor  # Adiciona para débitos
         banco.save()
     except Bancos.DoesNotExist:
         pass  # Tratar o caso em que o banco não é encontrado, se necessário

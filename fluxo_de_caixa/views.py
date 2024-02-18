@@ -186,22 +186,30 @@ def criar_registro_temporario(objeto):
     )
 
 def processar_transferencia(request):
+    banco_saida_data = request.POST.get('banco_saida').split('|')
+    banco_entrada_data = request.POST.get('banco_entrada').split('|')
+
+    if len(banco_saida_data) == 2 and len(banco_entrada_data) == 2:
+        banco_saida_id, banco_saida_nome = banco_saida_data
+        banco_entrada_id, banco_entrada_nome = banco_entrada_data
+
     data_transferencia = request.POST.get('data')
     valor_transferencia = Decimal(request.POST.get('valor').replace(',', '.'))
-    banco_saida = request.POST.get('banco_saida')
-    banco_entrada = request.POST.get('banco_entrada')
     observacao = request.POST.get('observacao')
     correlacao_id = uuid.uuid4()
     
     data_liquidacao = datetime.strptime(data_transferencia, '%Y-%m-%d')
 
-    if banco_saida == banco_entrada:
+    if banco_saida_id == banco_entrada_id:
         messages.error(request, "O banco de saída não pode ser igual ao banco de entrada. Por favor, selecione bancos diferentes.")
-        return redirect('fluxo_de_caixa')  # Substitua 'fluxo_de_caixa' pelo nome correto da sua URL, se necessário
+        return redirect('fluxo_de_caixa')
+    
     # Cria o lançamento de saída
     lancamento_saida = Tabela_realizado(
         vencimento=data_liquidacao,
-        descricao='Transferência para '+banco_entrada,
+        descricao=f'Transferência para {banco_entrada_nome}',
+        banco_id_liquidacao=banco_saida_id,
+        banco_liquidacao=banco_saida_nome,
         observacao=observacao,
         valor=valor_transferencia,
         conta_contabil='Transferência Saída',
@@ -211,7 +219,6 @@ def processar_transferencia(request):
         natureza='Débito',
         original_data_criacao=datetime.now(),
         data_liquidacao=data_liquidacao,
-        banco_liquidacao=banco_saida,
         uuid_correlacao=correlacao_id
     )
     lancamento_saida.save()
@@ -219,7 +226,9 @@ def processar_transferencia(request):
     # Cria o lançamento de entrada
     lancamento_entrada = Tabela_realizado(
         vencimento=data_liquidacao,
-        descricao='Transferência de '+banco_saida,
+        descricao=f'Transferência de {banco_saida_nome}',
+        banco_id_liquidacao=banco_entrada_id,
+        banco_liquidacao=banco_entrada_nome,
         observacao=observacao,
         valor=valor_transferencia,
         conta_contabil='Transferência Entrada',
@@ -229,7 +238,6 @@ def processar_transferencia(request):
         natureza='Crédito',
         original_data_criacao=datetime.now(),
         data_liquidacao=data_liquidacao,
-        banco_liquidacao=banco_entrada,
         uuid_correlacao=correlacao_id
     )
     lancamento_entrada.save()
@@ -284,6 +292,7 @@ def processar_liquidacao(request):
                     original_data_criacao=registro_original.data_criacao,
                     data_liquidacao=data_liquidacao_aware,
                     banco_liquidacao=item.get('banco_liquidacao', ''),
+                    banco_id_liquidacao=item.get('banco_id_liquidacao', ''),
                     uuid_correlacao=uuid_correlacao,
                     uuid_correlacao_parcelas=uuid_correlacao  # Aqui é adicionado o mesmo UUID a uuid_correlacao_parcelas
                 )

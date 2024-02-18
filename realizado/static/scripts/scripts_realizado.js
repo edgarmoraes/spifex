@@ -132,7 +132,7 @@ function filtrarTabela() {
   var filtroDescricao = document.getElementById("caixa-pesquisa").value.toUpperCase();
   var filtroTags = document.getElementById("caixa-pesquisa-tags").value.toUpperCase();
   var filtroContaContabil = document.getElementById("contas-contabeis").value.toUpperCase();
-  var filtroBancoLiquidacao = document.getElementById("bancos").value.toUpperCase();
+  var filtroBancoLiquidacaoId = document.getElementById("bancos").value;
   var filtroNatureza = document.getElementById("natureza").value;
 
   var tabela = document.getElementById("tabela-lancamentos");
@@ -145,7 +145,7 @@ function filtrarTabela() {
       var tdDescricao = tr[i].getElementsByClassName("descricao-row")[0];
       var tdObservacao = tr[i].getElementsByClassName("obs-row")[0];
       var contaContabil = tr[i].getAttribute('data-conta-contabil').toUpperCase();
-      var bancoLiquidacao = tr[i].getAttribute('data-banco-liquidacao').toUpperCase();
+      var bancoLiquidacaoId = tr[i].getAttribute('data-banco-id-liquidacao');
       var tdVencimento = tr[i].getElementsByClassName("vencimento-row")[0];
       var dataVencimento = new Date(tdVencimento.textContent.split('/').reverse().join('-'));
       var tdTags = tr[i].getElementsByClassName("d-block")[0];
@@ -158,7 +158,7 @@ function filtrarTabela() {
       var descricaoObservacaoMatch = txtDescricao.toUpperCase().indexOf(filtroDescricao) > -1 || txtObservacao.toUpperCase().indexOf(filtroDescricao) > -1;
       var tagMatch = filtroTags === "" || txtTags.indexOf(filtroTags) > -1;
       var contaContabilMatch = filtroContaContabil === "" || contaContabil.toUpperCase().indexOf(filtroContaContabil) > -1;
-      var bancoLiquidacaoMatch = filtroBancoLiquidacao === "" || bancoLiquidacao.toUpperCase().indexOf(filtroBancoLiquidacao) > -1;
+      var bancoLiquidacaoMatch = filtroBancoLiquidacaoId === "" || bancoLiquidacaoId === filtroBancoLiquidacaoId;
       var mesMatch = (!inicioMesDate && !fimMesDate) || (dataVencimento >= inicioMesDate && dataVencimento <= fimMesDate);
       var naturezaMatch = filtroNatureza === "" || filtroNatureza === naturezaLancamento;
       var dataMatch = (!dataInicioObj || dataVencimento >= dataInicioObj) && (!dataFimObj || dataVencimento <= dataFimObj);
@@ -202,17 +202,18 @@ function atualizarSaldoTotalBancos() {
 }
 
 function filtrarBancos() {
-  var bancoSelecionado = document.getElementById("bancos").value;
+  var bancoSelecionadoId = document.getElementById("bancos").value; // ID do banco selecionado
   var tabelaBancos = document.querySelectorAll(".row-bancos");
   var saldoTotal = 0;
 
   tabelaBancos.forEach(linha => {
-      if (linha.querySelector(".banco-row").textContent === bancoSelecionado || bancoSelecionado === "") {
-          linha.style.display = ""; 
+      var bancoId = linha.getAttribute('data-banco-id'); // Assume que cada linha tem um data-banco-id
+      if (bancoId === bancoSelecionadoId || bancoSelecionadoId === "") {
+          linha.style.display = "";
           var saldo = parseSaldo(linha.querySelector(".saldo-banco-row").textContent);
           saldoTotal += saldo;
       } else {
-          linha.style.display = "none"; 
+          linha.style.display = "none";
       }
   });
 
@@ -221,14 +222,14 @@ function filtrarBancos() {
 }
 
 function filtrarFluxoCaixaPorBanco() {
-  var bancoSelecionado = document.getElementById("bancos").value;
+  var bancoSelecionadoId = document.getElementById("bancos").value;
   var linhasFluxoCaixa = document.querySelectorAll("#tabela-lancamentos .row-lancamentos");
   var saldoTotal = parseSaldo(document.querySelector(".saldo-total-banco-row").textContent);
 
   for (var i = linhasFluxoCaixa.length - 1; i >= 0; i--) {
       var linha = linhasFluxoCaixa[i];
-      var bancoLiquidacao = linha.getAttribute('data-banco-liquidacao');
-      if (linha.style.display !== "none" && (bancoLiquidacao === bancoSelecionado || bancoSelecionado === "")) {
+      var bancoLiquidacaoId = linha.getAttribute('data-banco-id-liquidacao');
+      if (linha.style.display !== "none" && (bancoLiquidacaoId === bancoSelecionadoId || bancoSelecionadoId === "")) {
           var debito = parseSaldo(linha.querySelector(".debito-row").textContent || "0");
           var credito = parseSaldo(linha.querySelector(".credito-row").textContent || "0");
           
@@ -249,4 +250,33 @@ function parseSaldo(valorSaldo) {
 
 function formatarComoMoeda(valor) {
   return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+// Verifica se a tecla 'Shift' foi pressionada juntamente com 'D'
+document.addEventListener('keydown', function(event) {
+  if (event.shiftKey && event.key === 'D') {
+      var elementoFocado = document.activeElement;
+      if (elementoFocado && elementoFocado.type === 'date') {
+          var dataAtual = new Date().toISOString().split('T')[0];
+          elementoFocado.value = dataAtual;
+          event.preventDefault();
+          moverParaProximoCampo(elementoFocado);
+      }
+  }
+});
+
+function moverParaProximoCampo(campoAtual) {
+  var form = campoAtual.form;
+  var index = Array.prototype.indexOf.call(form, campoAtual) + 1; // Começa no próximo elemento
+  var proximoCampo;
+
+  // Percorre os campos subsequentes do formulário até encontrar um que seja editável
+  while (index < form.elements.length) {
+      proximoCampo = form.elements[index];
+      if (proximoCampo && !proximoCampo.disabled && !proximoCampo.readOnly && !proximoCampo.hidden && proximoCampo.tabIndex >= 0) {
+          proximoCampo.focus();
+          break; // Sai do loop assim que encontra um campo editável
+      }
+      index++; // Move para o próximo campo no formulário
+  }
 }

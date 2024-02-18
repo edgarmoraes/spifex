@@ -12,25 +12,21 @@ body {
 }
 
 /* Títulos */
-h1 {
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  padding: 1vh;
-  width: 100%;
-  height: 16vh;
-  font-family: var(--primary-font);
-  font-size: 25px;
-  color: var(--branco);
-  background-color: var(--color7);
-}
-
 h2 {
   font-weight: 700;
   font-size: 20px;
 }
 
 /* Área do Acordeão */
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  align-items: center;
+  margin: 4.5rem auto 1rem auto;
+  width: 100%;
+}
+
 section {
   margin: 20px;
   width: 80%;

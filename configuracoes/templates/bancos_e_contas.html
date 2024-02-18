@@ -2,7 +2,7 @@
 {% load currency_filters %}
 {% load number_filters %}
 {% load add_decimal %}
-
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -105,11 +105,12 @@
 
             <section class="modal-botoes">
                 <input class="modal-salvar-bancos" type="submit" value="Salvar">
+                <button class="modal-apagar-bancos" style="display:none;">Apagar</button>
                 <button class="modal-fechar-bancos">Cancelar</button>
             </section>
         </form>
     </dialog>
 
-    <script src="{% static 'scripts/scripts-adicionar-bancos.js' %}"></script>
+    <script src="{% static 'scripts/scripts-bancos-e-contas.js' %}"></script>
 </body>
 </html>

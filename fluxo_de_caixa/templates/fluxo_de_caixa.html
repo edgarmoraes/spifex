@@ -59,10 +59,11 @@
                     <!-- ############### Filtro Bancos ############### -->
                     <section class="flex">
                         <label for="bancos">BANCOS</label>
-                        <select id="bancos" name ="bancos">
+                        <select id="bancos" name="bancos">
                             <option value="" disabled selected hidden>Selecione</option>
-                            {% for bancos in bancos %}
-                            <option value="{{ bancos.banco }}">{{ bancos.banco }}</option>
+                            <option value="Todos" style="display:none;">Todos</option> <!-- Opção para selecionar todos os bancos -->
+                            {% for banco in bancos %}
+                            <option value="{{ banco.id }}" data-banco-id="{{ banco.id }}">{{ banco.banco }}</option>
                             {% endfor %}
                         </select>
                     </section>
@@ -143,7 +144,7 @@
                     </thead>
                     <tbody>
                         {% for banco in bancos %}
-                        <tr class="row-bancos" scope="row">
+                        <tr class="row-bancos" scope="row" name="banco-id" data-banco-id="{{ banco.id }}">
                             <td class="banco-row" name="banco">{{ banco.banco }}</td>
                             <td class="ag-row" name="agencia">{{ banco.agencia }}</td>
                             <td class="conta-row" name="conta">{{ banco.conta }}</td>
@@ -307,24 +308,24 @@
                 <input class="modal-valor" id="valor-transferencias" type="text" name="valor" oninput="formatarCampoValor(this)" value="" required><br>
             </section>
             
-                <section class="modal-flex">
-                    <label for="banco-saida">Do banco</label>
-                    <select class="modal-banco-saida" id="banco-saida" name="banco_saida" required>
-                        <option value="" disabled selected hidden>Selecione</option>
-                        {% for bancos in bancos %}
-                        <option value="{{ bancos.banco }}">{{ bancos.banco }}</option>
-                        {% endfor %}
-                    </select><br>
-                </section>
-                <section class="modal-flex">
-                    <label for="banco-entrada">Para o banco</label>
-                    <select class="modal-banco-entrada" id="banco-entrada" name="banco_entrada" required>
-                        <option value="" disabled selected hidden>Selecione</option>
-                        {% for bancos in bancos %}
-                        <option value="{{ bancos.banco }}">{{ bancos.banco }}</option>
-                        {% endfor %}
-                    </select><br>
-                </section>
+            <section class="modal-flex">
+                <label for="banco-saida">Do banco</label>
+                <select class="modal-banco-saida" id="banco-saida" name="banco_saida" required>
+                    <option value="" disabled selected hidden>Selecione</option>
+                    {% for bancos in bancos %}
+                    <option value="{{ bancos.id }}|{{ bancos.banco }}">{{ bancos.banco }}</option>
+                    {% endfor %}
+                </select><br>
+            </section>
+            <section class="modal-flex">
+                <label for="banco-entrada">Para o banco</label>
+                <select class="modal-banco-entrada" id="banco-entrada" name="banco_entrada" required>
+                    <option value="" disabled selected hidden>Selecione</option>
+                    {% for bancos in bancos %}
+                    <option value="{{ bancos.id }}|{{ bancos.banco }}">{{ bancos.banco }}</option>
+                    {% endfor %}
+                </select><br>
+            </section>
         
             <section class="modal-flex mesclar-2">
                 <label for="observacao-transferencia">Observação</label>
@@ -450,13 +451,13 @@
                                 {% for banco in bancos %}
                                 <tr class="row-bancos" scope="row">
                                     <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado-liquidacao" type="checkbox"><span class="checkmark-liquidacao"></span></label></td>
-                                    <td class="banco-row banco-liquidacao" name="banco" data-nome-banco="{{ banco.banco }}">{{ banco.banco }}</td>
+                                    <td class="banco-row banco-liquidacao" name="banco" data-nome-banco="{{ banco.banco }}" data-id-banco="{{ banco.id }}">{{ banco.banco }}</td>
                                     <td class="ag-row" name="agencia">{{ banco.agencia }}</td>
                                     <td class="conta-row" name="conta">{{ banco.conta }}</td>
                                     <td class="saldo-banco-liquidacao-row" name="saldo_inicial">{{ banco.saldo_inicial|add:banco.saldo_atual|format_number }}</td>
                                 </tr>
                                 {% endfor %}
-                                <tr class="totais-row" scope="row">
+                                <tr class="totais-row-liquidacao" scope="row">
                                     <td class=""></td>
                                     <td class=""></td>
                                     <td class=""></td>

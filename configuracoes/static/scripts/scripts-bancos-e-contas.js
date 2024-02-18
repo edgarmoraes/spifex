@@ -26,6 +26,7 @@ function fecharModal(closeBtn, modal, formSelector) {
 function fechar(modal, formSelector) {
   modal.close();
   document.body.style.overflow = '';
+  document.querySelectorAll(".modal-apagar-bancos").forEach(botao => botao.style.display = 'none');
   limparCamposModal()
   document.querySelector(formSelector).reset();
 }
@@ -73,7 +74,7 @@ function formatarCampoValorBancos(input) {
   input.value = valor;
 }
 
-
+// Edição de banco
 document.addEventListener('DOMContentLoaded', function () {
   var linhasBancos = document.querySelectorAll('.row-bancos');
 
@@ -82,6 +83,9 @@ document.addEventListener('DOMContentLoaded', function () {
           // Abra o modal aqui
           const modalBancos = document.querySelector('.modal-bancos');
           modalBancos.showModal();
+          
+          // Torna o botão de apagar visível
+          document.querySelectorAll(".modal-apagar-bancos").forEach(botao => botao.style.display = 'block');
 
           // Preencha os campos do modal com os dados da linha clicada
           const banco = linha.querySelector('.banco-row').textContent;
@@ -96,9 +100,8 @@ document.addEventListener('DOMContentLoaded', function () {
           document.getElementById('conta-banco').value = conta;
           document.getElementById('saldo-inicial').value = saldoInicial;
           document.querySelector('[name="id_banco"]').value = idBanco;
-          // Corrige a seleção de elemento para o select de status e ajusta o valor baseado no texto
-          const selectStatusBanco = document.querySelector('#status-banco'); // Corrige a seleção para o ID correto
-          selectStatusBanco.value = statusBanco.toLowerCase() === 'ativo' ? 'ativo' : 'inativo'; // Ajusta o valor do select
+          const selectStatusBanco = document.querySelector('#status-banco');
+          selectStatusBanco.value = statusBanco.toLowerCase() === 'ativo' ? 'ativo' : 'inativo';
       });
   });
 
@@ -107,8 +110,48 @@ document.addEventListener('DOMContentLoaded', function () {
   btnFechar.addEventListener('click', function () {
       var modalBancos = document.querySelector('.modal-bancos');
       modalBancos.close();
+      
+      // Torna o botão de apagar invisível
+      document.querySelectorAll(".modal-apagar-bancos").forEach(botao => botao.style.display = 'none');
   });
+  document.querySelector('.modal-apagar-bancos').addEventListener('click', function () {
+    const idBanco = document.querySelector('[name="id_banco"]').value; // Obtém o ID do banco a ser excluído
+    if (!confirm("Tem certeza que deseja apagar este banco?")) return; // Confirmação antes de excluir
+    
+    fetch(`/configuracoes/verificar_e_excluir_banco/${idBanco}/`, {
+      method: 'POST',
+      headers: {
+          'X-CSRFToken': getCsrfToken() // Inclui CSRF token
+      },
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Falha na requisição');
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            alert("Banco excluído com sucesso.");
+            window.location.reload(); // Recarrega a página para atualizar a lista de bancos
+        } else {
+            alert(data.error); // Exibe mensagem de erro retornada pelo servidor
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        alert("Falha ao tentar excluir o banco.");
+    });
+
+    // Torna o botão de apagar invisível novamente e fecha o modal
+    this.style.display = 'none';
+    document.querySelector('.modal-bancos').close();
 });
+
+// Função para obter CSRF token do cookie
+function getCsrfToken() {
+    return document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+}
+});
+
 
 document.querySelector('.modal-form-bancos').addEventListener('submit', function(e) {
   e.preventDefault();  // Impede o envio tradicional do formulário
@@ -126,9 +169,10 @@ document.querySelector('.modal-form-bancos').addEventListener('submit', function
       if(data.success) {
           // Feche o modal aqui
           document.querySelector('.modal-bancos').close();
+          // Torna o botão de apagar invisível
+          document.querySelectorAll(".modal-apagar-bancos").forEach(botao => botao.style.display = 'none');
           window.location.reload();
           // Atualize a lista de bancos aqui
-          // Você pode adicionar o código para atualizar a lista dinamicamente sem recarregar a página
       } else {
           alert("Houve um erro ao salvar as informações.");
       }

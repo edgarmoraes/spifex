@@ -16,7 +16,8 @@ class Tabela_realizado(models.Model):
     original_data_criacao = models.DateTimeField(null=True, blank=True)
     data_liquidacao = models.DateTimeField()
     banco_liquidacao = models.CharField(max_length=255, null=True, blank=True)
-    uuid_correlacao = models.UUIDField(null=True, blank=True)  # Campo novo para agrupar transferências
+    banco_id_liquidacao = models.IntegerField(null=True, blank=True)
+    uuid_correlacao = models.UUIDField(null=True, blank=True)
     uuid_correlacao_parcelas = models.UUIDField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
@@ -24,8 +25,7 @@ class Tabela_realizado(models.Model):
         self.atualizar_saldo_banco()
     
     def atualizar_saldo_banco(self):
-        # Assume que 'banco_liquidacao' armazena o nome do banco
-        banco = Bancos.objects.get(banco=self.banco_liquidacao)
+        banco = Bancos.objects.get(id=self.banco_id_liquidacao)  # Modificado para usar ID
         if self.natureza == 'Crédito':
             banco.saldo_atual += self.valor
         else:  # Débito

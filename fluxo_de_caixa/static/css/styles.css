@@ -600,6 +600,14 @@ nav {
 .totais-row {
   position: sticky;
   bottom: 0;
+  height: 35px;
+  background-color: var(--color2);
+  z-index: 1;
+}
+
+.totais-row-liquidacao {
+  position: sticky;
+  bottom: 0;
   height: 25px;
   background-color: var(--color2);
   z-index: 1;

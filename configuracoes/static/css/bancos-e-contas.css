@@ -172,7 +172,8 @@ input:focus {
 }
 
 .modal-fechar-bancos,
-.modal-salvar-bancos {
+.modal-salvar-bancos,
+.modal-apagar-bancos {
   border: none;
   height: 45px;
   color: var(--branco);
@@ -183,17 +184,9 @@ input:focus {
 }
 
 .modal-fechar-bancos:focus,
-.modal-salvar-bancos:focus {
+.modal-salvar-bancos:focus,
+.modal-apagar-bancos:focus {
   outline: none;
-}
-
-.modal-fechar-bancos:hover {
-  background-color: var(--color8);
-  box-shadow: var(--box-shadow2);
-}
-
-.modal-fechar-bancos {
-  background-color: var(--color6);
 }
 
 .modal-salvar-bancos {
@@ -205,9 +198,28 @@ input:focus {
   box-shadow: var(--box-shadow2);
 }
 
+.modal-fechar-bancos {
+  background-color: var(--color6);
+}
+
+.modal-fechar-bancos:hover {
+  background-color: var(--color8);
+  box-shadow: var(--box-shadow2);
+}
+
+.modal-apagar-bancos {
+  background-color: #500000;
+}
+
+.modal-apagar-bancos:hover {
+  background-color: var(--color6);
+  box-shadow: var(--box-shadow2);
+}
+
 /* Tabela Bancos */
 .cadastro-contas-bancos-col {
   width: 20%;
+  border-radius: 20px 0px 0px 20px;
 }
 
 .cadastro-ag-bancos-col {
@@ -224,4 +236,5 @@ input:focus {
 
 .cadastro-status-bancos-col {
   width: 20%;
+  border-radius: 0px 20px 20px 0px;
 }
