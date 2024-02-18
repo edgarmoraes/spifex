@@ -98,6 +98,189 @@
   cursor: pointer;
 }
 
+/* Modais */
+.modal-realizado {
+  width: 80%;
+  margin: auto auto;
+  padding: 2rem;
+  background-color: var(--branco);
+  border: none;
+  border-radius: 1rem;
+  box-shadow: var(--box-shadow1);
+  transition: var(--transition-duration1);
+  font-family: 'Open Sans', sans-serif;
+  outline: none;
+}
+
+.mesclar-2 {
+  grid-column: span 2;
+}
+
+.modal-recebimentos::backdrop,
+.modal-pagamentos::backdrop,
+.modal-transferencias::backdrop {
+  overflow-y: scroll !important;
+  max-height: 100% !important;
+}
+
+.modal-titulo {
+  margin-bottom: 1rem;
+  font-size: 20px;
+}
+
+dialog > form {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.lancamentos-selecionados {
+  display: grid;
+  grid-template-columns: 0.4fr 0.6fr 0.8fr 0.40fr 0.3fr 0.1fr;
+}
+
+.modal-transferencias > form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+dialog > form > section {
+  display: flex;
+  flex-direction: column;
+  margin: 0 5px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+section.modal-flex {
+  margin: 0px 5px;
+}
+
+.modal-flex > select,
+.modal-flex > input {
+  width: 100%;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 15px;
+  margin-top: 5px;
+}
+
+/* Estilo das Caixas de Seleções e Datas */
+.modal-flex select,
+.modal-flex input {
+background-color: var(--color2);
+  border: none;
+  color: var(--preto);
+  padding: 0.7rem 1rem;
+  border-radius: 5px;
+  transition: var(--transition-effect1) .5s;
+}
+
+.modal-flex select:hover,
+.modal-flex select:focus,
+.modal-flex input:hover,
+.modal-flex input:focus {
+  box-shadow: var(--box-shadow1);
+}
+
+.modal-flex select,
+input:focus {
+  outline: none;
+  background-color: var(--color1);
+}
+
+/* Botões dos Modais */
+.modal-botoes {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-end;
+  margin: 10px 5px;
+  gap: 1.5rem;
+}
+
+.modal-fechar-realizado,
+.modal-salvar {
+  border: none;
+  height: 45px;
+  color: var(--branco);
+  font-weight: 700;
+  padding: 0.7rem 1rem;
+  border-radius: 5px;
+  transition: var(--transition-effect1) var(--transition-duration2);
+}
+
+.modal-fechar-realizado,:focus,
+.modal-salvar:focus {
+  outline: none;
+}
+
+.modal-fechar-realizado:hover {
+  background-color: var(--color8);
+  box-shadow: var(--box-shadow2);
+}
+
+.modal-fechar-realizado {
+  background-color: var(--color6);
+}
+
+.modal-salvar {
+  background-color: var(--color5);
+}
+
+.modal-salvar:hover {
+  background-color: var(--color3);
+  box-shadow: var(--box-shadow2);
+}
+
+/* Tag Container */
+.tag-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 5px;
+  margin-top: 10px;
+}
+
+.tag {
+  background-color: var(--color7);
+  color: #000000;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.tag input {
+  display: none;
+  border: none;
+  background: var(--color7);
+  color: var(--color4);
+  font-weight: 700;
+  width: auto;
+}
+
+.tag input:focus {
+  display: none;
+  border: none;
+  background: var(--color2);
+  color: var(--color4);
+  font-weight: 700;
+  width: auto;
+}
+
+input#tagInput {
+  padding: 8px;
+  font-size: 16px;
+}
+
+
+
+
+
+
+
+
+
+
 @media screen and (max-width: 768px) {
   .box-grid,
   .box-grid-filters,

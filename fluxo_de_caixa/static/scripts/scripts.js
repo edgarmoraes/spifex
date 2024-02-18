@@ -512,23 +512,23 @@ function abrirModal(openBtn, modal) {
   });
 }
 
-function fecharModal(closeBtn, modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId, parcelasId) {
+function fecharModal(closeBtn, modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId) {
   closeBtn.addEventListener('click', () => {
-    fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId, parcelasId);
+    fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId);
   });
   
   modal.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId, parcelasId);
+      fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId);
     }
   });
 
   modal.addEventListener('close', () => {
-    fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId, parcelasId);
+    fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId);
   });
 }
 
-function fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId, parcelasId) {
+function fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId) {
   modal.close();
   modalAberto = null;
   document.body.style.overflow = '';
@@ -554,14 +554,6 @@ function fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainer
   const tagsHiddenInput = document.getElementById(tagsHiddenInputId);
   if (tagsHiddenInput) {
       tagsHiddenInput.value = '';
-  }
-
-  // Verifica se o parcelasInput existe antes de tentar manipulá-lo
-  const parcelasInput = document.getElementById(parcelasId);
-  if (parcelasInput) {
-      parcelasInput.value = '1'; // Define o valor padrão para 1
-      parcelasInput.style.display = 'none'; // Oculta o campo de parcelas
-      parcelasInput.disabled = false; // Habilita o campo de parcelas
   }
 
     // Oculta as seções de liquidação parcial e remove a classe 'ativo' dos elementos ajustáveis

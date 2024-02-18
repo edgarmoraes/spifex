@@ -280,3 +280,146 @@ function moverParaProximoCampo(campoAtual) {
       index++; // Move para o próximo campo no formulário
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Configura o evento de duplo clique em cada linha da tabela de lançamentos
+  document.querySelectorAll('.row-lancamentos').forEach(row => {
+      row.addEventListener('dblclick', function() {
+          abrirModalEdicao(this);
+      });
+  });
+});
+
+function abrirModalEdicao(row) {
+  // Extrai os dados da linha selecionada
+  const id = row.getAttribute('data-id-row');
+  const vencimento = row.querySelector('.vencimento-row').textContent.trim();
+  const descricao = row.querySelector('.descricao-row').textContent.trim();
+  const observacao = row.querySelector('.obs-row').textContent.trim().split('Tags:')[0];
+  const valor = row.querySelector('.debito-row').textContent.trim() || row.querySelector('.credito-row').textContent.trim();
+  const contaContabil = row.getAttribute('data-conta-contabil');
+  const tags = row.querySelector('.obs-row').textContent.trim().split('Tags:')[1];
+
+  // Preenche os campos do modal com os dados extraídos
+  preencherDadosModalRealizado(id, vencimento, descricao, observacao, valor, contaContabil, tags);
+
+  // Abre o modal "Realizado"
+  document.getElementById('modal-realizado').showModal();
+  document.body.style.overflow = 'hidden';
+  document.body.style.marginRight = '17px';
+  document.querySelector('.nav-bar').style.marginRight = '17px';
+}
+
+function preencherDadosModalRealizado(id, vencimento, descricao, observacao, valor, contaContabil, tags) {
+  document.querySelector('.modal-form-realizado [name="lancamento_id_realizado"]').value = id;
+  document.getElementById('data-realizado').value = formatarDataParaInput(vencimento);
+  document.getElementById('descricao-realizado').value = descricao;
+  document.getElementById('observacao-realizado').value = observacao;
+  document.getElementById('valor-realizado').value = valor.replace(/[^\d,.-]/g, '').replace(',', '.'); // Supondo que o valor seja formatado como número
+  
+  // Seleciona a conta contábil correspondente
+  const contaContabilSelect = document.getElementById('conta-contabil-realizado');
+  Array.from(contaContabilSelect.options).forEach(option => {
+      if (option.text === contaContabil) {
+          contaContabilSelect.value = option.value;
+      }
+  });
+
+  // Limpa o container de tags antes de adicionar novas
+  const tagContainer = document.getElementById('tag-container-realizado');
+  tagContainer.innerHTML = '';
+  // Supondo que as tags sejam separadas por vírgulas
+  tags.split(',').forEach(tag => {
+      if (tag.trim()) {
+          adicionarTag(tag.trim(), 'tag-container-realizado');
+      }
+  });
+}
+
+function formatarDataParaInput(data) {
+  const [dia, mes, ano] = data.split('/');
+  return `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+}
+
+function adicionarTag(tag, containerId) {
+  const container = document.getElementById(containerId);
+  const tagElement = document.createElement('span');
+  tagElement.classList.add('tag');
+  tagElement.textContent = tag;
+  container.appendChild(tagElement);
+}
+
+// Adiciona lógica para fechar o modal e resetar o formulário
+document.querySelector('.modal-fechar-realizado').addEventListener('click', function() {
+  const modal = document.getElementById('modal-realizado');
+  modal.close();
+  document.body.style.overflow = '';
+  document.body.style.marginRight = '';
+  document.querySelector('.nav-bar').style.marginRight = '';
+  const form = document.querySelector(".modal-form-realizado");
+  form.reset();
+  document.getElementById('tag-container-realizado').innerHTML = ''; // Limpa as tags
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  const linhasLancamentos = document.querySelectorAll('.row-lancamentos');
+
+  linhasLancamentos.forEach(linha => {
+      linha.addEventListener('dblclick', function() {
+          const id = this.getAttribute('data-id-row');
+          const vencimento = this.querySelector('.vencimento-row').textContent;
+          const descricao = this.querySelector('.descricao-row').textContent;
+          const observacao = this.querySelector('.obs-row').textContent.split('Tags:')[0].trim(); // Separa a observação das tags
+          const valor = this.querySelector('.debito-row').textContent || this.querySelector('.credito-row').textContent;
+          const contaContabil = this.getAttribute('data-conta-contabil');
+          const parcelasTotal = this.getAttribute('parcelas-total');
+
+          abrirModalRealizado(id, vencimento, descricao, observacao, valor, contaContabil, parcelasTotal);
+      });
+  });
+});
+
+function abrirModalRealizado(id, vencimento, descricao, observacao, valor, contaContabil, parcelasTotal) {
+  document.getElementById('modal-realizado').showModal();
+  document.getElementById('data-realizado').value = formatarDataParaInput(vencimento);
+  document.getElementById('descricao-realizado').value = descricao;
+  document.getElementById('observacao-realizado').value = observacao;
+  document.getElementById('valor-realizado').value = valor.replace(/[^\d,-]/g, '').replace(',', '.'); // Remove caracteres não numéricos exceto vírgula, e substitui vírgula por ponto
+  document.getElementById('conta-contabil-realizado').value = contaContabil;
+  // Supondo que exista lógica para definir o valor de recorrência e parcelas
+  // document.getElementById('recorrencia-realizado').value = ...;
+  document.getElementById('parcelas-realizado').value = parcelasTotal;
+
+  // Adicione aqui a lógica para tags se necessário
+}
+
+function formatarDataParaInput(vencimento) {
+  const partesData = vencimento.split('/').reverse(); // Converte dd/mm/yyyy para yyyy-mm-dd
+  return partesData.join('-');
+}
