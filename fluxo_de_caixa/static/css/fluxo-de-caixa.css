@@ -51,7 +51,7 @@
 }
 
 .recebimentos {
-  background-color: #0056e9;
+  background-color: var(--color7);
 }
 
 .pagamentos {
@@ -83,11 +83,11 @@
 }
 
 .pagamentos:hover {
-  background-color: var(--color8);
+  background-color: var(--color7);
 }
 
 .transferencias:hover {
-  background-color: var(--color3);
+  background-color: var(--color7);
 }
 
 .botao:hover .svgIcon {
@@ -107,19 +107,19 @@
 }
 
 .botao:hover.recebimentos::before {
-  content: "Recebimentos";
+  content: "RECEBIMENTOS";
 }
 
 .botao:hover.pagamentos::before {
-  content: "Pagamentos";
+  content: "PAGAMENTOS";
 }
 
 .botao:hover.transferencias::before {
-  content: "Transferências";
+  content: "TRANSFERÊNCIAS";
 }
 
 .botao:hover::before {
-  font-size: 13px;
+  font-size: 12px;
   opacity: 1;
   transform: translateY(30px);
   transition-duration: var(--transition-duration1);

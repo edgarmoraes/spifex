@@ -180,16 +180,16 @@ function montarDivLancamento({id, descricao, vencimento, observacao, valor, natu
         <input class="modal-data data-liquidacao" id="data-liquidacao-${id}" type="date" name="data-liquidacao-${id}" value="${formatarDataParaInput(vencimento)}" required>
     </section>
     <section class="modal-flex">
-        <input class="modal-descricao" id="descricao-liquidacao-${id}" maxlength="100" type="text" name="descricao-liquidacao-${id}" value="${descricao}" readonly>
+        <input class="modal-descricao" id="descricao-liquidacao-${id}" maxlength="100" type="text" name="descricao-liquidacao-${id}" value="${descricao}" readonly style="background-color: #ababab; color: #ffffff;">
     </section>
     <section class="modal-flex">
         <input class="modal-obs" id="observacao-liquidacao-${id}" maxlength="100" type="text" name="observacao-liquidacao-${id}" value="${observacao}">
     </section>
     <section class="modal-flex">
-        <input class="modal-valor valor-liquidacao-total" id="valor-liquidacao-${id}" type="text" name="valor-liquidacao-${id}" oninput="formatarCampoValor(this)" value="${formatarValorDecimal(valor)}" readonly required>
+        <input class="modal-valor valor-liquidacao-total" id="valor-liquidacao-${id}" type="text" name="valor-liquidacao-${id}" oninput="formatarCampoValor(this)" value="${formatarValorDecimal(valor)}" readonly required style="background-color: #ababab; color: #ffffff;">
     </section>
     <section class="modal-flex natureza-liquidacao">
-        <input class="modal-natureza" id="natureza-liquidacao-${id}" type="text" name="natureza-liquidacao-${id}" value="${natureza}" readonly>
+        <input class="modal-natureza" id="natureza-liquidacao-${id}" type="text" name="natureza-liquidacao-${id}" value="${natureza}" readonly style="background-color: #ababab; color: #ffffff;">
     </section>
     <section class="modal-botao-parcial">
       <div>
@@ -733,7 +733,10 @@ function preencherDadosModal(row, tipo) {
 
       // Bloqueia a edição do campo 'valor' caso o 'data-uuid-row' seja diferente de 'none'
     if (uuid !== 'None') {
-        document.getElementById(`valor-${tipo}`).readOnly = true;
+      var element = document.getElementById(`valor-${tipo}`);
+      element.readOnly = true;
+      element.style.backgroundColor = '#B5B5B5';
+      element.style.color = '#FFFFFF';
     } else {
         document.getElementById(`valor-${tipo}`).readOnly = false;
     }

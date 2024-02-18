@@ -267,31 +267,6 @@ nav {
   color: var(--color4);
 }
 
-.caixa-pesquisa:focus + .botao-pesquisa {
-  background-color: var(--color1);
-}
-
-.botao-pesquisa {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  margin-right: 1rem;
-  border: none;
-  background-color: var(--color2);
-}
-
-.botao-pesquisa:hover {
-  cursor: pointer;
-}
-
-.icon-pesquisa {
-  height: 1.3em;
-  width: 1.3em;
-  fill: #b4b4b4;
-  display: none; /* Oculta os botões de pesquisa */
-}
-
 /* Caixa de Pesquisa de Tags */
 .pesquisa-tags {
   display: flex;
@@ -328,30 +303,6 @@ nav {
 .caixa-pesquisa-tags::-webkit-input-placeholder {
   font-weight: 400;
   color: var(--color4);
-}
-
-.caixa-pesquisa-tags:focus + .botao-pesquisa-tags {
-  background-color: var(--color1);
-}
-
-.botao-pesquisa-tags {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  margin-right: 1rem;
-  border: none;
-  background-color: var(--color2);
-}
-
-.botao-pesquisa-tags:hover {
-  cursor: pointer;
-}
-
-.icon-pesquisa-tags {
-  height: 1.3em;
-  width: 1.3em;
-  fill: #b4b4b4;
 }
 
 /* Tabela com Lançamentos */
@@ -957,7 +908,8 @@ td.saldo-total-banco-liquidacao-row {
       justify-content: center;
   }
 
-  .tabela-lancamentos, .tabela-bancos {
+  .tabela-lancamentos,
+  .tabela-bancos {
       min-width: 0;
       overflow-x: auto;
   }
@@ -966,7 +918,9 @@ td.saldo-total-banco-liquidacao-row {
       display: block;
   }
 
-  .flex > select, .flex > input, .caixa-pesquisa, .caixa-pesquisa-tags {
+  .flex > select, .flex > input,
+  .caixa-pesquisa,
+  .caixa-pesquisa-tags {
       width: 90%;
   }
 
@@ -1069,13 +1023,6 @@ td.saldo-total-banco-liquidacao-row {
   .caixa-pesquisa,
   .caixa-pesquisa-tags {
     width: calc(100% - 2rem);
-    margin: 10px 1rem;
-  }
-
-  .botao-pesquisa,
-  .botao-pesquisa-tags {
-    display: none; /* Oculta os botões de pesquisa */
-    position: static;
     margin: 10px 1rem;
   }
 
