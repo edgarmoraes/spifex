@@ -45,6 +45,7 @@
                         <th class="cadastro-ag-bancos-col" scope="col">Agência</th>
                         <th class="cadastro-conta-bancos-col" scope="col">Conta</th>
                         <th class="cadastro-JPsaldo-bancos-col" scope="col">Saldo Inicial</th>
+                        <th class="cadastro-JPsaldo-bancos-col" scope="col">Saldo Atual</th>
                         <th class="cadastro-status-bancos-col" scope="col">Status</th>
                     </tr>
                 </thead>
@@ -55,6 +56,7 @@
                         <td class="ag-row" name="agencia">{{ banco.agencia }}</td>
                         <td class="conta-row" name="conta">{{ banco.conta }}</td>
                         <td class="saldo-banco-row" name="saldo_inicial">{{ banco.saldo_inicial|format_number }}</td>
+                        <td class="saldo_consolidado-banco-row" name="saldo_inicial">{{ banco.saldo_consolidado|format_number }}</td>
                         <td class="status-row" name="status_banco">
                             {% if banco.status %}
                             Ativo

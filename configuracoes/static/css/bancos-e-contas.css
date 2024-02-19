@@ -234,7 +234,11 @@ input:focus {
   width: 20%;
 }
 
-.cadastro-status-bancos-col {
+.saldo_consolidado-banco-row {
   width: 20%;
+}
+
+.cadastro-status-bancos-col {
+  width: 10%;
   border-radius: 0px 20px 20px 0px;
 }
