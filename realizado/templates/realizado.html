@@ -140,9 +140,10 @@
 
         <h1 class="modal-titulo">Realizado</h1>
         
-        <form class="modal-form-realizado" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
-            <input type="hidden" name="lancamento_id_realizado" value="{{ fluxo_de_caixa.id }}">
-            <input type="hidden" name="uuid_realizado" value="{{ fluxo_de_caixa.uuid_correlacao }}">
+        <form class="modal-form-realizado" action="/realizado/" method="POST">{% csrf_token %}
+            <input type="hidden" name="lancamento_id_realizado" value="{{ realizado.id }}">
+            <input type="hidden" name="uuid_realizado" value="{{ realizado.uuid_correlacao }}">
+            <input type="hidden" name="uuid_parcelas_realizado" value="{{ realizado.uuid_correlacao_parcelas }}">
             <section class="modal-flex">
                 <label for="data-realizado">Data</label>
                 <input class="modal-data" id="data-realizado" type="date" name="vencimento" required><br>
@@ -160,39 +161,25 @@
             
             <section class="modal-flex">
                 <label for="valor-realizado">Valor</label>
-                <input class="modal-valor" id="valor-realizado" type="text" name="valor" oninput="formatarCampoValor(this)" value="" required><br>
+                <input class="modal-valor" id="valor-realizado" type="text" name="valor" oninput="formatarCampoValor(this)" value="" required readonly><br>
             </section>
         
             <section class="modal-flex">
                 <label for="conta-contabil-realizado">Conta Contábil</label>
-                <select class="modal-conta-contabil" id="conta-contabil-realizado" type="text" name="conta_contabil" required>
-                  <option value="Receita 1">Receita 1</option>
-                  <option value="Receita 2">Receita 2</option>
-                  <option value="Receita 3">Receita 3</option>
-                </select><br>
+                <input class="modal-conta-contabil" id="conta-contabil-realizado" type="text" name="conta_contabil" required readonly>
+                </input><br>
             </section>
         
-            <section class="modal-flex" id="recorrencia-section">
-                <label for="recorrencia-realizado" class="recorrencia-label">Recorrência</label>
-                <select class="modal-recorrencia" id="recorrencia-realizado" name="recorrencia" required onchange="mostrarParcelasrealizado()">
-                    <option value="nao">Não</option>
-                    <option value="sim">Sim</option>
-                </select><br>
-            </section>
-        
-            <section class="modal-flex mesclar-2" id="parcelas-section-realizado" style="display:none;">
-                <label for="parcelas-realizado">Número de Parcelas</label>
-                <input class="modal-parcelas" id="parcelas-realizado" type="number" name="parcelas" parcela-atual="{{ fluxo_de_caixa.parcela_atual }}" parcelas-total="{{ fluxo_de_caixa.parcelas_total }}" min="1" value="1"><br>
+            <section class="modal-flex" id="parcelas-section-realizado">
+                <label for="parcelas-realizado">Parcela</label>
+                <input class="modal-parcelas" id="parcelas-realizado" type="text" name="parcelas" parcela-atual="{{ realizado.parcela_atual }}" parcelas-total="{{ realizado.parcelas_total }}" min="1" value="1" readonly><br>
             </section>
 
             <section class="modal-flex mesclar-2">
-                <div id="tag-container-realizado" class="tag-container">
-                  </div>
-                  <input type="text" id="tagInput-realizado" class="tagInput" placeholder="Adicione uma tag">
-                  <input type="hidden" id="tagsHiddenInput-realizado" name="tags">
+                <div id="tag-container-realizado" class="tag-container"></div>
             </section>
             <section class="modal-botoes">
-                <input type="submit" class="modal-salvar" name="salvar_recebimento" value="Salvar">
+                <input type="submit" class="modal-salvar" name="salvar_realizado" value="Salvar">
                 <button type="button" class="modal-fechar-realizado">Cancelar</button>
             </section>
         </form>
@@ -216,7 +203,7 @@
             <tbody id="tabela-lancamentos">
                 {% for realizado in Tabela_realizado_list %}
                 <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ realizado.id }}" data-banco-liquidacao="{{ realizado.banco_liquidacao }}" data-banco-id-liquidacao="{{ realizado.banco_id_liquidacao }}" data-conta-contabil="{{ realizado.conta_contabil }}" parcela-atual="{{ realizado.parcela_atual }}" parcelas-total="{{ realizado.parcelas_total }}" data-uuid-correlacao="{{ realizado.uuid_correlacao }}" data-uuid-correlacao-parcelas="{{ realizado.uuid_correlacao_parcelas }}" scope="row">
-                    <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado" type="checkbox" data-id="{{ realizado.id }}"><span class="checkmark"></span></label></td>
+                    <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado" type="checkbox" data-id="{{ realizado.id }}" data-uuid-correlacao="{{ realizado.uuid_correlacao }}" data-uuid-correlacao-parcelas="{{ realizado.uuid_correlacao_parcelas }}"><span class="checkmark"></span></label></td>
                     <td class="vencimento-row">{{ realizado.data_liquidacao|date:"d/m/Y" }}</td>
                     <td class="descricao-row">{{ realizado.descricao }}</td>
                     <td class="obs-row">

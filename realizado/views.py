@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from django.db.models import Sum
 from django.shortcuts import render
 from django.dispatch import receiver
@@ -171,3 +172,55 @@ def atualizar_saldo_banco_apos_remocao(sender, instance, **kwargs):
         banco.save()
     except Bancos.DoesNotExist:
         pass  # Tratar o caso em que o banco não é encontrado, se necessário
+
+@csrf_exempt
+def atualizar_lancamento(request, id):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            lancamento = Tabela_realizado.objects.get(pk=id)
+            
+            # Assume que 'vencimento' é a chave no JSON que contém a data no formato 'YYYY-MM-DD'
+            data_vencimento = data.get('vencimento', None)
+            if data_vencimento:
+                # Converte a data recebida para datetime, adicionando uma hora padrão se necessário
+                data_vencimento = datetime.strptime(data_vencimento, '%Y-%m-%d').date()
+                # Mantém a hora original da data_liquidacao ou define uma hora padrão (ex: meio-dia)
+                hora_original = lancamento.data_liquidacao.time() if lancamento.data_liquidacao else datetime.time(12, 0)
+                lancamento.data_liquidacao = datetime.combine(data_vencimento, hora_original)
+            
+            lancamento.descricao = data.get('descricao', lancamento.descricao)
+            lancamento.observacao = data.get('observacao', lancamento.observacao)
+
+            lancamento._skip_update_saldo = True
+            
+            lancamento.save()
+            
+            return JsonResponse({"message": "Lançamento atualizado com sucesso!"}, status=200)
+        except Tabela_realizado.DoesNotExist:
+            return JsonResponse({"error": "Lançamento não encontrado"}, status=404)
+        except ValueError as e:
+            # Captura erros na conversão da data
+            return JsonResponse({"error": f"Erro ao processar a data: {str(e)}"}, status=400)
+
+    return JsonResponse({"error": "Método não permitido"}, status=405)
+
+@csrf_exempt
+def atualizar_lancamentos_por_uuid(request, uuid):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            data_vencimento = data.get('novaData', None)
+            if data_vencimento:
+                data_vencimento = datetime.strptime(data_vencimento, '%Y-%m-%d').date()
+                lancamentos = Tabela_realizado.objects.filter(uuid_correlacao=uuid)
+                for lancamento in lancamentos:
+                    hora_original = lancamento.data_liquidacao.time() if lancamento.data_liquidacao else datetime.time(12, 0)
+                    lancamento.data_liquidacao = datetime.combine(data_vencimento, hora_original)
+                    lancamento._skip_update_saldo = True
+                    lancamento.save()
+            
+            return JsonResponse({"message": f"Lançamentos atualizados com sucesso para o UUID {uuid}!"}, status=200)
+        except ValueError as e:
+            return JsonResponse({"error": f"Erro ao processar a data: {str(e)}"}, status=400)
+    return JsonResponse({"error": "Método não permitido"}, status=405)

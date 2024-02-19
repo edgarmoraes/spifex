@@ -294,54 +294,59 @@ function moverParaProximoCampo(campoAtual) {
 
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Configura o evento de duplo clique em cada linha da tabela de lançamentos
   document.querySelectorAll('.row-lancamentos').forEach(row => {
       row.addEventListener('dblclick', function() {
           abrirModalEdicao(this);
       });
   });
+
+  // Adiciona lógica para fechar o modal e resetar o formulário com a tecla Esc
+  document.addEventListener('keydown', function(event) {
+      if (event.key === "Escape") {
+          const modal = document.getElementById('modal-realizado');
+          if (modal.open) {
+              fecharModal(modal);
+          }
+      }
+  });
 });
 
 function abrirModalEdicao(row) {
-  // Extrai os dados da linha selecionada
   const id = row.getAttribute('data-id-row');
   const vencimento = row.querySelector('.vencimento-row').textContent.trim();
   const descricao = row.querySelector('.descricao-row').textContent.trim();
-  const observacao = row.querySelector('.obs-row').textContent.trim().split('Tags:')[0];
+  const observacao = row.querySelector('.obs-row').textContent.split('Tags:')[0].trim().replace(/\s+/g, ' ');
   const valor = row.querySelector('.debito-row').textContent.trim() || row.querySelector('.credito-row').textContent.trim();
   const contaContabil = row.getAttribute('data-conta-contabil');
   const tags = row.querySelector('.obs-row').textContent.trim().split('Tags:')[1];
+  const parcelaAtual = row.getAttribute('parcela-atual');
+  const parcelasTotal = row.getAttribute('parcelas-total');
+  const uuid = row.getAttribute('data-uuid-correlacao');
+  const uuidParcelas = row.getAttribute('data-uuid-correlacao-parcelas');
 
-  // Preenche os campos do modal com os dados extraídos
-  preencherDadosModalRealizado(id, vencimento, descricao, observacao, valor, contaContabil, tags);
+  preencherDadosModalRealizado(id, vencimento, descricao, observacao, valor, contaContabil, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas);
 
-  // Abre o modal "Realizado"
   document.getElementById('modal-realizado').showModal();
   document.body.style.overflow = 'hidden';
   document.body.style.marginRight = '17px';
   document.querySelector('.nav-bar').style.marginRight = '17px';
 }
 
-function preencherDadosModalRealizado(id, vencimento, descricao, observacao, valor, contaContabil, tags) {
+function preencherDadosModalRealizado(id, vencimento, descricao, observacao, valor, contaContabil, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas) {
   document.querySelector('.modal-form-realizado [name="lancamento_id_realizado"]').value = id;
   document.getElementById('data-realizado').value = formatarDataParaInput(vencimento);
   document.getElementById('descricao-realizado').value = descricao;
   document.getElementById('observacao-realizado').value = observacao;
-  document.getElementById('valor-realizado').value = valor.replace(/[^\d,.-]/g, '').replace(',', '.'); // Supondo que o valor seja formatado como número
-  
-  // Seleciona a conta contábil correspondente
-  const contaContabilSelect = document.getElementById('conta-contabil-realizado');
-  Array.from(contaContabilSelect.options).forEach(option => {
-      if (option.text === contaContabil) {
-          contaContabilSelect.value = option.value;
-      }
-  });
+  document.getElementById('valor-realizado').value = valor.replace(/[^\d,.-]/g, '').replace(',', '.');
+  document.getElementById('conta-contabil-realizado').value = contaContabil;
+  document.getElementById('parcelas-realizado').value = `${parcelaAtual}/${parcelasTotal}`;
+  document.querySelector('.modal-form-realizado [name="uuid_realizado"]').value = uuid;
+  document.querySelector('.modal-form-realizado [name="uuid_parcelas_realizado"]').value = uuidParcelas;
 
   // Limpa o container de tags antes de adicionar novas
   const tagContainer = document.getElementById('tag-container-realizado');
   tagContainer.innerHTML = '';
-  // Supondo que as tags sejam separadas por vírgulas
-  tags.split(',').forEach(tag => {
+  tags && tags.split(',').forEach(tag => {
       if (tag.trim()) {
           adicionarTag(tag.trim(), 'tag-container-realizado');
       }
@@ -361,9 +366,8 @@ function adicionarTag(tag, containerId) {
   container.appendChild(tagElement);
 }
 
-// Adiciona lógica para fechar o modal e resetar o formulário
-document.querySelector('.modal-fechar-realizado').addEventListener('click', function() {
-  const modal = document.getElementById('modal-realizado');
+// Função para fechar o modal e voltar às configurações iniciais
+function fecharModal(modal) {
   modal.close();
   document.body.style.overflow = '';
   document.body.style.marginRight = '';
@@ -371,16 +375,14 @@ document.querySelector('.modal-fechar-realizado').addEventListener('click', func
   const form = document.querySelector(".modal-form-realizado");
   form.reset();
   document.getElementById('tag-container-realizado').innerHTML = ''; // Limpa as tags
+}
+
+// As demais funções permanecem inalteradas
+
+document.querySelector('.modal-fechar-realizado').addEventListener('click', function() {
+  const modal = document.getElementById('modal-realizado');
+  fecharModal(modal);
 });
-
-
-
-
-
-
-
-
-
 
 
 
@@ -388,38 +390,79 @@ document.querySelector('.modal-fechar-realizado').addEventListener('click', func
 
 
 document.addEventListener('DOMContentLoaded', function() {
-  const linhasLancamentos = document.querySelectorAll('.row-lancamentos');
+  const formRealizado = document.querySelector('.modal-form-realizado');
 
-  linhasLancamentos.forEach(linha => {
-      linha.addEventListener('dblclick', function() {
-          const id = this.getAttribute('data-id-row');
-          const vencimento = this.querySelector('.vencimento-row').textContent;
-          const descricao = this.querySelector('.descricao-row').textContent;
-          const observacao = this.querySelector('.obs-row').textContent.split('Tags:')[0].trim(); // Separa a observação das tags
-          const valor = this.querySelector('.debito-row').textContent || this.querySelector('.credito-row').textContent;
-          const contaContabil = this.getAttribute('data-conta-contabil');
-          const parcelasTotal = this.getAttribute('parcelas-total');
+  formRealizado.addEventListener('submit', function(e) {
+      e.preventDefault(); // Impede a submissão padrão do formulário
 
-          abrirModalRealizado(id, vencimento, descricao, observacao, valor, contaContabil, parcelasTotal);
-      });
+      const lancamentoId = document.querySelector('[name="lancamento_id_realizado"]').value;
+      const dataRealizado = document.getElementById('data-realizado').value;
+      const descricaoRealizado = document.getElementById('descricao-realizado').value;
+      const observacaoRealizado = document.getElementById('observacao-realizado').value;
+      const uuid = document.querySelector('[name="uuid_realizado"]').value;
+      const uuidParcelas = document.querySelector('[name="uuid_parcelas_realizado"]').value;
+
+      const hoje = new Date();
+      const dataRealizadoDate = new Date(dataRealizado);
+      hoje.setHours(0, 0, 0, 0);
+
+      if (dataRealizadoDate > hoje) {
+          alert('A data não pode ser futura. Por favor, selecione a data de hoje ou uma anterior.');
+          return;
+      }
+
+      if (uuid !== 'None' && uuidParcelas === 'None') {
+        atualizarDataLancamentosRelacionados(uuid, dataRealizado)
+            .then(response => response.json()) // Garantir que estamos processando a resposta como JSON
+            .then(data => {
+                console.log('Lançamentos relacionados atualizados:', data);
+                return atualizarLancamento(lancamentoId, dataRealizado, descricaoRealizado, observacaoRealizado);
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Lançamento atualizado com sucesso:', data);
+                window.location.reload();
+            })
+            .catch(error => console.error('Erro:', error));
+    } else {
+        atualizarLancamento(lancamentoId, dataRealizado, descricaoRealizado, observacaoRealizado)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Lançamento atualizado com sucesso:', data);
+                window.location.reload();
+            })
+            .catch(error => console.error('Erro ao atualizar o lançamento:', error));
+    }
   });
 });
 
-function abrirModalRealizado(id, vencimento, descricao, observacao, valor, contaContabil, parcelasTotal) {
-  document.getElementById('modal-realizado').showModal();
-  document.getElementById('data-realizado').value = formatarDataParaInput(vencimento);
-  document.getElementById('descricao-realizado').value = descricao;
-  document.getElementById('observacao-realizado').value = observacao;
-  document.getElementById('valor-realizado').value = valor.replace(/[^\d,-]/g, '').replace(',', '.'); // Remove caracteres não numéricos exceto vírgula, e substitui vírgula por ponto
-  document.getElementById('conta-contabil-realizado').value = contaContabil;
-  // Supondo que exista lógica para definir o valor de recorrência e parcelas
-  // document.getElementById('recorrencia-realizado').value = ...;
-  document.getElementById('parcelas-realizado').value = parcelasTotal;
-
-  // Adicione aqui a lógica para tags se necessário
+function atualizarDataLancamentosRelacionados(uuid, novaData) {
+  return fetch(`/realizado/atualizar-lancamentos-uuid/${uuid}/`, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('[name="csrfmiddlewaretoken"]').value
+      },
+      body: JSON.stringify({ novaData: novaData })
+  });
 }
 
-function formatarDataParaInput(vencimento) {
-  const partesData = vencimento.split('/').reverse(); // Converte dd/mm/yyyy para yyyy-mm-dd
-  return partesData.join('-');
+function atualizarLancamento(lancamentoId, dataRealizado, descricaoRealizado, observacaoRealizado) {
+  const dados = { vencimento: dataRealizado, descricao: descricaoRealizado, observacao: observacaoRealizado };
+  const url = `/realizado/atualizar-lancamento/${lancamentoId}/`;
+
+  fetch(url, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('[name="csrfmiddlewaretoken"]').value
+      },
+      body: JSON.stringify(dados)
+  })
+  .then(response => response.json())
+  .then(data => {
+      console.log('Lançamento atualizado com sucesso:', data);
+      window.location.reload();
+  })
+  .catch(error => console.error('Erro ao atualizar o lançamento:', error));
 }

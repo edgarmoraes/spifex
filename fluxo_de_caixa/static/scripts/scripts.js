@@ -1,14 +1,25 @@
-// Evitar bancos iguais no processo de transferência
+// Evitar bancos iguais e datas futuras no processo de transferência
 document.addEventListener("DOMContentLoaded", function() {
   const formularioTransferencia = document.querySelector(".modal-form-transferencias");
 
   formularioTransferencia.addEventListener("submit", function(e) {
       const bancoSaidaId = document.getElementById("banco-saida").value;
       const bancoEntradaId = document.getElementById("banco-entrada").value;
+      const dataTransferencia = new Date(document.getElementById("data-transferencias").value);
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0); // Ajusta a data de hoje para meia-noite para garantir a comparação correta
 
+      // Verifica se o banco de saída é igual ao banco de entrada
       if (bancoSaidaId === bancoEntradaId) {
           e.preventDefault(); // Impede o envio do formulário
           alert("O banco de saída não pode ser igual ao banco de entrada. Por favor, selecione bancos diferentes.");
+          return; // Interrompe a execução do evento
+      }
+
+      // Verifica se a data de transferência é maior que a data atual
+      if (dataTransferencia > hoje) {
+          e.preventDefault(); // Impede o envio do formulário
+          alert("A data da transferência não pode ser futura. Por favor, selecione a data de hoje ou uma data passada.");
       }
   });
 });
@@ -112,6 +123,87 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
+
+document.addEventListener('DOMContentLoaded', function() {
+  const botaoLiquidacao = document.getElementById('liquidar-button');
+  const modalLiquidacao = document.getElementById('modal-liquidacoes');
+
+  botaoLiquidacao.addEventListener('click', function() {
+      modalLiquidacao.showModal(); // Abre o modal
+
+      // Esconde todos os campos de valor parcial inicialmente
+      document.querySelectorAll('.valor-parcial-liquidacao').forEach(campo => {
+          campo.style.display = 'none'; // Esconde todos os campos de valor parcial inicialmente
+      });
+
+      let algumBotaoParcialAtivado = false;
+
+      // Busca todos os checkboxes marcados na tabela de lançamentos
+      const checkboxesMarcadas = document.querySelectorAll('.tabela-lancamentos .checkbox-personalizado:checked');
+
+      checkboxesMarcadas.forEach(checkbox => {
+          const uuid = checkbox.getAttribute('data-uuid-row'); // Pega o UUID do lançamento
+          const id = checkbox.getAttribute('data-id'); // Pega o ID do lançamento
+
+          if (uuid !== "None") {
+              const botaoParcial = document.querySelector(`#botao-parcial-${id}`);
+              if (botaoParcial) {
+                  botaoParcial.checked = true; // Ativa o checkbox
+                  algumBotaoParcialAtivado = true; // Indica que pelo menos um botão parcial foi ativado
+
+                  // Adiciona classe 'travado' para prevenir desmarcação
+                  botaoParcial.classList.add('travado');
+
+                  // Encontra o campo de valor parcial específico para este lançamento e o torna visível
+                  const secaoValorParcial = document.querySelector(`#valor-parcial-liquidacao-${id}`);
+                  if (secaoValorParcial) {
+                      secaoValorParcial.style.display = 'block'; // Mostra o campo de valor parcial específico
+                  }
+              }
+          }
+      });
+
+      // Prevenir desmarcação dos botões parciais 'travados'
+      document.querySelectorAll('.botao-parcial.travado').forEach(botao => {
+          botao.addEventListener('click', function(event) {
+              event.preventDefault();
+          });
+      });
+
+      // Garante que a seção de valor parcial seja visível para botões parciais ativos
+      document.querySelectorAll('.botao-parcial').forEach(botao => {
+          const lancamentoSelecionado = botao.closest('.lancamentos-selecionados');
+          if (botao.checked) {
+              const secaoValorParcial = lancamentoSelecionado.querySelector('.valor-parcial-liquidacao');
+              if (secaoValorParcial) {
+                  secaoValorParcial.style.display = 'block';
+              }
+          }
+      });
+
+      // Atualiza as classes 'ativo' conforme necessário
+      atualizarClassesAtivo(algumBotaoParcialAtivado);
+  });
+
+  // Função para atualizar as classes 'ativo'
+  function atualizarClassesAtivo(ativado) {
+      const labelLancamentosSelecionados = document.querySelectorAll('.lancamentos-selecionados, .label-lancamentos-selecionados');
+      const labelParcial = document.querySelector('.label-parcial');
+      labelLancamentosSelecionados.forEach(el => {
+          el.classList.toggle('ativo', ativado);
+          labelParcial.style.display = ativado ? 'block' : 'none';
+      });
+  }
+
+  // Opcional: Adiciona um ouvinte de eventos para fechar o modal no botão de cancelar, se houver
+  const botaoFechar = modalLiquidacao.querySelector('.modal-fechar-liquidacoes');
+  if (botaoFechar) {
+      botaoFechar.addEventListener('click', function() {
+          modalLiquidacao.close(); // Fecha o modal
+      });
+  }
+});
+
 // Passa informações do fluxo para o modal de liquidação
 document.addEventListener('DOMContentLoaded', function() {
   inicializarAtualizacaoDeLancamentos();
@@ -180,16 +272,16 @@ function montarDivLancamento({id, descricao, vencimento, observacao, valor, natu
         <input class="modal-data data-liquidacao" id="data-liquidacao-${id}" type="date" name="data-liquidacao-${id}" value="${formatarDataParaInput(vencimento)}" required>
     </section>
     <section class="modal-flex">
-        <input class="modal-descricao" id="descricao-liquidacao-${id}" maxlength="100" type="text" name="descricao-liquidacao-${id}" value="${descricao}" readonly style="background-color: #ababab; color: #ffffff;">
+        <input class="modal-descricao" id="descricao-liquidacao-${id}" maxlength="100" type="text" name="descricao-liquidacao-${id}" value="${descricao}" readonly style="background-color: #B5B5B5; color: #FFFFFF;">
     </section>
     <section class="modal-flex">
         <input class="modal-obs" id="observacao-liquidacao-${id}" maxlength="100" type="text" name="observacao-liquidacao-${id}" value="${observacao}">
     </section>
     <section class="modal-flex">
-        <input class="modal-valor valor-liquidacao-total" id="valor-liquidacao-${id}" type="text" name="valor-liquidacao-${id}" oninput="formatarCampoValor(this)" value="${formatarValorDecimal(valor)}" readonly required style="background-color: #ababab; color: #ffffff;">
+        <input class="modal-valor valor-liquidacao-total" id="valor-liquidacao-${id}" type="text" name="valor-liquidacao-${id}" oninput="formatarCampoValor(this)" value="${formatarValorDecimal(valor)}" readonly required style="background-color: #B5B5B5; color: #FFFFFF;">
     </section>
     <section class="modal-flex natureza-liquidacao">
-        <input class="modal-natureza" id="natureza-liquidacao-${id}" type="text" name="natureza-liquidacao-${id}" value="${natureza}" readonly style="background-color: #ababab; color: #ffffff;">
+        <input class="modal-natureza" id="natureza-liquidacao-${id}" type="text" name="natureza-liquidacao-${id}" value="${natureza}" readonly style="background-color: #B5B5B5; color: #FFFFFF;">
     </section>
     <section class="modal-botao-parcial">
       <div>
@@ -197,9 +289,10 @@ function montarDivLancamento({id, descricao, vencimento, observacao, valor, natu
       </div>
     </section>
     <section class="modal-flex valor-parcial-liquidacao" style="display:none;">
-    <input class="modal-valor valor-parcial" id="valor-parcial-liquidacao-${id}" type="text" name="valor-parcial-liquidacao-${id}" oninput="formatarCampoValor(this)" value="" required>
+      <input class="modal-valor valor-parcial" id="valor-parcial-liquidacao-${id}" type="text" name="valor-parcial-liquidacao-${id}" oninput="formatarCampoValor(this)" value="" required>
     </section>
     `;
+  ajustarDataDeLiquidacaoSeNecessario(div, id, vencimento);
   return div;
 }
   
@@ -211,9 +304,28 @@ function configurarEstadoInicialValor(div, id) {
     });
 }
 
-function formatarDataParaInput(data) {
-    const partes = data.split('/');
-    return `${partes[2]}-${partes[1]}-${partes[0]}`;
+function ajustarDataDeLiquidacaoSeNecessario(div, id, vencimentoOriginal) {
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0); // Zera o horário para comparar apenas as datas
+  const dataVencimento = converterDataStringParaDate(formatarDataParaInput(vencimentoOriginal));
+
+  if (dataVencimento > hoje) {
+    const campoDataLiquidacao = div.querySelector(`#data-liquidacao-${id}`);
+    campoDataLiquidacao.value = formatarDataAtualParaInput();
+  }
+}
+
+function formatarDataAtualParaInput() {
+  const dataAtual = new Date();
+  const ano = dataAtual.getFullYear();
+  const mes = String(dataAtual.getMonth() + 1).padStart(2, '0'); // getMonth() retorna mês de 0 a 11
+  const dia = String(dataAtual.getDate()).padStart(2, '0');
+  return `${ano}-${mes}-${dia}`;
+}
+
+function converterDataStringParaDate(dataString) {
+  const partes = dataString.split('-');
+  return new Date(partes[0], partes[1] - 1, partes[2]);
 }
 
 function formatarValorDecimal(valor) {
@@ -238,6 +350,7 @@ document.getElementById('salvar-liquidacao').addEventListener('click', async fun
   let selectedRows = document.querySelectorAll('.checkbox-personalizado:checked');
   let dataToSend = [];
   let hoje = new Date();
+  
   hoje.setHours(0, 0, 0, 0);
 
   for (let checkbox of selectedRows) {
@@ -336,26 +449,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   });
 });
-
-
-// Seleciona o botão pelo ID
-const botaoTeste = document.getElementById('liquidar-button');
-
-// Seleciona o modal pelo ID
-const modalLiquidacao = document.getElementById('modal-liquidacoes');
-
-// Adiciona um ouvinte de eventos ao botão para abrir o modal
-botaoTeste.addEventListener('click', function() {
-    modalLiquidacao.showModal(); // Abre o modal
-});
-
-// Opcional: Adiciona um ouvinte de eventos para fechar o modal no botão de cancelar, se houver
-const botaoFechar = modalLiquidacao.querySelector('.modal-fechar-liquidacoes');
-if (botaoFechar) {
-    botaoFechar.addEventListener('click', function() {
-        modalLiquidacao.close(); // Fecha o modal
-    });
-}
 
 
 // Mobile Buttons
@@ -712,8 +805,8 @@ function preencherDadosModal(row, tipo) {
     document.getElementById(`descricao-${tipo}`).value = row.querySelector('.descricao-row').textContent.trim();
     document.getElementById(`observacao-${tipo}`).value = row.querySelector('.obs-row').childNodes[0].textContent.trim();
 
-    const tags = extrairTags(row);
-    document.getElementById(`tagInput-${tipo}`).value = tags;
+    const tagsString = extrairTags(row);
+    adicionarTagsAoContainer(tagsString, tipo);
 
     document.getElementById(`conta-contabil-${tipo}`).value = row.dataset.contaContabil;
 
@@ -734,6 +827,25 @@ function preencherDadosModal(row, tipo) {
     }
 
     simularEnter(`tagInput-${tipo}`);
+}
+
+function adicionarTagsAoContainer(tagsString, tipo) {
+  const containerId = `tag-container-${tipo}`;
+  const hiddenInputId = `tagsHiddenInput-${tipo}`;
+  const tagContainer = document.getElementById(containerId);
+
+  // Limpa as tags existentes no container para evitar duplicação
+  while (tagContainer.firstChild) {
+      tagContainer.removeChild(tagContainer.firstChild);
+  }
+
+  // Divide a string de tags e adiciona cada tag individualmente
+  const tags = tagsString.split(',');
+  tags.forEach(tag => {
+      if (tag.trim()) {
+          addTag(tag.trim(), containerId, hiddenInputId);
+      }
+  });
 }
 
 function limparCamposModal(tipo) {

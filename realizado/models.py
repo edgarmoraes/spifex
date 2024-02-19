@@ -20,9 +20,12 @@ class Tabela_realizado(models.Model):
     uuid_correlacao = models.UUIDField(null=True, blank=True)
     uuid_correlacao_parcelas = models.UUIDField(null=True, blank=True)
 
+    _skip_update_saldo = False
+
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)  # Chama o método save original para salvar a transação
-        self.atualizar_saldo_banco()
+        if not self._skip_update_saldo:
+            self.atualizar_saldo_banco()
+        super().save(*args, **kwargs)
     
     def atualizar_saldo_banco(self):
         banco = Bancos.objects.get(id=self.banco_id_liquidacao)  # Modificado para usar ID
@@ -31,6 +34,7 @@ class Tabela_realizado(models.Model):
         else:  # Débito
             banco.saldo_atual -= self.valor
         banco.save()
+        pass
 
 class Totais_mes_realizado(models.Model):
     inicio_mes = models.DateField(null=True, blank=True)

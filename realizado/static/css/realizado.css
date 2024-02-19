@@ -99,6 +99,34 @@
 }
 
 /* Modais */
+.modal-valor,
+.modal-conta-contabil,
+.modal-parcelas {
+  background-color: #B5B5B5;
+  color: var(--branco);
+  border: none;
+  padding: 0.7rem 1rem;
+  border-radius: 5px;
+  transition: var(--transition-effect1) .5s;
+}
+
+.modal-valor:focus,
+.modal-conta-contabil:focus,
+.modal-parcelas:focus {
+  background-color: #B5B5B5 !important;
+}
+
+.modal-data,
+.modal-descricao,
+.modal-obs {
+  background-color: var(--color2);
+  border: none;
+  color: var(--preto);
+  padding: 0.7rem 1rem;
+  border-radius: 5px;
+  transition: var(--transition-effect1) .5s;
+}
+
 .modal-realizado {
   width: 80%;
   margin: auto auto;
@@ -165,16 +193,6 @@ section.modal-flex {
 }
 
 /* Estilo das Caixas de Seleções e Datas */
-.modal-flex select,
-.modal-flex input {
-background-color: var(--color2);
-  border: none;
-  color: var(--preto);
-  padding: 0.7rem 1rem;
-  border-radius: 5px;
-  transition: var(--transition-effect1) .5s;
-}
-
 .modal-flex select:hover,
 .modal-flex select:focus,
 .modal-flex input:hover,
