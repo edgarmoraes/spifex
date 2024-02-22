@@ -36,7 +36,7 @@
                 <div class="box-grid-filters">
                     <!-- ############### Filtro Contas Contábeis ############### -->
                     <section class="flex">
-                        <label for="contas-contabeis">CONTAS CONTÁBEIS</label>
+                        <label for="contas-contabeis">Contas Contábeis</label>
                         <select id="contas-contabeis" name = "contas_contabeis">
                             <option value="" disabled selected hidden>Selecione</option>
                             <option value="Receita 1">Receita 1</option>
@@ -47,7 +47,7 @@
                     </section>
                     <!-- ############### Filtro Meses ############### -->
                     <section class="flex">
-                        <label for="meses">MESES</label>
+                        <label for="meses">Meses</label>
                         <select id="meses" name="meses">
                             <option value="" disabled selected hidden>Selecione</option>
                             {% for total in totais_mes_realizado %}
@@ -57,7 +57,7 @@
                     </section>
                     <!-- ############### Filtro Bancos ############### -->
                     <section class="flex">
-                        <label for="bancos">BANCOS</label>
+                        <label for="bancos">Bancos</label>
                         <select id="bancos" name="bancos">
                             <option value="" disabled selected hidden>Selecione</option>
                             {% for banco in bancos %}
@@ -67,17 +67,17 @@
                     </section>
                     <!-- ############### Filtro Data Início ############### -->
                     <section class="flex">
-                        <label for="data-inicio">DE</label>
+                        <label for="data-inicio">De</label>
                         <input class="data" type="date" id="data-inicio" name = "data_inicio">
                     </section>
                     <!-- ############### Filtro Data Fim ############### -->
                     <section class="flex">
-                        <label for="data-fim">ATÉ</label>
+                        <label for="data-fim">Até</label>
                         <input class="data" type="date" id="data-fim" name = "data_fim">
                     </section>
                     <!-- ############### Filtro Natureza ############### -->
                     <section class="flex">
-                        <label for="natureza">NATUREZA</label>
+                        <label for="natureza">Natureza</label>
                         <select id="natureza" name = "natureza">
                             <option value="" disabled selected hidden>Selecione</option>
                             <option value="credito">Crédito</option>
@@ -108,10 +108,10 @@
                 <table class="tabela-bancos">
                     <thead class="cabecalho-bancos">
                         <tr class="linha-cabecalho-bancos">
-                            <th class="contas-bancos-col" scope="col">BANCO</th>
-                            <th class="ag-bancos-col" scope="col">AGÊNCIA</th>
-                            <th class="conta-bancos-col" scope="col">CONTA</th>
-                            <th class="saldo-bancos-col" scope="col">SALDO</th>
+                            <th class="contas-bancos-col" scope="col">Banco</th>
+                            <th class="ag-bancos-col" scope="col">Agência</th>
+                            <th class="conta-bancos-col" scope="col">Conta</th>
+                            <th class="saldo-bancos-col" scope="col">Saldo</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -191,13 +191,13 @@
             <thead class="cabecalho-lancamentos">
                 <tr class="linha-cabecalho-lancamentos">
                     <th class="checkbox-col" scope="col"></th>
-                    <th class="vencimento-col" scope="col">VENCIMENTO</th>
-                    <th class="descricao-col" scope="col">DESCRIÇÃO</th>
-                    <th class="obs-col" scope="col">OBSERVAÇÃO</th>
-                    <th class="parcela-col" scope="col">PARCELA</th>
-                    <th class="debito-col" scope="col">DÉBITO</th>
-                    <th class="credito-col" scope="col">CRÉDITO</th>
-                    <th class="saldo-col" scope="col">SALDO</th>
+                    <th class="vencimento-col" scope="col">Vencimento</th>
+                    <th class="descricao-col" scope="col">Descrição</th>
+                    <th class="obs-col" scope="col">Observação</th>
+                    <th class="parcela-col" scope="col">Parcela</th>
+                    <th class="debito-col" scope="col">Débito</th>
+                    <th class="credito-col" scope="col">Crédito</th>
+                    <th class="saldo-col" scope="col">Saldo</th>
                 </tr>
             </thead>
             <tbody id="tabela-lancamentos">

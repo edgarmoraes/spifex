@@ -1,9 +1,10 @@
 /* Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 
 /* Estilos Universais */
 :root {
-  --primary-font: 'Open Sans', sans-serif;
+  --primary-font: Inter, -apple-system, BlinkMacSystemFont, Helvetica, sans-serif;
   --transition-duration1: 0.3s;
   --transition-duration2: 0.2s;
   --transition-effect1: all ease-in-out;
@@ -690,7 +691,7 @@ td.saldo-total-banco-liquidacao-row {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%) translateY(100%);
-  background-color: #3d3d40bf;
+  background-color: var(--branco);
   backdrop-filter: blur(5px);
   padding: 10px;
   width: 100%;
@@ -717,16 +718,16 @@ td.saldo-total-banco-liquidacao-row {
 
 .btn-coluna {
   font-family: var(--primary-font);
-  color: var(--branco);
-  font-size: 12px;
+  color: var(--preto);
+  font-size: 14px;
   font-weight: 500;
 }
 
 .total-liquidar-row {
   font-family: var(--primary-font);
-  color: var(--branco);
+  color: var(--preto);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .btn-coluna {
@@ -1158,6 +1159,7 @@ td.saldo-total-banco-liquidacao-row {
   .row-bancos,
   .totais-row {
       height: auto;
+      font-family: var(--primary-font);
   }
 
   .contas-bancos-col {
