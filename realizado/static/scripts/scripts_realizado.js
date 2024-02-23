@@ -337,7 +337,7 @@ function preencherDadosModalRealizado(id, vencimento, descricao, observacao, val
   document.getElementById('data-realizado').value = formatarDataParaInput(vencimento);
   document.getElementById('descricao-realizado').value = descricao;
   document.getElementById('observacao-realizado').value = observacao;
-  document.getElementById('valor-realizado').value = valor.replace(/[^\d,.-]/g, '').replace(',', '.');
+  document.getElementById('valor-realizado').value = "R$ "+valor;
   document.getElementById('conta-contabil-realizado').value = contaContabil;
   document.getElementById('parcelas-realizado').value = `${parcelaAtual}/${parcelasTotal}`;
   document.querySelector('.modal-form-realizado [name="uuid_realizado"]').value = uuid;
@@ -358,6 +358,7 @@ function formatarDataParaInput(data) {
   return `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
 }
 
+
 function adicionarTag(tag, containerId) {
   const container = document.getElementById(containerId);
   const tagElement = document.createElement('span');
@@ -377,18 +378,12 @@ function fecharModal(modal) {
   document.getElementById('tag-container-realizado').innerHTML = ''; // Limpa as tags
 }
 
-// As demais funções permanecem inalteradas
-
 document.querySelector('.modal-fechar-realizado').addEventListener('click', function() {
   const modal = document.getElementById('modal-realizado');
   fecharModal(modal);
 });
 
-
-
-
-
-
+// Edição de realizado
 document.addEventListener('DOMContentLoaded', function() {
   const formRealizado = document.querySelector('.modal-form-realizado');
 

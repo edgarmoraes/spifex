@@ -72,10 +72,12 @@ def extrair_dados_formulario(request):
     vencimento_str = request.POST.get('vencimento')
     vencimento = datetime.strptime(vencimento_str, '%Y-%m-%d') if vencimento_str else None
 
+    valor_str = request.POST.get('valor', 'R$ 0,00').replace('R$ ', '').replace('.', '').replace(',', '.')
+    valor = float(valor_str) if valor_str else 0.00
+
     # Processa outros campos com segurança
     descricao = request.POST.get('descricao', '')
     observacao = request.POST.get('observacao', '')
-    valor = request.POST.get('valor', '0.00')
     conta_contabil = request.POST.get('conta_contabil', '')
     parcelas = request.POST.get('parcelas', '1')
     parcelas_total = int(parcelas) if parcelas.isdigit() else 1
@@ -195,7 +197,8 @@ def processar_transferencia(request):
         banco_entrada_id, banco_entrada_nome = banco_entrada_data
 
     data_transferencia = request.POST.get('data')
-    valor_transferencia = Decimal(request.POST.get('valor').replace(',', '.'))
+    valor_transferencia_str = request.POST.get('valor', 'R$ 0,00').replace('R$ ', '').replace('.', '').replace(',', '.')
+    valor_transferencia = Decimal(valor_transferencia_str) if valor_transferencia_str else 0.00
     observacao = request.POST.get('observacao')
     correlacao_id = uuid.uuid4()
     
@@ -254,7 +257,7 @@ def processar_liquidacao(request):
         for item in dados:
             try:
                 registro_original = Tabela_fluxo.objects.get(id=item['id'])
-                valor_total = registro_original.valor  # Utiliza o valor diretamente do registro para evitar discrepâncias
+                valor_total = registro_original.valor
                 valor_parcial = Decimal(item.get('valor_parcial', 0))
                 is_liquidacao_parcial = valor_parcial > 0 and valor_parcial <= valor_total
                 completando_liquidacao = valor_parcial == valor_total

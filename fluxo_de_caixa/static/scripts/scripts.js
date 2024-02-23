@@ -278,7 +278,7 @@ function montarDivLancamento({id, descricao, vencimento, observacao, valor, natu
         <input class="modal-obs" id="observacao-liquidacao-${id}" maxlength="100" type="text" name="observacao-liquidacao-${id}" value="${observacao}">
     </section>
     <section class="modal-flex">
-        <input class="modal-valor valor-liquidacao-total" id="valor-liquidacao-${id}" type="text" name="valor-liquidacao-${id}" oninput="formatarCampoValor(this)" value="${formatarValorDecimal(valor)}" readonly required style="background-color: #B5B5B5; color: #FFFFFF;">
+        <input class="modal-valor valor-liquidacao-total" id="valor-liquidacao-${id}" type="text" name="valor-liquidacao-${id}" oninput="formatarCampoValor(this)" value="R$ ${valor}" readonly required style="background-color: #B5B5B5; color: #FFFFFF;">
     </section>
     <section class="modal-flex natureza-liquidacao">
         <input class="modal-natureza" id="natureza-liquidacao-${id}" type="text" name="natureza-liquidacao-${id}" value="${natureza}" readonly style="background-color: #B5B5B5; color: #FFFFFF;">
@@ -289,7 +289,7 @@ function montarDivLancamento({id, descricao, vencimento, observacao, valor, natu
       </div>
     </section>
     <section class="modal-flex valor-parcial-liquidacao" style="display:none;">
-      <input class="modal-valor valor-parcial" id="valor-parcial-liquidacao-${id}" type="text" name="valor-parcial-liquidacao-${id}" oninput="formatarCampoValor(this)" value="" required>
+      <input class="modal-valor valor-parcial" id="valor-parcial-liquidacao-${id}" type="text" name="valor-parcial-liquidacao-${id}" oninput="formatarCampoValor(this)" value="R$ " required>
     </section>
     `;
   ajustarDataDeLiquidacaoSeNecessario(div, id, vencimento);
@@ -367,7 +367,16 @@ document.getElementById('salvar-liquidacao').addEventListener('click', async fun
 
     let botaoParcial = document.getElementById(`botao-parcial-${id}`);
     let campoValorParcial = document.getElementById(`valor-parcial-liquidacao-${id}`);
-    let valorParcial = campoValorParcial && campoValorParcial.value ? parseFloat(campoValorParcial.value.replace(/\D/g, '').replace(',', '.')) : 0;
+    let valorParcial = 0;
+
+    if (campoValorParcial && campoValorParcial.value) {
+      // Remover o prefixo 'R$ ' e todos os pontos usados como separadores de milhar
+      let valorFormatado = campoValorParcial.value.replace('R$ ', '').replace(/\./g, '');
+      // Substituir a vírgula por ponto para o separador decimal
+      valorFormatado = valorFormatado.replace(',', '.');
+      // Converter para float
+      valorParcial = parseFloat(valorFormatado);
+    }
 
     if (botaoParcial.checked && (valorParcial <= 0 || isNaN(valorParcial))) {
       alert('Por favor, preencha o valor parcial para realizar uma liquidação parcial.');
@@ -399,7 +408,7 @@ document.getElementById('salvar-liquidacao').addEventListener('click', async fun
       data_liquidacao: campoData ? campoData.value : '',
       banco_liquidacao: nomeBancoSelecionado,
       banco_id_liquidacao: idBancoSelecionado,
-      valor_parcial: valorParcial > 0 ? campoValorParcial.value : undefined,
+      valor_parcial: valorParcial > 0 ? valorParcial : undefined,
     };
 
     dataToSend.push(itemData);
@@ -649,28 +658,28 @@ function fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainer
       tagsHiddenInput.value = '';
   }
 
-    // Oculta as seções de liquidação parcial e remove a classe 'ativo' dos elementos ajustáveis
-    const secoesValorParcial = document.querySelectorAll('.valor-parcial-liquidacao');
-    secoesValorParcial.forEach(secao => {
-      secao.style.display = 'none';
-    });
-  
-    const elementosParaAjustar = document.querySelectorAll('.lancamentos-selecionados, .label-lancamentos-selecionados');
-    elementosParaAjustar.forEach(el => {
-      el.classList.remove('ativo');
-    });
-  
-    const labelParcial = document.querySelector('.label-parcial');
-    if (labelParcial) labelParcial.style.display = 'none';
-  
-    // Desmarca todos os checkboxes 'botao-parcial'
-    const todosBotoesParcial = document.querySelectorAll('.botao-parcial');
-    todosBotoesParcial.forEach(checkbox => {
-      checkbox.checked = false;
-    });
-  
-    // Atualiza o estado das colunas para refletir a remoção da classe 'ativo'
-    atualizarEstadoColunas();
+  // Oculta as seções de liquidação parcial e remove a classe 'ativo' dos elementos ajustáveis
+  const secoesValorParcial = document.querySelectorAll('.valor-parcial-liquidacao');
+  secoesValorParcial.forEach(secao => {
+    secao.style.display = 'none';
+  });
+
+  const elementosParaAjustar = document.querySelectorAll('.lancamentos-selecionados, .label-lancamentos-selecionados');
+  elementosParaAjustar.forEach(el => {
+    el.classList.remove('ativo');
+  });
+
+  const labelParcial = document.querySelector('.label-parcial');
+  if (labelParcial) labelParcial.style.display = 'none';
+
+  // Desmarca todos os checkboxes 'botao-parcial'
+  const todosBotoesParcial = document.querySelectorAll('.botao-parcial');
+  todosBotoesParcial.forEach(checkbox => {
+    checkbox.checked = false;
+  });
+
+  // Atualiza o estado das colunas para refletir a remoção da classe 'ativo'
+  atualizarEstadoColunas();
 }
 
 
@@ -800,7 +809,7 @@ function preencherDadosModal(row, tipo) {
     document.getElementById(`data-${tipo}`).value = formatarDataParaInput(vencimento);
 
     const valor = row.querySelector(`.${tipo === 'recebimentos' ? 'credito' : 'debito'}-row`).textContent.trim();
-    document.getElementById(`valor-${tipo}`).value = desformatarNumero(valor);
+    document.getElementById(`valor-${tipo}`).value = "R$ "+valor;
 
     document.getElementById(`descricao-${tipo}`).value = row.querySelector('.descricao-row').textContent.trim();
     document.getElementById(`observacao-${tipo}`).value = row.querySelector('.obs-row').childNodes[0].textContent.trim();
@@ -824,6 +833,8 @@ function preencherDadosModal(row, tipo) {
       element.style.color = '#FFFFFF';
     } else {
         document.getElementById(`valor-${tipo}`).readOnly = false;
+        document.getElementById(`valor-${tipo}`).style.backgroundColor = '#F4F2F2';
+        document.getElementById(`valor-${tipo}`).style.color = '#202020';
     }
 
     simularEnter(`tagInput-${tipo}`);
@@ -933,25 +944,24 @@ function extrairTags(row) {
 
 // Função para formatar o valor de um campo como moeda brasileira
 function formatarCampoValor(input) {
-  // Remover caracteres não numéricos
-  let valor = input.value.replace(/\D/g, '');
+  // Extrair apenas os números do valor do campo
+  let valorNumerico = input.value.replace(/\D/g, '');
 
-  // Remover zeros à esquerda
-  valor = valor.replace(/^0+/, '');
+  // Converter o valor numérico para float para manipulação
+  let valorFloat = parseFloat(valorNumerico) / 100;
 
-  // Adicionar o ponto decimal nas duas últimas casas decimais
-  if (valor.length > 2) {
-      valor = valor.slice(0, -2) + '.' + valor.slice(-2);
-  } else if (valor.length === 2) {
-      valor = '0.' + valor;
-  } else if (valor.length === 1) {
-      valor = '0.0' + valor;
-  } else {
-      valor = '0.00';
+  // Formatar o número para incluir separador de milhar '.' e decimal ','
+  let valorFormatado = valorFloat.toFixed(2) // Garantir duas casas decimais
+    .replace('.', ',') // Substituir ponto por vírgula para separador decimal
+    .replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Adicionar '.' como separador de milhar
+
+  // Atualizar o valor do campo, mantendo o "R$" fixo na frente
+  input.value = valorNumerico ? `R$ ${valorFormatado}` : 'R$ 0,00';
+
+  // Tratar caso especial quando o campo é limpo para mostrar 'R$ 0,00'
+  if (input.value === 'R$ 0,00') {
+    input.value = 'R$ 0,00';
   }
-
-  // Atualizar o valor do campo
-  input.value = valor;
 }
 
 

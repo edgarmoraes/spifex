@@ -2,7 +2,7 @@
 
 /* Compartilhado */
 .nav-fluxo-de-caixa a {
-  color: var(--color9);
+  color: var(--color7);
 }
 
 /* Componentes da Caixa de Filtros */
@@ -51,7 +51,7 @@
 }
 
 .recebimentos {
-  background-color: steelblue;
+  background-color: #003d6e;
 }
 
 .pagamentos {
@@ -104,18 +104,19 @@
   color: var(--branco);
   transition-duration: var(--transition-duration1);
   font-size: 2px;
+  font-family: var(--primary-font);
 }
 
 .botao:hover.recebimentos::before {
-  content: "RECEBIMENTOS";
+  content: "Recebimentos";
 }
 
 .botao:hover.pagamentos::before {
-  content: "PAGAMENTOS";
+  content: "Pagamentos";
 }
 
 .botao:hover.transferencias::before {
-  content: "TRANSFERÊNCIAS";
+  content: "Transferências";
 }
 
 .botao:hover::before {

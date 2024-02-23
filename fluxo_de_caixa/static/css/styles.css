@@ -21,6 +21,9 @@
   --color7: #7F4FFF;
   --color8: #F87C7C;
   --color9: #FFEB24;
+  --color10: #FFFAFA;
+  --border1: solid 1px #ececec;
+  --border2: solid 10px #ececec;
 }
 
 * {
@@ -34,7 +37,7 @@ html {
 }
 
 a {
-  color: var(--branco);
+  color: #202020;
   text-decoration: none;
   transition: var(--transition-duration1);
 }
@@ -43,19 +46,14 @@ a:hover {
   opacity: 0.7;
 }
 
-.main {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-}
-
 /* Barra de Navegação Fixa */
 
 .openbtn {
   font-size: 20px;
   cursor: pointer;
-  color: var(--color9);
+  color: var(--color7);
   background-color: #3d3d40bf;
-  color: white;
+  color: #b4b4b4;
   padding: 10px 15px;
   border: none;
   display: none;
@@ -84,8 +82,10 @@ nav {
   align-items: center;
   height: 8vh;
   font-family: var(--primary-font);
-  background-color: rgba(73, 4.5, 255, 0.7);
+  background-color: #FFFAFA;
+  border-bottom: solid 1px #ececec;
   backdrop-filter: blur(5px);
+  box-shadow: var(--box-shadow1);
 }
 
 .nav-list {
@@ -96,11 +96,11 @@ nav {
 .nav-list li {
   margin-left: 48px;
   font-weight: bold;
-  font-size: 15px;
+  font-size: 17px;
 }
 
 .line {
-  border: 0.5px solid var(--branco);
+  border: 0.5px solid #202020;
   margin-top: 1.8px;
   height: 16px;
 }
@@ -108,11 +108,28 @@ nav {
 /* Componentes da Caixa de Filtros
 ... */
 
-.label-filtros {
-  background-color: var(--color7);
-  padding: 5px 30px;
-  border-radius: 0px 20px;
-  color: var(--branco);
+/* .box-grid {
+  display: flex;
+  flex-direction: column;
+  width: 700px;
+  height: auto;
+  margin: 4.5rem auto 1rem auto;
+  background-color: var(--branco);
+  border-radius: 1rem;
+  box-shadow: var(--box-shadow1);
+} */
+
+/* .box-grid-filters {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 700px;
+  padding: 1rem;
+  padding-bottom: 0rem;
+} */
+
+.filter-boxes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .mesclar-2 {
@@ -130,37 +147,40 @@ nav {
   align-items: center;
   margin: 10px;
   font-family: var(--primary-font);
+  color: #202020;
   font-weight: 700;
-  font-size: 13px;
-}
-
-.flex > select, .flex > input {
-  width: 100%;
-  font-family: var(--primary-font);
-  font-size: 15px;
-  margin-top: 5px;
+  font-size: 14px;
 }
 
 /* Estilos dos Selects e Inputs */
-.flex select, .flex input {
+.flex > select,
+.flex > input {
+  width: 100%;
+  font-family: var(--primary-font);
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.flex select,
+.flex input {
   background-color: var(--color2);
-  border: none;
-  color: var(--preto);
+  border: var(--border1);
+  color: var(--color4);
   padding: 0.7rem 1rem;
   border-radius: 5px;
   transition: var(--transition-effect1) var(--transition-duration1);
 }
 
-.flex select:hover, .flex select:focus,
-.flex input:hover, .flex input:focus {
+.flex select:hover,
+.flex select:focus,
+.flex input:hover,
+.flex input:focus {
   box-shadow: var(--box-shadow1);
-}
-
-.flex select, input:focus {
-  outline: none;
   background-color: var(--color1);
+  color: #202020;
 }
 
+/* Botões Mobile */
 .toggle-filters-btn,
 .toggle-banks-btn {
   display: none;
@@ -245,21 +265,18 @@ nav {
   margin: 0;
   padding: 0.7rem 2.5rem 0.7rem 1rem;
   width: 100%;
-  font-family: var(--primary-font);
-  color: var(--preto);
   background-color: var(--color2);
+  font-family: var(--primary-font);
+  color: #202020;
   font-size: 15px;
-  border: none;
+  border: var(--border1);
   border-radius: 30px;
   transition: var(--transition-effect1) var(--transition-duration1);
 }
 
-.caixa-pesquisa:hover, .caixa-pesquisa:focus {
-  box-shadow: var(--box-shadow1);
-}
-
+.caixa-pesquisa:hover,
 .caixa-pesquisa:focus {
-  outline: none;
+  box-shadow: var(--box-shadow1);
   background-color: var(--color1);
 }
 
@@ -283,27 +300,123 @@ nav {
   margin: 0;
   padding: 0.7rem 1rem;
   width: 100%;
-  font-family: var(--primary-font);
-  color: var(--color4);
   background-color: var(--color2);
+  font-family: var(--primary-font);
+  color: #202020;
   font-size: 15px;
-  border: none;
+  border: var(--border1);
   border-radius: 30px;
   transition: var(--transition-effect1) var(--transition-duration1);
 }
 
 .caixa-pesquisa-tags:hover, .caixa-pesquisa-tags:focus {
   box-shadow: var(--box-shadow1);
-}
-
-.caixa-pesquisa-tags:focus {
-  outline: none;
   background-color: var(--color1);
 }
 
 .caixa-pesquisa-tags::-webkit-input-placeholder {
   font-weight: 400;
   color: var(--color4);
+}
+
+/* Tabela Bancos */
+.tabela-bancos,
+.tabela-bancos-liquidacao {
+  border-collapse: collapse;
+  width: 100%;
+  font-family: var(--primary-font);
+  border-left: var(--border1);
+  border-right: var(--border1);
+  color: #202020;
+  border-spacing: 0;
+}
+
+.tabela-bancos th,
+.tabela-bancos-liquidacao th {
+  padding: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #202020;
+}
+
+.tabela-bancos td,
+.tabela-bancos-liquidacao td {
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.tabela-bancos tbody tr:hover,
+.tabela-bancos tbody tr:focus,
+.tabela-bancos-liquidacao tbody tr:hover,
+.tabela-bancos-liquidacao tbody tr:focus {
+  background: #efeaff;
+}
+
+.tabela-bancos tbody tr,
+.tabela-bancos-liquidacao tbody tr {
+  transition: .3s all ease;
+}
+
+.cabecalho-bancos,
+.cabecalho-bancos-liquidacao {
+  position: sticky;
+  top: 0;
+  height: 35px;
+  background-color: var(--color2);
+  z-index: 1;
+  backdrop-filter: (5px);
+  color: #202020;
+}
+
+.row-bancos {
+  height: 35px;
+  text-align: center;
+}
+
+.totais-row,
+.totais-row-liquidacao {
+  position: sticky;
+  bottom: 0px;
+  height: 35px;
+  background-color: var(--color2);
+  z-index: 1;
+}
+
+.bancos-bancos-col {
+  width: 200px;
+}
+
+.ag-bancos-col {
+  width: 100px;
+}
+
+.bancos-bancos-liquidacao-col {
+  width: 100px;
+}
+
+.ag-bancos-liquidacao-col {
+  width: 100px;
+}
+
+.conta-bancos-liquidacao-col {
+  width: 100px;
+}
+
+.saldo-bancos-liquidacao-col {
+  width: 100px;
+}
+
+.banco-row {
+  text-align: left;
+  padding: 0 20px;
+}
+
+td.total-row,
+td.saldo-total-banco-row,
+td.saldo-total-banco-liquidacao-row {
+  text-align: center; 
+  font-weight: 700;
+  font-size: 14px;
 }
 
 /* Tabela com Lançamentos */
@@ -326,13 +439,17 @@ nav {
   width: 95%;
 }
 
+.linha-cabecalho-lancamentos {
+  border: var(--border1);
+}
+
 .tabela-lancamentos th {
   padding: 0;
   font-size: 14px;
   font-weight: 700;
-  background-color: var(--color7);
+  background-color: var(--color10);
   height: 35px;
-  color: var(--branco);
+  color: #202020;
 }
 
 .tabela-lancamentos td {
@@ -386,14 +503,6 @@ nav {
 .credito-col,
 .saldo-col {
   width: 120px;
-}
-
-.saldo-col {
-  border-radius: 0px 20px 20px 0px;
-}
-
-.checkbox-col {
-  border-radius: 20px 0px 0px 20px;
 }
 
 .checkbox-row {
@@ -530,159 +639,7 @@ nav {
   animation: checkAnim 0.2s forwards;
 }
 
-/* Tabela Bancos */
-.cabecalho-bancos {
-  position: sticky;
-  top: 0;
-  height: 35px;
-  background-color: #7F4FFF;
-  z-index: 1;
-  backdrop-filter: (5px);
-}
-
-.cabecalho-bancos-liquidacao {
-  position: sticky;
-  top: 0;
-  height: 25px;
-  background-color: #7F4FFF;
-  z-index: 1;
-  backdrop-filter: (5px);
-}
-
-.totais-row {
-  position: sticky;
-  bottom: 0;
-  height: 35px;
-  background-color: var(--color2);
-  z-index: 1;
-}
-
-.totais-row-liquidacao {
-  position: sticky;
-  bottom: 0;
-  height: 25px;
-  background-color: var(--color2);
-  z-index: 1;
-}
-
-.tabela-bancos {
-  width: 100%;
-  font-family: var(--primary-font);
-  color: var(--preto);
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-
-.tabela-bancos th {
-  padding: 0;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--branco);
-}
-
-.tabela-bancos td {
-  font-size: 12px;
-  font-weight: 400;
-}
-
-.tabela-bancos tbody tr:hover,
-.tabela-bancos tbody tr:focus {
-  background: #efeaff;
-}
-
-.tabela-bancos tbody tr {
-  transition: .3s all ease;
-}
-
-.tabela-bancos-liquidacao th {
-  padding: 0;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--branco);
-}
-
-.tabela-bancos-liquidacao {
-  width: 100%;
-  font-family: var(--primary-font);
-  color: var(--preto);
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-
-.tabela-bancos-liquidacao th {
-  padding: 0;
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.tabela-bancos-liquidacao td {
-  font-size: 12px;
-  font-weight: 400;
-}
-
-.tabela-bancos-liquidacao tbody tr:hover,
-.tabela-bancos-liquidacao tbody tr:focus {
-  background: #efeaff;
-}
-
-.tabela-bancos-liquidacao tbody tr {
-  transition: .3s all ease;
-}
-
-.row-bancos {
-  height: 35px;
-  text-align: center;
-}
-
-.contas-bancos-col {
-  width: 200px;
-  border-radius: 20px 0px 0px 20px;
-}
-
-.ag-bancos-col {
-  width: 100px;
-}
-
-.saldo-bancos-col {
-  border-radius: 0px 20px 20px 0px;
-}
-
-.contas-bancos-liquidacao-col {
-  width: 100px;
-}
-
-.ag-bancos-liquidacao-col {
-  width: 100px;
-}
-
-.conta-bancos-liquidacao-col {
-  width: 100px;
-}
-
-.saldo-bancos-liquidacao-col {
-  width: 100px;
-  border-radius: 0px 20px 20px 0px;
-}
-
-.banco-row {
-  text-align: left;
-  padding: 0 20px;
-}
-
-td.total-row {
-  text-align: center;
-  font-weight: 900;
-  font-size: 14px;
-}
-
-td.saldo-total-banco-row,
-td.saldo-total-banco-liquidacao-row {
-  text-align: center; 
-  font-weight: 900;
-  font-size: 14px;
-}
-
-/* Botões da Checkbox */
+/* Botões de Liquidação */
 .botoes-acoes {
   opacity: 0;
   grid-template-columns: repeat(3, 1fr);
@@ -691,11 +648,11 @@ td.saldo-total-banco-liquidacao-row {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%) translateY(100%);
-  background-color: var(--branco);
-  backdrop-filter: blur(5px);
+  background-color: var(--color10);
   padding: 10px;
   width: 100%;
-  box-shadow: 0px -2px 5px 0px #0000001a;
+  border: var(--border1);
+  box-shadow: var(--box-shadow1);
   transition: transform 0.5s ease, opacity 0.5s ease;
   border-radius: 20px 20px 0px 0px;
 }
@@ -709,11 +666,7 @@ td.saldo-total-banco-liquidacao-row {
 .btn-areas {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  backdrop-filter: blur(50%);
-  background-color: #3d3d4034;
   padding: 5px;
-  border-radius: 20px;
-  box-shadow: 0px -2px 10px 0px #0000001a;
 }
 
 .btn-coluna {
@@ -766,8 +719,8 @@ td.saldo-total-banco-liquidacao-row {
 }
 
 .liquidar-button:hover {
-  background-color: #8fa74c;
-  border: 2px solid #91a756;
+  background-color: var(--color7);
+  border: 2px solid var(--color7);
 }
 
 .liquidar-button:active {
@@ -824,7 +777,8 @@ td.saldo-total-banco-liquidacao-row {
 }
 
 .apagar-button:hover {
-  background-color: rgb(255, 0, 0);
+  background-color: var(--color7);
+  border: 2px solid var(--color7);
 }
 
 .apagar-button:active {
@@ -866,14 +820,15 @@ td.saldo-total-banco-liquidacao-row {
   background-color: var(--branco);
   cursor: pointer;
   border: 2px solid var(--color1);
-  transition-duration: 0.3s;
+  transition-duration: 0.6s;
   position: relative;
   overflow: hidden;
   transform: scale(0.7);
 }
 
 .cancelar-button:hover {
-  background-color: var(--color2);  
+  background-color: var(--color7);
+  border: 2px solid var(--color7);
 }
 
 .cancelar-button:active {
@@ -891,13 +846,13 @@ td.saldo-total-banco-liquidacao-row {
 }
 
 .cancelar-button:hover > .x-svg path {
-  fill: var(--color4);
+  fill: var(--branco);
   cursor: pointer;
 }
 
 /* Media Queries para telas de dispositivos móveis */
 @media screen and (max-width: 768px) {
-  .main {
+  .filter-boxes {
       grid-template-columns: 1fr;
   }
 
@@ -946,7 +901,7 @@ td.saldo-total-banco-liquidacao-row {
 
   .openbtn:hover {
       background-color: var(--color7);
-      color: var(--color9);
+      color: var(--color7);
       transition: var(--transition-effect1) var(--transition-duration1);
   }
 
@@ -1162,7 +1117,7 @@ td.saldo-total-banco-liquidacao-row {
       font-family: var(--primary-font);
   }
 
-  .contas-bancos-col {
+  .bancos-bancos-col {
     width: 40.75%;
   }
 

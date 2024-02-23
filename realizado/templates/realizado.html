@@ -18,235 +18,236 @@
         <nav class="nav-bar">
             <a class="logo" href="{% url 'realizado:realizado' %}">WAYEASI</a>
             <ul class="nav-list">
-                <li class="nav-fluxo-de-caixa"><a href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">FLUXO DE CAIXA</a></li>
-                <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">REALIZADO</a></li>
-                <li class="nav-relatorios"><a href="#">RELATÓRIOS</a></li>
-                <li><div class="line"></div></li>
-                <li class="nav-configuracoes"><a href="{% url 'configuracoes:configuracoes' %}">CONFIGURAÇÕES</a></li>
-                <li class="nav-meu-perfil"><a href="meu-perfil.html">MEU PERFIL</a></li>
+                <li class="nav-fluxo-de-caixa"><a href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">Fluxo de Caixa</a></li>
+                <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">Realizado</a></li>
+                <li class="nav-relatorios"><a href="#">Relatórios</a></li>
+                <li class="nav-line"><div class="line"></div></li>
+                <li class="nav-configuracoes"><a href="{% url 'configuracoes:configuracoes' %}">Configurações</a></li>
+                <li class="nav-meu-perfil"><a href="meu-perfil.html">Meu Perfil</a></li>
             </ul>
         </nav>
     </header>
     <!-- ############### Metade Superior da Página ############### -->
     <main class="main">
-        <button class="toggle-filters-btn" onclick="toggleFilters()">Filtros</button>
-        <!-- ############### Caixa com Filtros à Esquerda ############### -->
-        <div class="box-grid">
-            <form id="formulario-filtros" method="get">
-                <div class="box-grid-filters">
-                    <!-- ############### Filtro Contas Contábeis ############### -->
-                    <section class="flex">
-                        <label for="contas-contabeis">Contas Contábeis</label>
-                        <select id="contas-contabeis" name = "contas_contabeis">
-                            <option value="" disabled selected hidden>Selecione</option>
-                            <option value="Receita 1">Receita 1</option>
-                            <option value="Receita 2">Receita 2</option>
-                            <option value="Receita 3">Despesa 1</option>
-                            <option value="Receita 4">Despesa 2</option>
-                        </select>
-                    </section>
-                    <!-- ############### Filtro Meses ############### -->
-                    <section class="flex">
-                        <label for="meses">Meses</label>
-                        <select id="meses" name="meses">
-                            <option value="" disabled selected hidden>Selecione</option>
-                            {% for total in totais_mes_realizado %}
-                            <option value="{{ total.data_formatada }}" data-inicio-mes="{{ total.inicio_mes|date:'Y-m-d' }}" data-fim-mes="{{ total.fim_mes|date:'Y-m-d' }}">{{ total.data_formatada }}</option>
-                            {% endfor %}
-                        </select>
-                    </section>
-                    <!-- ############### Filtro Bancos ############### -->
-                    <section class="flex">
-                        <label for="bancos">Bancos</label>
-                        <select id="bancos" name="bancos">
-                            <option value="" disabled selected hidden>Selecione</option>
+        <div class="filter-boxes">
+            <button class="toggle-filters-btn" onclick="toggleFilters()">Filtros</button>
+            <!-- ############### Caixa com Filtros à Esquerda ############### -->
+            <div class="box-grid">
+                <form id="formulario-filtros" method="get">
+                    <div class="box-grid-filters">
+                        <!-- ############### Filtro Contas Contábeis ############### -->
+                        <section class="flex">
+                            <label for="contas-contabeis">Contas Contábeis</label>
+                            <select id="contas-contabeis" name = "contas_contabeis">
+                                <option value="" disabled selected hidden>Selecione</option>
+                                <option value="Receita 1">Receita 1</option>
+                                <option value="Receita 2">Receita 2</option>
+                                <option value="Receita 3">Despesa 1</option>
+                                <option value="Receita 4">Despesa 2</option>
+                            </select>
+                        </section>
+                        <!-- ############### Filtro Meses ############### -->
+                        <section class="flex">
+                            <label for="meses">Meses</label>
+                            <select id="meses" name="meses">
+                                <option value="" disabled selected hidden>Selecione</option>
+                                {% for total in totais_mes_realizado %}
+                                <option value="{{ total.data_formatada }}" data-inicio-mes="{{ total.inicio_mes|date:'Y-m-d' }}" data-fim-mes="{{ total.fim_mes|date:'Y-m-d' }}">{{ total.data_formatada }}</option>
+                                {% endfor %}
+                            </select>
+                        </section>
+                        <!-- ############### Filtro Bancos ############### -->
+                        <section class="flex">
+                            <label for="bancos">Bancos</label>
+                            <select id="bancos" name="bancos">
+                                <option value="" disabled selected hidden>Selecione</option>
+                                {% for banco in bancos %}
+                                <option value="{{ banco.id }}">{{ banco.banco }}</option>
+                                {% endfor %}
+                            </select>
+                        </section>
+                        <!-- ############### Filtro Data Início ############### -->
+                        <section class="flex">
+                            <label for="data-inicio">De</label>
+                            <input class="data" type="date" id="data-inicio" name = "data_inicio">
+                        </section>
+                        <!-- ############### Filtro Data Fim ############### -->
+                        <section class="flex">
+                            <label for="data-fim">Até</label>
+                            <input class="data" type="date" id="data-fim" name = "data_fim">
+                        </section>
+                        <!-- ############### Filtro Natureza ############### -->
+                        <section class="flex">
+                            <label for="natureza">Natureza</label>
+                            <select id="natureza" name = "natureza">
+                                <option value="" disabled selected hidden>Selecione</option>
+                                <option value="credito">Crédito</option>
+                                <option value="debito">Débito</option>
+                            </select>
+                        </section>
+                        <!-- ############### Filtro Caixa de Pesquisa ############### -->
+                        <div class="pesquisa mesclar-2">
+                            <input type="text" class="caixa-pesquisa" id="caixa-pesquisa" name ="caixa_pesquisa" placeholder="Pesquisar">
+                            <button class="botao-pesquisa">
+                                <svg class="icon-pesquisa" aria-hidden="true" viewBox="0 0 24 24">
+                                    <g>
+                                        <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+                                    </g>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="pesquisa-tags">
+                            <input type="text" class="caixa-pesquisa-tags" id="caixa-pesquisa-tags"  name ="caixa_pesquisa_tags" placeholder="Tags">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- ############### Tabela de Bancos ############### -->
+            <button class="toggle-banks-btn" onclick="toggleBanks()">Bancos</button>
+            <div class="box-grid-bancos">
+                <div class="conteudo-tabela-bancos">
+                    <table class="tabela-bancos">
+                        <thead class="cabecalho-bancos">
+                            <tr class="linha-cabecalho-bancos">
+                                <th class="bancos-bancos-col" scope="col">Banco</th>
+                                <th class="ag-bancos-col" scope="col">Agência</th>
+                                <th class="conta-bancos-col" scope="col">Conta</th>
+                                <th class="saldo-bancos-col" scope="col">Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                             {% for banco in bancos %}
-                            <option value="{{ banco.id }}">{{ banco.banco }}</option>
+                            <tr class="row-bancos" data-banco-id="{{ banco.id }}" scope="row">
+                                <td class="banco-row" name="banco">{{ banco.banco }}</td>
+                                <td class="ag-row" name="agencia">{{ banco.agencia }}</td>
+                                <td class="conta-row" name="conta">{{ banco.conta }}</td>
+                                <td class="saldo-banco-row" name="saldo_inicial">{{ banco.saldo_inicial|add_decimal:banco.saldo_atual|format_number }}</td>
+                            </tr>
                             {% endfor %}
-                        </select>
-                    </section>
-                    <!-- ############### Filtro Data Início ############### -->
-                    <section class="flex">
-                        <label for="data-inicio">De</label>
-                        <input class="data" type="date" id="data-inicio" name = "data_inicio">
-                    </section>
-                    <!-- ############### Filtro Data Fim ############### -->
-                    <section class="flex">
-                        <label for="data-fim">Até</label>
-                        <input class="data" type="date" id="data-fim" name = "data_fim">
-                    </section>
-                    <!-- ############### Filtro Natureza ############### -->
-                    <section class="flex">
-                        <label for="natureza">Natureza</label>
-                        <select id="natureza" name = "natureza">
-                            <option value="" disabled selected hidden>Selecione</option>
-                            <option value="credito">Crédito</option>
-                            <option value="debito">Débito</option>
-                        </select>
-                    </section>
-                    <!-- ############### Filtro Caixa de Pesquisa ############### -->
-                    <div class="pesquisa mesclar-2">
-                        <input type="text" class="caixa-pesquisa" id="caixa-pesquisa" name ="caixa_pesquisa" placeholder="Pesquisar">
-                        <button class="botao-pesquisa">
-                            <svg class="icon-pesquisa" aria-hidden="true" viewBox="0 0 24 24">
-                                <g>
-                                    <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
-                                </g>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="pesquisa-tags">
-                        <input type="text" class="caixa-pesquisa-tags" id="caixa-pesquisa-tags"  name ="caixa_pesquisa_tags" placeholder="Tags">
-                    </div>
+                            <tr class="totais-row" scope="row">
+                                <td class=""></td>
+                                <td class=""></td>
+                                <td class="total-row">TOTAL</td>
+                                <td class="saldo-total-banco-row" name="saldo-total-banco-row">{{ saldo_total_bancos|currency_br }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            </form>
+            </div>
         </div>
-        <!-- ############### Tabela de Bancos ############### -->
-        <button class="toggle-banks-btn" onclick="toggleBanks()">Bancos</button>
-        <div class="box-grid-bancos">
-            <div class="conteudo-tabela-bancos">
-                <table class="tabela-bancos">
-                    <thead class="cabecalho-bancos">
-                        <tr class="linha-cabecalho-bancos">
-                            <th class="contas-bancos-col" scope="col">Banco</th>
-                            <th class="ag-bancos-col" scope="col">Agência</th>
-                            <th class="conta-bancos-col" scope="col">Conta</th>
-                            <th class="saldo-bancos-col" scope="col">Saldo</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for banco in bancos %}
-                        <tr class="row-bancos" data-banco-id="{{ banco.id }}" scope="row">
-                            <td class="banco-row" name="banco">{{ banco.banco }}</td>
-                            <td class="ag-row" name="agencia">{{ banco.agencia }}</td>
-                            <td class="conta-row" name="conta">{{ banco.conta }}</td>
-                            <td class="saldo-banco-row" name="saldo_inicial">{{ banco.saldo_inicial|add_decimal:banco.saldo_atual|format_number }}</td>
-                        </tr>
-                        {% endfor %}
-                        <tr class="totais-row" scope="row">
-                            <td class=""></td>
-                            <td class=""></td>
-                            <td class="total-row">TOTAL</td>
-                            <td class="saldo-total-banco-row" name="saldo-total-banco-row">{{ saldo_total_bancos|currency_br }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+
+        <!-- Modal realizado -->
+        <dialog class="modal-realizado" id="modal-realizado">
+
+            <h1 class="modal-titulo">Realizado</h1>
+            
+            <form class="modal-form-realizado" action="/realizado/" method="POST">{% csrf_token %}
+                <input type="hidden" name="lancamento_id_realizado" value="{{ realizado.id }}">
+                <input type="hidden" name="uuid_realizado" value="{{ realizado.uuid_correlacao }}">
+                <input type="hidden" name="uuid_parcelas_realizado" value="{{ realizado.uuid_correlacao_parcelas }}">
+                <section class="modal-flex">
+                    <label for="data-realizado">Data</label>
+                    <input class="modal-data" id="data-realizado" type="date" name="vencimento" required><br>
+                </section>
+            
+                <section class="modal-flex">
+                    <label for="descricao-realizado">Descrição</label>
+                    <input class="modal-descricao" id="descricao-realizado" maxlength="100" type="text" name="descricao" required><br>
+                </section>
+            
+                <section class="modal-flex">
+                    <label for="observacao-realizado">Observação</label>
+                    <input class="modal-obs" id="observacao-realizado" maxlength="100" type="text" name="observacao"></input><br>
+                </section>
+                
+                <section class="modal-flex">
+                    <label for="valor-realizado">Valor</label>
+                    <input class="modal-valor" id="valor-realizado" type="text" name="valor" required readonly><br>
+                </section>
+            
+                <section class="modal-flex">
+                    <label for="conta-contabil-realizado">Conta Contábil</label>
+                    <input class="modal-conta-contabil" id="conta-contabil-realizado" type="text" name="conta_contabil" required readonly>
+                    </input><br>
+                </section>
+            
+                <section class="modal-flex" id="parcelas-section-realizado">
+                    <label for="parcelas-realizado">Parcela</label>
+                    <input class="modal-parcelas" id="parcelas-realizado" type="text" name="parcelas" parcela-atual="{{ realizado.parcela_atual }}" parcelas-total="{{ realizado.parcelas_total }}" min="1" value="1" readonly><br>
+                </section>
+
+                <section class="modal-flex mesclar-2">
+                    <div id="tag-container-realizado" class="tag-container"></div>
+                </section>
+                <section class="modal-botoes">
+                    <input type="submit" class="modal-salvar" name="salvar_realizado" value="Salvar">
+                    <button type="button" class="modal-fechar-realizado">Cancelar</button>
+                </section>
+            </form>
+        </dialog>
+
+        <!-- ############### Tabela com Lançamentos ############### -->
+        <div class="conteudo-tabela-lancamentos">
+            <table class="tabela-lancamentos">
+                <thead class="cabecalho-lancamentos">
+                    <tr class="linha-cabecalho-lancamentos">
+                        <th class="checkbox-col" scope="col"></th>
+                        <th class="vencimento-col" scope="col">Vencimento</th>
+                        <th class="descricao-col" scope="col">Descrição</th>
+                        <th class="obs-col" scope="col">Observação</th>
+                        <th class="parcela-col" scope="col">Parcela</th>
+                        <th class="debito-col" scope="col">Débito</th>
+                        <th class="credito-col" scope="col">Crédito</th>
+                        <th class="saldo-col" scope="col">Saldo</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-lancamentos">
+                    {% for realizado in Tabela_realizado_list %}
+                    <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ realizado.id }}" data-banco-liquidacao="{{ realizado.banco_liquidacao }}" data-banco-id-liquidacao="{{ realizado.banco_id_liquidacao }}" data-conta-contabil="{{ realizado.conta_contabil }}" parcela-atual="{{ realizado.parcela_atual }}" parcelas-total="{{ realizado.parcelas_total }}" data-uuid-correlacao="{{ realizado.uuid_correlacao }}" data-uuid-correlacao-parcelas="{{ realizado.uuid_correlacao_parcelas }}" scope="row">
+                        <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado" type="checkbox" data-id="{{ realizado.id }}" data-uuid-correlacao="{{ realizado.uuid_correlacao }}" data-uuid-correlacao-parcelas="{{ realizado.uuid_correlacao_parcelas }}"><span class="checkmark"></span></label></td>
+                        <td class="vencimento-row">{{ realizado.data_liquidacao|date:"d/m/Y" }}</td>
+                        <td class="descricao-row">{{ realizado.descricao }}</td>
+                        <td class="obs-row">
+                            {{ realizado.observacao }}
+                            <small class="d-block">Tags: {{ realizado.tags }}</small>
+                        </td>
+                        <td class="parcela-row">{{ realizado.parcela_atual }}/{{ realizado.parcelas_total }}</td>
+                        <input type="hidden" id="parcelas-total-originais-recebimentos" name="parcelas_total_originais">
+                        <input type="hidden" id="parcelas-total-originais-pagamentos" name="parcelas_total_originais">
+                        {% if realizado.natureza == 'Débito' %}
+                            <td class="debito-row">{{ realizado.valor|format_number }}</td>
+                            <td class="credito-row"></td>
+                        {% else %}
+                            <td class="debito-row"></td>
+                            <td class="credito-row">{{ realizado.valor|format_number }}</td>
+                        {% endif %}
+                        <td class="saldo-row" id = "saldo-row">{{ realizado.saldo|format_number }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ############### Botões da Checkbox ############### -->
+        <div class="botoes-acoes">
+            <!-- ############### Botão de Liquidar ############### -->
+            <div class="btn-areas-realizado">
+                <div class="btn-coluna">
+                    <label for="retornar-button">Retornar</label>
+                    <button class="btn-acoes retornar-button" id="retornar-button">
+                        <svg version="1.1" id="ios7_x5F_arrows_1_" xmlns="http://www.w3.org/2000/svg" x="0" y="0" viewBox="0 0 128 128" style="enable-background:new 0 0 128 128" xml:space="preserve" class="retornar"><g id="_x32_2_1_"><path d="M70.7 7.1C45 7.1 23.2 24 16 47.2L7.2 14.5 1.5 16l12.1 44.8h.1l45.1-12-1.5-5.6-37 9.8c5-23 25.7-40.3 50.3-40.3 28.5 0 51.5 22.9 51.5 51.2 0 28.3-23.1 51.2-51.5 51.2-17.6 0-33.1-8.8-42.4-22.1-.3-.4-.9-1.3-.9-1.3l-5.6 1.8s.5.8.8 1.3c10.2 15.7 27.9 26.1 48.2 26.1 31.6 0 57.3-25.5 57.3-56.9-.1-31.4-25.7-56.9-57.3-56.9z" id="icon_17_"/></g></svg>
+                    </button>
+                </div>
+                <!-- ############### Botão de Cancelar ############### -->
+                <div class="btn-coluna">
+                    <label for="cancelar-button">Cancelar</label>
+                    <button class="btn-acoes cancelar-button" id="cancelar-button">
+                        <svg class="x-svg" fill="#000000" height="800px" width="800px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 460.775 460.775" xml:space="preserve"><path d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55 c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55 c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505 c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55 l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719 c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z"/>
+                        </svg>
+                    </button>
             </div>
         </div>
     </main>
-
-    <!-- Modal realizado -->
-    <dialog class="modal-realizado" id="modal-realizado">
-
-        <h1 class="modal-titulo">Realizado</h1>
-        
-        <form class="modal-form-realizado" action="/realizado/" method="POST">{% csrf_token %}
-            <input type="hidden" name="lancamento_id_realizado" value="{{ realizado.id }}">
-            <input type="hidden" name="uuid_realizado" value="{{ realizado.uuid_correlacao }}">
-            <input type="hidden" name="uuid_parcelas_realizado" value="{{ realizado.uuid_correlacao_parcelas }}">
-            <section class="modal-flex">
-                <label for="data-realizado">Data</label>
-                <input class="modal-data" id="data-realizado" type="date" name="vencimento" required><br>
-            </section>
-        
-            <section class="modal-flex">
-                <label for="descricao-realizado">Descrição</label>
-                <input class="modal-descricao" id="descricao-realizado" maxlength="100" type="text" name="descricao" required><br>
-            </section>
-        
-            <section class="modal-flex">
-                <label for="observacao-realizado">Observação</label>
-                <input class="modal-obs" id="observacao-realizado" maxlength="100" type="text" name="observacao"></input><br>
-            </section>
-            
-            <section class="modal-flex">
-                <label for="valor-realizado">Valor</label>
-                <input class="modal-valor" id="valor-realizado" type="text" name="valor" oninput="formatarCampoValor(this)" value="" required readonly><br>
-            </section>
-        
-            <section class="modal-flex">
-                <label for="conta-contabil-realizado">Conta Contábil</label>
-                <input class="modal-conta-contabil" id="conta-contabil-realizado" type="text" name="conta_contabil" required readonly>
-                </input><br>
-            </section>
-        
-            <section class="modal-flex" id="parcelas-section-realizado">
-                <label for="parcelas-realizado">Parcela</label>
-                <input class="modal-parcelas" id="parcelas-realizado" type="text" name="parcelas" parcela-atual="{{ realizado.parcela_atual }}" parcelas-total="{{ realizado.parcelas_total }}" min="1" value="1" readonly><br>
-            </section>
-
-            <section class="modal-flex mesclar-2">
-                <div id="tag-container-realizado" class="tag-container"></div>
-            </section>
-            <section class="modal-botoes">
-                <input type="submit" class="modal-salvar" name="salvar_realizado" value="Salvar">
-                <button type="button" class="modal-fechar-realizado">Cancelar</button>
-            </section>
-        </form>
-    </dialog>
-
-    <!-- ############### Tabela com Lançamentos ############### -->
-    <div class="conteudo-tabela-lancamentos">
-        <table class="tabela-lancamentos">
-            <thead class="cabecalho-lancamentos">
-                <tr class="linha-cabecalho-lancamentos">
-                    <th class="checkbox-col" scope="col"></th>
-                    <th class="vencimento-col" scope="col">Vencimento</th>
-                    <th class="descricao-col" scope="col">Descrição</th>
-                    <th class="obs-col" scope="col">Observação</th>
-                    <th class="parcela-col" scope="col">Parcela</th>
-                    <th class="debito-col" scope="col">Débito</th>
-                    <th class="credito-col" scope="col">Crédito</th>
-                    <th class="saldo-col" scope="col">Saldo</th>
-                </tr>
-            </thead>
-            <tbody id="tabela-lancamentos">
-                {% for realizado in Tabela_realizado_list %}
-                <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ realizado.id }}" data-banco-liquidacao="{{ realizado.banco_liquidacao }}" data-banco-id-liquidacao="{{ realizado.banco_id_liquidacao }}" data-conta-contabil="{{ realizado.conta_contabil }}" parcela-atual="{{ realizado.parcela_atual }}" parcelas-total="{{ realizado.parcelas_total }}" data-uuid-correlacao="{{ realizado.uuid_correlacao }}" data-uuid-correlacao-parcelas="{{ realizado.uuid_correlacao_parcelas }}" scope="row">
-                    <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado" type="checkbox" data-id="{{ realizado.id }}" data-uuid-correlacao="{{ realizado.uuid_correlacao }}" data-uuid-correlacao-parcelas="{{ realizado.uuid_correlacao_parcelas }}"><span class="checkmark"></span></label></td>
-                    <td class="vencimento-row">{{ realizado.data_liquidacao|date:"d/m/Y" }}</td>
-                    <td class="descricao-row">{{ realizado.descricao }}</td>
-                    <td class="obs-row">
-                        {{ realizado.observacao }}
-                        <small class="d-block">Tags: {{ realizado.tags }}</small>
-                    </td>
-                    <td class="parcela-row">{{ realizado.parcela_atual }}/{{ realizado.parcelas_total }}</td>
-                    <input type="hidden" id="parcelas-total-originais-recebimentos" name="parcelas_total_originais">
-                    <input type="hidden" id="parcelas-total-originais-pagamentos" name="parcelas_total_originais">
-                    {% if realizado.natureza == 'Débito' %}
-                        <td class="debito-row">{{ realizado.valor|format_number }}</td>
-                        <td class="credito-row"></td>
-                    {% else %}
-                        <td class="debito-row"></td>
-                        <td class="credito-row">{{ realizado.valor|format_number }}</td>
-                    {% endif %}
-                    <td class="saldo-row" id = "saldo-row">{{ realizado.saldo|format_number }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <!-- ############### Botões da Checkbox ############### -->
-    <div class="botoes-acoes">
-        <!-- ############### Botão de Liquidar ############### -->
-        <div class="btn-areas-realizado">
-            <div class="btn-coluna">
-                <label for="retornar-button">Retornar</label>
-                <button class="btn-acoes retornar-button" id="retornar-button">
-                    <svg version="1.1" id="ios7_x5F_arrows_1_" xmlns="http://www.w3.org/2000/svg" x="0" y="0" viewBox="0 0 128 128" style="enable-background:new 0 0 128 128" xml:space="preserve" class="retornar"><g id="_x32_2_1_"><path d="M70.7 7.1C45 7.1 23.2 24 16 47.2L7.2 14.5 1.5 16l12.1 44.8h.1l45.1-12-1.5-5.6-37 9.8c5-23 25.7-40.3 50.3-40.3 28.5 0 51.5 22.9 51.5 51.2 0 28.3-23.1 51.2-51.5 51.2-17.6 0-33.1-8.8-42.4-22.1-.3-.4-.9-1.3-.9-1.3l-5.6 1.8s.5.8.8 1.3c10.2 15.7 27.9 26.1 48.2 26.1 31.6 0 57.3-25.5 57.3-56.9-.1-31.4-25.7-56.9-57.3-56.9z" id="icon_17_"/></g></svg>
-                </button>
-            </div>
-            <!-- ############### Botão de Cancelar ############### -->
-            <div class="btn-coluna">
-                <label for="cancelar-button">Cancelar</label>
-                <button class="btn-acoes cancelar-button" id="cancelar-button">
-                    <svg class="x-svg" fill="#000000" height="800px" width="800px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 460.775 460.775" xml:space="preserve"><path d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55 c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55 c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505 c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55 l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719 c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z"/>
-                    </svg>
-                </button>
-        </div>
-    </div>
-
     <script src="{% static 'scripts/scripts_realizado.js' %}"></script>
 </body>
 </html>
