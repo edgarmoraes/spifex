@@ -1144,12 +1144,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // Listener para fechar os dropdowns ao clicar fora
   document.addEventListener('click', function(event) {
-      if (!event.target.closest("#dropdown-content-bancos")) {
-          document.getElementById("dropdown-content-bancos").classList.remove("show");
-      }
-      if (!event.target.closest("#dropdown-content-meses")) {
-          document.getElementById("dropdown-content-meses").classList.remove("show");
-      }
+    if (!event.target.closest("#dropdown-content-meses") && !event.target.closest("#dropdown-button-meses")) {
+        document.getElementById("dropdown-content-meses").classList.remove("show");
+    }
+    if (!event.target.closest("#dropdown-content-bancos") && !event.target.closest("#dropdown-button-bancos")) {
+        document.getElementById("dropdown-content-bancos").classList.remove("show");
+    }
   });
 
   // Inicializa a filtragem para configurar a visualização inicial com base nos filtros padrão
