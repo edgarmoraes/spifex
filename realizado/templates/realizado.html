@@ -50,7 +50,6 @@
                         <section class="flex">
                             <label for="meses-dropdown">Meses</label>
                             <div class="dropdown-multiselect">
-                                <!-- Botão para acionar o dropdown -->
                                 <button type="button" onclick="toggleDropdownMeses(event)" id="dropdown-button-meses" class="dropdown-button">Selecione</button>
                                 <div id="dropdown-content-meses" class="dropdown-content">
                                     <div class="dropdown-header">
@@ -58,7 +57,6 @@
                                         <button class="button-desmarcar-todos" type="button" onclick="deselectAllMeses(event)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
-                                        <!-- Substitua esta parte com a iteração apropriada em seu framework/template engine -->
                                         {% for total in totais_mes_realizado %}
                                         <label class="label-filters">
                                             <input type="checkbox" name="meses" value="{{ total.data_formatada }}" class="mes-checkbox" data-inicio-mes="{{ total.inicio_mes|date:'Y-m-d' }}" data-fim-mes="{{ total.fim_mes|date:'Y-m-d' }}">
@@ -73,7 +71,6 @@
                         <section class="flex">
                             <label for="dropdown-button-bancos">Bancos</label>
                             <div class="dropdown-multiselect">
-                                <!-- Botão para acionar o dropdown -->
                                 <button type="button" onclick="toggleDropdownBancos(event)" id="dropdown-button-bancos" class="dropdown-button">Selecione</button>
                                 <div id="dropdown-content-bancos" class="dropdown-content">
                                     <div class="dropdown-header">
@@ -81,7 +78,6 @@
                                         <button class="button-desmarcar-todos" type="button" onclick="deselectAllBancos(event)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
-                                        <!-- Substitua esta parte com a iteração apropriada em seu framework/template engine -->
                                         {% for banco in bancos %}
                                         <label class="label-filters">
                                             <input type="checkbox" name="bancos" value="{{ banco.id }}" class="banco-checkbox">
@@ -221,6 +217,7 @@
                         <th class="vencimento-col" scope="col">Vencimento</th>
                         <th class="descricao-col" scope="col">Descrição</th>
                         <th class="obs-col" scope="col">Observação</th>
+                        <th class="banco-col" scope="col">Banco</th>
                         <th class="parcela-col" scope="col">Parcela</th>
                         <th class="debito-col" scope="col">Débito</th>
                         <th class="credito-col" scope="col">Crédito</th>
@@ -237,6 +234,7 @@
                             {{ realizado.observacao }}
                             <small class="d-block">Tags: {{ realizado.tags }}</small>
                         </td>
+                        <td class="banco-row">{{ realizado.banco_liquidacao }}</td>
                         <td class="parcela-row">{{ realizado.parcela_atual }}/{{ realizado.parcelas_total }}</td>
                         <input type="hidden" id="parcelas-total-originais-recebimentos" name="parcelas_total_originais">
                         <input type="hidden" id="parcelas-total-originais-pagamentos" name="parcelas_total_originais">

@@ -48,6 +48,15 @@
   overflow: auto;
 }
 
+/* Tabela liquidação */
+.obs-col {
+  width: 350px !important;
+}
+
+.banco-col {
+  width: 200px !important;
+}
+
 /* Botões da Checkbox */
 
 /* Compartilhado */
