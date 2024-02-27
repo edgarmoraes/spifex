@@ -1129,6 +1129,10 @@ document.querySelectorAll('.checkbox-personalizado').forEach(checkbox => {
 // Chamar a função calcularTotal inicialmente
 calcularTotal();
 
+
+
+
+// Filtro de meses e bancos
 document.addEventListener("DOMContentLoaded", function() {
   // Adiciona listeners para checkboxes de meses e bancos
   document.querySelectorAll('#dropdown-content-meses .mes-checkbox').forEach(checkbox => {
@@ -1154,7 +1158,31 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // Inicializa a filtragem para configurar a visualização inicial com base nos filtros padrão
   filtrarBancos();
-  filtrarTabela();
+  const today = new Date();
+  const currentMonth = today.toLocaleString('pt-BR', { month: 'short' }).toLowerCase().replace('.', '');
+  const currentYear = today.getFullYear();
+
+  // Combinando mês e ano para fazer a verificação
+  const currentMonthYear = `${currentMonth}/${currentYear}`;
+
+  // Marque o checkbox do mês e ano atuais e filtre a tabela
+  const checkboxesMeses = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
+  let currentMonthChecked = false;
+  checkboxesMeses.forEach(checkbox => {
+    if (checkbox.value === currentMonthYear) {
+      checkbox.checked = true;
+      currentMonthChecked = true;
+    }
+  });
+
+  // Atualize o texto do botão e filtre a tabela se o mês atual foi marcado
+  if (currentMonthChecked) {
+    updateButtonTextMeses();
+    filtrarTabela();
+  } else {
+    // Se não encontrou o mês atual, pode querer marcar o checkbox manualmente ou tratar o caso
+    console.error('Checkbox do mês atual não encontrado. Valor procurado:', currentMonthYear);
+  }
 });
 
 // Funções para manipular os eventos de abertura dos dropdowns
@@ -1205,14 +1233,14 @@ function deselectAllBancos(event) {
 function updateButtonTextMeses() {
   const selectedCount = document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked').length;
   const totalOptions = document.querySelectorAll('#dropdown-content-meses .mes-checkbox').length;
-  const buttonText = selectedCount === 0 ? "Selecione" : selectedCount === totalOptions ? "Todos Selecionados" : `${selectedCount} meses selecionados`;
+  const buttonText = selectedCount === 0 ? "Selecione" : selectedCount === totalOptions ? "Todos Selecionados" : `Selecione`;
   document.getElementById('dropdown-button-meses').textContent = buttonText;
 }
 
 function updateButtonTextBancos() {
   const selectedCount = document.querySelectorAll('#dropdown-content-bancos .banco-checkbox:checked').length;
   const totalOptions = document.querySelectorAll('#dropdown-content-bancos .banco-checkbox').length;
-  const buttonText = selectedCount === 0 ? "Selecione" : selectedCount === totalOptions ? "Todos Selecionados" : `${selectedCount} bancos selecionados`;
+  const buttonText = selectedCount === 0 ? "Selecione" : selectedCount === totalOptions ? "Todos Selecionados" : `Selecione`;
   document.getElementById('dropdown-button-bancos').textContent = buttonText;
 }
 

@@ -20,7 +20,7 @@ def exibir_realizado(request):
 
     Tabela_realizado_list = Tabela_realizado.objects.all().order_by('data_liquidacao', '-valor', 'descricao')
 
-    totais_mes_realizado = Totais_mes_realizado.objects.all()
+    totais_mes_realizado = Totais_mes_realizado.objects.all().order_by('-fim_mes')
     context = {
         'Tabela_realizado_list': Tabela_realizado_list,
         'totais_mes_realizado': totais_mes_realizado,
