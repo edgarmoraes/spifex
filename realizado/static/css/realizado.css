@@ -44,7 +44,7 @@
 
 /* Compartilhado */
 .conteudo-tabela-bancos {
-  max-height: 216px; /* Ajuste conforme necessário */
+  max-height: 215px;
   overflow: auto;
 }
 

@@ -469,7 +469,7 @@ nav {
 .totais-row-liquidacao {
   position: sticky;
   bottom: 0px;
-  height: 35px;
+  height: 36px;
   background-color: var(--color2);
   z-index: 1;
 }
