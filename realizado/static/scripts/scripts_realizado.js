@@ -494,9 +494,9 @@ function coletarBancosSelecionados() {
   linhasTabelaBancos.forEach(linha => {
     const idBanco = linha.getAttribute('data-banco-id');
     if (bancosSelecionados.length === 0 || bancosSelecionados.includes(idBanco)) {
-      linha.style.display = ''; // Mostra a linha se o banco está selecionado ou se nenhum banco está selecionado.
+      linha.style.display = '';
     } else {
-      linha.style.display = 'none'; // Oculta a linha se o banco não está selecionado.
+      linha.style.display = 'none';
     }
   });
 
@@ -533,22 +533,25 @@ function filtrarTabela() {
     const natureza = row.getAttribute('data-natureza').toLowerCase().trim();
 
     const descricao = row.querySelector('.descricao-row').textContent.toLowerCase();
-    const observacao = row.querySelector('.obs-row').textContent.toLowerCase();
-    const tags = row.querySelector('.tags-row') ? row.querySelector('.tags-row').textContent.toLowerCase() : "";
+    const obsElement = row.querySelector('.obs-row');
+    const observacao = obsElement.childNodes[0].textContent.toLowerCase().trim();
+    const tags = obsElement.querySelector('.d-block') ? obsElement.querySelector('.d-block').textContent.toLowerCase().trim() : "";
     const mesAno = formatarDataParaMesAno(dataTexto);
     const idBancoLancamento = row.getAttribute('data-banco-id-liquidacao');
+    const bancosSelecionados = [];
     const bancoMatch = bancosSelecionados.length === 0 || bancosSelecionados.includes(idBancoLancamento);
 
     const descricaoMatch = descricao.includes(inputDescricao);
-    const observacaoMatch = observacao.includes(inputDescricao) && !tags.includes(inputDescricao);
+    const observacaoMatch = observacao.includes(inputDescricao);
     const tagsMatch = tags.includes(inputTags);
 
+    const textoMatch = descricaoMatch || observacaoMatch;
     const contaContabilMatch = !contaContabilSelecionada || contaContabil === contaContabilSelecionada;
     const dataMatch = (!dataInicio || dataLancamento >= dataInicio) && (!dataFim || dataLancamento <= dataFim);
     const naturezaMatch = !naturezaSelecionada || natureza === naturezaSelecionada;
     const mesMatch = mesesSelecionados.length === 0 || mesesSelecionados.includes(mesAno);
 
-    if (contaContabilMatch && dataMatch && naturezaMatch && mesMatch && (descricaoMatch || observacaoMatch) && tagsMatch && bancoMatch) {
+    if (contaContabilMatch && dataMatch && naturezaMatch && mesMatch && textoMatch && tagsMatch && bancoMatch) {
       row.style.display = "";
     } else {
       row.style.display = "none";

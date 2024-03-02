@@ -1134,8 +1134,65 @@ calcularTotal();
 
 // Filtro de meses e bancos
 document.addEventListener("DOMContentLoaded", function() {
-    // Adiciona listeners para checkboxes de meses
-    document.querySelectorAll('#dropdown-content-meses .mes-checkbox').forEach(checkbox => {
+  const meses = [
+      'jan', 'fev', 'mar', 'abr', 'mai', 'jun',
+      'jul', 'ago', 'set', 'out', 'nov', 'dez'
+  ];
+
+  const today = new Date();
+  let currentMonthIndex = today.getMonth(); // Obtém o índice do mês atual (0-11)
+  const currentYear = today.getFullYear();
+
+  // Função para marcar checkboxes de meses anteriores e o mês atual
+  function marcarMesesAnterioresAteAtual(index) {
+      const checkboxesMeses = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
+      checkboxesMeses.forEach(checkbox => {
+          const [mesCheckbox, anoCheckbox] = checkbox.value.split('/');
+          const mesIndex = meses.indexOf(mesCheckbox);
+          const ano = parseInt(anoCheckbox, 10);
+          if ((ano < currentYear) || (ano === currentYear && mesIndex <= index)) {
+              checkbox.checked = true;
+          }
+      });
+      updateButtonTextMeses();
+      filtrarTabela();
+  }
+
+  // Função para encontrar e marcar o mês atual ou o próximo mês disponível
+  function encontrarEMarcarMesAtualOuProximo() {
+      const checkboxesMeses = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
+      let mesAtualOuProximoEncontrado = false;
+      let tentativas = 0;
+
+      while (!mesAtualOuProximoEncontrado && tentativas < 12) {
+          const mesAnoProcurado = `${meses[currentMonthIndex]}/${currentYear}`;
+          for (const checkbox of checkboxesMeses) {
+              if (checkbox.value === mesAnoProcurado) {
+                  mesAtualOuProximoEncontrado = true;
+                  marcarMesesAnterioresAteAtual(currentMonthIndex);
+                  break;
+              }
+          }
+
+          if (!mesAtualOuProximoEncontrado) {
+              currentMonthIndex = (currentMonthIndex + 1) % 12;
+              if (currentMonthIndex === 0) {
+                  // Se passar por todos os meses e começar um novo ciclo, aumenta o ano
+                  currentYear++;
+              }
+          }
+          tentativas++;
+      }
+
+      if (!mesAtualOuProximoEncontrado) {
+          console.error('Nenhum mês válido encontrado. Considere revisar os valores dos checkboxes.');
+      }
+  }
+
+  encontrarEMarcarMesAtualOuProximo();
+
+  // Adiciona listeners para checkboxes de meses
+  document.querySelectorAll('#dropdown-content-meses .mes-checkbox').forEach(checkbox => {
       checkbox.addEventListener('change', function() {
           updateButtonTextMeses();
           filtrarTabela();
@@ -1152,42 +1209,18 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // Listener para fechar os dropdowns ao clicar fora
   document.addEventListener('click', function(event) {
-    if (!event.target.closest("#dropdown-content-meses") && !event.target.closest("#dropdown-button-meses")) {
-        document.getElementById("dropdown-content-meses").classList.remove("show");
-    }
-    if (!event.target.closest("#dropdown-content-bancos") && !event.target.closest("#dropdown-button-bancos")) {
-        document.getElementById("dropdown-content-bancos").classList.remove("show");
-    }
+      if (!event.target.closest("#dropdown-content-meses") && !event.target.closest("#dropdown-button-meses")) {
+          document.getElementById("dropdown-content-meses").classList.remove("show");
+      }
+      if (!event.target.closest("#dropdown-content-bancos") && !event.target.closest("#dropdown-button-bancos")) {
+          document.getElementById("dropdown-content-bancos").classList.remove("show");
+      }
   });
 
   // Inicializa a filtragem para configurar a visualização inicial com base nos filtros padrão
   filtrarBancos();
-  const today = new Date();
-  const currentMonth = today.toLocaleString('pt-BR', { month: 'short' }).toLowerCase().replace('.', '');
-  const currentYear = today.getFullYear();
-
-  // Combinando mês e ano para fazer a verificação
-  const currentMonthYear = `${currentMonth}/${currentYear}`;
-
-  // Marque o checkbox do mês e ano atuais e filtre a tabela
-  const checkboxesMeses = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
-  let currentMonthChecked = false;
-  checkboxesMeses.forEach(checkbox => {
-    if (checkbox.value === currentMonthYear) {
-      checkbox.checked = true;
-      currentMonthChecked = true;
-    }
-  });
-
-  // Atualize o texto do botão e filtre a tabela se o mês atual foi marcado
-  if (currentMonthChecked) {
-    updateButtonTextMeses();
-    filtrarTabela();
-  } else {
-    // Se não encontrou o mês atual, pode querer marcar o checkbox manualmente ou tratar o caso
-    console.error('Checkbox do mês atual não encontrado. Valor procurado:', currentMonthYear);
-  }
 });
+
 
 // Funções para manipular os eventos de abertura dos dropdowns
 function toggleDropdownMeses(event) {
