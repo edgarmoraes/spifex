@@ -1134,14 +1134,18 @@ calcularTotal();
 
 // Filtro de meses e bancos
 document.addEventListener("DOMContentLoaded", function() {
-  // Adiciona listeners para checkboxes de meses e bancos
-  document.querySelectorAll('#dropdown-content-meses .mes-checkbox').forEach(checkbox => {
+    // Adiciona listeners para checkboxes de meses
+    document.querySelectorAll('#dropdown-content-meses .mes-checkbox').forEach(checkbox => {
       checkbox.addEventListener('change', function() {
+          updateButtonTextMeses();
           filtrarTabela();
       });
   });
+
+  // Adiciona listeners para checkboxes de bancos
   document.querySelectorAll('#dropdown-content-bancos .banco-checkbox').forEach(checkbox => {
       checkbox.addEventListener('change', function() {
+          updateButtonTextBancos();
           filtrarBancos();
       });
   });
@@ -1233,14 +1237,18 @@ function deselectAllBancos(event) {
 function updateButtonTextMeses() {
   const selectedCount = document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked').length;
   const totalOptions = document.querySelectorAll('#dropdown-content-meses .mes-checkbox').length;
-  const buttonText = selectedCount === 0 ? "Selecione" : selectedCount === totalOptions ? "Todos Selecionados" : `Selecione`;
+  const buttonText = selectedCount === 0 ? "Selecione" : 
+                     selectedCount === totalOptions ? "Todos Selecionados" : 
+                     `${selectedCount} Selecionado(s)`;
   document.getElementById('dropdown-button-meses').textContent = buttonText;
 }
 
 function updateButtonTextBancos() {
   const selectedCount = document.querySelectorAll('#dropdown-content-bancos .banco-checkbox:checked').length;
   const totalOptions = document.querySelectorAll('#dropdown-content-bancos .banco-checkbox').length;
-  const buttonText = selectedCount === 0 ? "Selecione" : selectedCount === totalOptions ? "Todos Selecionados" : `Selecione`;
+  const buttonText = selectedCount === 0 ? "Selecione" : 
+                     selectedCount === totalOptions ? "Todos Selecionados" : 
+                     `${selectedCount} Selecionado(s)`;
   document.getElementById('dropdown-button-bancos').textContent = buttonText;
 }
 
