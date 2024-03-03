@@ -755,16 +755,21 @@ function configurarEventosTabela() {
     });
 }
 
+// Funções de Eventos de Tabela
+function handleCellDoubleClick(cell) {
+  const row = cell.closest('.row-lancamentos');
+  abrirModalEdicao(row);
+}
+
 // Funções de Manipulação de Modais
 function abrirModalEdicao(row) {
-    const credito = row.querySelector('.credito-row').textContent.trim();
-    const debito = row.querySelector('.debito-row').textContent.trim();
+  const natureza = row.getAttribute('data-natureza');
 
-    if (credito && !debito) {
-        abrirModalRecebimentosEdicao(row);
-    } else if (!credito && debito) {
-        abrirModalPagamentosEdicao(row);
-    }
+  if (natureza === 'Crédito') {
+      abrirModalRecebimentosEdicao(row);
+  } else if (natureza === 'Débito') {
+      abrirModalPagamentosEdicao(row);
+  }
 }
 
 function fecharModais() {
@@ -921,11 +926,6 @@ function mostrarParcelasPagamentos(row) {
   }
 }
 
-// Funções de Eventos de Tabela
-function handleCellDoubleClick(cell) {
-  const row = cell.closest('.row-lancamentos');
-  abrirModalEdicao(row);
-}
 
 // Funções de Formatação e Utilidades
 function desformatarNumero(valorFormatado) {
@@ -1287,15 +1287,14 @@ function updateButtonTextBancos() {
 
 // Filtros
 function filtrarTabela() {
-  console.log
   // Pega todos os checkboxes marcados dentro do dropdown de meses e extrai suas datas
   const checkboxesMesesSelecionados = document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked');
   let todosSelecionados = checkboxesMesesSelecionados.length === 0;
   var intervalosMesesSelecionados = Array.from(checkboxesMesesSelecionados).map(function(checkbox) {
-    return {
-      inicio: new Date(checkbox.getAttribute('data-inicio-mes')),
-      fim: new Date(checkbox.getAttribute('data-fim-mes'))
-    };
+      return {
+          inicio: new Date(checkbox.getAttribute('data-inicio-mes')),
+          fim: new Date(checkbox.getAttribute('data-fim-mes'))
+      };
   });
 
   var dataInicio = document.getElementById("data-inicio").value;
@@ -1305,36 +1304,56 @@ function filtrarTabela() {
   var filtroContaContabil = document.getElementById("contas-contabeis").value.toUpperCase();
   var filtroNatureza = document.getElementById("natureza").value;
 
-  var tabela = document.getElementById("tabela-lancamentos");
-  var tr = tabela.getElementsByTagName("tr");
+  var trLancamentos = document.querySelectorAll("#tabela-lancamentos .row-lancamentos");
 
   var dataInicioObj = dataInicio ? new Date(dataInicio) : null;
   var dataFimObj = dataFim ? new Date(dataFim) : null;
 
-  for (var i = 0; i < tr.length; i++) {
-    var tdDescricao = tr[i].getElementsByClassName("descricao-row")[0];
-    var tdObservacao = tr[i].getElementsByClassName("obs-row")[0];
-    var contaContabil = tr[i].getAttribute('data-conta-contabil').toUpperCase();
-    var tdVencimento = tr[i].getElementsByClassName("vencimento-row")[0];
-    var dataVencimento = new Date(tdVencimento.textContent.split('/').reverse().join('-'));
-    var tdTags = tr[i].getElementsByClassName("d-block")[0];
+  // Coleção para armazenar meses/anos das linhas exibidas
+  let mesesExibidos = new Set();
 
-    var txtDescricao = tdDescricao ? tdDescricao.textContent || tdDescricao.innerText : "";
-    var txtObservacao = tdObservacao ? tdObservacao.textContent.split("Tags:")[0].trim() : "";
-    var naturezaLancamento = tr[i].querySelector(".credito-row").textContent.trim() ? 'credito' : 'debito';
-    var txtTags = tdTags ? tdTags.textContent.toUpperCase() : "";
+  for (var i = 0; i < trLancamentos.length; i++) {
+      var tdDescricao = trLancamentos[i].getElementsByClassName("descricao-row")[0];
+      var tdObservacao = trLancamentos[i].getElementsByClassName("obs-row")[0];
+      var contaContabil = trLancamentos[i].getAttribute('data-conta-contabil').toUpperCase();
+      var tdVencimento = trLancamentos[i].getElementsByClassName("vencimento-row")[0];
+      var dataVencimento = new Date(tdVencimento.textContent.split('/').reverse().join('-'));
+      var tdTags = trLancamentos[i].getElementsByClassName("d-block")[0];
 
-    var descricaoObservacaoMatch = txtDescricao.toUpperCase().indexOf(filtroDescricao) > -1 || txtObservacao.toUpperCase().indexOf(filtroDescricao) > -1;
-    var tagMatch = filtroTags === "" || txtTags.indexOf(filtroTags) > -1;
-    var contaContabilMatch = filtroContaContabil === "" || contaContabil.indexOf(filtroContaContabil) > -1;
-    var mesMatch = intervalosMesesSelecionados.length === 0 || intervalosMesesSelecionados.some(function(intervalo) {
-      return dataVencimento >= intervalo.inicio && dataVencimento <= intervalo.fim;
-    });
-    var naturezaMatch = filtroNatureza === "" || filtroNatureza === naturezaLancamento;
-    var dataMatch = (!dataInicioObj || dataVencimento >= dataInicioObj) && (!dataFimObj || dataVencimento <= dataFimObj);
+      var txtDescricao = tdDescricao ? tdDescricao.textContent || tdDescricao.innerText : "";
+      var txtObservacao = tdObservacao ? tdObservacao.textContent.split("Tags:")[0].trim() : "";
+      var naturezaLancamento = trLancamentos[i].querySelector(".credito-row").textContent.trim() ? 'credito' : 'debito';
+      var txtTags = tdTags ? tdTags.textContent.toUpperCase() : "";
 
-    tr[i].style.display = descricaoObservacaoMatch && tagMatch && contaContabilMatch && mesMatch && naturezaMatch && dataMatch ? "" : "none";
+      var descricaoObservacaoMatch = txtDescricao.toUpperCase().indexOf(filtroDescricao) > -1 || txtObservacao.toUpperCase().indexOf(filtroDescricao) > -1;
+      var tagMatch = filtroTags === "" || txtTags.indexOf(filtroTags) > -1;
+      var contaContabilMatch = filtroContaContabil === "" || contaContabil.indexOf(filtroContaContabil) > -1;
+      var mesMatch = intervalosMesesSelecionados.length === 0 || intervalosMesesSelecionados.some(function(intervalo) {
+          return dataVencimento >= intervalo.inicio && dataVencimento <= intervalo.fim;
+      });
+      var naturezaMatch = filtroNatureza === "" || filtroNatureza === naturezaLancamento;
+      var dataMatch = (!dataInicioObj || dataVencimento >= dataInicioObj) && (!dataFimObj || dataVencimento <= dataFimObj);
+
+      var displayStyle = descricaoObservacaoMatch && tagMatch && contaContabilMatch && mesMatch && naturezaMatch && dataMatch ? "" : "none";
+      trLancamentos[i].style.display = displayStyle;
+
+      if (displayStyle !== "none") { // Se a linha está sendo exibida, adicionar seu mês/ano ao conjunto
+          let mesAno = tdVencimento.textContent.slice(3); // Assume o formato DD/MM/YYYY, captura MM/YYYY
+          mesesExibidos.add(mesAno);
+      }
   }
+
+  // Filtrar as linhas 'linha-total-mes' com base nos meses/anos exibidos
+  document.querySelectorAll("#tabela-lancamentos .linha-total-mes").forEach(row => {
+      let textoMesAno = row.cells[1].textContent;
+      let mesAno = textoMesAno.match(/\d{2}\/\d{4}$/); // Captura MM/YYYY no final do texto
+      if (mesAno && mesesExibidos.has(mesAno[0])) { // Se o mesAno estiver nos meses exibidos
+          row.style.display = ""; // Mostrar linha
+      } else {
+          row.style.display = "none"; // Ocultar linha
+      }
+  });
+
   calcularSaldoAcumulado();
 }
 

@@ -571,6 +571,16 @@ td.saldo-total-banco-liquidacao-row {
   border-bottom: 1px solid var(--color2);
 }
 
+.linha-total-mes {
+  height: 30px;
+  background-color: var(--color10);
+  border-bottom: 1px solid var(--color2);
+}
+
+.linha-total-mes td {
+  font-weight: 700;
+}
+
 .checkbox-col {
   width: 40px;
 }
@@ -606,6 +616,15 @@ td.saldo-total-banco-liquidacao-row {
 .debito-row,
 .credito-row,
 .saldo-row {
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.debito-total-row,
+.credito-total-row,
+.saldo-total-row {
   text-align: center;
   overflow: hidden;
   white-space: nowrap;
