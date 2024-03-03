@@ -111,8 +111,6 @@ def atualizar_fluxo_existente(dados):
 
 def criar_novos_fluxos(dados, iniciar_desde_o_atual=False):
     if 'vencimento' not in dados or dados['vencimento'] is None:
-        # Trata o caso onde 'vencimento' não é fornecido ou é None
-        # Você pode definir uma data padrão ou retornar um erro
         return JsonResponse({'error': 'Data de vencimento é necessária.'}, status=400)
 
     parcela_inicial = dados.get('parcela_atual', 1)
