@@ -535,6 +535,8 @@ function filtrarTabela() {
   const dataInicio = inputInicio ? new Date(inputInicio + "T00:00:00") : null;
   const dataFim = inputFim ? new Date(inputFim + "T23:59:59") : null;
 
+  let mesesExibidos = new Set();
+
   document.querySelectorAll('.row-lancamentos').forEach(function(row) {
     const contaContabil = row.getAttribute('data-conta-contabil');
     const dataTexto = row.querySelector('.vencimento-row').textContent;
@@ -560,8 +562,21 @@ function filtrarTabela() {
 
     if (contaContabilMatch && dataMatch && naturezaMatch && mesMatch && (descricaoMatch || observacaoMatch) && tagsMatch && bancoMatch) {
       row.style.display = "";
+      // Ajuste aqui: Garanta que o formato adicionado ao conjunto seja MM/YYYY
+      let dataFormatadaParaConjunto = partesData[1] + "/" + partesData[2]; // Formato MM/YYYY
+      mesesExibidos.add(dataFormatadaParaConjunto); // Adiciona o mês/ano do lançamento ao conjunto
     } else {
       row.style.display = "none";
+    }
+  });
+
+  document.querySelectorAll('.linha-total-mes').forEach(row => {
+    let textoMesAno = row.cells[1].textContent;
+    let mesAno = textoMesAno.match(/\d{2}\/\d{4}$/); // Captura MM/YYYY no final do texto
+    if (mesAno && mesesExibidos.has(mesAno[0])) { // Verifica se o mesAno capturado está nos meses exibidos
+      row.style.display = ""; // Mostra a linha
+    } else {
+      row.style.display = "none"; // Oculta a linha
     }
   });
 

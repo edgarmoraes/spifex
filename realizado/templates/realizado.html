@@ -219,28 +219,38 @@
                 </thead>
                 <tbody id="tabela-lancamentos">
                     {% for realizado in Tabela_realizado_list %}
-                    <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ realizado.id }}" data-banco-liquidacao="{{ realizado.banco_liquidacao }}" data-banco-id-liquidacao="{{ realizado.banco_id_liquidacao }}" data-conta-contabil="{{ realizado.conta_contabil }}" parcela-atual="{{ realizado.parcela_atual }}" parcelas-total="{{ realizado.parcelas_total }}" data-natureza="{{ realizado.natureza }}" data-uuid-correlacao="{{ realizado.uuid_correlacao }}" data-uuid-correlacao-parcelas="{{ realizado.uuid_correlacao_parcelas }}" scope="row">
-                        <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado" type="checkbox" data-id="{{ realizado.id }}" data-uuid-correlacao="{{ realizado.uuid_correlacao }}" data-uuid-correlacao-parcelas="{{ realizado.uuid_correlacao_parcelas }}"><span class="checkmark"></span></label></td>
-                        <td class="vencimento-row">{{ realizado.data_liquidacao|date:"d/m/Y" }}</td>
-                        <td class="descricao-row">{{ realizado.descricao }}</td>
-                        <td class="obs-row">
-                            {{ realizado.observacao }}
-                            <small class="d-block">Tags: {{ realizado.tags }}</small>
-                        </td>
-                        <td class="banco-row">{{ realizado.banco_liquidacao }}</td>
-                        <td class="parcela-row">{{ realizado.parcela_atual }}/{{ realizado.parcelas_total }}</td>
-                        <input type="hidden" id="parcelas-total-originais-recebimentos" name="parcelas_total_originais">
-                        <input type="hidden" id="parcelas-total-originais-pagamentos" name="parcelas_total_originais">
-                        {% if realizado.natureza == 'Débito' %}
-                            <td class="debito-row">{{ realizado.valor|format_number }}</td>
-                            <td class="credito-row"></td>
+                        {% if realizado.is_total %}
+                            <tr class="linha-total-mes">
+                                <td></td>
+                                <td colspan="5">Total do Mês {{ realizado.data_liquidacao|date:"m/Y" }}</td>
+                                <td class="debito-total-row">{{ realizado.debito|format_number }}</td>
+                                <td class="credito-total-row">{{ realizado.credito|format_number }}</td>
+                                <td class="saldo-total-row">{{ realizado.saldo|format_number }}</td>
+                            </tr>
                         {% else %}
-                            <td class="debito-row"></td>
-                            <td class="credito-row">{{ realizado.valor|format_number }}</td>
+                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ realizado.id }}" data-banco-liquidacao="{{ realizado.banco_liquidacao }}" data-banco-id-liquidacao="{{ realizado.banco_id_liquidacao }}" data-conta-contabil="{{ realizado.conta_contabil }}" parcela-atual="{{ realizado.parcela_atual }}" parcelas-total="{{ realizado.parcelas_total }}" data-natureza="{{ realizado.natureza }}" data-uuid-correlacao="{{ realizado.uuid_correlacao }}" data-uuid-correlacao-parcelas="{{ realizado.uuid_correlacao_parcelas }}" scope="row">
+                                <td class="checkbox-row"><label class="checkbox-container"><input class="checkbox-personalizado" type="checkbox" data-id="{{ realizado.id }}" data-uuid-correlacao="{{ realizado.uuid_correlacao }}" data-uuid-correlacao-parcelas="{{ realizado.uuid_correlacao_parcelas }}"><span class="checkmark"></span></label></td>
+                                <td class="vencimento-row">{{ realizado.data_liquidacao|date:"d/m/Y" }}</td>
+                                <td class="descricao-row">{{ realizado.descricao }}</td>
+                                <td class="obs-row">
+                                    {{ realizado.observacao }}
+                                    <small class="d-block">Tags: {{ realizado.tags }}</small>
+                                </td>
+                                <td class="banco-row">{{ realizado.banco_liquidacao }}</td>
+                                <td class="parcela-row">{{ realizado.parcela_atual }}/{{ realizado.parcelas_total }}</td>
+                                <input type="hidden" id="parcelas-total-originais-recebimentos" name="parcelas_total_originais">
+                                <input type="hidden" id="parcelas-total-originais-pagamentos" name="parcelas_total_originais">
+                                {% if realizado.natureza == 'Débito' %}
+                                    <td class="debito-row">{{ realizado.valor|format_number }}</td>
+                                    <td class="credito-row"></td>
+                                {% else %}
+                                    <td class="debito-row"></td>
+                                    <td class="credito-row">{{ realizado.valor|format_number }}</td>
+                                {% endif %}
+                                <td class="saldo-row" id = "saldo-row">{{ realizado.saldo|format_number }}</td>
+                            </tr>
                         {% endif %}
-                        <td class="saldo-row" id = "saldo-row">{{ realizado.saldo|format_number }}</td>
-                    </tr>
-                {% endfor %}
+                    {% endfor %}
                 </tbody>
             </table>
         </div>

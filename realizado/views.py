@@ -9,21 +9,44 @@ from django.views.decorators.csrf import csrf_exempt
 from fluxo_de_caixa.models import Tabela_fluxo, Bancos
 from .models import Tabela_realizado, Totais_mes_realizado
 from django.db.models.signals import post_save, post_delete
+from itertools import groupby
 
 def realizado(request):
     if request.method == "GET":
         return exibir_realizado(request)
 
 def exibir_realizado(request):
-    """ Exibe a lista de fluxos de caixa junto com os totais de cada mês """
     bancos_ativos = Bancos.objects.filter(status=True)
-
     Tabela_realizado_list = Tabela_realizado.objects.all().order_by('data_liquidacao', '-valor', 'descricao')
-
     totais_mes_realizado = Totais_mes_realizado.objects.all().order_by('-fim_mes')
+
+    # Convertendo QuerySet para lista para manipulação
+    Tabela_realizado_list = list(Tabela_realizado_list)
+
+    # Preparando a lista para incluir totais de cada mês
+    lancamentos_com_totais = []
+
+    for key, group in groupby(Tabela_realizado_list, key=lambda x: x.data_liquidacao.strftime('%Y-%m')):
+        lista_grupo = list(group)
+        lancamentos_com_totais.extend(lista_grupo)
+
+        total_debito = sum(item.valor for item in lista_grupo if item.natureza == 'Débito')
+        total_credito = sum(item.valor for item in lista_grupo if item.natureza == 'Crédito')
+        saldo_total = total_credito - total_debito  # Cálculo do saldo total
+
+        # Inserir o total do mês, incluindo agora o saldo
+        lancamentos_com_totais.append({
+            'data_liquidacao': datetime.strptime(key + "-01", '%Y-%m-%d'),
+            'descricao': 'Total do Mês',
+            'debito': total_debito,
+            'credito': total_credito,
+            'saldo': saldo_total,  # Incluindo o saldo no dicionário
+            'is_total': True,
+        })
+
     context = {
-        'Tabela_realizado_list': Tabela_realizado_list,
-        'totais_mes_realizado': totais_mes_realizado,
+        'Tabela_realizado_list': lancamentos_com_totais,
+        'totais_mes_realizado': totais_mes_realizado,  # Incluindo totais_mes_realizado no contexto
         'bancos': bancos_ativos,
     }
     return render(request, 'realizado.html', context)
