@@ -1219,6 +1219,20 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // Inicializa a filtragem para configurar a visualização inicial com base nos filtros padrão
   filtrarBancos();
+
+  document.querySelectorAll('.saldo-total-row').forEach(function(cell) {
+    // Extrai o texto, remove o símbolo de moeda e espaços, substitui a vírgula por ponto e verifica se é negativo
+    var saldoTexto = cell.textContent.replace(/\s/g, ''); // Remove espaços
+    var saldo = parseFloat(saldoTexto.replace('.', '').replace(',', '.')); // Remove pontos e troca vírgulas por pontos antes de converter
+
+      // Verifica se o número é negativo e altera a cor do texto
+      if (!isNaN(saldo) && saldo < 0) {
+          cell.style.color = '#740000'; // Cor vermelha
+      }
+      else {
+        cell.style.color = '#000acf';
+    }
+  });
 });
 
 
@@ -1507,4 +1521,17 @@ function formatarComoMoeda(valor) {
   return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
+document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll('.saldo-total-row').forEach(function(cell) {
+      var saldoTexto = cell.textContent;
+      // Remove caracteres de formatação exceto o sinal de menos, ponto e vírgula
+      var saldoNumerico = saldoTexto.replace(/[^\d,-]/g, '').replace('.', '').replace(',', '.');
+      // Converte para float
+      var saldo = parseFloat(saldoNumerico);
 
+      // Verifica se o número é negativo
+      if (saldo < 0) {
+          cell.style.color = '#740000'; // Muda a cor para vermelho
+      }
+  });
+});

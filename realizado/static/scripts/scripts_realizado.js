@@ -489,6 +489,20 @@ document.addEventListener("DOMContentLoaded", function() {
   coletarBancosSelecionados(); // Isso irá filtrar a tabela de bancos ao carregar a página
   updateButtonBancosText();
   atualizarSaldoTotalBancos();
+
+  document.querySelectorAll('.saldo-total-row').forEach(function(cell) {
+    // Extrai o texto, remove o símbolo de moeda e espaços, substitui a vírgula por ponto e verifica se é negativo
+    var saldoTexto = cell.textContent.replace(/\s/g, ''); // Remove espaços
+    var saldo = parseFloat(saldoTexto.replace('.', '').replace(',', '.')); // Remove pontos e troca vírgulas por pontos antes de converter
+
+      // Verifica se o número é negativo e altera a cor do texto
+      if (!isNaN(saldo) && saldo < 0) {
+          cell.style.color = '#740000'; // Cor vermelha
+      }
+      else {
+          cell.style.color = '#000acf';
+      }
+  });
 });
 
 let bancosSelecionados = [];
