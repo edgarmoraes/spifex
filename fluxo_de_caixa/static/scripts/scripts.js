@@ -1,9 +1,3 @@
-
-
-
-
-
-
 // Evitar bancos iguais e datas futuras no processo de transferência
 document.addEventListener("DOMContentLoaded", function() {
   const formularioTransferencia = document.querySelector(".modal-form-transferencias");
@@ -1207,6 +1201,14 @@ document.addEventListener("DOMContentLoaded", function() {
       });
   });
 
+  // Adiciona listeners para checkboxes de natureza
+  document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        updateButtonTextNatureza();
+        filtrarTabela();
+    });
+  });
+
   // Listener para fechar os dropdowns ao clicar fora
   document.addEventListener('click', function(event) {
       if (!event.target.closest("#dropdown-content-meses") && !event.target.closest("#dropdown-button-meses")) {
@@ -1215,6 +1217,9 @@ document.addEventListener("DOMContentLoaded", function() {
       if (!event.target.closest("#dropdown-content-bancos") && !event.target.closest("#dropdown-button-bancos")) {
           document.getElementById("dropdown-content-bancos").classList.remove("show");
       }
+      if (!event.target.closest("#dropdown-content-natureza") && !event.target.closest("#dropdown-button-natureza")) {
+        document.getElementById("dropdown-content-natureza").classList.remove("show");
+    }
   });
 
   // Inicializa a filtragem para configurar a visualização inicial com base nos filtros padrão
@@ -1245,6 +1250,11 @@ function toggleDropdownMeses(event) {
 function toggleDropdownBancos(event) {
   event.stopPropagation();
   document.getElementById("dropdown-content-bancos").classList.toggle("show");
+}
+
+function toggleDropdownNatureza(event) {
+  event.stopPropagation();
+  document.getElementById("dropdown-content-natureza").classList.toggle("show");
 }
 
 // Funções para selecionar e desmarcar todos os checkboxes
@@ -1280,6 +1290,22 @@ function deselectAllBancos(event) {
   filtrarBancos();
 }
 
+function selectAllNatureza(event) {
+  event.stopPropagation();
+  const checkboxes = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox');
+  checkboxes.forEach(checkbox => checkbox.checked = true);
+  updateButtonTextNatureza();
+  filtrarTabela();
+}
+
+function deselectAllNatureza(event) {
+  event.stopPropagation();
+  const checkboxes = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox');
+  checkboxes.forEach(checkbox => checkbox.checked = false);
+  updateButtonTextNatureza();
+  filtrarTabela();
+}
+
 // Funções para atualizar o texto dos botões de dropdown
 function updateButtonTextMeses() {
   const selectedCount = document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked').length;
@@ -1299,73 +1325,85 @@ function updateButtonTextBancos() {
   document.getElementById('dropdown-button-bancos').textContent = buttonText;
 }
 
+function updateButtonTextNatureza() {
+  const selectedCount = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked').length;
+  const totalOptions = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').length;
+  const buttonText = selectedCount === 0 ? "Crédito, Débito" : 
+                     selectedCount === totalOptions ? "Crédito, Débito" : 
+                     `${selectedCount} Selecionado(s)`;
+  document.getElementById('dropdown-button-natureza').textContent = buttonText;
+}
+
 // Filtros
 function filtrarTabela() {
-  // Pega todos os checkboxes marcados dentro do dropdown de meses e extrai suas datas
+  const totalCheckboxesMeses = document.querySelectorAll('#dropdown-content-meses .mes-checkbox').length;
   const checkboxesMesesSelecionados = document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked');
-  let todosSelecionados = checkboxesMesesSelecionados.length === 0;
-  var intervalosMesesSelecionados = Array.from(checkboxesMesesSelecionados).map(function(checkbox) {
-      return {
-          inicio: new Date(checkbox.getAttribute('data-inicio-mes')),
-          fim: new Date(checkbox.getAttribute('data-fim-mes'))
-      };
-  });
+  const totalCheckboxesNatureza = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').length;
+  const checkboxesNaturezaSelecionados = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked');
+  
+  var intervalosMesesSelecionados = Array.from(checkboxesMesesSelecionados).map(checkbox => ({
+      inicio: new Date(checkbox.getAttribute('data-inicio-mes')),
+      fim: new Date(checkbox.getAttribute('data-fim-mes'))
+  }));
+
+  let naturezasSelecionadas = Array.from(checkboxesNaturezaSelecionados).map(checkbox => checkbox.value);
+
+  let selecionarTodosMeses = checkboxesMesesSelecionados.length === 0 || checkboxesMesesSelecionados.length === totalCheckboxesMeses;
+  let selecionarTodaNatureza = checkboxesNaturezaSelecionados.length === 0 || checkboxesNaturezaSelecionados.length === totalCheckboxesNatureza;
 
   var dataInicio = document.getElementById("data-inicio").value;
   var dataFim = document.getElementById("data-fim").value;
   var filtroDescricao = document.getElementById("caixa-pesquisa").value.toUpperCase();
   var filtroTags = document.getElementById("caixa-pesquisa-tags").value.toUpperCase();
   var filtroContaContabil = document.getElementById("contas-contabeis").value.toUpperCase();
-  var filtroNatureza = document.getElementById("natureza").value;
-
-  var trLancamentos = document.querySelectorAll("#tabela-lancamentos .row-lancamentos");
 
   var dataInicioObj = dataInicio ? new Date(dataInicio) : null;
   var dataFimObj = dataFim ? new Date(dataFim) : null;
+  let mesesAnosVisiveis = new Set();
+  
+  var trLancamentos = document.querySelectorAll("#tabela-lancamentos .row-lancamentos");
+  
+  trLancamentos.forEach(function(linha) {
+      var descricao = linha.querySelector(".descricao-row").textContent.toUpperCase();
+      var observacao = linha.querySelector(".obs-row").textContent.toUpperCase();
+      var contaContabil = linha.getAttribute('data-conta-contabil').toUpperCase();
+      var dataVencimento = new Date(linha.querySelector(".vencimento-row").textContent.split('/').reverse().join('-'));
+      var tags = linha.querySelector(".d-block") ? linha.querySelector(".d-block").textContent.toUpperCase() : "";
 
-  // Coleção para armazenar meses/anos das linhas exibidas
-  let mesesExibidos = new Set();
+      var debitoCelula = linha.querySelector(".debito-row").textContent.trim();
+      var naturezaLancamento = debitoCelula === "" ? "Crédito" : "Débito";
 
-  for (var i = 0; i < trLancamentos.length; i++) {
-      var tdDescricao = trLancamentos[i].getElementsByClassName("descricao-row")[0];
-      var tdObservacao = trLancamentos[i].getElementsByClassName("obs-row")[0];
-      var contaContabil = trLancamentos[i].getAttribute('data-conta-contabil').toUpperCase();
-      var tdVencimento = trLancamentos[i].getElementsByClassName("vencimento-row")[0];
-      var dataVencimento = new Date(tdVencimento.textContent.split('/').reverse().join('-'));
-      var tdTags = trLancamentos[i].getElementsByClassName("d-block")[0];
-
-      var txtDescricao = tdDescricao ? tdDescricao.textContent || tdDescricao.innerText : "";
-      var txtObservacao = tdObservacao ? tdObservacao.textContent.split("Tags:")[0].trim() : "";
-      var naturezaLancamento = trLancamentos[i].querySelector(".credito-row").textContent.trim() ? 'credito' : 'debito';
-      var txtTags = tdTags ? tdTags.textContent.toUpperCase() : "";
-
-      var descricaoObservacaoMatch = txtDescricao.toUpperCase().indexOf(filtroDescricao) > -1 || txtObservacao.toUpperCase().indexOf(filtroDescricao) > -1;
-      var tagMatch = filtroTags === "" || txtTags.indexOf(filtroTags) > -1;
-      var contaContabilMatch = filtroContaContabil === "" || contaContabil.indexOf(filtroContaContabil) > -1;
-      var mesMatch = intervalosMesesSelecionados.length === 0 || intervalosMesesSelecionados.some(function(intervalo) {
-          return dataVencimento >= intervalo.inicio && dataVencimento <= intervalo.fim;
+      var descricaoObservacaoMatch = descricao.includes(filtroDescricao) || observacao.includes(filtroDescricao);
+      var tagMatch = filtroTags === "" || tags.includes(filtroTags);
+      var contaContabilMatch = filtroContaContabil === "" || contaContabil.includes(filtroContaContabil);
+      var mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => {
+        var dataVencimento = new Date(linha.querySelector(".vencimento-row").textContent.split('/').reverse().join('-'));
+        return dataVencimento >= intervalo.inicio && dataVencimento <= intervalo.fim;
       });
-      var naturezaMatch = filtroNatureza === "" || filtroNatureza === naturezaLancamento;
+      var naturezaLancamento = linha.getAttribute('data-natureza');
+      var naturezaMatch = selecionarTodaNatureza || naturezasSelecionadas.includes(naturezaLancamento);
       var dataMatch = (!dataInicioObj || dataVencimento >= dataInicioObj) && (!dataFimObj || dataVencimento <= dataFimObj);
 
-      var displayStyle = descricaoObservacaoMatch && tagMatch && contaContabilMatch && mesMatch && naturezaMatch && dataMatch ? "" : "none";
-      trLancamentos[i].style.display = displayStyle;
+      if (descricaoObservacaoMatch && tagMatch && contaContabilMatch && mesMatch && naturezaMatch && dataMatch) {
+        linha.style.display = "";
 
-      if (displayStyle !== "none") { // Se a linha está sendo exibida, adicionar seu mês/ano ao conjunto
-          let mesAno = tdVencimento.textContent.slice(3); // Assume o formato DD/MM/YYYY, captura MM/YYYY
-          mesesExibidos.add(mesAno);
-      }
-  }
-
-  // Filtrar as linhas 'linha-total-mes' com base nos meses/anos exibidos
-  document.querySelectorAll("#tabela-lancamentos .linha-total-mes").forEach(row => {
-      let textoMesAno = row.cells[1].textContent;
-      let mesAno = textoMesAno.match(/\d{2}\/\d{4}$/); // Captura MM/YYYY no final do texto
-      if (mesAno && mesesExibidos.has(mesAno[0])) { // Se o mesAno estiver nos meses exibidos
-          row.style.display = ""; // Mostrar linha
+        // Adiciona o mês/ano ao conjunto de meses/anos visíveis se a linha estiver visível
+        let mesAno = new Date(linha.querySelector(".vencimento-row").textContent.split('/').reverse().join('-')).toLocaleString('default', { month: '2-digit', year: 'numeric' });
+        mesesAnosVisiveis.add(mesAno);
       } else {
-          row.style.display = "none"; // Ocultar linha
+        linha.style.display = "none";
       }
+  });
+
+  // Filtrar as linhas 'linha-total-mes'
+  document.querySelectorAll("#tabela-lancamentos .linha-total-mes").forEach(row => {
+    let textoMesAno = row.querySelector("td:nth-child(2)").textContent;
+    let mesAnoMatch = textoMesAno.match(/\d{2}\/\d{4}$/); // Captura MM/YYYY
+    if (mesAnoMatch && mesesAnosVisiveis.has(mesAnoMatch[0])) {
+        row.style.display = "";
+    } else {
+        row.style.display = "none";
+    }
   });
 
   calcularSaldoAcumulado();
@@ -1375,7 +1413,6 @@ function filtrarTabela() {
 document.getElementById('caixa-pesquisa').addEventListener('keyup', filtrarTabela);
 document.getElementById('caixa-pesquisa-tags').addEventListener('keyup', filtrarTabela);
 document.getElementById('contas-contabeis').addEventListener('change', filtrarTabela);
-document.getElementById('natureza').addEventListener('change', filtrarTabela);
 document.getElementById('data-inicio').addEventListener('change', filtrarTabela);
 document.getElementById('data-fim').addEventListener('change', filtrarTabela);
 
@@ -1482,8 +1519,7 @@ function filtrarBancos() {
 atualizarSaldosFluxoCaixa(saldoTotal);
 }
 
-
-
+// Calcular saldo no fluxo de caixa
 function calcularSaldoAcumulado() {
   // Obtem o saldo inicial total dos bancos.
   var saldoTotalBancoRow = document.querySelector(".saldo-total-banco-row");
