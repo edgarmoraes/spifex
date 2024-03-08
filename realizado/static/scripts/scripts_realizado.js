@@ -409,8 +409,8 @@ function toggleDropdownNatureza(event) {
 }
 
 // Função para marcar todos os checkboxes da natureza
-function selectAllNaturezas(event) {
-  event.stopPropagation();
+function selectAllNatureza(event) {
+  if (event) event.stopPropagation();
   document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').forEach(checkbox => {
     checkbox.checked = true;
   });
@@ -419,8 +419,8 @@ function selectAllNaturezas(event) {
 }
 
 // Função para desmarcar todos os checkboxes da natureza
-function deselectAllNaturezas(event) {
-  event.stopPropagation();
+function deselectAllNatureza(event) {
+  if (event) event.stopPropagation();
   document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').forEach(checkbox => {
     checkbox.checked = false;
   });
@@ -550,6 +550,21 @@ document.addEventListener("DOMContentLoaded", function() {
 
 let bancosSelecionados = [];
 
+document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', () => {
+      updateButtonNaturezaText();
+      coletarNaturezasSelecionadas();
+    });
+  });
+
+  document.addEventListener('click', event => {
+    if (!event.target.closest("#dropdown-content-natureza") && !event.target.closest("#dropdown-button-natureza")) {
+      document.getElementById("dropdown-content-natureza").classList.remove("show");
+    }
+  });
+});
+
 function coletarBancosSelecionados() {
   bancosSelecionados = Array.from(document.querySelectorAll('.banco-checkbox:checked')).map(el => el.value);
   
@@ -579,27 +594,15 @@ document.querySelectorAll('.banco-checkbox').forEach(checkbox => {
 // Aplica a filtragem inicial com base no estado dos checkboxes dos bancos
 coletarBancosSelecionados();
 
-document.addEventListener("DOMContentLoaded", function() {
-  document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').forEach(checkbox => {
-    checkbox.addEventListener('change', () => {
-      updateButtonNaturezaText();
-      coletarNaturezasSelecionadas();
-    });
-  });
-
-  document.addEventListener('click', event => {
-    if (!event.target.closest("#dropdown-content-natureza") && !event.target.closest("#dropdown-button-natureza")) {
-      document.getElementById("dropdown-content-natureza").classList.remove("show");
-    }
-  });
-});
-
-// 4. Filtragem da Tabela
+// 4. Filtragem da Tabela Adaptada para Incluir Naturezas
 function filtrarTabela() {
   const contaContabilSelecionada = document.getElementById('contas-contabeis').value;
   const inputInicio = document.getElementById('data-inicio').value;
   const inputFim = document.getElementById('data-fim').value;
-  const naturezaSelecionada = document.getElementById('natureza').value.toLowerCase().trim();
+  
+  // Alterado para coletar naturezas de um conjunto de checkboxes ao invés de um único dropdown
+  const naturezasSelecionadas = Array.from(document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked')).map(el => el.value.toLowerCase().trim());
+  
   const mesesSelecionados = Array.from(document.querySelectorAll('.mes-checkbox:checked')).map(el => el.value);
   const inputDescricao = document.getElementById('caixa-pesquisa').value.toLowerCase();
   const inputTags = document.getElementById('caixa-pesquisa-tags').value.toLowerCase();
@@ -629,14 +632,16 @@ function filtrarTabela() {
 
     const contaContabilMatch = !contaContabilSelecionada || contaContabil === contaContabilSelecionada;
     const dataMatch = (!dataInicio || dataLancamento >= dataInicio) && (!dataFim || dataLancamento <= dataFim);
-    const naturezaMatch = !naturezaSelecionada || natureza === naturezaSelecionada;
+    
+    // Adaptado para verificar se a natureza da linha está dentro das naturezas selecionadas
+    const naturezaMatch = naturezasSelecionadas.length === 0 || naturezasSelecionadas.includes(natureza);
+    
     const mesMatch = mesesSelecionados.length === 0 || mesesSelecionados.includes(mesAno);
 
     if (contaContabilMatch && dataMatch && naturezaMatch && mesMatch && (descricaoMatch || observacaoMatch) && tagsMatch && bancoMatch) {
       row.style.display = "";
-      // Ajuste aqui: Garanta que o formato adicionado ao conjunto seja MM/YYYY
       let dataFormatadaParaConjunto = partesData[1] + "/" + partesData[2]; // Formato MM/YYYY
-      mesesExibidos.add(dataFormatadaParaConjunto); // Adiciona o mês/ano do lançamento ao conjunto
+      mesesExibidos.add(dataFormatadaParaConjunto);
     } else {
       row.style.display = "none";
     }
@@ -644,11 +649,11 @@ function filtrarTabela() {
 
   document.querySelectorAll('.linha-total-mes').forEach(row => {
     let textoMesAno = row.cells[1].textContent;
-    let mesAno = textoMesAno.match(/\d{2}\/\d{4}$/); // Captura MM/YYYY no final do texto
-    if (mesAno && mesesExibidos.has(mesAno[0])) { // Verifica se o mesAno capturado está nos meses exibidos
-      row.style.display = ""; // Mostra a linha
+    let mesAno = textoMesAno.match(/\d{2}\/\d{4}$/);
+    if (mesAno && mesesExibidos.has(mesAno[0])) {
+      row.style.display = "";
     } else {
-      row.style.display = "none"; // Oculta a linha
+      row.style.display = "none";
     }
   });
 
@@ -663,6 +668,13 @@ document.getElementById('data-fim').addEventListener('change', filtrarTabela);
 document.getElementById('natureza').addEventListener('change', filtrarTabela);
 document.querySelectorAll('.mes-checkbox').forEach(checkbox => {
   checkbox.addEventListener('change', filtrarTabela);
+});
+
+// Lembre-se de adicionar listeners para os checkboxes de natureza
+document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', filtrarTabela);
+  });
 });
 
 // Inicializa listeners de mudança para os checkboxes dos bancos
