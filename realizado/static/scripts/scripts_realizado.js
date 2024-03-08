@@ -402,6 +402,49 @@ function updateButtonBancosText() {
                            `${totalSelecionados} Selecionado(s)`;
 }
 
+// Função para alternar a visibilidade do dropdown de natureza
+function toggleDropdownNatureza(event) {
+  event.stopPropagation();
+  document.getElementById("dropdown-content-natureza").classList.toggle("show");
+}
+
+// Função para marcar todos os checkboxes da natureza
+function selectAllNaturezas(event) {
+  event.stopPropagation();
+  document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').forEach(checkbox => {
+    checkbox.checked = true;
+  });
+  coletarNaturezasSelecionadas();
+  updateButtonNaturezaText();
+}
+
+// Função para desmarcar todos os checkboxes da natureza
+function deselectAllNaturezas(event) {
+  event.stopPropagation();
+  document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').forEach(checkbox => {
+    checkbox.checked = false;
+  });
+  coletarNaturezasSelecionadas();
+  updateButtonNaturezaText();
+}
+
+// Função para atualizar o texto do botão de natureza
+function updateButtonNaturezaText() {
+  const totalNaturezas = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').length;
+  const totalSelecionados = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked').length;
+  const buttonText = document.getElementById('dropdown-button-natureza');
+  buttonText.textContent = totalSelecionados === 0 ? 'Selecione' : 
+                           totalSelecionados === totalNaturezas ? 'Todos Selecionados' : 
+                           `${totalSelecionados} Selecionado(s)`;
+}
+
+let naturezasSelecionadas = [];
+
+function coletarNaturezasSelecionadas() {
+  naturezasSelecionadas = Array.from(document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked')).map(el => el.value);
+  filtrarTabela();
+}
+
 // 2. Lógica de Seleção de Mês
 function selecionarMesAtualEfiltrar() {
   let today = new Date();
@@ -535,6 +578,21 @@ document.querySelectorAll('.banco-checkbox').forEach(checkbox => {
 
 // Aplica a filtragem inicial com base no estado dos checkboxes dos bancos
 coletarBancosSelecionados();
+
+document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', () => {
+      updateButtonNaturezaText();
+      coletarNaturezasSelecionadas();
+    });
+  });
+
+  document.addEventListener('click', event => {
+    if (!event.target.closest("#dropdown-content-natureza") && !event.target.closest("#dropdown-button-natureza")) {
+      document.getElementById("dropdown-content-natureza").classList.remove("show");
+    }
+  });
+});
 
 // 4. Filtragem da Tabela
 function filtrarTabela() {
