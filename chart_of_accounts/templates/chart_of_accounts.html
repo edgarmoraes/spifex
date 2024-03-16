@@ -1,0 +1,37 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/chart_of_accounts.css' %}">
+    <link rel="icon" href="{% static 'wayeasi-favicon.png' %}" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <title>Excel Display</title>
+</head>
+<body>
+    <header class="header">
+        <!-- ############### Barra de Navegação Fixa ############### -->
+        <nav class="nav-bar">
+            <a class="logo" href="{% url 'realizado:realizado' %}">WAYEASI</a>
+            <ul class="nav-list">
+                <li class="nav-fluxo-de-caixa"><a href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">Fluxo de Caixa</a></li>
+                <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">Realizado</a></li>
+                <li class="nav-relatorios"><a href="#">Relatórios</a></li>
+                <li class="nav-line"><div class="line"></div></li>
+                <li class="nav-configuracoes"><a href="{% url 'configuracoes:configuracoes' %}">Configurações</a></li>
+                <li class="nav-meu-perfil"><a href="meu-perfil.html">Meu Perfil</a></li>
+            </ul>
+        </nav>
+    </header>
+<input type="file" id="input-excel" accept=".xlsx, .xls" />
+<table id="excel-data" border="1">
+    <!-- Table rows will be inserted here -->
+</table>
+
+<script src="{% static 'scripts/chart_of_accounts.js' %}"></script>
+
+</body>
+</html>
