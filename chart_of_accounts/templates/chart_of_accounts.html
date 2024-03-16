@@ -13,9 +13,9 @@
 </head>
 <body>
     <header class="header">
-        <!-- ############### Barra de Navegação Fixa ############### -->
+        <!-- ############### Navigation Bar ############### -->
         <nav class="nav-bar">
-            <a class="logo" href="{% url 'realizado:realizado' %}">WAYEASI</a>
+            <a class="logo" href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">WAYEASI</a>
             <ul class="nav-list">
                 <li class="nav-fluxo-de-caixa"><a href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">Fluxo de Caixa</a></li>
                 <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">Realizado</a></li>
@@ -26,12 +26,12 @@
             </ul>
         </nav>
     </header>
-<input type="file" id="input-excel" accept=".xlsx, .xls" />
-<table id="excel-data" border="1">
-    <!-- Table rows will be inserted here -->
-</table>
 
-<script src="{% static 'scripts/chart_of_accounts.js' %}"></script>
+    <input type="file" id="input-excel" accept=".xlsx, .xls" />
+    <table id="excel-data" border="1">
+        <!-- Table rows will be inserted here -->
+    </table>
 
+    <script src="{% static 'scripts/chart_of_accounts.js' %}"></script>
 </body>
 </html>

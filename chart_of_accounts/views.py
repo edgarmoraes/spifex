@@ -1,26 +1,38 @@
-from django.shortcuts import render, redirect
-from .models import ExcelFile
-from .forms import ExcelFileForm
 import openpyxl
+from django.shortcuts import render, redirect
+from .models import ExcelDocument, ExcelData
+from .forms import ExcelDocumentForm
+from django.db import transaction
 
 def chart_of_accounts(request):
     return render(request, 'chart_of_accounts.html')
 
-def upload_and_show_excel(request):
+def upload_excel_file(request):
     if request.method == 'POST':
-        form = ExcelFileForm(request.POST, request.FILES)
+        form = ExcelDocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            return redirect('display_excel')
+            with transaction.atomic():  # Ensure the operation is atomic
+                excel_document = form.save()
+                workbook = openpyxl.load_workbook(excel_document.excel_file.path, data_only=True)
+                worksheet = workbook.active
+                for row in worksheet.iter_rows(min_row=2, max_col=3, values_only=True):
+                    excel_data_instance = ExcelData(
+                        column_a=row[0] or "",
+                        column_b=row[1] or "",
+                        column_c=row[2] or ""
+                    )
+                    excel_data_instance.save()  # Save each instance
+                    print(f"Saved: {excel_data_instance.column_a}, {excel_data_instance.column_b}, {excel_data_instance.column_c}")  # Debugging line
+                # Redirect to a new URL:
+                return redirect('display_excel')
+        else:
+            print(form.errors)  # Print form errors, if any, during debugging
     else:
-        form = ExcelFileForm()
+        form = ExcelDocumentForm()
+
     return render(request, 'upload_excel.html', {'form': form})
 
 def display_excel(request):
-    excel_file = ExcelFile.objects.last()
-    workbook = openpyxl.load_workbook(excel_file.excel_file.path)
-    worksheet = workbook.active
-    data = []
-    for row in worksheet.iter_rows(values_only=True, max_col=3):
-        data.append(row)
+    # Fetch all the rows of data from ExcelData model
+    data = ExcelData.objects.all()
     return render(request, 'display_excel.html', {'data': data})

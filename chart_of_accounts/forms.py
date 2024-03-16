@@ -1,7 +1,7 @@
 from django import forms
-from .models import ExcelFile
+from .models import ExcelDocument
 
-class ExcelFileForm(forms.ModelForm):
+class ExcelDocumentForm(forms.ModelForm):
     class Meta:
-        model = ExcelFile
+        model = ExcelDocument
         fields = ('excel_file',)
