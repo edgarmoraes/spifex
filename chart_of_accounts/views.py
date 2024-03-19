@@ -21,4 +21,4 @@ def upload_and_save(request):
         form = UploadFileForm()
     
     chart_of_accounts = Chart_of_accounts.objects.all()  # Busca todos os registros, para qualquer tipo de solicitação
-    return render(request, 'upload_form.html', {'form': form, 'chart_of_accounts': chart_of_accounts})
+    return render(request, 'chart_of_accounts.html', {'form': form, 'chart_of_accounts': chart_of_accounts})
