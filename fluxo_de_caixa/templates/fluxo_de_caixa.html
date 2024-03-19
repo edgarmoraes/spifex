@@ -10,16 +10,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{% static 'css/fluxo-de-caixa.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
-    <link rel="icon" href="{% static 'wayeasi-favicon.png' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'favicon.png' %}" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
-    <title>WayEasi | Fluxo de Caixa</title>
+    <title>Sppiff | Fluxo de Caixa</title>
 </head>
 <body>
     <header class="header">
         <button class="openbtn" onclick="toggleNav()">☰</button>
         <!-- ############### Barra de Navegação Fixa ############### -->
         <nav class="nav-bar">
-            <a class="logo" href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">WAYEASI</a>
+            <a class="logo" href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">SPPIFF</a>
             <ul class="nav-list">
                 <li class="nav-fluxo-de-caixa"><a href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">Fluxo de Caixa</a></li>
                 <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">Realizado</a></li>

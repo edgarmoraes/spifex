@@ -1,38 +1,24 @@
 import openpyxl
-from django.shortcuts import render, redirect
-from .models import ExcelDocument, ExcelData
-from .forms import ExcelDocumentForm
-from django.db import transaction
+from django.shortcuts import render
+from .forms import UploadFileForm
+from .models import Chart_of_accounts
 
-def chart_of_accounts(request):
-    return render(request, 'chart_of_accounts.html')
-
-def upload_excel_file(request):
+def upload_and_save(request):
     if request.method == 'POST':
-        form = ExcelDocumentForm(request.POST, request.FILES)
+        form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            with transaction.atomic():  # Ensure the operation is atomic
-                excel_document = form.save()
-                workbook = openpyxl.load_workbook(excel_document.excel_file.path, data_only=True)
-                worksheet = workbook.active
-                for row in worksheet.iter_rows(min_row=2, max_col=3, values_only=True):
-                    excel_data_instance = ExcelData(
-                        column_a=row[0] or "",
-                        column_b=row[1] or "",
-                        column_c=row[2] or ""
-                    )
-                    excel_data_instance.save()  # Save each instance
-                    print(f"Saved: {excel_data_instance.column_a}, {excel_data_instance.column_b}, {excel_data_instance.column_c}")  # Debugging line
-                # Redirect to a new URL:
-                return redirect('display_excel')
-        else:
-            print(form.errors)  # Print form errors, if any, during debugging
+            Chart_of_accounts.objects.all().delete()  # Apaga todos os registros existentes
+            excel_file = request.FILES['file']
+            wb = openpyxl.load_workbook(excel_file)
+            worksheet = wb.active
+            for row in worksheet.iter_rows(min_row=2, values_only=True):
+                Chart_of_accounts.objects.create(
+                    column1=row[0],
+                    column2=row[1],
+                    column3=row[2]
+                )
     else:
-        form = ExcelDocumentForm()
-
-    return render(request, 'upload_excel.html', {'form': form})
-
-def display_excel(request):
-    # Fetch all the rows of data from ExcelData model
-    data = ExcelData.objects.all()
-    return render(request, 'display_excel.html', {'data': data})
+        form = UploadFileForm()
+    
+    chart_of_accounts = Chart_of_accounts.objects.all()  # Busca todos os registros, para qualquer tipo de solicitação
+    return render(request, 'upload_form.html', {'form': form, 'chart_of_accounts': chart_of_accounts})

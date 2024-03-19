@@ -1,0 +1,53 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/chart_of_accounts.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+        <link rel="icon" href="{% static 'favicon.png' %}" type="image/x-icon">
+        <title>Sppiff | Plano de Contas</title>
+    </head>
+<header class="header">
+    <!-- ############### Barra de Navegação Fixa ############### -->
+    <nav class="nav-bar">
+        <a class="logo" href="{% url 'realizado:realizado' %}">SPPIFF</a>
+        <ul class="nav-list">
+            <li class="nav-fluxo-de-caixa"><a href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">Fluxo de Caixa</a></li>
+            <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">Realizado</a></li>
+            <li class="nav-relatorios"><a href="#">Relatórios</a></li>
+            <li class="nav-line"><div class="line"></div></li>
+            <li class="nav-configuracoes"><a href="{% url 'configuracoes:configuracoes' %}">Configurações</a></li>
+            <li class="nav-meu-perfil"><a href="meu-perfil.html">Meu Perfil</a></li>
+        </ul>
+    </nav>
+</header>
+<body>
+    <form id="input-excel" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Atualizar</button>
+    </form>
+
+    <table id="tabela-plano-de-contas" border="1">
+        <thead>
+            <tr>
+                <th>Column 1</th>
+                <th>Column 2</th>
+                <th>Column 3</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for Chart_of_accounts in chart_of_accounts %}
+                <tr>
+                    <td>{{ Chart_of_accounts.column1 }}</td>
+                    <td>{{ Chart_of_accounts.column2 }}</td>
+                    <td>{{ Chart_of_accounts.column3 }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,10 +1,9 @@
 from django.db import models
 
-class ExcelDocument(models.Model):
-    excel_file = models.FileField(upload_to='excel_documents/')
-    json_data = models.JSONField(blank=True, null=True)
+class Chart_of_accounts(models.Model):
+    column1 = models.CharField(max_length=255)
+    column2 = models.CharField(max_length=255)
+    column3 = models.CharField(max_length=255)
 
-class ExcelData(models.Model):
-    column_a = models.CharField(max_length=255, blank=True, null=True)
-    column_b = models.CharField(max_length=255, blank=True, null=True)
-    column_c = models.CharField(max_length=255, blank=True, null=True)
+    def __str__(self):
+        return self.column1
