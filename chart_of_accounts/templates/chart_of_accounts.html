@@ -33,16 +33,18 @@
     </form>
 
     <div id="report-container">
-        {% for group, items in chart_of_accounts|groupby:"column2" %}
+        {% for group, items in chart_of_accounts|groupby:"group" %}
             <button class="collapsible" style="max-height: none;">{{ group }}</button>
             <div class="content" style="max-height: none; display: block;">
-                {% for sub_group, sub_items in items|groupby:"column3" %}
+                {% for sub_group, sub_items in items|groupby:"subgroup" %}
                     <button class="collapsible sub-collapsible" style="max-height: none;">{{ sub_group }}</button>
                     <div class="content sub-content" style="max-height: none; display: block;">
                         <ul>
                             {% for item in sub_items %}
-                                <li style="margin-bottom: 10px;">{{ item.column4 }}</li>
+                                <li style="margin-bottom: 10px;">{{ item.account }}</li>
                             {% endfor %}
+                            <!-- Botão Adicione uma conta -->
+                            <a href="{% url 'plano_de_contas:adicionar-conta' %}" class="add-account-btn">Adicione uma conta</a>
                         </ul>
                     </div>
                 {% endfor %}
