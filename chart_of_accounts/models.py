@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 
 class Chart_of_accounts(models.Model):
     CREDITO_DEBITO_CHOICES = [
@@ -17,6 +18,7 @@ class Chart_of_accounts(models.Model):
     group = models.CharField(max_length=255, choices=GROUP_CHOICES)
     subgroup = models.CharField(max_length=255)  # Subgrupo
     account = models.CharField(max_length=255)  # Nome da conta
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
 
     def save(self, *args, **kwargs):
         # Não altera 'nature' se for 'Transferência entre Contas'

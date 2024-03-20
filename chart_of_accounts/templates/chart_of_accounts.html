@@ -34,7 +34,9 @@
 
     <div id="report-container">
         {% for group, items in chart_of_accounts|groupby:"group" %}
-            <button class="collapsible" style="max-height: none;">{{ group }}</button>
+            <button class="collapsible" style="max-height: none;">{{ group }}
+                <a href="{% url 'plano_de_contas:adicionar-conta' %}" class="add-account-btn">Adicione um subgrupo</a>
+            </button>
             <div class="content" style="max-height: none; display: block;">
                 {% for sub_group, sub_items in items|groupby:"subgroup" %}
                     <button class="collapsible sub-collapsible" style="max-height: none;">{{ sub_group }}</button>
