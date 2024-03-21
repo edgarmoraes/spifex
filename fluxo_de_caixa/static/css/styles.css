@@ -186,7 +186,7 @@ nav {
   background-color: #f9f9f9;
   color: black;
   padding: 8px;
-  border: none;
+  border: none !important;
   cursor: pointer;
   width: 100%;
   font-family: var(--primary-font);

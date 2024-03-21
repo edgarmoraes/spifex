@@ -33,20 +33,7 @@ def upload_and_save(request):
                     subgroup=row[2] or '',
                     account=row[3] or ''
                 )
-            
-            # Adicionar as duas linhas especiais ao final
-            Chart_of_accounts.objects.create(
-                nature='Crédito',
-                group='Transferência entre Contas',
-                subgroup='Operação Nula',
-                account='Transferência Entrada'
-            )
-            Chart_of_accounts.objects.create(
-                nature='Débito',
-                group='Transferência entre Contas',
-                subgroup='Operação Nula',
-                account='Transferência Saída'
-            )
+
     
     else:
         form = UploadFileForm()
@@ -77,9 +64,8 @@ def add_account(request):
     return render(request, 'add_account_form.html', {'form': form})
 
 def get_groups(request):
-    # Filtrar os grupos excluindo 'Transferência entre Contas'
-    groups = Chart_of_accounts.objects.exclude(group='Transferência entre Contas')\
-                                      .values_list('group', flat=True)\
+    groups = request.GET.get('group')
+    groups = Chart_of_accounts.objects.values_list('group', flat=True)\
                                       .distinct()
     return JsonResponse(list(groups), safe=False)
 

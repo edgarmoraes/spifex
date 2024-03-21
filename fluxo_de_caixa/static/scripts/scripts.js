@@ -604,114 +604,84 @@ document.addEventListener('DOMContentLoaded', function () {
       
       
 // Modais
-function abrirModal(openBtn, modal) {
-  openBtn.addEventListener('click', () => {
-    modalAberto = modal;
-    modal.showModal();
-    document.body.style.overflow = 'hidden';
-    document.body.style.marginRight = '17px';
-    document.querySelector('.nav-bar').style.marginRight = '17px';
-  });
-}
+// Função auxiliar para resetar campos específicos de cada modal
+function resetModalFields(formSelector, dropdownId = '', tagInputId = '', tagsHiddenInputId = '', tagContainerId = '') {
+  const form = document.querySelector(formSelector);
+  form?.reset();
 
-function fecharModal(closeBtn, modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId) {
-  closeBtn.addEventListener('click', () => {
-    fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId);
-  });
-  
-  modal.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId);
-    }
-  });
-
-  modal.addEventListener('close', () => {
-    fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId);
-  });
-}
-
-function fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId) {
-  modal.close();
-  modalAberto = null;
-  document.body.style.overflow = '';
-  document.body.style.marginRight = '';
-  document.querySelector('.nav-bar').style.marginRight = '';
-  document.querySelector(formSelector).reset();
-
-  // Verifica se o tagContainer existe antes de tentar manipulá-lo
-  const tagContainer = document.getElementById(tagContainerId);
-  if (tagContainer) {
-      while (tagContainer.firstChild) {
-          tagContainer.removeChild(tagContainer.firstChild);
-      }
+  // Reset do botão dropdown e checkboxes de contas contábeis
+  if (dropdownId) {
+    const dropdownBtn = document.getElementById(dropdownId);
+    dropdownBtn.textContent = 'Selecione';
+    document.querySelectorAll(`#${dropdownId}-content .conta-checkbox`).forEach(checkbox => checkbox.checked = false);
   }
 
-  // Verifica se o tagInput existe antes de tentar manipulá-lo
+  // Reset dos inputs de tags
   const tagInput = document.getElementById(tagInputId);
   if (tagInput) {
-      tagInput.value = '';
+    tagInput.value = '';
+  }
+  
+  // Reset do contêiner de tags
+  const tagContainer = document.getElementById(tagContainerId);
+  while (tagContainer && tagContainer.firstChild) {
+    tagContainer.removeChild(tagContainer.firstChild);
   }
 
-  // Verifica se o tagsHiddenInput existe antes de tentar manipulá-lo
+  // Reset do input oculto que armazena as tags serializadas
   const tagsHiddenInput = document.getElementById(tagsHiddenInputId);
   if (tagsHiddenInput) {
-      tagsHiddenInput.value = '';
+    tagsHiddenInput.value = '';
   }
-
-  // Oculta as seções de liquidação parcial e remove a classe 'ativo' dos elementos ajustáveis
-  const secoesValorParcial = document.querySelectorAll('.valor-parcial-liquidacao');
-  secoesValorParcial.forEach(secao => {
-    secao.style.display = 'none';
-  });
-
-  const elementosParaAjustar = document.querySelectorAll('.lancamentos-selecionados, .label-lancamentos-selecionados');
-  elementosParaAjustar.forEach(el => {
-    el.classList.remove('ativo');
-  });
-
-  const labelParcial = document.querySelector('.label-parcial');
-  if (labelParcial) labelParcial.style.display = 'none';
-
-  // Desmarca todos os checkboxes 'botao-parcial'
-  const todosBotoesParcial = document.querySelectorAll('.botao-parcial');
-  todosBotoesParcial.forEach(checkbox => {
-    checkbox.checked = false;
-  });
-
-  // Atualiza o estado das colunas para refletir a remoção da classe 'ativo'
-  atualizarEstadoColunas();
 }
 
+// Função unificada para manipular a abertura e fechamento de modais
+function handleModal(openBtnSelector, modalSelector, formSelector, config = {}) {
+  const openBtn = document.querySelector(openBtnSelector);
+  const modal = document.querySelector(modalSelector);
+  const valorField = modal.querySelector('.modal-valor');
 
-// Elementos do DOM
-const openModalRecebimentos = document.querySelector('.recebimentos');
-const openModalPagamentos = document.querySelector('.pagamentos');
-const openModalTransferencias = document.querySelector('.transferencias');
-const openModalLiquidacoes = document.querySelector('.liquidar-button');
+  // Abertura do modal
+  openBtn.addEventListener('click', () => {
+    modal.showModal();
+    document.body.classList.add('modal-open');
+    valorField.value = 'R$ '; // Define o valor do campo de valor como "R$ " ao abrir o modal
+  });
+  
+  openBtn.addEventListener('click', () => {
+    modal.showModal();
+    document.body.classList.add('modal-open');
+  });
 
-const closeModalRecebimentos = document.querySelector('.modal-fechar-recebimentos');
-const closeModalPagamentos = document.querySelector('.modal-fechar-pagamentos');
-const closeModalTransferencias = document.querySelector('.modal-fechar-transferencias');
-const closeModalLiquidacoes = document.querySelector('.modal-fechar-liquidacoes');
+  // Fechamento do modal
+  const closeModalFunc = () => {
+    modal.close();
+    document.body.classList.remove('modal-open');
+    resetModalFields(formSelector, config.dropdownId, config.tagInputId, config.tagsHiddenInputId, config.tagContainerId);
+  };
 
-const modalRecebimentos = document.querySelector('.modal-recebimentos');
-const modalPagamentos = document.querySelector('.modal-pagamentos');
-const modalTransferencias = document.querySelector('.modal-transferencias');
-const modalLiquidacoes = document.querySelector('.modal-liquidacoes');
+  const closeBtn = document.querySelector(config.closeBtnSelector);
+  closeBtn?.addEventListener('click', closeModalFunc);
+  modal.addEventListener('keydown', (e) => e.key === 'Escape' && closeModalFunc());
+  modal.addEventListener('close', closeModalFunc);
+}
 
-// Event Listeners
-abrirModal(openModalRecebimentos, modalRecebimentos, ".modal-form-recebimentos", 'tagInput-recebimentos', 'tagsHiddenInput-recebimentos', 'tag-container-recebimentos');
-fecharModal(closeModalRecebimentos, modalRecebimentos, ".modal-form-recebimentos", 'tagInput-recebimentos', 'tagsHiddenInput-recebimentos', 'tag-container-recebimentos', "parcelas-section-recebimentos");
+document.addEventListener('DOMContentLoaded', () => {
+  // Configurações dos modais
+  const modalConfigs = [
+    {openBtn: '.recebimentos', modal: '.modal-recebimentos', form: '.modal-form-recebimentos', config: {closeBtnSelector: '.modal-fechar-recebimentos', dropdownId: 'dropdown-button-contas-recebimentos', tagInputId: 'tagInput-recebimentos', 
+    tagsHiddenInputId: 'tagsHiddenInput-recebimentos', tagContainerId: 'tag-container-recebimentos'}},
+    {openBtn: '.pagamentos', modal: '.modal-pagamentos', form: '.modal-form-pagamentos', config: {closeBtnSelector: '.modal-fechar-pagamentos', dropdownId: 'dropdown-button-contas-pagamentos', tagInputId: 'tagInput-pagamentos', 
+    tagsHiddenInputId: 'tagsHiddenInput-recebimentos', tagContainerId: 'tag-container-pagamentos'}},
+    {openBtn: '.transferencias', modal: '.modal-transferencias', form: '.modal-form-transferencias', config: {closeBtnSelector: '.modal-fechar-transferencias'}},
+    {openBtn: '.liquidar-button', modal: '.modal-liquidacoes', form: '.modal-form-liquidacoes', config: {closeBtnSelector: '.modal-fechar-liquidacoes'}},
+  ];
 
-abrirModal(openModalPagamentos, modalPagamentos, ".modal-form-pagamentos", 'tagInput-pagamentos', 'tagsHiddenInput-pagamentos', 'tag-container-pagamentos');
-fecharModal(closeModalPagamentos, modalPagamentos, ".modal-form-pagamentos", 'tagInput-pagamentos', 'tagsHiddenInput-pagamentos', 'tag-container-pagamentos', "parcelas-section-pagamentos");
-
-abrirModal(openModalTransferencias, modalTransferencias, ".modal-form-transferencias");
-fecharModal(closeModalTransferencias, modalTransferencias, ".modal-form-transferencias");
-
-abrirModal(openModalLiquidacoes, modalLiquidacoes, ".modal-form-liquidacoes");
-fecharModal(closeModalLiquidacoes, modalLiquidacoes, ".modal-form-liquidacoes");
-
+  // Aplicar configurações para cada modal
+  modalConfigs.forEach(({openBtn, modal, form, config}) => {
+    handleModal(openBtn, modal, form, config);
+  });
+});
 
 // Evento para editar lançamentos ao clicar duas vezes nas células da tabela
 // Variáveis Globais
@@ -740,8 +710,8 @@ function configurarEventosModais() {
     };
 }
 
+// Evento para editar lançamentos ao clicar duas vezes nas células da tabela
 function configurarEventosTabela() {
-    // Evento para editar lançamentos ao clicar duas vezes nas células da tabela
     document.querySelectorAll('.row-lancamentos td:not(.checkbox-row)').forEach(cell => {
         cell.addEventListener('dblclick', function() {
             handleCellDoubleClick(cell);
@@ -1186,58 +1156,45 @@ function encontrarEMarcarMesAtualOuProximo() {
 
 encontrarEMarcarMesAtualOuProximo();
 
-// Listeners
-// Adiciona listeners para checkboxes de meses
-document.querySelectorAll('#dropdown-content-meses .mes-checkbox').forEach(checkbox => {
+// Adiciona listeners para checkboxes
+function addListenerAndUpdate(selector, updateFunction, filterFunction = null, isExclusive = false) {
+  document.querySelectorAll(selector).forEach(checkbox => {
     checkbox.addEventListener('change', function() {
-        updateButtonTextMeses();
-        filtrarTabela();
-    });
-});
-
-// Adiciona listeners para checkboxes de bancos
-document.querySelectorAll('#dropdown-content-bancos .banco-checkbox').forEach(checkbox => {
-    checkbox.addEventListener('change', function() {
-        updateButtonTextBancos();
-        filtrarBancos();
-    });
-});
-
-// Adiciona o listener a todas as checkboxes de recebimentos
-document.querySelectorAll('#dropdown-content-contas-recebimentos .conta-checkbox').forEach(checkbox => {
-  checkbox.addEventListener('change', () => {
-    setTimeout(() => updateButtonTextContasRecebimentos(), 0);
-    // Se uma checkbox é selecionada, desmarque todas as outras
-    if (checkbox.checked) {
-      document.querySelectorAll('#dropdown-content-contas-recebimentos .conta-checkbox')
-        .forEach(box => {
+      if (isExclusive && checkbox.checked) {
+        // Se é exclusivo e a checkbox é selecionada, desmarque todas as outras
+        document.querySelectorAll(selector).forEach(box => {
           if (box !== checkbox) box.checked = false;
         });
-    }
+      }
+      // A função de atualização é chamada após um atraso se necessário
+      if (selector.includes('recebimentos') || selector.includes('pagamentos')) {
+        setTimeout(updateFunction, 0);
+      } else {
+        updateFunction();
+      }
+      // Chama a função de filtragem se for fornecida
+      if (filterFunction) {
+        filterFunction();
+      }
+    });
   });
-});
+}
 
-// Adiciona o listener a todas as checkboxes de pagamentos
-document.querySelectorAll('#dropdown-content-contas-pagamentos .conta-checkbox').forEach(checkbox => {
-  checkbox.addEventListener('change', () => {
-    setTimeout(() => updateButtonTextContasPagamentos(), 0);
-    // Se uma checkbox é selecionada, desmarque todas as outras
-    if (checkbox.checked) {
-      document.querySelectorAll('#dropdown-content-contas-pagamentos .conta-checkbox')
-        .forEach(box => {
-          if (box !== checkbox) box.checked = false;
-        });
-    }
-  });
-});
+// Adicionando os listeners para cada grupo de checkboxes
+addListenerAndUpdate('#dropdown-content-contas .conta-checkbox', updateButtonTextContas, filtrarTabela);
+addListenerAndUpdate('#dropdown-content-meses .mes-checkbox', updateButtonTextMeses, filtrarTabela);
+addListenerAndUpdate('#dropdown-content-bancos .banco-checkbox', updateButtonTextBancos, filtrarBancos);
+addListenerAndUpdate('#dropdown-content-natureza .natureza-checkbox', updateButtonTextNatureza, filtrarTabela);
+addListenerAndUpdate('#dropdown-content-contas-recebimentos .conta-checkbox', updateButtonTextContasRecebimentos, null, true);
+addListenerAndUpdate('#dropdown-content-contas-pagamentos .conta-checkbox', updateButtonTextContasPagamentos, null, true);
 
 // Adiciona o listener para click fora do dropdown
 document.addEventListener('click', function(event) {
   const dropdowns = [
+      {button: "#dropdown-button-contas", content: "dropdown-content-contas"},
       {button: "#dropdown-button-meses", content: "dropdown-content-meses"},
       {button: "#dropdown-button-bancos", content: "dropdown-content-bancos"},
       {button: "#dropdown-button-natureza", content: "dropdown-content-natureza"},
-      {button: "#dropdown-button-contas", content: "dropdown-content-contas"},
       {button: "#dropdown-button-contas-recebimentos", content: "dropdown-content-contas-recebimentos"},
       {button: "#dropdown-button-contas-pagamentos", content: "dropdown-content-contas-pagamentos"}
   ];
@@ -1251,7 +1208,6 @@ document.addEventListener('click', function(event) {
       }
   });
 });
-
 
 // Funções para manipular os eventos de abertura dos dropdowns
 function toggleDropdownFilters(dropdownId, event) {
@@ -1290,105 +1246,67 @@ function toggleDropdownModals(dropdownId, event) {
 }
 
 // Funções para selecionar e desmarcar todos os checkboxes
-function selectAllMeses(event) {
-  event.stopPropagation();
-  const checkboxes = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
-  checkboxes.forEach(checkbox => checkbox.checked = true);
-  updateButtonTextMeses();
-  filtrarTabela();
+function toggleAllCheckboxes(containerSelector, shouldCheck) {
+  const checkboxes = document.querySelectorAll(`${containerSelector} .dropdown-options input[type="checkbox"]`);
+  checkboxes.forEach(checkbox => checkbox.checked = shouldCheck);
+  
+  // Atualiza o texto do botão e filtra a tabela conforme o container
+  switch (containerSelector) {
+    case '#dropdown-content-contas':
+      updateButtonTextContas();
+      filtrarTabela();
+      break;
+    case '#dropdown-content-meses':
+      updateButtonTextMeses();
+      filtrarTabela();
+      break;
+    case '#dropdown-content-bancos':
+      updateButtonTextBancos();
+      filtrarBancos();
+      break;
+    case '#dropdown-content-natureza':
+      updateButtonTextNatureza();
+      filtrarTabela();
+      break;
+  }
 }
 
-function deselectAllMeses(event) {
-  event.stopPropagation();
-  const checkboxes = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
-  checkboxes.forEach(checkbox => checkbox.checked = false);
-  updateButtonTextMeses();
-  filtrarTabela();
-}
-
-function selectAllBancos(event) {
-  event.stopPropagation();
-  const checkboxes = document.querySelectorAll('#dropdown-content-bancos .banco-checkbox');
-  checkboxes.forEach(checkbox => checkbox.checked = true);
-  updateButtonTextBancos();
-  filtrarBancos();
-}
-
-function deselectAllBancos(event) {
-  event.stopPropagation();
-  const checkboxes = document.querySelectorAll('#dropdown-content-bancos .banco-checkbox');
-  checkboxes.forEach(checkbox => checkbox.checked = false);
-  updateButtonTextBancos();
-  filtrarBancos();
-}
-
-function selectAllNatureza(event) {
-  event.stopPropagation();
-  const checkboxes = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox');
-  checkboxes.forEach(checkbox => checkbox.checked = true);
-  updateButtonTextNatureza();
-  filtrarTabela();
-}
-
-function deselectAllNatureza(event) {
-  event.stopPropagation();
-  const checkboxes = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox');
-  checkboxes.forEach(checkbox => checkbox.checked = false);
-  updateButtonTextNatureza();
-  filtrarTabela();
-}
-
-function selectAllContas(event) {
-  event.stopPropagation();
-  const checkboxes = document.querySelectorAll('#dropdown-content-contas .conta-checkbox');
-  checkboxes.forEach(checkbox => checkbox.checked = true);
-  updateButtonTextContas();
-}
-
-function deselectAllContas(event) {
-  event.stopPropagation();
-  const checkboxes = document.querySelectorAll('#dropdown-content-contas .conta-checkbox');
-  checkboxes.forEach(checkbox => checkbox.checked = false);
-  updateButtonTextContas();
-}
-
-// Funções para atualizar o texto dos botões de dropdown
-function updateButtonTextMeses() {
-  const selectedCount = document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked').length;
-  const totalOptions = document.querySelectorAll('#dropdown-content-meses .mes-checkbox').length;
-  const buttonText = selectedCount === 0 ? "Selecione" : 
-                     selectedCount === totalOptions ? "Todos Selecionados" : 
+// Função para atualizar o texto dos botões de dropdown
+function updateButtonText(dropdownId, checkboxesSelector, defaultText, allSelectedText = "Todos Selecionados") {
+  const selectedCount = document.querySelectorAll(`${checkboxesSelector}:checked`).length;
+  const totalOptions = document.querySelectorAll(checkboxesSelector).length;
+  const buttonText = selectedCount === 0 ? defaultText : 
+                     selectedCount === totalOptions ? allSelectedText : 
                      `${selectedCount} Selecionado(s)`;
-  document.getElementById('dropdown-button-meses').textContent = buttonText;
+  document.getElementById(dropdownId).textContent = buttonText;
+}
+
+// Chamadas específicas para cada dropdown
+function updateButtonTextContas() {
+  updateButtonText('dropdown-button-contas', '#dropdown-content-contas .conta-checkbox', 'Selecione');
+}
+
+function updateButtonTextMeses() {
+  updateButtonText('dropdown-button-meses', '#dropdown-content-meses .mes-checkbox', 'Selecione');
 }
 
 function updateButtonTextBancos() {
-  const selectedCount = document.querySelectorAll('#dropdown-content-bancos .banco-checkbox:checked').length;
-  const totalOptions = document.querySelectorAll('#dropdown-content-bancos .banco-checkbox').length;
-  const buttonText = selectedCount === 0 ? "Selecione" : 
-                     selectedCount === totalOptions ? "Todos Selecionados" : 
-                     `${selectedCount} Selecionado(s)`;
-  document.getElementById('dropdown-button-bancos').textContent = buttonText;
+  updateButtonText('dropdown-button-bancos', '#dropdown-content-bancos .banco-checkbox', 'Selecione');
 }
 
 function updateButtonTextNatureza() {
-  const selectedCount = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked').length;
-  const totalOptions = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').length;
-  const buttonText = selectedCount === 0 ? "Crédito, Débito" : 
-                     selectedCount === totalOptions ? "Crédito, Débito" : 
-                     `${selectedCount} Selecionado(s)`;
+  const checkboxes = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox');
+  const selectedCheckboxes = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked');
+  const selectedCount = selectedCheckboxes.length;
+  const totalOptions = checkboxes.length;
+  let buttonText = "Crédito, Débito";
+  if (selectedCount > 0 && selectedCount < totalOptions) {
+    buttonText = Array.from(selectedCheckboxes).map(cb => cb.nextSibling.textContent.trim()).join(", ");
+  }
   document.getElementById('dropdown-button-natureza').textContent = buttonText;
 }
 
-function updateButtonTextContas() {
-  const selectedCount = document.querySelectorAll('#dropdown-content-contas .conta-checkbox:checked').length;
-  const totalOptions = document.querySelectorAll('#dropdown-content-contas .conta-checkbox').length;
-  const buttonText = selectedCount === 0 ? "Selecione" : 
-                     selectedCount === totalOptions ? "Todos Selecionados" : 
-                     `${selectedCount} Selecionado(s)`;
-  document.getElementById('dropdown-button-contas').textContent = buttonText;
-}
-
+// Chamadas para contas de recebimentos e pagamentos
 function updateButtonTextContasRecebimentos() {
   const selectedCheckbox = document.querySelector('#dropdown-content-contas-recebimentos .conta-checkbox:checked');
   const selectedText = selectedCheckbox ? selectedCheckbox.nextSibling.textContent.trim() : "Selecione";
@@ -1403,74 +1321,54 @@ function updateButtonTextContasPagamentos() {
 
 // Filtros
 function filtrarTabela() {
-  const totalCheckboxesMeses = document.querySelectorAll('#dropdown-content-meses .mes-checkbox').length;
-  const checkboxesMesesSelecionados = document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked');
-  const totalCheckboxesNatureza = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').length;
-  const checkboxesNaturezaSelecionados = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked');
-  
-  var intervalosMesesSelecionados = Array.from(checkboxesMesesSelecionados).map(checkbox => ({
-      inicio: new Date(checkbox.getAttribute('data-inicio-mes')),
-      fim: new Date(checkbox.getAttribute('data-fim-mes'))
+  // Simplificação na obtenção dos intervalos selecionados e naturezas selecionadas
+  const intervalosMesesSelecionados = Array.from(document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked')).map(checkbox => ({
+    inicio: new Date(checkbox.getAttribute('data-inicio-mes')),
+    fim: new Date(checkbox.getAttribute('data-fim-mes'))
   }));
+  const naturezasSelecionadas = Array.from(document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked'), cb => cb.value);
 
-  let naturezasSelecionadas = Array.from(checkboxesNaturezaSelecionados).map(checkbox => checkbox.value);
+  // Verificações de seleção total ou nenhuma seleção simplificadas
+  const selecionarTodosMeses = intervalosMesesSelecionados.length === 0;
+  const selecionarTodaNatureza = naturezasSelecionadas.length === 0;
 
-  let selecionarTodosMeses = checkboxesMesesSelecionados.length === 0 || checkboxesMesesSelecionados.length === totalCheckboxesMeses;
-  let selecionarTodaNatureza = checkboxesNaturezaSelecionados.length === 0 || checkboxesNaturezaSelecionados.length === totalCheckboxesNatureza;
-
-  var dataInicio = document.getElementById("data-inicio").value;
-  var dataFim = document.getElementById("data-fim").value;
-  var filtroDescricao = document.getElementById("caixa-pesquisa").value.toUpperCase();
-  var filtroTags = document.getElementById("caixa-pesquisa-tags").value.toUpperCase();
-
-
-  var dataInicioObj = dataInicio ? new Date(dataInicio) : null;
-  var dataFimObj = dataFim ? new Date(dataFim) : null;
+  // Obtenção dos filtros de texto e datas
+  const filtroDescricao = document.getElementById("caixa-pesquisa").value.toUpperCase();
+  const filtroTags = document.getElementById("caixa-pesquisa-tags").value.toUpperCase();
+  const dataInicioObj = document.getElementById("data-inicio").value ? new Date(document.getElementById("data-inicio").value) : null;
+  const dataFimObj = document.getElementById("data-fim").value ? new Date(document.getElementById("data-fim").value) : null;
   let mesesAnosVisiveis = new Set();
-  
-  var trLancamentos = document.querySelectorAll("#tabela-lancamentos .row-lancamentos");
-  
-  trLancamentos.forEach(function(linha) {
-      var descricao = linha.querySelector(".descricao-row").textContent.toUpperCase();
-      var observacao = linha.querySelector(".obs-row").textContent.toUpperCase();
 
-      var dataVencimento = new Date(linha.querySelector(".vencimento-row").textContent.split('/').reverse().join('-'));
-      var tags = linha.querySelector(".d-block") ? linha.querySelector(".d-block").textContent.toUpperCase() : "";
+  document.querySelectorAll("#tabela-lancamentos .row-lancamentos").forEach(linha => {
+    const descricao = linha.querySelector(".descricao-row").textContent.toUpperCase();
+    const observacaoElemento = linha.querySelector(".obs-row").cloneNode(true);
+    const tagsElemento = observacaoElemento.querySelector(".d-block");
+    if (tagsElemento) observacaoElemento.removeChild(tagsElemento);
+    const observacao = observacaoElemento.textContent.toUpperCase();
+    const tags = tagsElemento ? tagsElemento.textContent.toUpperCase() : "";
+    const dataVencimento = new Date(linha.querySelector(".vencimento-row").textContent.split('/').reverse().join('-'));
+    const naturezaLancamento = linha.getAttribute('data-natureza');
 
-      var debitoCelula = linha.querySelector(".debito-row").textContent.trim();
-      var naturezaLancamento = debitoCelula === "" ? "Crédito" : "Débito";
+    // Centraliza a lógica de correspondência
+    const descricaoObservacaoMatch = filtroDescricao === "" || descricao.includes(filtroDescricao) || observacao.includes(filtroDescricao);
+    const tagMatch = filtroTags === "" || tags.includes(filtroTags);
+    const mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => dataVencimento >= intervalo.inicio && dataVencimento <= intervalo.fim);
+    const naturezaMatch = selecionarTodaNatureza || naturezasSelecionadas.includes(naturezaLancamento);
+    const dataMatch = (!dataInicioObj || dataVencimento >= dataInicioObj) && (!dataFimObj || dataVencimento <= dataFimObj);
 
-      var descricaoObservacaoMatch = descricao.includes(filtroDescricao) || observacao.includes(filtroDescricao);
-      var tagMatch = filtroTags === "" || tags.includes(filtroTags);
+    linha.style.display = descricaoObservacaoMatch && tagMatch && mesMatch && naturezaMatch && dataMatch ? "" : "none";
 
-      var mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => {
-        var dataVencimento = new Date(linha.querySelector(".vencimento-row").textContent.split('/').reverse().join('-'));
-        return dataVencimento >= intervalo.inicio && dataVencimento <= intervalo.fim;
-      });
-      var naturezaLancamento = linha.getAttribute('data-natureza');
-      var naturezaMatch = selecionarTodaNatureza || naturezasSelecionadas.includes(naturezaLancamento);
-      var dataMatch = (!dataInicioObj || dataVencimento >= dataInicioObj) && (!dataFimObj || dataVencimento <= dataFimObj);
-
-      if (descricaoObservacaoMatch && tagMatch && mesMatch && naturezaMatch && dataMatch) {
-        linha.style.display = "";
-
-        // Adiciona o mês/ano ao conjunto de meses/anos visíveis se a linha estiver visível
-        let mesAno = new Date(linha.querySelector(".vencimento-row").textContent.split('/').reverse().join('-')).toLocaleString('default', { month: '2-digit', year: 'numeric' });
-        mesesAnosVisiveis.add(mesAno);
-      } else {
-        linha.style.display = "none";
-      }
+    if (linha.style.display === "") {
+      let mesAno = dataVencimento.toLocaleString('default', { month: '2-digit', year: 'numeric' });
+      mesesAnosVisiveis.add(mesAno);
+    }
   });
 
-  // Filtrar as linhas 'linha-total-mes'
+  // Simplificação na filtragem das linhas de total do mês
   document.querySelectorAll("#tabela-lancamentos .linha-total-mes").forEach(row => {
     let textoMesAno = row.querySelector("td:nth-child(2)").textContent;
     let mesAnoMatch = textoMesAno.match(/\d{2}\/\d{4}$/); // Captura MM/YYYY
-    if (mesAnoMatch && mesesAnosVisiveis.has(mesAnoMatch[0])) {
-        row.style.display = "";
-    } else {
-        row.style.display = "none";
-    }
+    row.style.display = mesAnoMatch && mesesAnosVisiveis.has(mesAnoMatch[0]) ? "" : "none";
   });
 
   calcularSaldoAcumulado();
@@ -1479,19 +1377,8 @@ function filtrarTabela() {
 // Event listeners para os elementos de filtro
 document.getElementById('caixa-pesquisa').addEventListener('keyup', filtrarTabela);
 document.getElementById('caixa-pesquisa-tags').addEventListener('keyup', filtrarTabela);
-
 document.getElementById('data-inicio').addEventListener('change', filtrarTabela);
 document.getElementById('data-fim').addEventListener('change', filtrarTabela);
-
-// Adiciona ouvintes de evento para os checkboxes de meses para refiltrar a tabela quando eles mudam
-document.addEventListener("DOMContentLoaded", function() {
-  document.querySelectorAll('.dropdown-options input[type="checkbox"]').forEach(checkbox => {
-    checkbox.addEventListener('change', filtrarTabela);
-  });
-  // Inicializa a tabela com o filtro aplicado
-  filtrarTabela();
-});
-
 
 // Calcula o saldo total dos bancos, sem filtragem
 document.addEventListener("DOMContentLoaded", function() {
@@ -1623,21 +1510,6 @@ function parseSaldo(valorSaldo) {
 function formatarComoMoeda(valor) {
   return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
-
-document.addEventListener("DOMContentLoaded", function() {
-  document.querySelectorAll('.saldo-total-row').forEach(function(cell) {
-      var saldoTexto = cell.textContent;
-      // Remove caracteres de formatação exceto o sinal de menos, ponto e vírgula
-      var saldoNumerico = saldoTexto.replace(/[^\d,-]/g, '').replace('.', '').replace(',', '.');
-      // Converte para float
-      var saldo = parseFloat(saldoNumerico);
-
-      // Verifica se o número é negativo
-      if (saldo < 0) {
-          cell.style.color = '#740000'; // Muda a cor para vermelho
-      }
-  });
-});
 
 document.querySelectorAll('.saldo-total-row').forEach(function(cell) {
   var saldoTexto = cell.textContent.replace(/\s/g, '');
