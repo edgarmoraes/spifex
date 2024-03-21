@@ -1126,135 +1126,167 @@ calcularTotal();
 
 
 
-// Filtro de meses e bancos
-document.addEventListener("DOMContentLoaded", function() {
-  const meses = [
-      'jan', 'fev', 'mar', 'abr', 'mai', 'jun',
-      'jul', 'ago', 'set', 'out', 'nov', 'dez'
-  ];
+// Filtro de meses
+const config = {
+  meses: ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'],
+  today: new Date(),
+};
 
-  const today = new Date();
-  let currentMonthIndex = today.getMonth(); // Obtém o índice do mês atual (0-11)
-  const currentYear = today.getFullYear();
+function getCurrentMonthIndex() {
+  return config.today.getMonth();
+}
 
-  // Função para marcar checkboxes de meses anteriores e o mês atual
-  function marcarMesesAnterioresAteAtual(index) {
-      const checkboxesMeses = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
-      checkboxesMeses.forEach(checkbox => {
-          const [mesCheckbox, anoCheckbox] = checkbox.value.split('/');
-          const mesIndex = meses.indexOf(mesCheckbox);
-          const ano = parseInt(anoCheckbox, 10);
-          if ((ano < currentYear) || (ano === currentYear && mesIndex <= index)) {
-              checkbox.checked = true;
-          }
-      });
-      updateButtonTextMeses();
-      filtrarTabela();
+function getCurrentYear() {
+  return config.today.getFullYear();
+}
+
+// Funções de manipulação de checkboxes
+function marcarMesesAnterioresAteAtual(index, currentYear) {
+  const checkboxesMeses = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
+  checkboxesMeses.forEach(checkbox => {
+    const [mesCheckbox, anoCheckbox] = checkbox.value.split('/');
+    const mesIndex = config.meses.indexOf(mesCheckbox);
+    const ano = parseInt(anoCheckbox, 10);
+    if ((ano < currentYear) || (ano === currentYear && mesIndex <= index)) {
+      checkbox.checked = true;
+    }
+  });
+  updateButtonTextMeses();
+  filtrarTabela();
+}
+
+function encontrarEMarcarMesAtualOuProximo() {
+  let currentMonthIndex = getCurrentMonthIndex();
+  let currentYear = getCurrentYear();
+  const checkboxesMeses = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
+  let encontrado = false;
+  let tentativas = 0;
+
+  while (!encontrado && tentativas < 12) {
+    const mesAnoProcurado = `${config.meses[currentMonthIndex]}/${currentYear}`;
+    encontrado = [...checkboxesMeses].some(checkbox => {
+      if (checkbox.value === mesAnoProcurado) {
+        marcarMesesAnterioresAteAtual(currentMonthIndex, currentYear);
+        return true;
+      }
+      return false;
+    });
+
+    if (!encontrado) {
+      currentMonthIndex = (currentMonthIndex + 1) % 12;
+      if (currentMonthIndex === 0) currentYear++;
+    }
+    tentativas++;
   }
 
-  // Função para encontrar e marcar o mês atual ou o próximo mês disponível
-  function encontrarEMarcarMesAtualOuProximo() {
-      const checkboxesMeses = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
-      let mesAtualOuProximoEncontrado = false;
-      let tentativas = 0;
-
-      while (!mesAtualOuProximoEncontrado && tentativas < 12) {
-          const mesAnoProcurado = `${meses[currentMonthIndex]}/${currentYear}`;
-          for (const checkbox of checkboxesMeses) {
-              if (checkbox.value === mesAnoProcurado) {
-                  mesAtualOuProximoEncontrado = true;
-                  marcarMesesAnterioresAteAtual(currentMonthIndex);
-                  break;
-              }
-          }
-
-          if (!mesAtualOuProximoEncontrado) {
-              currentMonthIndex = (currentMonthIndex + 1) % 12;
-              if (currentMonthIndex === 0) {
-                  // Se passar por todos os meses e começar um novo ciclo, aumenta o ano
-                  currentYear++;
-              }
-          }
-          tentativas++;
-      }
-
-      if (!mesAtualOuProximoEncontrado) {
-          console.error('Nenhum mês válido encontrado. Considere revisar os valores dos checkboxes.');
-      }
+  if (!encontrado) {
+    console.error('Nenhum mês válido encontrado. Considere revisar os valores dos checkboxes.');
   }
+}
 
-  encontrarEMarcarMesAtualOuProximo();
+encontrarEMarcarMesAtualOuProximo();
 
-  // Adiciona listeners para checkboxes de meses
-  document.querySelectorAll('#dropdown-content-meses .mes-checkbox').forEach(checkbox => {
-      checkbox.addEventListener('change', function() {
-          updateButtonTextMeses();
-          filtrarTabela();
-      });
-  });
-
-  // Adiciona listeners para checkboxes de bancos
-  document.querySelectorAll('#dropdown-content-bancos .banco-checkbox').forEach(checkbox => {
-      checkbox.addEventListener('change', function() {
-          updateButtonTextBancos();
-          filtrarBancos();
-      });
-  });
-
-  // Adiciona listeners para checkboxes de natureza
-  document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').forEach(checkbox => {
+// Listeners
+// Adiciona listeners para checkboxes de meses
+document.querySelectorAll('#dropdown-content-meses .mes-checkbox').forEach(checkbox => {
     checkbox.addEventListener('change', function() {
-        updateButtonTextNatureza();
+        updateButtonTextMeses();
         filtrarTabela();
     });
-  });
+});
 
-  // Listener para fechar os dropdowns ao clicar fora
-  document.addEventListener('click', function(event) {
-      if (!event.target.closest("#dropdown-content-meses") && !event.target.closest("#dropdown-button-meses")) {
-          document.getElementById("dropdown-content-meses").classList.remove("show");
-      }
-      if (!event.target.closest("#dropdown-content-bancos") && !event.target.closest("#dropdown-button-bancos")) {
-          document.getElementById("dropdown-content-bancos").classList.remove("show");
-      }
-      if (!event.target.closest("#dropdown-content-natureza") && !event.target.closest("#dropdown-button-natureza")) {
-        document.getElementById("dropdown-content-natureza").classList.remove("show");
+// Adiciona listeners para checkboxes de bancos
+document.querySelectorAll('#dropdown-content-bancos .banco-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        updateButtonTextBancos();
+        filtrarBancos();
+    });
+});
+
+// Adiciona o listener a todas as checkboxes de recebimentos
+document.querySelectorAll('#dropdown-content-contas-recebimentos .conta-checkbox').forEach(checkbox => {
+  checkbox.addEventListener('change', () => {
+    setTimeout(() => updateButtonTextContasRecebimentos(), 0);
+    // Se uma checkbox é selecionada, desmarque todas as outras
+    if (checkbox.checked) {
+      document.querySelectorAll('#dropdown-content-contas-recebimentos .conta-checkbox')
+        .forEach(box => {
+          if (box !== checkbox) box.checked = false;
+        });
     }
   });
+});
 
-  // Inicializa a filtragem para configurar a visualização inicial com base nos filtros padrão
-  filtrarBancos();
-
-  document.querySelectorAll('.saldo-total-row').forEach(function(cell) {
-    // Extrai o texto, remove o símbolo de moeda e espaços, substitui a vírgula por ponto e verifica se é negativo
-    var saldoTexto = cell.textContent.replace(/\s/g, ''); // Remove espaços
-    var saldo = parseFloat(saldoTexto.replace('.', '').replace(',', '.')); // Remove pontos e troca vírgulas por pontos antes de converter
-
-      // Verifica se o número é negativo e altera a cor do texto
-      if (!isNaN(saldo) && saldo < 0) {
-          cell.style.color = '#740000'; // Cor vermelha
-      }
-      else {
-        cell.style.color = '#000acf';
+// Adiciona o listener a todas as checkboxes de pagamentos
+document.querySelectorAll('#dropdown-content-contas-pagamentos .conta-checkbox').forEach(checkbox => {
+  checkbox.addEventListener('change', () => {
+    setTimeout(() => updateButtonTextContasPagamentos(), 0);
+    // Se uma checkbox é selecionada, desmarque todas as outras
+    if (checkbox.checked) {
+      document.querySelectorAll('#dropdown-content-contas-pagamentos .conta-checkbox')
+        .forEach(box => {
+          if (box !== checkbox) box.checked = false;
+        });
     }
+  });
+});
+
+// Adiciona o listener para click fora do dropdown
+document.addEventListener('click', function(event) {
+  const dropdowns = [
+      {button: "#dropdown-button-meses", content: "dropdown-content-meses"},
+      {button: "#dropdown-button-bancos", content: "dropdown-content-bancos"},
+      {button: "#dropdown-button-natureza", content: "dropdown-content-natureza"},
+      {button: "#dropdown-button-contas", content: "dropdown-content-contas"},
+      {button: "#dropdown-button-contas-recebimentos", content: "dropdown-content-contas-recebimentos"},
+      {button: "#dropdown-button-contas-pagamentos", content: "dropdown-content-contas-pagamentos"}
+  ];
+
+  dropdowns.forEach(function(dropdown) {
+      if (!event.target.closest(dropdown.button) && !event.target.closest(`#${dropdown.content}`)) {
+          const content = document.getElementById(dropdown.content);
+          if (content && content.classList.contains('show')) {
+              content.classList.remove('show');
+          }
+      }
   });
 });
 
 
 // Funções para manipular os eventos de abertura dos dropdowns
-function toggleDropdownMeses(event) {
+function toggleDropdownFilters(dropdownId, event) {
   event.stopPropagation();
-  document.getElementById("dropdown-content-meses").classList.toggle("show");
+  const dropdown = document.getElementById(dropdownId);
+  dropdown.classList.toggle("show");
 }
 
-function toggleDropdownBancos(event) {
+function toggleDropdownModals(dropdownId, event) {
   event.stopPropagation();
-  document.getElementById("dropdown-content-bancos").classList.toggle("show");
-}
+  const dropdown = document.getElementById(dropdownId);
+  const buttonRect = event.target.getBoundingClientRect();
 
-function toggleDropdownNatureza(event) {
-  event.stopPropagation();
-  document.getElementById("dropdown-content-natureza").classList.toggle("show");
+  if (dropdown.classList.contains("show")) {
+    // Hide the dropdown
+    dropdown.classList.remove("show");
+    // Reset styles
+    Object.assign(dropdown.style, {
+      maxHeight: null,
+      position: null,
+      top: null,
+      left: null,
+      overflowY: null
+    });
+  } else {
+    // Show the dropdown and adjust its position and styles
+    dropdown.classList.add("show");
+    Object.assign(dropdown.style, {
+      position: 'fixed',
+      top: `${window.scrollY + buttonRect.bottom}px`,
+      left: `${window.scrollX + buttonRect.left}px`,
+      maxHeight: '250px',
+      overflowY: 'auto'
+    });
+  }
 }
 
 // Funções para selecionar e desmarcar todos os checkboxes
@@ -1306,6 +1338,20 @@ function deselectAllNatureza(event) {
   filtrarTabela();
 }
 
+function selectAllContas(event) {
+  event.stopPropagation();
+  const checkboxes = document.querySelectorAll('#dropdown-content-contas .conta-checkbox');
+  checkboxes.forEach(checkbox => checkbox.checked = true);
+  updateButtonTextContas();
+}
+
+function deselectAllContas(event) {
+  event.stopPropagation();
+  const checkboxes = document.querySelectorAll('#dropdown-content-contas .conta-checkbox');
+  checkboxes.forEach(checkbox => checkbox.checked = false);
+  updateButtonTextContas();
+}
+
 // Funções para atualizar o texto dos botões de dropdown
 function updateButtonTextMeses() {
   const selectedCount = document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked').length;
@@ -1334,6 +1380,27 @@ function updateButtonTextNatureza() {
   document.getElementById('dropdown-button-natureza').textContent = buttonText;
 }
 
+function updateButtonTextContas() {
+  const selectedCount = document.querySelectorAll('#dropdown-content-contas .conta-checkbox:checked').length;
+  const totalOptions = document.querySelectorAll('#dropdown-content-contas .conta-checkbox').length;
+  const buttonText = selectedCount === 0 ? "Selecione" : 
+                     selectedCount === totalOptions ? "Todos Selecionados" : 
+                     `${selectedCount} Selecionado(s)`;
+  document.getElementById('dropdown-button-contas').textContent = buttonText;
+}
+
+function updateButtonTextContasRecebimentos() {
+  const selectedCheckbox = document.querySelector('#dropdown-content-contas-recebimentos .conta-checkbox:checked');
+  const selectedText = selectedCheckbox ? selectedCheckbox.nextSibling.textContent.trim() : "Selecione";
+  document.getElementById('dropdown-button-contas-recebimentos').textContent = selectedText;
+}
+
+function updateButtonTextContasPagamentos() {
+  const selectedCheckbox = document.querySelector('#dropdown-content-contas-pagamentos .conta-checkbox:checked');
+  const selectedText = selectedCheckbox ? selectedCheckbox.nextSibling.textContent.trim() : "Selecione";
+  document.getElementById('dropdown-button-contas-pagamentos').textContent = selectedText;
+}
+
 // Filtros
 function filtrarTabela() {
   const totalCheckboxesMeses = document.querySelectorAll('#dropdown-content-meses .mes-checkbox').length;
@@ -1355,7 +1422,7 @@ function filtrarTabela() {
   var dataFim = document.getElementById("data-fim").value;
   var filtroDescricao = document.getElementById("caixa-pesquisa").value.toUpperCase();
   var filtroTags = document.getElementById("caixa-pesquisa-tags").value.toUpperCase();
-  var filtroContaContabil = document.getElementById("contas-contabeis").value.toUpperCase();
+
 
   var dataInicioObj = dataInicio ? new Date(dataInicio) : null;
   var dataFimObj = dataFim ? new Date(dataFim) : null;
@@ -1366,7 +1433,7 @@ function filtrarTabela() {
   trLancamentos.forEach(function(linha) {
       var descricao = linha.querySelector(".descricao-row").textContent.toUpperCase();
       var observacao = linha.querySelector(".obs-row").textContent.toUpperCase();
-      var contaContabil = linha.getAttribute('data-conta-contabil').toUpperCase();
+
       var dataVencimento = new Date(linha.querySelector(".vencimento-row").textContent.split('/').reverse().join('-'));
       var tags = linha.querySelector(".d-block") ? linha.querySelector(".d-block").textContent.toUpperCase() : "";
 
@@ -1375,7 +1442,7 @@ function filtrarTabela() {
 
       var descricaoObservacaoMatch = descricao.includes(filtroDescricao) || observacao.includes(filtroDescricao);
       var tagMatch = filtroTags === "" || tags.includes(filtroTags);
-      var contaContabilMatch = filtroContaContabil === "" || contaContabil.includes(filtroContaContabil);
+
       var mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => {
         var dataVencimento = new Date(linha.querySelector(".vencimento-row").textContent.split('/').reverse().join('-'));
         return dataVencimento >= intervalo.inicio && dataVencimento <= intervalo.fim;
@@ -1384,7 +1451,7 @@ function filtrarTabela() {
       var naturezaMatch = selecionarTodaNatureza || naturezasSelecionadas.includes(naturezaLancamento);
       var dataMatch = (!dataInicioObj || dataVencimento >= dataInicioObj) && (!dataFimObj || dataVencimento <= dataFimObj);
 
-      if (descricaoObservacaoMatch && tagMatch && contaContabilMatch && mesMatch && naturezaMatch && dataMatch) {
+      if (descricaoObservacaoMatch && tagMatch && mesMatch && naturezaMatch && dataMatch) {
         linha.style.display = "";
 
         // Adiciona o mês/ano ao conjunto de meses/anos visíveis se a linha estiver visível
@@ -1412,7 +1479,7 @@ function filtrarTabela() {
 // Event listeners para os elementos de filtro
 document.getElementById('caixa-pesquisa').addEventListener('keyup', filtrarTabela);
 document.getElementById('caixa-pesquisa-tags').addEventListener('keyup', filtrarTabela);
-document.getElementById('contas-contabeis').addEventListener('change', filtrarTabela);
+
 document.getElementById('data-inicio').addEventListener('change', filtrarTabela);
 document.getElementById('data-fim').addEventListener('change', filtrarTabela);
 
@@ -1570,4 +1637,15 @@ document.addEventListener("DOMContentLoaded", function() {
           cell.style.color = '#740000'; // Muda a cor para vermelho
       }
   });
+});
+
+document.querySelectorAll('.saldo-total-row').forEach(function(cell) {
+  var saldoTexto = cell.textContent.replace(/\s/g, '');
+  var saldo = parseFloat(saldoTexto.replace('.', '').replace(',', '.'));
+    if (!isNaN(saldo) && saldo < 0) {
+        cell.style.color = '#740000';
+    }
+    else {
+      cell.style.color = '#000acf';
+  }
 });

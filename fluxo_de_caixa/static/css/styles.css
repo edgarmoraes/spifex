@@ -229,6 +229,21 @@ nav {
   cursor: pointer;
 }
 
+.subgroup-label {
+  display: block;
+  padding: 10px 10px 0px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.subgroup-label[data-nature="Crédito"] {
+  color: var(--color7);
+}
+
+.subgroup-label[data-nature="Débito"] {
+  color: var(--color6);
+}
+
 .dropdown-options label {
   display: block;
   cursor: pointer;

@@ -40,20 +40,33 @@
                     <div class="box-grid-filters">
                         <!-- ############### Filtro Contas Contábeis ############### -->
                         <section class="flex">
-                            <label for="contas-contabeis">Contas Contábeis</label>
-                            <select id="contas-contabeis" name = "contas_contabeis">
-                                <option value="" disabled selected hidden>Selecione</option>
-                                <option value="Receita 1">Receita 1</option>
-                                <option value="Receita 2">Receita 2</option>
-                                <option value="Receita 3">Despesa 1</option>
-                                <option value="Receita 4">Despesa 2</option>
-                            </select>
+                            <label for="dropdown-button-contas">Contas Contábeis</label>
+                            <div class="dropdown-multiselect">
+                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-contas', event)" id="dropdown-button-contas" class="dropdown-button">Selecione</button>
+                                <div id="dropdown-content-contas" class="dropdown-content">
+                                    <div class="dropdown-header">
+                                        <button class="button-selecionar-todos" type="button" onclick="selectAllContas(event)">Selecionar Todos</button>
+                                        <button class="button-desmarcar-todos" type="button" onclick="deselectAllContas(event)">Desmarcar Todos</button>
+                                    </div>
+                                    <div class="dropdown-options">
+                                        {% for subgroup, accounts in accounts_by_subgroup.items %}
+                                            <div class="subgroup-label" data-nature="{{ accounts.0.nature }}">{{ subgroup }}</div>
+                                            {% for account in accounts %}
+                                                <label class="label-filters">
+                                                    <input type="checkbox" name="contas" value="{{ account.uuid }}" class="conta-checkbox">
+                                                    {{ account.account }}
+                                                </label>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
                         </section>
                         <!-- ############### Filtro Meses ############### -->
                         <section class="flex">
                             <label for="dropdown-button-meses">Meses</label>
                             <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdownMeses(event)" id="dropdown-button-meses" class="dropdown-button">Selecione</button>
+                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-meses', event)" id="dropdown-button-meses" class="dropdown-button">Selecione</button>
                                 <div id="dropdown-content-meses" class="dropdown-content">
                                     <div class="dropdown-header">
                                         <button class="button-selecionar-todos" type="button" onclick="selectAllMeses(event)">Selecionar Todos</button>
@@ -74,7 +87,7 @@
                         <section class="flex">
                             <label for="dropdown-button-bancos">Bancos</label>
                             <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdownBancos(event)" id="dropdown-button-bancos" class="dropdown-button">Selecione</button>
+                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-bancos', event)" id="dropdown-button-bancos" class="dropdown-button">Selecione</button>
                                 <div id="dropdown-content-bancos" class="dropdown-content">
                                     <div class="dropdown-header">
                                         <button class="button-selecionar-todos" type="button" onclick="selectAllBancos(event)">Selecionar Todos</button>
@@ -105,7 +118,7 @@
                         <section class="flex">
                             <label for="dropdown-button-natureza">Natureza</label>
                             <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdownNatureza(event)" id="dropdown-button-natureza" class="dropdown-button">Crédito, Débito</button>
+                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-natureza', event)" id="dropdown-button-natureza" class="dropdown-button">Crédito, Débito</button>
                                 <div id="dropdown-content-natureza" class="dropdown-content">
                                     <div class="dropdown-header">
                                         <button class="button-selecionar-todos" type="button" onclick="selectAllNatureza(event)">Selecionar Todos</button>
@@ -225,12 +238,25 @@
                 </section>
             
                 <section class="modal-flex">
-                    <label for="conta-contabil-recebimentos">Conta Contábil</label>
-                    <select class="modal-conta-contabil" id="conta-contabil-recebimentos" type="text" name="conta_contabil" required>
-                    <option value="Receita 1">Receita 1</option>
-                    <option value="Receita 2">Receita 2</option>
-                    <option value="Receita 3">Receita 3</option>
-                    </select><br>
+                    <label for="dropdown-button-contas-recebimentos">Conta Contábil</label>
+                    <div class="dropdown-multiselect">
+                        <button type="button" onclick="toggleDropdownModals('dropdown-content-contas-recebimentos', event)" id="dropdown-button-contas-recebimentos" class="dropdown-button">Selecione</button>
+                        <div id="dropdown-content-contas-recebimentos" class="dropdown-content">
+                            <div class="dropdown-options">
+                                {% for subgroup, accounts in accounts_by_subgroup.items %}
+                                    {% if accounts.0.nature == 'Crédito' %}
+                                        <div class="subgroup-label">{{ subgroup }}</div>
+                                        {% for account in accounts %}
+                                            <label class="label-filters">
+                                                <input type="checkbox" name="contas_recebimentos" value="{{ account.uuid }}" class="conta-checkbox">
+                                                {{ account.account }}
+                                            </label>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
                 </section>
             
                 <section class="modal-flex" id="recorrencia-section">
@@ -288,12 +314,25 @@
                 </section>
             
                 <section class="modal-flex">
-                    <label for="conta-contabil-pagamentos">Conta Contábil</label>
-                    <select class="modal-conta-contabil" id="conta-contabil-pagamentos" type="text" name="conta_contabil" required>
-                    <option value="conta1">Conta 1</option>
-                    <option value="conta2">Conta 2</option>
-                    <option value="conta3">Conta 3</option>
-                    </select><br>
+                    <label for="dropdown-button-contas-pagamentos">Conta Contábil</label>
+                    <div class="dropdown-multiselect">
+                        <button type="button" onclick="toggleDropdownModals('dropdown-content-contas-pagamentos', event)" id="dropdown-button-contas-pagamentos" class="dropdown-button">Selecione</button>
+                        <div id="dropdown-content-contas-pagamentos" class="dropdown-content">
+                            <div class="dropdown-options">
+                                {% for subgroup, accounts in accounts_by_subgroup.items %}
+                                    {% if accounts.0.nature == 'Débito' %}
+                                        <div class="subgroup-label">{{ subgroup }}</div>
+                                        {% for account in accounts %}
+                                            <label class="label-filters">
+                                                <input type="checkbox" name="contas_pagamentos" value="{{ account.uuid }}" class="conta-checkbox">
+                                                {{ account.account }}
+                                            </label>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
                 </section>
             
                 <section class="modal-flex">

@@ -1,4 +1,3 @@
-import re
 import uuid
 import json
 from decimal import Decimal
@@ -9,6 +8,7 @@ from django.contrib import messages
 from django.dispatch import receiver
 from django.http import JsonResponse
 from realizado.models import Tabela_realizado
+from chart_of_accounts.models import Chart_of_accounts
 from dateutil.relativedelta import relativedelta
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
@@ -17,6 +17,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Tabela_fluxo, TabelaTemporaria, Totais_mes_fluxo, Bancos
 from collections import defaultdict
 from itertools import groupby
+from collections import OrderedDict
 
 def fluxo_de_caixa(request):
     if request.method == "GET":
@@ -26,37 +27,42 @@ def fluxo_de_caixa(request):
 
 def exibir_fluxo_de_caixa(request):
     bancos_ativos = Bancos.objects.filter(status=True)
-    Tabela_fluxo_list = Tabela_fluxo.objects.all().order_by('vencimento', '-valor', 'descricao')
+    tabela_fluxo_list = Tabela_fluxo.objects.all().order_by('vencimento', '-valor', 'descricao')
     totais_mes_fluxo = Totais_mes_fluxo.objects.all()
+    chart_of_accounts_queryset = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
+    
+    # Agrupando as contas por subgroup usando OrderedDict para manter a ordem
+    accounts_by_subgroup = OrderedDict()
+    for account in chart_of_accounts_queryset:
+        if account.subgroup not in accounts_by_subgroup:
+            accounts_by_subgroup[account.subgroup] = []
+        accounts_by_subgroup[account.subgroup].append(account)
 
-    # Convertendo QuerySet para lista para manipulação
-    Tabela_fluxo_list = list(Tabela_fluxo_list)
+    tabela_fluxo_list = list(tabela_fluxo_list)
 
-    # Preparando a lista para incluir totais de cada mês
     lancamentos_com_totais = []
-
-    for key, group in groupby(Tabela_fluxo_list, key=lambda x: x.vencimento.strftime('%Y-%m')):
+    for key, group in groupby(tabela_fluxo_list, key=lambda x: x.vencimento.strftime('%Y-%m')):
         lista_grupo = list(group)
         lancamentos_com_totais.extend(lista_grupo)
 
         total_debito = sum(item.valor for item in lista_grupo if item.natureza == 'Débito')
         total_credito = sum(item.valor for item in lista_grupo if item.natureza == 'Crédito')
-        saldo_total = total_credito - total_debito  # Cálculo do saldo total
+        saldo_total = total_credito - total_debito
 
-        # Inserir o total do mês, incluindo agora o saldo
         lancamentos_com_totais.append({
             'vencimento': datetime.strptime(key + "-01", '%Y-%m-%d'),
             'descricao': 'Total do Mês',
             'debito': total_debito,
             'credito': total_credito,
-            'saldo': saldo_total,  # Incluindo o saldo no dicionário
+            'saldo': saldo_total,
             'is_total': True,
         })
 
     context = {
         'Tabela_fluxo_list': lancamentos_com_totais,
-        'totais_mes_fluxo': totais_mes_fluxo,  # Mantém a variável, caso seja útil em outra parte do seu template
+        'totais_mes_fluxo': totais_mes_fluxo,
         'bancos': bancos_ativos,
+        'accounts_by_subgroup': accounts_by_subgroup,  # Passando o OrderedDict para o contexto
     }
     return render(request, 'fluxo_de_caixa.html', context)
 
