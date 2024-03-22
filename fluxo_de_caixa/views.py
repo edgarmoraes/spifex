@@ -88,6 +88,13 @@ def processar_fluxo_de_caixa(request):
 def extrair_dados_formulario(request):
     """Extrai e retorna os dados do formulário."""
     natureza = 'Crédito' if 'salvar_recebimento' in request.POST else 'Débito'
+
+    if natureza == 'Crédito':
+        conta_contabil_uuid = request.POST.get('conta_contabil_uuid_recebimentos')
+        conta_contabil_nome = request.POST.get('conta_contabil_nome_recebimentos')
+    else:
+        conta_contabil_uuid = request.POST.get('conta_contabil_uuid_pagamentos')
+        conta_contabil_nome = request.POST.get('conta_contabil_nome_pagamentos')
     
     # Escolhe o campo de ID correto com base na natureza da transação
     lancamento_id_recebimentos = request.POST.get('lancamento_id_recebimentos')
@@ -122,7 +129,8 @@ def extrair_dados_formulario(request):
         'descricao': descricao,
         'observacao': observacao,
         'valor': valor,
-        'conta_contabil': conta_contabil,
+        'conta_contabil_uuid': conta_contabil_uuid,
+        'conta_contabil_nome': conta_contabil_nome,
         'parcelas_total': parcelas_total,
         'parcelas_total_originais': parcelas_total_originais,
         'tags': tags,
@@ -162,7 +170,8 @@ def criar_novos_fluxos(dados, iniciar_desde_o_atual=False):
             descricao=dados['descricao'],
             observacao=dados['observacao'],
             valor=dados['valor'],
-            conta_contabil=dados['conta_contabil'],
+            conta_contabil=dados['conta_contabil_nome'],  # Usar o nome da conta contábil
+            uuid_conta_contabil=dados['conta_contabil_uuid'],  # Armazenar o UUID da conta contábil
             parcela_atual=i,
             parcelas_total=total_parcelas,
             tags=dados['tags'],
@@ -319,6 +328,7 @@ def processar_liquidacao(request):
                     observacao=item['observacao'],
                     valor=valor_parcial if is_liquidacao_parcial else valor_total,
                     conta_contabil=registro_original.conta_contabil,
+                    uuid_conta_contabil=registro_original.uuid_conta_contabil,
                     parcela_atual=registro_original.parcela_atual,
                     parcelas_total=registro_original.parcelas_total,
                     tags=registro_original.tags,
@@ -328,7 +338,7 @@ def processar_liquidacao(request):
                     banco_liquidacao=item.get('banco_liquidacao', ''),
                     banco_id_liquidacao=item.get('banco_id_liquidacao', ''),
                     uuid_correlacao=uuid_correlacao,
-                    uuid_correlacao_parcelas=uuid_correlacao  # Aqui é adicionado o mesmo UUID a uuid_correlacao_parcelas
+                    uuid_correlacao_parcelas=uuid_correlacao
                 )
 
                 # Remove o registro original se for uma liquidação total ou a última liquidação parcial

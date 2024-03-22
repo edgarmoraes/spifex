@@ -248,12 +248,14 @@
                                         <div class="subgroup-label">{{ subgroup }}</div>
                                         {% for account in accounts %}
                                             <label class="label-filters">
-                                                <input type="checkbox" name="contas_recebimentos" value="{{ account.uuid }}" class="conta-checkbox">
+                                                <input type="checkbox" name="contas_recebimentos" data-uuid-account="{{ account.uuid }}" data-account="{{ account.account }}" class="conta-checkbox">
                                                 {{ account.account }}
                                             </label>
                                         {% endfor %}
                                     {% endif %}
                                 {% endfor %}
+                                <input type="hidden" id="conta_contabil_uuid_recebimentos" name="conta_contabil_uuid_recebimentos" value="">
+                                <input type="hidden" id="conta_contabil_nome_recebimentos" name="conta_contabil_nome_recebimentos" value="">
                             </div>
                         </div>
                     </div>
@@ -324,15 +326,18 @@
                                         <div class="subgroup-label">{{ subgroup }}</div>
                                         {% for account in accounts %}
                                             <label class="label-filters">
-                                                <input type="checkbox" name="contas_pagamentos" value="{{ account.uuid }}" class="conta-checkbox">
+                                                <input type="checkbox" name="contas_pagamentos" data-uuid-account="{{ account.uuid }}" data-account="{{ account.account }}" class="conta-checkbox">
                                                 {{ account.account }}
                                             </label>
                                         {% endfor %}
                                     {% endif %}
                                 {% endfor %}
+                                <input type="hidden" id="conta_contabil_uuid_pagamentos" name="conta_contabil_uuid_pagamentos" value="">
+                                <input type="hidden" id="conta_contabil_nome_pagamentos" name="conta_contabil_nome_pagamentos" value="">
                             </div>
                         </div>
                     </div>
+                    
                 </section>
             
                 <section class="modal-flex">
@@ -434,7 +439,7 @@
                                 <td class="saldo-total-row">{{ fluxo_de_caixa.saldo|format_number }}</td>
                             </tr>
                         {% else %}
-                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ fluxo_de_caixa.id }}" data-conta-contabil="{{ fluxo_de_caixa.conta_contabil }}" data-natureza="{{ fluxo_de_caixa.natureza }}" parcela-atual="{{ fluxo_de_caixa.parcela_atual }}" parcelas-total="{{ fluxo_de_caixa.parcelas_total }}" data-uuid-row="{{ fluxo_de_caixa.uuid_correlacao }}" scope="row">
+                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ fluxo_de_caixa.id }}" data-conta-contabil="{{ fluxo_de_caixa.conta_contabil }}" data-uuid-conta-contabil="{{ fluxo_de_caixa.uuid_conta_contabil }}" data-natureza="{{ fluxo_de_caixa.natureza }}" parcela-atual="{{ fluxo_de_caixa.parcela_atual }}" parcelas-total="{{ fluxo_de_caixa.parcelas_total }}" data-uuid-row="{{ fluxo_de_caixa.uuid_correlacao }}" scope="row">
                                 <td class="checkbox-row"><label class="checkbox-container"><input id="checkbox-personalizado-{{ fluxo_de_caixa.id }}" class="checkbox-personalizado" type="checkbox" data-id="{{ fluxo_de_caixa.id }}" data-uuid-row="{{ fluxo_de_caixa.uuid_correlacao }}"><span class="checkmark"></span></label></td>
                                 <td class="vencimento-row">{{ fluxo_de_caixa.vencimento|date:"d/m/Y" }}</td>
                                 <td class="descricao-row">{{ fluxo_de_caixa.descricao }}</td>

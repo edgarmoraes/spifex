@@ -402,6 +402,7 @@ document.getElementById('salvar-liquidacao').addEventListener('click', async fun
       observacao: campoObservacao ? campoObservacao.value : '',
       valor: campoValorTotal.value,
       conta_contabil: row.getAttribute('data-conta-contabil'),
+      uuid_conta_contabil: row.getAttribute('data-uuid-conta-contabil'),
       parcela_atual: row.getAttribute('parcela-atual'),
       parcelas_total: row.getAttribute('parcelas-total'),
       natureza: row.querySelector('.debito-row').textContent ? 'Débito' : 'Crédito',
@@ -571,35 +572,35 @@ document.addEventListener('DOMContentLoaded', function () {
     
     checkboxes.forEach(function (checkbox) {
       checkbox.addEventListener('change', function () {
-            const algumaCheckboxMarcada = Array.from(checkboxes).some(checkbox => checkbox.checked);
+        const algumaCheckboxMarcada = Array.from(checkboxes).some(checkbox => checkbox.checked);
 
-            if (algumaCheckboxMarcada) {
-                // Pelo menos uma checkbox marcada, exibir os botões e adicionar a margem
-                botoesAcoes.style.display = 'flex';
-                botoesAcoes.classList.add('mostrar');
-                tabelaLancamentos.style.marginBottom = '6.5rem';
-              } else {
-                // Nenhuma checkbox marcada, ocultar os botões e remover a margem
-                botoesAcoes.classList.remove('mostrar');
-                tabelaLancamentos.style.marginBottom = '0';
-              }
-            });
-          });
-          
-          cancelarButton.addEventListener('click', function () {
-            checkboxes.forEach(function (checkbox) {
-            checkbox.checked = false;
-          });
-          
-          // Ocultar os botões e remover a margem
-          botoesAcoes.classList.remove('mostrar');
-          tabelaLancamentos.style.marginBottom = '0';
-        });
-
-          apagarButton.addEventListener('click', function () {
+        if (algumaCheckboxMarcada) {
+            // Pelo menos uma checkbox marcada, exibir os botões e adicionar a margem
+            botoesAcoes.style.display = 'flex';
+            botoesAcoes.classList.add('mostrar');
+            tabelaLancamentos.style.marginBottom = '6.5rem';
+          } else {
+            // Nenhuma checkbox marcada, ocultar os botões e remover a margem
             botoesAcoes.classList.remove('mostrar');
             tabelaLancamentos.style.marginBottom = '0';
-        });
+          }
+      });
+    });
+      
+    cancelarButton.addEventListener('click', function () {
+      checkboxes.forEach(function (checkbox) {
+      checkbox.checked = false;
+    });
+    
+      // Ocultar os botões e remover a margem
+      botoesAcoes.classList.remove('mostrar');
+      tabelaLancamentos.style.marginBottom = '0';
+    });
+
+    apagarButton.addEventListener('click', function () {
+      botoesAcoes.classList.remove('mostrar');
+      tabelaLancamentos.style.marginBottom = '0';
+  });
 });
       
       
@@ -682,6 +683,22 @@ document.addEventListener('DOMContentLoaded', () => {
     handleModal(openBtn, modal, form, config);
   });
 });
+
+document.querySelectorAll('.conta-checkbox').forEach(checkbox => {
+  checkbox.addEventListener('change', function() {
+    if (this.checked) {
+      // Determinar se é um recebimento ou pagamento
+      const isRecebimento = this.name === "contas_recebimentos";
+      const uuidFieldId = isRecebimento ? "conta_contabil_uuid_recebimentos" : "conta_contabil_uuid_pagamentos";
+      const nomeFieldId = isRecebimento ? "conta_contabil_nome_recebimentos" : "conta_contabil_nome_pagamentos";
+      
+      // Atualizar campos ocultos
+      document.getElementById(uuidFieldId).value = this.dataset.uuidAccount;
+      document.getElementById(nomeFieldId).value = this.dataset.account;
+    }
+  });
+});
+
 
 // Evento para editar lançamentos ao clicar duas vezes nas células da tabela
 // Variáveis Globais
@@ -777,42 +794,42 @@ function onModalClose(tipo) {
 
 // Funções Auxiliares de Modais
 function preencherDadosModal(row, tipo) {
-    const parcelasTotalOriginais = row.getAttribute('parcelas-total');
-    document.getElementById(`parcelas-total-originais-${tipo}`).value = parcelasTotalOriginais;
+  const parcelasTotalOriginais = row.getAttribute('parcelas-total');
+  document.getElementById(`parcelas-total-originais-${tipo}`).value = parcelasTotalOriginais;
 
-    const vencimento = row.querySelector('.vencimento-row').textContent.trim();
-    document.getElementById(`data-${tipo}`).value = formatarDataParaInput(vencimento);
+  const vencimento = row.querySelector('.vencimento-row').textContent.trim();
+  document.getElementById(`data-${tipo}`).value = formatarDataParaInput(vencimento);
 
-    const valor = row.querySelector(`.${tipo === 'recebimentos' ? 'credito' : 'debito'}-row`).textContent.trim();
-    document.getElementById(`valor-${tipo}`).value = "R$ "+valor;
+  const valor = row.querySelector(`.${tipo === 'recebimentos' ? 'credito' : 'debito'}-row`).textContent.trim();
+  document.getElementById(`valor-${tipo}`).value = "R$ "+valor;
 
-    document.getElementById(`descricao-${tipo}`).value = row.querySelector('.descricao-row').textContent.trim();
-    document.getElementById(`observacao-${tipo}`).value = row.querySelector('.obs-row').childNodes[0].textContent.trim();
+  document.getElementById(`descricao-${tipo}`).value = row.querySelector('.descricao-row').textContent.trim();
+  document.getElementById(`observacao-${tipo}`).value = row.querySelector('.obs-row').childNodes[0].textContent.trim();
 
-    const tagsString = extrairTags(row);
-    adicionarTagsAoContainer(tagsString, tipo);
+  const tagsString = extrairTags(row);
+  adicionarTagsAoContainer(tagsString, tipo);
 
-    document.getElementById(`conta-contabil-${tipo}`).value = row.dataset.contaContabil;
+  document.getElementById(`conta-contabil-${tipo}`).value = row.dataset.contaContabil;
 
-    const lancamentoId = row.querySelector('.checkbox-personalizado').getAttribute('data-id');
-    document.querySelector(`[name="lancamento_id_${tipo}"]`).value = lancamentoId;
+  const lancamentoId = row.querySelector('.checkbox-personalizado').getAttribute('data-id');
+  document.querySelector(`[name="lancamento_id_${tipo}"]`).value = lancamentoId;
 
-    const uuid = row.querySelector('.checkbox-personalizado').getAttribute('data-uuid-row');
-    document.querySelector(`[name="uuid_${tipo}"]`).value = uuid;
+  const uuid = row.querySelector('.checkbox-personalizado').getAttribute('data-uuid-row');
+  document.querySelector(`[name="uuid_${tipo}"]`).value = uuid;
 
-      // Bloqueia a edição do campo 'valor' caso o 'data-uuid-row' seja diferente de 'none'
-    if (uuid !== 'None') {
-      var element = document.getElementById(`valor-${tipo}`);
-      element.readOnly = true;
-      element.style.backgroundColor = '#B5B5B5';
-      element.style.color = '#FFFFFF';
-    } else {
-        document.getElementById(`valor-${tipo}`).readOnly = false;
-        document.getElementById(`valor-${tipo}`).style.backgroundColor = '#F4F2F2';
-        document.getElementById(`valor-${tipo}`).style.color = '#202020';
-    }
+  // Bloqueia a edição do campo 'valor' caso o 'data-uuid-row' seja diferente de 'none'
+  if (uuid !== 'None') {
+    var element = document.getElementById(`valor-${tipo}`);
+    element.readOnly = true;
+    element.style.backgroundColor = '#B5B5B5';
+    element.style.color = '#FFFFFF';
+  } else {
+      document.getElementById(`valor-${tipo}`).readOnly = false;
+      document.getElementById(`valor-${tipo}`).style.backgroundColor = '#F4F2F2';
+      document.getElementById(`valor-${tipo}`).style.color = '#202020';
+  }
 
-    simularEnter(`tagInput-${tipo}`);
+  simularEnter(`tagInput-${tipo}`);
 }
 
 function adicionarTagsAoContainer(tagsString, tipo) {
@@ -835,22 +852,22 @@ function adicionarTagsAoContainer(tagsString, tipo) {
 }
 
 function limparCamposModal(tipo) {
-    const inputs = document.querySelectorAll(`.modal-form-${tipo} input`);
-    inputs.forEach(input => {
-        if (input.type !== 'submit' && input.name !== 'csrfmiddlewaretoken') {
-            input.value = '';
-        }
-    });
+  const inputs = document.querySelectorAll(`.modal-form-${tipo} input`);
+  inputs.forEach(input => {
+      if (input.type !== 'submit' && input.name !== 'csrfmiddlewaretoken') {
+          input.value = '';
+      }
+  });
 }
 
 function redefinirCampoParcelas(tipo) {
-    var select = document.getElementById(`recorrencia-${tipo}`);
-    var input = document.getElementById(`parcelas-${tipo}`);
-    var section = document.getElementById(`parcelas-section-${tipo}`);
+  var select = document.getElementById(`recorrencia-${tipo}`);
+  var input = document.getElementById(`parcelas-${tipo}`);
+  var section = document.getElementById(`parcelas-section-${tipo}`);
 
-    section.style.display = select.value === 'sim' ? 'block' : 'none';
-    input.value = select.value === 'sim' ? '' : '1';
-    input.disabled = false;
+  section.style.display = select.value === 'sim' ? 'block' : 'none';
+  input.value = select.value === 'sim' ? '' : '1';
+  input.disabled = false;
 }
 
 // Função para mostrar campo de recorrência
@@ -967,87 +984,84 @@ function moverParaProximoCampo(campoAtual) {
 
 // Tags
 function initializeTagInputs(inputId, containerId, hiddenInputId) {
-    document.getElementById(inputId).addEventListener('keydown', function(event) {
-      if (event.key === 'Enter' || event.key === ',') {
-        event.preventDefault();
-        addTag(this.value.trim(), containerId, hiddenInputId);
-        this.value = ''; // Limpar o campo de entrada após adicionar uma tag
-      }
+  document.getElementById(inputId).addEventListener('keydown', function(event) {
+    if (event.key === 'Enter' || event.key === ',') {
+      event.preventDefault();
+      addTag(this.value.trim(), containerId, hiddenInputId);
+      this.value = ''; // Limpar o campo de entrada após adicionar uma tag
+    }
+  });
+}
+
+function addTag(tag, containerId, hiddenInputId) {
+  if (tag !== '') {
+    const tagContainer = document.getElementById(containerId);
+    const tagElement = document.createElement('div');
+    const tagText = document.createElement('span');
+    const tagInput = document.createElement('input');
+
+    tagElement.classList.add('tag');
+    tagText.textContent = tag;
+    tagElement.appendChild(tagText);
+
+    tagInput.value = tag;
+    tagInput.addEventListener('blur', function() {
+      saveTagEdit(tagInput, tagText);
+      updateHiddenInput(containerId, hiddenInputId);
     });
-  }
 
-  function addTag(tag, containerId, hiddenInputId) {
-    if (tag !== '') {
-      const tagContainer = document.getElementById(containerId);
-      const tagElement = document.createElement('div');
-      const tagText = document.createElement('span');
-      const tagInput = document.createElement('input');
-
-      tagElement.classList.add('tag');
-      tagText.textContent = tag;
-      tagElement.appendChild(tagText);
-
-      tagInput.value = tag;
-      tagInput.addEventListener('blur', function() {
+    tagInput.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
         saveTagEdit(tagInput, tagText);
         updateHiddenInput(containerId, hiddenInputId);
-      });
-
-      tagInput.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-          saveTagEdit(tagInput, tagText);
-          updateHiddenInput(containerId, hiddenInputId);
-        }
-      });
-      
-      tagElement.addEventListener('click', function() {
-        let singleClick = true;
-        
-        setTimeout(function() {
-            if (singleClick) {
-                tagInput.style.display = 'inline';
-                tagText.style.display = 'none';
-                tagInput.focus();
-            }
-        }, 500); // Tempo de intervalo para contar o click único
-    
-        tagElement.addEventListener('dblclick', function() {
-          const isBeingEdited = tagInput.style.display === 'inline';
-      
-          setTimeout(() => {
-              if (!isBeingEdited) {
-                  this.remove();
-                  updateHiddenInput(containerId, hiddenInputId);
-              }
-          }, 250); // Ajuste o tempo conforme necessário
-      });
+      }
     });
-
-      tagElement.appendChild(tagInput);
-      tagContainer.appendChild(tagElement);
-      updateHiddenInput(containerId, hiddenInputId);
-    }
-  }
-
-  function saveTagEdit(tagInput, tagText) {
-    tagText.textContent = tagInput.value;
-    tagInput.style.display = 'none';
-    tagText.style.display = 'inline';
-  }
-
-  function updateHiddenInput(containerId, hiddenInputId) {
-    const tagsHiddenInput = document.getElementById(hiddenInputId);
-    const tagElements = document.querySelectorAll(`#${containerId} .tag span`);
-    const tagsArray = Array.from(tagElements).map(tag => tag.textContent);
-    tagsHiddenInput.value = tagsArray.join(',');
-  }
-
-  // Initialize for recebimentos
-  initializeTagInputs('tagInput-recebimentos', 'tag-container-recebimentos', 'tagsHiddenInput-recebimentos');
+    
+    tagElement.addEventListener('click', function() {
+      let singleClick = true;
+      
+      setTimeout(function() {
+          if (singleClick) {
+              tagInput.style.display = 'inline';
+              tagText.style.display = 'none';
+              tagInput.focus();
+          }
+      }, 500); // Tempo de intervalo para contar o click único
   
-  // Initialize for pagamentos
-  initializeTagInputs('tagInput-pagamentos', 'tag-container-pagamentos', 'tagsHiddenInput-pagamentos');
+      tagElement.addEventListener('dblclick', function() {
+        const isBeingEdited = tagInput.style.display === 'inline';
+    
+        setTimeout(() => {
+            if (!isBeingEdited) {
+                this.remove();
+                updateHiddenInput(containerId, hiddenInputId);
+            }
+        }, 250); // Ajuste o tempo conforme necessário
+    });
+  });
+
+    tagElement.appendChild(tagInput);
+    tagContainer.appendChild(tagElement);
+    updateHiddenInput(containerId, hiddenInputId);
+  }
+}
+
+function saveTagEdit(tagInput, tagText) {
+  tagText.textContent = tagInput.value;
+  tagInput.style.display = 'none';
+  tagText.style.display = 'inline';
+}
+
+function updateHiddenInput(containerId, hiddenInputId) {
+  const tagsHiddenInput = document.getElementById(hiddenInputId);
+  const tagElements = document.querySelectorAll(`#${containerId} .tag span`);
+  const tagsArray = Array.from(tagElements).map(tag => tag.textContent);
+  tagsHiddenInput.value = tagsArray.join(',');
+}
+
+initializeTagInputs('tagInput-recebimentos', 'tag-container-recebimentos', 'tagsHiddenInput-recebimentos');
+initializeTagInputs('tagInput-pagamentos', 'tag-container-pagamentos', 'tagsHiddenInput-pagamentos');
 
 
 // Soma de valores no campo de liquidar
@@ -1154,7 +1168,9 @@ function encontrarEMarcarMesAtualOuProximo() {
   }
 }
 
-encontrarEMarcarMesAtualOuProximo();
+document.addEventListener('DOMContentLoaded', function() {
+  encontrarEMarcarMesAtualOuProximo();
+});
 
 // Adiciona listeners para checkboxes
 function addListenerAndUpdate(selector, updateFunction, filterFunction = null, isExclusive = false) {

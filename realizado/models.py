@@ -19,6 +19,7 @@ class Tabela_realizado(models.Model):
     banco_id_liquidacao = models.IntegerField(null=True, blank=True)
     uuid_correlacao = models.UUIDField(null=True, blank=True)
     uuid_correlacao_parcelas = models.UUIDField(null=True, blank=True)
+    uuid_conta_contabil = models.UUIDField(null=True, blank=True)
 
     _skip_update_saldo = False
 
