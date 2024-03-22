@@ -801,35 +801,52 @@ function preencherDadosModal(row, tipo) {
   document.getElementById(`data-${tipo}`).value = formatarDataParaInput(vencimento);
 
   const valor = row.querySelector(`.${tipo === 'recebimentos' ? 'credito' : 'debito'}-row`).textContent.trim();
-  document.getElementById(`valor-${tipo}`).value = "R$ "+valor;
+  document.getElementById(`valor-${tipo}`).value = "R$ " + valor;
 
   document.getElementById(`descricao-${tipo}`).value = row.querySelector('.descricao-row').textContent.trim();
   document.getElementById(`observacao-${tipo}`).value = row.querySelector('.obs-row').childNodes[0].textContent.trim();
 
+  // Supõe-se que essas funções de extrair tags e adicionar ao container já existam
   const tagsString = extrairTags(row);
   adicionarTagsAoContainer(tagsString, tipo);
 
-  document.getElementById(`conta-contabil-${tipo}`).value = row.dataset.contaContabil;
+  // Obtém o UUID da conta contábil armazenado na linha e atualiza o campo oculto correspondente
+  const contaContabilUuid = row.getAttribute('data-uuid-conta-contabil');
+  document.getElementById(`conta_contabil_uuid_${tipo}`).value = contaContabilUuid;
+
+  // Chama a função para selecionar a checkbox da conta contábil baseada no UUID
+  selecionarContaContabilDropdown(tipo, contaContabilUuid);
 
   const lancamentoId = row.querySelector('.checkbox-personalizado').getAttribute('data-id');
   document.querySelector(`[name="lancamento_id_${tipo}"]`).value = lancamentoId;
 
-  const uuid = row.querySelector('.checkbox-personalizado').getAttribute('data-uuid-row');
+  const uuid = row.getAttribute('data-uuid-row');
   document.querySelector(`[name="uuid_${tipo}"]`).value = uuid;
 
-  // Bloqueia a edição do campo 'valor' caso o 'data-uuid-row' seja diferente de 'none'
+  // Configura a acessibilidade do campo valor conforme o UUID
+  const valorElement = document.getElementById(`valor-${tipo}`);
   if (uuid !== 'None') {
-    var element = document.getElementById(`valor-${tipo}`);
-    element.readOnly = true;
-    element.style.backgroundColor = '#B5B5B5';
-    element.style.color = '#FFFFFF';
+    valorElement.readOnly = true;
+    valorElement.style.backgroundColor = '#B5B5B5';
+    valorElement.style.color = '#FFFFFF';
   } else {
-      document.getElementById(`valor-${tipo}`).readOnly = false;
-      document.getElementById(`valor-${tipo}`).style.backgroundColor = '#F4F2F2';
-      document.getElementById(`valor-${tipo}`).style.color = '#202020';
+    valorElement.readOnly = false;
+    valorElement.style.backgroundColor = '#F4F2F2';
+    valorElement.style.color = '#202020';
   }
+}
 
-  simularEnter(`tagInput-${tipo}`);
+function selecionarContaContabilDropdown(tipo, contaContabilUuid) {
+  const checkboxesContaContabil = document.querySelectorAll(`#dropdown-content-contas-${tipo} .conta-checkbox`);
+
+  checkboxesContaContabil.forEach(checkbox => {
+    if (checkbox.dataset.uuidAccount === contaContabilUuid) {
+      checkbox.checked = true;
+      document.getElementById(`dropdown-button-contas-${tipo}`).textContent = checkbox.dataset.account;
+    } else {
+      checkbox.checked = false;
+    }
+  });
 }
 
 function adicionarTagsAoContainer(tagsString, tipo) {

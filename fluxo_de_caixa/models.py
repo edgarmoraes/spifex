@@ -33,6 +33,7 @@ class TabelaTemporaria(models.Model):
     observacao = models.CharField(max_length = 100)
     valor = models.DecimalField(max_digits=13, decimal_places=2)
     conta_contabil = models.CharField(max_length = 100)
+    uuid_conta_contabil = models.UUIDField(null=True, blank=True)
     parcela_atual = models.IntegerField()
     parcelas_total = models.IntegerField()
     tags = models.CharField(max_length = 100)

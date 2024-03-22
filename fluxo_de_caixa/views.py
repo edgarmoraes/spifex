@@ -139,14 +139,24 @@ def extrair_dados_formulario(request):
     }
 
 def atualizar_fluxo_existente(dados):
+    # Busca o fluxo de caixa pelo ID
     fluxo_de_caixa = get_object_or_404(Tabela_fluxo, id=dados['lancamento_id'])
-    parcelas_total_originais = fluxo_de_caixa.parcelas_total  # Obter o valor original de parcelas_total
+    
+    # Atualiza campos comuns diretamente
+    fluxo_de_caixa.descricao = dados['descricao']
+    fluxo_de_caixa.observacao = dados['observacao']
+    fluxo_de_caixa.valor = dados['valor']
+    fluxo_de_caixa.natureza = dados['natureza']
+    # Não altera parcelas_total se já é parte de uma série de parcelas
+    if fluxo_de_caixa.parcelas_total <= 1 or 'parcelas_total' not in dados:
+        fluxo_de_caixa.parcelas_total = dados.get('parcelas_total', fluxo_de_caixa.parcelas_total)
+    fluxo_de_caixa.tags = dados['tags']
 
-    for campo, valor in dados.items():
-        # Não atualizar parcelas_total se for um lançamento de múltiplas parcelas
-        if campo == 'parcelas_total' and parcelas_total_originais > 1:
-            continue
-        setattr(fluxo_de_caixa, campo, valor)
+    # Atualiza a conta contábil e seu UUID
+    fluxo_de_caixa.conta_contabil = dados['conta_contabil_nome']
+    fluxo_de_caixa.uuid_conta_contabil = dados['conta_contabil_uuid']
+
+    # Salva as alterações no banco de dados
     fluxo_de_caixa.save()
 
 def criar_novos_fluxos(dados, iniciar_desde_o_atual=False):
@@ -220,6 +230,7 @@ def criar_registro_temporario(objeto):
         observacao=objeto.observacao,
         valor=objeto.valor,
         conta_contabil=objeto.conta_contabil,
+        uuid_conta_contabil=objeto.uuid_conta_contabil,
         parcela_atual=objeto.parcela_atual,
         parcelas_total=objeto.parcelas_total,
         tags=objeto.tags,
