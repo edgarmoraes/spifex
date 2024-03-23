@@ -1334,17 +1334,16 @@ function updateButtonTextContas() {
 // Filtros
 function filtrarTabela() {
   // Simplificação na obtenção dos intervalos selecionados e naturezas selecionadas
+  const uuidsContaContabilSelecionados = Array.from(document.querySelectorAll('#dropdown-content-contas .conta-checkbox:checked')).map(checkbox => checkbox.value);
   const intervalosMesesSelecionados = Array.from(document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked')).map(checkbox => ({
     inicio: new Date(checkbox.getAttribute('data-inicio-mes')),
     fim: new Date(checkbox.getAttribute('data-fim-mes'))
   }));
   const naturezasSelecionadas = Array.from(document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked'), cb => cb.value);
-  const uuidsContaContabilSelecionados = Array.from(document.querySelectorAll('#dropdown-content-contas .conta-checkbox:checked')).map(checkbox => checkbox.value);
 
   // Verificações de seleção total ou nenhuma seleção simplificadas
   const selecionarTodosMeses = intervalosMesesSelecionados.length === 0;
   const selecionarTodaNatureza = naturezasSelecionadas.length === 0;
-  const selecionarTodasContasContabeis = uuidsContaContabilSelecionados.length === 0;
 
   // Obtenção dos filtros de texto e datas
   const filtroDescricao = document.getElementById("caixa-pesquisa").value.toUpperCase();
@@ -1354,6 +1353,7 @@ function filtrarTabela() {
   let mesesAnosVisiveis = new Set();
 
   document.querySelectorAll("#tabela-lancamentos .row-lancamentos").forEach(linha => {
+    const uuidContaContabilLinha = linha.getAttribute('data-uuid-conta-contabil');
     const descricao = linha.querySelector(".descricao-row").textContent.toUpperCase();
     const observacaoElemento = linha.querySelector(".obs-row").cloneNode(true);
     const tagsElemento = observacaoElemento.querySelector(".d-block");
@@ -1362,7 +1362,6 @@ function filtrarTabela() {
     const tags = tagsElemento ? tagsElemento.textContent.toUpperCase() : "";
     const dataVencimento = new Date(linha.querySelector(".vencimento-row").textContent.split('/').reverse().join('-'));
     const naturezaLancamento = linha.getAttribute('data-natureza');
-    const uuidContaContabilLinha = linha.getAttribute('data-uuid-conta-contabil');
 
     // Centraliza a lógica de correspondência
     const descricaoObservacaoMatch = filtroDescricao === "" || descricao.includes(filtroDescricao) || observacao.includes(filtroDescricao);
