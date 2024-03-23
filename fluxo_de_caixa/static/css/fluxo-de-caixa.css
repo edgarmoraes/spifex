@@ -326,26 +326,28 @@ section.modal-flex {
 
 /* Estilo das Caixas de Seleções e Datas */
 .modal-flex select,
-.modal-flex input {
+.modal-flex input,
+.modal-flex button {
   background-color: var(--color2);
   border: none;
   color: var(--preto);
   padding: 0.7rem 1rem;
   border-radius: 5px;
+  outline: none;
   transition: var(--transition-effect1) .5s;
+}
+
+.dropdown-button {
+  height: 100%;
 }
 
 .modal-flex select:hover,
 .modal-flex select:focus,
 .modal-flex input:hover,
-.modal-flex input:focus {
+.modal-flex input:focus,
+.modal-flex button:hover,
+.modal-flex button:focus {
   box-shadow: var(--box-shadow1);
-}
-
-.modal-flex select,
-input:focus {
-  outline: none;
-  background-color: var(--color1);
 }
 
 /* Botões dos Modais */
@@ -354,7 +356,7 @@ input:focus {
   flex-direction: row;
   justify-content: flex-end;
   align-items: flex-end;
-  margin: 10px 5px;
+  margin: 10px 5px 0px 5px;
   gap: 1.5rem;
 }
 

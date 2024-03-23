@@ -263,7 +263,7 @@
             
                 <section class="modal-flex" id="recorrencia-section">
                     <label for="recorrencia-recebimentos" class="recorrencia-label">Recorrência</label>
-                    <select class="modal-recorrencia" id="recorrencia-recebimentos" name="recorrencia" required onchange="mostrarParcelasRecebimentos()">
+                    <select class="modal-recorrencia" id="recorrencia-recebimentos" name="recorrencia" required onchange="mostrarParcelas(null, 'recebimentos')">
                         <option value="nao">Não</option>
                         <option value="sim">Sim</option>
                     </select><br>
@@ -341,7 +341,7 @@
             
                 <section class="modal-flex">
                     <label for="recorrencia-pagamentos" class="recorrencia-label">Recorrência</label>
-                    <select class="modal-recorrencia" id="recorrencia-pagamentos" name="recorrencia" required onchange="mostrarParcelasPagamentos()">
+                    <select class="modal-recorrencia" id="recorrencia-pagamentos" name="recorrencia" required onchange="mostrarParcelas(null, 'pagamentos')">
                         <option value="nao">Não</option>
                         <option value="sim">Sim</option>
                     </select><br>

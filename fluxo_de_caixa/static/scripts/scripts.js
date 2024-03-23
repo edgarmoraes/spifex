@@ -699,39 +699,34 @@ document.querySelectorAll('.conta-checkbox').forEach(checkbox => {
 
 
 // Evento para editar lançamentos ao clicar duas vezes nas células da tabela
-// Variáveis Globais
 let estaEditando = false;
 
 // Event Listeners Principais
 document.addEventListener('DOMContentLoaded', function() {
-    configurarEventosModais();
-    configurarEventosTabela();
+  configurarEventos();
 });
 
-function configurarEventosModais() {
-    // Fechar modais ao pressionar a tecla Escape
-    document.addEventListener('keydown', event => {
-        if (event.key === 'Escape') {
-            fecharModais();
-        }
-    });
-
-    // Configuração do fechamento do modal
-    document.getElementById('modal-recebimentos').onclose = function() {
-        onModalClose('recebimentos');
-    };
-    document.getElementById('modal-pagamentos').onclose = function() {
-        onModalClose('pagamentos');
-    };
+function configurarEventos() {
+  document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') {
+          fecharModais();
+      }
+  });
+  ['recebimentos', 'pagamentos'].forEach(tipo => {
+      document.getElementById(`modal-${tipo}`).onclose = function() {
+          onModalClose(tipo);
+      };
+  });
+  configurarEventosTabela();
 }
 
-// Evento para editar lançamentos ao clicar duas vezes nas células da tabela
 function configurarEventosTabela() {
-    document.querySelectorAll('.row-lancamentos td:not(.checkbox-row)').forEach(cell => {
-        cell.addEventListener('dblclick', function() {
-            handleCellDoubleClick(cell);
-        });
+  const cells = document.querySelectorAll('.row-lancamentos td');
+  cells.forEach(cell => {
+    cell.addEventListener('dblclick', function() {
+      handleCellDoubleClick(this);
     });
+  });
 }
 
 // Funções de Eventos de Tabela
@@ -743,46 +738,30 @@ function handleCellDoubleClick(cell) {
 // Funções de Manipulação de Modais
 function abrirModalEdicao(row) {
   const natureza = row.getAttribute('data-natureza');
-
-  if (natureza === 'Crédito') {
-      abrirModalRecebimentosEdicao(row);
-  } else if (natureza === 'Débito') {
-      abrirModalPagamentosEdicao(row);
-  }
+  const tipo = natureza === 'Crédito' ? 'recebimentos' : 'pagamentos';
+  abrirModalEdicaoGeral(row, tipo);
 }
 
-function abrirModalRecebimentosEdicao(row) {
+function abrirModalEdicaoGeral(row, tipo) {
   estaEditando = true;
-  preencherDadosModal(row, 'recebimentos');
-  mostrarParcelasRecebimentos(row);
-  document.getElementById('modal-recebimentos').showModal();
-  document.body.style.overflow = 'hidden';
-  document.body.style.marginRight = '17px';
-  document.querySelector('.nav-bar').style.marginRight = '17px';
-  
-}
-  
-function abrirModalPagamentosEdicao(row) {
-  estaEditando = true;
-  preencherDadosModal(row, 'pagamentos');
-  mostrarParcelasPagamentos(row);
-  document.getElementById('modal-pagamentos').showModal();
+  preencherDadosModal(row, tipo);
+  mostrarParcelas(row, tipo);
+  const modal = document.getElementById(`modal-${tipo}`);
+  modal.showModal();
   document.body.style.overflow = 'hidden';
   document.body.style.marginRight = '17px';
   document.querySelector('.nav-bar').style.marginRight = '17px';
 }
-  
+
 function fecharModais() {
-  if (document.getElementById('modal-recebimentos').open) {
-      var form = document.querySelector(".modal-form-recebimentos");
-      form.reset();
-      document.getElementById('modal-recebimentos').close();
-  }
-  if (document.getElementById('modal-pagamentos').open) {
-      var form = document.querySelector(".modal-form-pagamentos");
-      form.reset();
-      document.getElementById('modal-pagamentos').close();
-  }
+  ['recebimentos', 'pagamentos'].forEach(tipo => {
+      const modal = document.getElementById(`modal-${tipo}`);
+      if (modal.open) {
+          const form = document.querySelector(`.modal-form-${tipo}`);
+          form.reset();
+          modal.close();
+      }
+  });
 }
   
 function onModalClose(tipo) {
@@ -815,7 +794,7 @@ function configurarCamposAtivos(tipo, ativar) {
 
   if (ativar) {
     campos.valor.readOnly = false;
-    configurarElemento(campos.valor, { backgroundColor: '#F4F2F2', color: '#202020', cursor: '' });
+    configurarElemento(campos.valor, { backgroundColor: '', color: '', cursor: '' });
     campos.recorrencia.disabled = false;
     configurarElemento(campos.recorrencia, { backgroundColor: '', color: '', cursor: '' });
     campos.dropdownButton.disabled = false;
@@ -877,6 +856,24 @@ function selecionarContaContabilDropdown(tipo, contaContabilUuid) {
   });
 }
 
+// Função para mostrar campo de recorrência
+function mostrarParcelas(row, tipo) {
+  const select = document.getElementById(`recorrencia-${tipo}`);
+  const section = document.getElementById(`parcelas-section-${tipo}`);
+  const input = document.getElementById(`parcelas-${tipo}`);
+
+  section.style.display = select.value === 'sim' ? 'block' : 'none';
+  if (estaEditando) {
+      const parcelasTotal = row.getAttribute('parcelas-total') ? parseInt(row.getAttribute('parcelas-total')) : 1;
+      const parcelaAtual = row.getAttribute('parcela-atual') ? parseInt(row.getAttribute('parcela-atual')) : 1;
+      input.value = parcelaAtual;
+      input.disabled = parcelasTotal > 1;
+  } else {
+      input.value = select.value === 'sim' ? '' : '1';
+      input.disabled = false;
+  }
+}
+
 function adicionarTagsAoContainer(tagsString, tipo) {
   const containerId = `tag-container-${tipo}`;
   const hiddenInputId = `tagsHiddenInput-${tipo}`;
@@ -901,44 +898,6 @@ function redefinirCampoParcelas(tipo) {
   input.value = select.value === 'sim' ? '' : '1';
   input.disabled = false;
 }
-
-// Função para mostrar campo de recorrência
-function mostrarParcelasRecebimentos(row) {
-  var select = document.getElementById('recorrencia-recebimentos');
-  var section = document.getElementById('parcelas-section-recebimentos');
-  var input = document.getElementById('parcelas-recebimentos');
-
-  section.style.display = select.value === 'sim' ? 'block' : 'none';
-  if (estaEditando) {
-      var parcelasTotal = row.getAttribute('parcelas-total') ? parseInt(row.getAttribute('parcelas-total')) : 1;
-      var parcelaAtual = row.getAttribute('parcela-atual') ? parseInt(row.getAttribute('parcela-atual')) : 1;
-
-      input.value = parcelaAtual;
-      input.disabled = parcelasTotal > 1;
-  } else {
-      input.value = select.value === 'sim' ? '' : '1';
-      input.disabled = false;
-  }
-}
-
-function mostrarParcelasPagamentos(row) {
-  var select = document.getElementById('recorrencia-pagamentos');
-  var section = document.getElementById('parcelas-section-pagamentos');
-  var input = document.getElementById('parcelas-pagamentos');
-
-  section.style.display = select.value === 'sim' ? 'block' : 'none';
-  if (estaEditando) {
-      var parcelasTotal = row.getAttribute('parcelas-total') ? parseInt(row.getAttribute('parcelas-total')) : 1;
-      var parcelaAtual = row.getAttribute('parcela-atual') ? parseInt(row.getAttribute('parcela-atual')) : 1;
-
-      input.value = parcelaAtual;
-      input.disabled = parcelasTotal > 1;
-  } else {
-      input.value = select.value === 'sim' ? '' : '1';
-      input.disabled = false;
-  }
-}
-
 
 // Funções de Formatação e Utilidades
 function desformatarNumero(valorFormatado) {
@@ -1235,6 +1194,7 @@ addListenerAndUpdate('#dropdown-content-bancos .banco-checkbox', updateButtonTex
 addListenerAndUpdate('#dropdown-content-natureza .natureza-checkbox', updateButtonTextNatureza, filtrarTabela);
 addListenerAndUpdate('#dropdown-content-contas-recebimentos .conta-checkbox', updateButtonTextContasRecebimentos, null, true);
 addListenerAndUpdate('#dropdown-content-contas-pagamentos .conta-checkbox', updateButtonTextContasPagamentos, null, true);
+addListenerAndUpdate('.conta-checkbox', updateButtonTextContas, filtrarTabela);
 
 // Adiciona o listener para click fora do dropdown
 document.addEventListener('click', function(event) {
@@ -1367,6 +1327,10 @@ function updateButtonTextContasPagamentos() {
   document.getElementById('dropdown-button-contas-pagamentos').textContent = selectedText;
 }
 
+function updateButtonTextContas() {
+  updateButtonText('dropdown-button-contas', '#dropdown-content-contas .conta-checkbox', 'Selecione');
+}
+
 // Filtros
 function filtrarTabela() {
   // Simplificação na obtenção dos intervalos selecionados e naturezas selecionadas
@@ -1375,10 +1339,12 @@ function filtrarTabela() {
     fim: new Date(checkbox.getAttribute('data-fim-mes'))
   }));
   const naturezasSelecionadas = Array.from(document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked'), cb => cb.value);
+  const uuidsContaContabilSelecionados = Array.from(document.querySelectorAll('#dropdown-content-contas .conta-checkbox:checked')).map(checkbox => checkbox.value);
 
   // Verificações de seleção total ou nenhuma seleção simplificadas
   const selecionarTodosMeses = intervalosMesesSelecionados.length === 0;
   const selecionarTodaNatureza = naturezasSelecionadas.length === 0;
+  const selecionarTodasContasContabeis = uuidsContaContabilSelecionados.length === 0;
 
   // Obtenção dos filtros de texto e datas
   const filtroDescricao = document.getElementById("caixa-pesquisa").value.toUpperCase();
@@ -1396,6 +1362,7 @@ function filtrarTabela() {
     const tags = tagsElemento ? tagsElemento.textContent.toUpperCase() : "";
     const dataVencimento = new Date(linha.querySelector(".vencimento-row").textContent.split('/').reverse().join('-'));
     const naturezaLancamento = linha.getAttribute('data-natureza');
+    const uuidContaContabilLinha = linha.getAttribute('data-uuid-conta-contabil');
 
     // Centraliza a lógica de correspondência
     const descricaoObservacaoMatch = filtroDescricao === "" || descricao.includes(filtroDescricao) || observacao.includes(filtroDescricao);
@@ -1403,8 +1370,9 @@ function filtrarTabela() {
     const mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => dataVencimento >= intervalo.inicio && dataVencimento <= intervalo.fim);
     const naturezaMatch = selecionarTodaNatureza || naturezasSelecionadas.includes(naturezaLancamento);
     const dataMatch = (!dataInicioObj || dataVencimento >= dataInicioObj) && (!dataFimObj || dataVencimento <= dataFimObj);
+    const contaContabilMatch = uuidsContaContabilSelecionados.length === 0 || uuidsContaContabilSelecionados.includes(uuidContaContabilLinha);
 
-    linha.style.display = descricaoObservacaoMatch && tagMatch && mesMatch && naturezaMatch && dataMatch ? "" : "none";
+    linha.style.display = descricaoObservacaoMatch && tagMatch && mesMatch && naturezaMatch && dataMatch && contaContabilMatch ? "" : "none";
 
     if (linha.style.display === "") {
       let mesAno = dataVencimento.toLocaleString('default', { month: '2-digit', year: 'numeric' });
