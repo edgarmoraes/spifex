@@ -640,10 +640,13 @@ function resetModalFields(formSelector, dropdownId = '', tagInputId = '', tagsHi
 function handleModal(openBtnSelector, modalSelector, formSelector, config = {}) {
   const openBtn = document.querySelector(openBtnSelector);
   const modal = document.querySelector(modalSelector);
+  const valorField = modal.querySelector('.modal-valor');
 
+  // Abertura do modal
   openBtn.addEventListener('click', () => {
     modal.showModal();
-    document.body.style.overflow = 'hidden';
+    document.body.classList.add('modal-open');
+    valorField.value = 'R$ '; // Define o valor do campo de valor como "R$ " ao abrir o modal
   });
   
   openBtn.addEventListener('click', () => {
@@ -654,7 +657,6 @@ function handleModal(openBtnSelector, modalSelector, formSelector, config = {}) 
   // Fechamento do modal
   const closeModalFunc = () => {
     modal.close();
-    document.body.style.overflow = '';
     document.body.classList.remove('modal-open');
     resetModalFields(formSelector, config.dropdownId, config.tagInputId, config.tagsHiddenInputId, config.tagContainerId);
   };
@@ -751,93 +753,46 @@ function abrirModalEdicao(row) {
   }
 }
 
-function abrirModalRecebimentosEdicao(row) {
-  estaEditando = true;
-  preencherDadosModal(row, 'recebimentos');
-  mostrarParcelasRecebimentos(row);
-  document.getElementById('modal-recebimentos').showModal();
-  document.body.style.overflow = 'hidden';
-  document.body.style.marginRight = '17px';
-  document.querySelector('.nav-bar').style.marginRight = '17px';
-  
-}
-  
-function abrirModalPagamentosEdicao(row) {
-  estaEditando = true;
-  preencherDadosModal(row, 'pagamentos');
-  mostrarParcelasPagamentos(row);
-  document.getElementById('modal-pagamentos').showModal();
-  document.body.style.overflow = 'hidden';
-  document.body.style.marginRight = '17px';
-  document.querySelector('.nav-bar').style.marginRight = '17px';
-}
-  
 function fecharModais() {
-  if (document.getElementById('modal-recebimentos').open) {
-      var form = document.querySelector(".modal-form-recebimentos");
-      form.reset();
-      document.getElementById('modal-recebimentos').close();
-  }
-  if (document.getElementById('modal-pagamentos').open) {
-      var form = document.querySelector(".modal-form-pagamentos");
-      form.reset();
-      document.getElementById('modal-pagamentos').close();
-  }
+    if (document.getElementById('modal-recebimentos').open) {
+        var form = document.querySelector(".modal-form-recebimentos"); // Adapte o seletor conforme necessário
+        form.reset(); // Reseta o formulário
+        document.getElementById('modal-recebimentos').close();
+    }
+    if (document.getElementById('modal-pagamentos').open) {
+        var form = document.querySelector(".modal-form-pagamentos"); // Adapte o seletor conforme necessário
+        form.reset(); // Reseta o formulário
+        document.getElementById('modal-pagamentos').close();
+    }
 }
-  
+
+function abrirModalRecebimentosEdicao(row) {
+    estaEditando = true;
+    preencherDadosModal(row, 'recebimentos');
+    mostrarParcelasRecebimentos(row);
+    document.getElementById('modal-recebimentos').showModal();
+    document.body.style.overflow = 'hidden';
+    document.body.style.marginRight = '17px';
+    document.querySelector('.nav-bar').style.marginRight = '17px';
+}
+
+function abrirModalPagamentosEdicao(row) {
+    estaEditando = true;
+    preencherDadosModal(row, 'pagamentos');
+    mostrarParcelasPagamentos(row);
+    document.getElementById('modal-pagamentos').showModal();
+    document.body.style.overflow = 'hidden';
+    document.body.style.marginRight = '17px';
+    document.querySelector('.nav-bar').style.marginRight = '17px';
+}
+
 function onModalClose(tipo) {
-  document.body.style.overflow = '';
-  document.body.style.marginRight = '';
-  document.querySelector('.nav-bar').style.marginRight = '';
-  configurarCamposAtivos(tipo, true);
-  limparCamposModal(tipo);
-  estaEditando = false;
-  redefinirCampoParcelas(tipo);
+    estaEditando = false;
+    limparCamposModal(tipo);
+    redefinirCampoParcelas(tipo);
 }
 
-function limparCamposModal(tipo) {
-  const inputs = document.querySelectorAll(`.modal-form-${tipo} input`);
-  inputs.forEach(input => {
-      if (input.type !== 'submit' && input.name !== 'csrfmiddlewaretoken') {
-          input.value = '';
-      }
-  });
-}
-
-// Função auxiliar para ativar ou desativar campos
-function configurarCamposAtivos(tipo, ativar) {
-  const campos = {
-    valor: document.getElementById(`valor-${tipo}`),
-    recorrencia: document.getElementById(`recorrencia-${tipo}`),
-    dropdownButton: document.getElementById(`dropdown-button-contas-${tipo}`),
-    checkboxes: document.querySelectorAll(`#dropdown-content-contas-${tipo} .conta-checkbox`)
-  };
-
-  if (ativar) {
-    campos.valor.readOnly = false;
-    configurarElemento(campos.valor, { backgroundColor: '#F4F2F2', color: '#202020', cursor: '' });
-    campos.recorrencia.disabled = false;
-    configurarElemento(campos.recorrencia, { backgroundColor: '', color: '', cursor: '' });
-    campos.dropdownButton.disabled = false;
-    configurarElemento(campos.dropdownButton, { backgroundColor: '', color: '', cursor: '' });
-    campos.checkboxes.forEach(checkbox => checkbox.disabled = false);
-  } else {
-    campos.valor.readOnly = true;
-    configurarElemento(campos.valor, { backgroundColor: '#B5B5B5', color: '#FFFFFF', cursor: 'default' });
-    campos.recorrencia.disabled = true;
-    configurarElemento(campos.recorrencia, { backgroundColor: '#B5B5B5', color: '#FFFFFF', cursor: 'default' });
-    campos.dropdownButton.disabled = true;
-    configurarElemento(campos.dropdownButton, { backgroundColor: '#B5B5B5', color: '#FFFFFF', cursor: 'default' });
-    campos.checkboxes.forEach(checkbox => checkbox.disabled = true);
-  }
-}
-
-function configurarElemento(elemento, propriedades) {
-  Object.keys(propriedades).forEach(prop => {
-    elemento.style[prop] = propriedades[prop];
-  });
-}
-
+// Funções Auxiliares de Modais
 function preencherDadosModal(row, tipo) {
   const parcelasTotalOriginais = row.getAttribute('parcelas-total');
   document.getElementById(`parcelas-total-originais-${tipo}`).value = parcelasTotalOriginais;
@@ -851,22 +806,67 @@ function preencherDadosModal(row, tipo) {
   document.getElementById(`descricao-${tipo}`).value = row.querySelector('.descricao-row').textContent.trim();
   document.getElementById(`observacao-${tipo}`).value = row.querySelector('.obs-row').childNodes[0].textContent.trim();
 
+  // Supõe-se que essas funções de extrair tags e adicionar ao container já existam
   const tagsString = extrairTags(row);
   adicionarTagsAoContainer(tagsString, tipo);
 
+  // Obtém o UUID da conta contábil armazenado na linha e atualiza o campo oculto correspondente
   const contaContabilUuid = row.getAttribute('data-uuid-conta-contabil');
   document.getElementById(`conta_contabil_uuid_${tipo}`).value = contaContabilUuid;
+
+  // Chama a função para selecionar a checkbox da conta contábil baseada no UUID
   selecionarContaContabilDropdown(tipo, contaContabilUuid);
 
   const lancamentoId = row.querySelector('.checkbox-personalizado').getAttribute('data-id');
   document.querySelector(`[name="lancamento_id_${tipo}"]`).value = lancamentoId;
 
   const uuid = row.getAttribute('data-uuid-row');
-  configurarCamposAtivos(tipo, uuid === 'None');
+  document.querySelector(`[name="uuid_${tipo}"]`).value = uuid;
+
+  // Configura a acessibilidade do campo valor conforme o UUID
+  const valorElement = document.getElementById(`valor-${tipo}`);
+  const recorrenciaSelect = document.getElementById(`recorrencia-${tipo}`);
+  const dropdownButton = document.getElementById(`dropdown-button-contas-${tipo}`);
+  const checkboxesContaContabil = document.querySelectorAll(`#dropdown-content-contas-${tipo} .conta-checkbox`);
+
+  if (uuid !== 'None') {
+    // Bloqueia os campos quando o UUID é definido
+    valorElement.readOnly = true;
+    valorElement.style.backgroundColor = '#B5B5B5';
+    valorElement.style.color = '#FFFFFF';
+
+    recorrenciaSelect.disabled = true;
+    recorrenciaSelect.style.backgroundColor = '#B5B5B5';
+    recorrenciaSelect.style.color = '#FFFFFF';
+
+    dropdownButton.disabled = true;
+    dropdownButton.style.backgroundColor = '#B5B5B5';
+    dropdownButton.style.color = '#FFFFFF';
+
+    checkboxesContaContabil.forEach(checkbox => checkbox.disabled = true);
+  } else {
+    // Desbloqueia os campos quando o UUID é 'None'
+    valorElement.readOnly = false;
+    valorElement.style.backgroundColor = '#F4F2F2';
+    valorElement.style.color = '#202020';
+
+    recorrenciaSelect.disabled = false;
+    recorrenciaSelect.style.backgroundColor = '';
+    recorrenciaSelect.style.color = '';
+
+    dropdownButton.disabled = false;
+    dropdownButton.style.backgroundColor = '';
+    dropdownButton.style.color = '';
+
+    checkboxesContaContabil.forEach(checkbox => checkbox.disabled = false);
+  }
+
+  // Resto do código para preenchimento do modal (código omitido para brevidade)
 }
 
 function selecionarContaContabilDropdown(tipo, contaContabilUuid) {
   const checkboxesContaContabil = document.querySelectorAll(`#dropdown-content-contas-${tipo} .conta-checkbox`);
+
   checkboxesContaContabil.forEach(checkbox => {
     if (checkbox.dataset.uuidAccount === contaContabilUuid) {
       checkbox.checked = true;
@@ -881,13 +881,26 @@ function adicionarTagsAoContainer(tagsString, tipo) {
   const containerId = `tag-container-${tipo}`;
   const hiddenInputId = `tagsHiddenInput-${tipo}`;
   const tagContainer = document.getElementById(containerId);
+
+  // Limpa as tags existentes no container para evitar duplicação
   while (tagContainer.firstChild) {
       tagContainer.removeChild(tagContainer.firstChild);
   }
+
+  // Divide a string de tags e adiciona cada tag individualmente
   const tags = tagsString.split(',');
   tags.forEach(tag => {
       if (tag.trim()) {
           addTag(tag.trim(), containerId, hiddenInputId);
+      }
+  });
+}
+
+function limparCamposModal(tipo) {
+  const inputs = document.querySelectorAll(`.modal-form-${tipo} input`);
+  inputs.forEach(input => {
+      if (input.type !== 'submit' && input.name !== 'csrfmiddlewaretoken') {
+          input.value = '';
       }
   });
 }

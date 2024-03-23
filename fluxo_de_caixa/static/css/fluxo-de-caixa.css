@@ -327,7 +327,7 @@ section.modal-flex {
 /* Estilo das Caixas de Seleções e Datas */
 .modal-flex select,
 .modal-flex input {
-background-color: var(--color2);
+  background-color: var(--color2);
   border: none;
   color: var(--preto);
   padding: 0.7rem 1rem;
