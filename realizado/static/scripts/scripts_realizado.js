@@ -339,23 +339,31 @@ function atualizarLancamento(lancamentoId, dataRealizado, descricaoRealizado, ob
 // Filtro de meses
 function selecionarMesAtualEfiltrar() {
   const hoje = new Date();
-  const mesAtual = hoje.getMonth();
-  const anoAtual = hoje.getFullYear();
+  let mesAtual = hoje.getMonth(); // 0-11
+  let anoAtual = hoje.getFullYear();
   const checkboxes = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
   const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 
-  // Formatando o mês/ano atual para correspondência
-  const mesAnoAtual = `${meses[mesAtual]}/${anoAtual}`;
-
-  // Buscando e marcando o checkbox correspondente ao mês e ano atual
+  let mesAnoAtual = `${meses[mesAtual]}/${anoAtual}`;
   let checkboxEncontrado = Array.from(checkboxes).find(checkbox => checkbox.value.toLowerCase() === mesAnoAtual.toLowerCase());
+
+  // Se não encontrar o checkbox para o mês/ano atual, tenta o mês anterior
+  if (!checkboxEncontrado && mesAtual === 0) {
+    // Se estiver em janeiro, volta para dezembro do ano anterior
+    mesAnoAtual = `dez/${anoAtual - 1}`;
+    checkboxEncontrado = Array.from(checkboxes).find(checkbox => checkbox.value.toLowerCase() === mesAnoAtual.toLowerCase());
+  } else if (!checkboxEncontrado) {
+    // Volta um mês no mesmo ano
+    mesAnoAtual = `${meses[mesAtual - 1]}/${anoAtual}`;
+    checkboxEncontrado = Array.from(checkboxes).find(checkbox => checkbox.value.toLowerCase() === mesAnoAtual.toLowerCase());
+  }
 
   if (checkboxEncontrado) {
     checkboxEncontrado.checked = true;
     updateButtonTextMeses();
     filtrarTabela();
   } else {
-    console.error('Nenhum checkbox correspondente ao mês atual encontrado.');
+    console.error('Nenhum checkbox correspondente ao mês atual ou imediatamente anterior encontrado.');
   }
 }
 
