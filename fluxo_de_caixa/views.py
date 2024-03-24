@@ -2,22 +2,20 @@ import uuid
 import json
 from decimal import Decimal
 from datetime import datetime
+from itertools import groupby
 from django.db.models import Sum
 from django.utils import timezone
+from collections import OrderedDict
 from django.contrib import messages
 from django.dispatch import receiver
 from django.http import JsonResponse
 from realizado.models import Tabela_realizado
-from chart_of_accounts.models import Chart_of_accounts
 from dateutil.relativedelta import relativedelta
 from django.views.decorators.csrf import csrf_exempt
-from django.core.exceptions import ObjectDoesNotExist
+from chart_of_accounts.models import Chart_of_accounts
 from django.db.models.signals import post_save, post_delete
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Tabela_fluxo, TabelaTemporaria, Totais_mes_fluxo, Bancos
-from collections import defaultdict
-from itertools import groupby
-from collections import OrderedDict
 
 def fluxo_de_caixa(request):
     if request.method == "GET":

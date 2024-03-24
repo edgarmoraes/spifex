@@ -1,15 +1,17 @@
 import json
 from datetime import datetime
+from itertools import groupby
 from django.db.models import Sum
+from collections import OrderedDict
 from django.shortcuts import render
 from django.dispatch import receiver
 from django.http import JsonResponse
 from dateutil.relativedelta import relativedelta
 from django.views.decorators.csrf import csrf_exempt
+from chart_of_accounts.models import Chart_of_accounts
 from fluxo_de_caixa.models import Tabela_fluxo, Bancos
 from .models import Tabela_realizado, Totais_mes_realizado
 from django.db.models.signals import post_save, post_delete
-from itertools import groupby
 
 def realizado(request):
     if request.method == "GET":
@@ -19,6 +21,13 @@ def exibir_realizado(request):
     bancos_ativos = Bancos.objects.filter(status=True)
     Tabela_realizado_list = Tabela_realizado.objects.all().order_by('data_liquidacao', '-valor', 'descricao')
     totais_mes_realizado = Totais_mes_realizado.objects.all().order_by('-fim_mes')
+    chart_of_accounts_queryset = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
+
+    accounts_by_subgroup = OrderedDict()
+    for account in chart_of_accounts_queryset:
+        if account.subgroup not in accounts_by_subgroup:
+            accounts_by_subgroup[account.subgroup] = []
+        accounts_by_subgroup[account.subgroup].append(account)
 
     # Convertendo QuerySet para lista para manipulação
     Tabela_realizado_list = list(Tabela_realizado_list)
@@ -48,6 +57,7 @@ def exibir_realizado(request):
         'Tabela_realizado_list': lancamentos_com_totais,
         'totais_mes_realizado': totais_mes_realizado,  # Incluindo totais_mes_realizado no contexto
         'bancos': bancos_ativos,
+        'accounts_by_subgroup': accounts_by_subgroup,  # Passando o OrderedDict para o contexto
     }
     return render(request, 'realizado.html', context)
 

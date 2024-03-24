@@ -336,325 +336,243 @@ function atualizarLancamento(lancamentoId, dataRealizado, descricaoRealizado, ob
 
 
 
+// Filtro de meses
+function selecionarMesAtualEfiltrar() {
+  const hoje = new Date();
+  const mesAtual = hoje.getMonth();
+  const anoAtual = hoje.getFullYear();
+  const checkboxes = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
+  const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 
-// 1. Definições de Funções Básicas
-function toggleDropdownMeses(event) {
+  // Formatando o mês/ano atual para correspondência
+  const mesAnoAtual = `${meses[mesAtual]}/${anoAtual}`;
+
+  // Buscando e marcando o checkbox correspondente ao mês e ano atual
+  let checkboxEncontrado = Array.from(checkboxes).find(checkbox => checkbox.value.toLowerCase() === mesAnoAtual.toLowerCase());
+
+  if (checkboxEncontrado) {
+    checkboxEncontrado.checked = true;
+    updateButtonTextMeses();
+    filtrarTabela();
+  } else {
+    console.error('Nenhum checkbox correspondente ao mês atual encontrado.');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', selecionarMesAtualEfiltrar);
+
+// Adiciona listeners para checkboxes
+function addListenerAndUpdate(selector, updateFunction, filterFunction = null, isExclusive = false) {
+  document.querySelectorAll(selector).forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      if (isExclusive && checkbox.checked) {
+        // Se é exclusivo e a checkbox é selecionada, desmarque todas as outras
+        document.querySelectorAll(selector).forEach(box => {
+          if (box !== checkbox) box.checked = false;
+        });
+      }
+      // A função de atualização é chamada após um atraso se necessário
+      if (selector.includes('recebimentos') || selector.includes('pagamentos')) {
+        setTimeout(updateFunction, 0);
+      } else {
+        updateFunction();
+      }
+      // Chama a função de filtragem se for fornecida
+      if (filterFunction) {
+        filterFunction();
+      }
+    });
+  });
+}
+
+// Adicionando os listeners para cada grupo de checkboxes
+addListenerAndUpdate('#dropdown-content-contas .conta-checkbox', updateButtonTextContas, filtrarTabela);
+addListenerAndUpdate('#dropdown-content-meses .mes-checkbox', updateButtonTextMeses, filtrarTabela);
+addListenerAndUpdate('#dropdown-content-bancos .banco-checkbox', updateButtonTextBancos, coletarBancosSelecionados);
+addListenerAndUpdate('#dropdown-content-natureza .natureza-checkbox', updateButtonTextNatureza, filtrarTabela);
+
+// Adiciona o listener para click fora do dropdown
+document.addEventListener('click', function(event) {
+  const dropdowns = [
+      {button: "#dropdown-button-contas", content: "dropdown-content-contas"},
+      {button: "#dropdown-button-meses", content: "dropdown-content-meses"},
+      {button: "#dropdown-button-bancos", content: "dropdown-content-bancos"},
+      {button: "#dropdown-button-natureza", content: "dropdown-content-natureza"},
+      {button: "#dropdown-button-contas-recebimentos", content: "dropdown-content-contas-recebimentos"},
+      {button: "#dropdown-button-contas-pagamentos", content: "dropdown-content-contas-pagamentos"}
+  ];
+
+  dropdowns.forEach(function(dropdown) {
+      if (!event.target.closest(dropdown.button) && !event.target.closest(`#${dropdown.content}`)) {
+          const content = document.getElementById(dropdown.content);
+          if (content && content.classList.contains('show')) {
+              content.classList.remove('show');
+          }
+      }
+  });
+});
+
+// Funções para manipular os eventos de abertura dos dropdowns
+function toggleDropdownFilters(dropdownId, event) {
   event.stopPropagation();
-  document.getElementById("dropdown-content-meses").classList.toggle("show");
+  const dropdown = document.getElementById(dropdownId);
+  dropdown.classList.toggle("show");
+}
+
+function toggleDropdownModals(dropdownId, event) {
+  event.stopPropagation();
+  const dropdown = document.getElementById(dropdownId);
+  const buttonRect = event.target.getBoundingClientRect();
+
+  if (dropdown.classList.contains("show")) {
+    // Hide the dropdown
+    dropdown.classList.remove("show");
+    // Reset styles
+    Object.assign(dropdown.style, {
+      maxHeight: null,
+      position: null,
+      top: null,
+      left: null,
+      overflowY: null
+    });
+  } else {
+    // Show the dropdown and adjust its position and styles
+    dropdown.classList.add("show");
+    Object.assign(dropdown.style, {
+      position: 'fixed',
+      left: `${window.scrollX + buttonRect.left}px`,
+      maxHeight: '250px',
+      overflowY: 'auto'
+    });
+  }
+}
+
+// Funções para selecionar e desmarcar todos os checkboxes
+function toggleAllCheckboxes(containerSelector, shouldCheck) {
+  const checkboxes = document.querySelectorAll(`${containerSelector} .dropdown-options input[type="checkbox"]`);
+  checkboxes.forEach(checkbox => checkbox.checked = shouldCheck);
+  
+  // Atualiza o texto do botão e filtra a tabela conforme o container
+  switch (containerSelector) {
+    case '#dropdown-content-contas':
+      updateButtonTextContas();
+      filtrarTabela();
+      break;
+    case '#dropdown-content-meses':
+      updateButtonTextMeses();
+      filtrarTabela();
+      break;
+    case '#dropdown-content-bancos':
+      updateButtonTextBancos();
+      coletarBancosSelecionados();
+      break;
+    case '#dropdown-content-natureza':
+      updateButtonTextNatureza();
+      filtrarTabela();
+      break;
+  }
+}
+
+// Função para atualizar o texto dos botões de dropdown
+function updateButtonText(dropdownId, checkboxesSelector, defaultText, allSelectedText = "Todos Selecionados") {
+  const selectedCount = document.querySelectorAll(`${checkboxesSelector}:checked`).length;
+  const totalOptions = document.querySelectorAll(checkboxesSelector).length;
+  const buttonText = selectedCount === 0 ? defaultText : 
+                     selectedCount === totalOptions ? allSelectedText : 
+                     `${selectedCount} Selecionado(s)`;
+  document.getElementById(dropdownId).textContent = buttonText;
+}
+
+function updateButtonTextContas() {
+  updateButtonText('dropdown-button-contas', '#dropdown-content-contas .conta-checkbox', 'Selecione');
 }
 
 function updateButtonTextMeses() {
-  const totalMeses = document.querySelectorAll('#dropdown-content-meses .mes-checkbox').length;
-  const totalSelecionados = document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked').length;
-  const buttonText = document.getElementById('dropdown-button-meses');
-  buttonText.textContent = totalSelecionados === 0 ? 'Selecione' : 
-                           totalSelecionados === totalMeses ? 'Todos Selecionados' : 
-                           `${totalSelecionados} Selecionado(s)`;
+  updateButtonText('dropdown-button-meses', '#dropdown-content-meses .mes-checkbox', 'Selecione');
 }
 
-function selectAllMeses(event) {
-  event.stopPropagation();
-  document.querySelectorAll('#dropdown-content-meses .mes-checkbox').forEach(checkbox => checkbox.checked = true);
-  updateButtonTextMeses();
-  filtrarTabela();
+function updateButtonTextBancos() {
+  updateButtonText('dropdown-button-bancos', '#dropdown-content-bancos .banco-checkbox', 'Selecione');
 }
 
-function deselectAllMeses(event) {
-  event.stopPropagation();
-  document.querySelectorAll('#dropdown-content-meses .mes-checkbox').forEach(checkbox => checkbox.checked = false);
-  updateButtonTextMeses();
-  filtrarTabela();
-}
-
-// Função para alternar a visibilidade do dropdown de bancos
-function toggleDropdownBancos(event) {
-  event.stopPropagation();
-  document.getElementById("dropdown-content-bancos").classList.toggle("show");
-}
-
-// Função para marcar todos os checkboxes dos bancos
-function selectAllBancos(event) {
-  event.stopPropagation();
-  document.querySelectorAll('#dropdown-content-bancos .banco-checkbox').forEach(checkbox => {
-    checkbox.checked = true;
-  });
-  coletarBancosSelecionados(); // Atualiza a lista de bancos selecionados e aplica a filtragem
-  updateButtonBancosText(); // Atualiza o texto do botão
-}
-
-// Função para desmarcar todos os checkboxes dos bancos
-function deselectAllBancos(event) {
-  event.stopPropagation();
-  document.querySelectorAll('#dropdown-content-bancos .banco-checkbox').forEach(checkbox => {
-    checkbox.checked = false;
-  });
-  coletarBancosSelecionados(); // Atualiza a lista de bancos selecionados e aplica a filtragem
-  updateButtonBancosText(); // Atualiza o texto do botão
-}
-
-// Função para atualizar o texto do botão de bancos
-function updateButtonBancosText() {
-  const totalBancos = document.querySelectorAll('#dropdown-content-bancos .banco-checkbox').length;
-  const totalSelecionados = document.querySelectorAll('#dropdown-content-bancos .banco-checkbox:checked').length;
-  const buttonText = document.getElementById('dropdown-button-bancos');
-  buttonText.textContent = totalSelecionados === 0 ? 'Selecione' : 
-                           totalSelecionados === totalBancos ? 'Todos Selecionados' : 
-                           `${totalSelecionados} Selecionado(s)`;
-}
-
-// Função para alternar a visibilidade do dropdown de natureza
-function toggleDropdownNatureza(event) {
-  event.stopPropagation();
-  document.getElementById("dropdown-content-natureza").classList.toggle("show");
-}
-
-// Função para marcar todos os checkboxes da natureza
-function selectAllNatureza(event) {
-  if (event) event.stopPropagation();
-  document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').forEach(checkbox => {
-    checkbox.checked = true;
-  });
-  coletarNaturezasSelecionadas();
-  updateButtonNaturezaText();
-}
-
-// Função para desmarcar todos os checkboxes da natureza
-function deselectAllNatureza(event) {
-  if (event) event.stopPropagation();
-  document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').forEach(checkbox => {
-    checkbox.checked = false;
-  });
-  coletarNaturezasSelecionadas();
-  updateButtonNaturezaText();
-}
-
-// Função para atualizar o texto do botão de natureza
-function updateButtonNaturezaText() {
-  const totalNaturezas = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').length;
-  const totalSelecionados = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked').length;
-  const buttonText = document.getElementById('dropdown-button-natureza');
-  buttonText.textContent = totalSelecionados === 0 ? 'Selecione' : 
-                           totalSelecionados === totalNaturezas ? 'Todos Selecionados' : 
-                           `${totalSelecionados} Selecionado(s)`;
-}
-
-let naturezasSelecionadas = [];
-
-function coletarNaturezasSelecionadas() {
-  naturezasSelecionadas = Array.from(document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked')).map(el => el.value);
-  filtrarTabela();
-}
-
-// 2. Lógica de Seleção de Mês
-function selecionarMesAtualEfiltrar() {
-  let today = new Date();
-  let month = today.getMonth(); // Mês atual como número (0-11)
-  let year = today.getFullYear();
-
-  const checkboxes = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
-  const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
-  let found = false;
-
-  while (!found) {
-      const currentMonthYear = `${meses[month]}/${year}`;
-      for (const checkbox of checkboxes) {
-          if (checkbox.value.toLowerCase() === currentMonthYear.toLowerCase()) {
-              checkbox.checked = true;
-              found = true;
-              break;
-          }
-      }
-      // Se não encontrou, retrocede um mês e ajusta o ano se necessário
-      if (!found) {
-          month--;
-          if (month < 0) {
-              month = 11;
-              year--;
-              // Se ajustamos o ano, atualizamos a data "today" para garantir que não voltaremos no tempo indefinidamente
-              today = new Date(year, month, 1);
-          }
-          // Se retrocedemos para antes da data mais antiga disponível, paramos de procurar
-          if (today < new Date(document.querySelector('.mes-checkbox').value)) {
-              break;
-          }
-      }
+function updateButtonTextNatureza() {
+  const checkboxes = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox');
+  const selectedCheckboxes = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked');
+  const selectedCount = selectedCheckboxes.length;
+  const totalOptions = checkboxes.length;
+  let buttonText = "Crédito, Débito";
+  if (selectedCount > 0 && selectedCount < totalOptions) {
+    buttonText = Array.from(selectedCheckboxes).map(cb => cb.nextSibling.textContent.trim()).join(", ");
   }
-
-  if (!found) {
-      console.error('Nenhum checkbox correspondente aos meses anteriores encontrado.');
-  } else {
-      updateButtonTextMeses();
-      filtrarTabela();
-  }
+  document.getElementById('dropdown-button-natureza').textContent = buttonText;
 }
-
-function formatarDataParaMesAno(data) {
-  const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
-  const partesData = data.split('/');
-  const mes = parseInt(partesData[1], 10) - 1; // Converte 'mm' para índice de array (0-11)
-  const ano = partesData[2]; // 'aaaa'
-  return `${meses[mes]}/${ano}`; // Retorna 'mmm/aaaa'
-}
-
-// 3. Inicialização e Event Listeners
-document.addEventListener("DOMContentLoaded", function() {
-  document.querySelectorAll('#dropdown-content-meses .mes-checkbox').forEach(checkbox => {
-      checkbox.addEventListener('change', () => {
-          updateButtonTextMeses();
-          filtrarTabela();
-      });
-  });
-
-  document.addEventListener('click', event => {
-      if (!event.target.closest("#dropdown-content-meses") && !event.target.closest("#dropdown-button-meses")) {
-          document.getElementById("dropdown-content-meses").classList.remove("show");
-      }
-  });
-
-  selecionarMesAtualEfiltrar();
-});
-
-document.addEventListener("DOMContentLoaded", function() {
-  // Event listeners para os bancos, similar aos meses
-  document.querySelectorAll('.banco-checkbox').forEach(checkbox => {
-    checkbox.addEventListener('change', () => {
-      updateButtonBancosText();
-    });
-  });
-
-  // Event listener para fechar dropdowns ao clicar fora
-  document.addEventListener('click', event => {
-    if (!event.target.closest("#dropdown-content-bancos") && !event.target.closest("#dropdown-button-bancos")) {
-      document.getElementById("dropdown-content-bancos").classList.remove("show");
-    }
-  });
-
-  coletarBancosSelecionados(); // Isso irá filtrar a tabela de bancos ao carregar a página
-  updateButtonBancosText();
-  atualizarSaldoTotalBancos();
-
-  document.querySelectorAll('.saldo-total-row').forEach(function(cell) {
-    // Extrai o texto, remove o símbolo de moeda e espaços, substitui a vírgula por ponto e verifica se é negativo
-    var saldoTexto = cell.textContent.replace(/\s/g, ''); // Remove espaços
-    var saldo = parseFloat(saldoTexto.replace('.', '').replace(',', '.')); // Remove pontos e troca vírgulas por pontos antes de converter
-
-      // Verifica se o número é negativo e altera a cor do texto
-      if (!isNaN(saldo) && saldo < 0) {
-          cell.style.color = '#740000'; // Cor vermelha
-      }
-      else {
-          cell.style.color = '#000acf';
-      }
-  });
-});
 
 let bancosSelecionados = [];
-
-document.addEventListener("DOMContentLoaded", function() {
-  document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').forEach(checkbox => {
-    checkbox.addEventListener('change', () => {
-      updateButtonNaturezaText();
-      coletarNaturezasSelecionadas();
-    });
-  });
-
-  document.addEventListener('click', event => {
-    if (!event.target.closest("#dropdown-content-natureza") && !event.target.closest("#dropdown-button-natureza")) {
-      document.getElementById("dropdown-content-natureza").classList.remove("show");
-    }
-  });
-});
-
 function coletarBancosSelecionados() {
   bancosSelecionados = Array.from(document.querySelectorAll('.banco-checkbox:checked')).map(el => el.value);
-  
-  // Aplica a filtragem na tabela de lançamentos
-  filtrarTabela();
-
-  // Aplica a filtragem na tabela de bancos
-  const linhasTabelaBancos = document.querySelectorAll('.tabela-bancos .row-bancos');
-  linhasTabelaBancos.forEach(linha => {
-    const idBanco = linha.getAttribute('data-banco-id');
-    if (bancosSelecionados.length === 0 || bancosSelecionados.includes(idBanco)) {
-      linha.style.display = ''; // Mostra a linha se o banco está selecionado ou se nenhum banco está selecionado.
-    } else {
-      linha.style.display = 'none'; // Oculta a linha se o banco não está selecionado.
-    }
+  filtrarTabela(); // Filtra a tabela de lançamentos
+  // Filtra a tabela de bancos
+  document.querySelectorAll('.tabela-bancos .row-bancos').forEach(row => {
+    const idBanco = row.getAttribute('data-banco-id');
+    row.style.display = bancosSelecionados.length === 0 || bancosSelecionados.includes(idBanco) ? '' : 'none';
   });
-
-  // Atualiza o saldo total dos bancos visíveis
-  atualizarSaldoTotalBancos();
+  atualizarSaldoTotalBancos(); // Atualiza o saldo total
 }
 
-// Certifique-se de adicionar o listener para a seleção de bancos
-document.querySelectorAll('.banco-checkbox').forEach(checkbox => {
-  checkbox.addEventListener('change', coletarBancosSelecionados);
-});
-
-// Aplica a filtragem inicial com base no estado dos checkboxes dos bancos
-coletarBancosSelecionados();
-
-// 4. Filtragem da Tabela Adaptada para Incluir Naturezas
+// Filtros
 function filtrarTabela() {
-  const contaContabilSelecionada = document.getElementById('contas-contabeis').value;
-  const inputInicio = document.getElementById('data-inicio').value;
-  const inputFim = document.getElementById('data-fim').value;
-  
-  // Alterado para coletar naturezas de um conjunto de checkboxes ao invés de um único dropdown
-  const naturezasSelecionadas = Array.from(document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked')).map(el => el.value.toLowerCase().trim());
-  
-  const mesesSelecionados = Array.from(document.querySelectorAll('.mes-checkbox:checked')).map(el => el.value);
-  const inputDescricao = document.getElementById('caixa-pesquisa').value.toLowerCase();
-  const inputTags = document.getElementById('caixa-pesquisa-tags').value.toLowerCase();
+  const uuidsContaContabilSelecionados = Array.from(document.querySelectorAll('#dropdown-content-contas .conta-checkbox:checked')).map(checkbox => checkbox.value);
+  const intervalosMesesSelecionados = Array.from(document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked')).map(checkbox => ({
+    inicio: new Date(checkbox.getAttribute('data-inicio-mes')),
+    fim: new Date(checkbox.getAttribute('data-fim-mes'))
+  }));
+  const naturezasSelecionadas = Array.from(document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked'), cb => cb.value);
 
-  const dataInicio = inputInicio ? new Date(inputInicio + "T00:00:00") : null;
-  const dataFim = inputFim ? new Date(inputFim + "T23:59:59") : null;
-
-  let mesesExibidos = new Set();
+  // Verificações de seleção total ou nenhuma seleção simplificadas
+  const selecionarTodosMeses = intervalosMesesSelecionados.length === 0;
+  const selecionarTodaNatureza = naturezasSelecionadas.length === 0;
+  
+  // Obtenção dos filtros de texto e datas
+  const filtroDescricao = document.getElementById("caixa-pesquisa").value.toUpperCase();
+  const filtroTags = document.getElementById("caixa-pesquisa-tags").value.toUpperCase();
+  const dataInicioObj = document.getElementById("data-inicio").value ? new Date(document.getElementById("data-inicio").value) : null;
+  const dataFimObj = document.getElementById("data-fim").value ? new Date(document.getElementById("data-fim").value) : null;
+  let mesesAnosVisiveis = new Set();
 
   document.querySelectorAll('.row-lancamentos').forEach(function(row) {
-    const contaContabil = row.getAttribute('data-conta-contabil');
-    const dataTexto = row.querySelector('.vencimento-row').textContent;
-    const partesData = dataTexto.split('/');
-    const dataLancamento = new Date(partesData[2], partesData[1] - 1, partesData[0]);
-    const natureza = row.getAttribute('data-natureza').toLowerCase().trim();
-
-    const descricao = row.querySelector('.descricao-row').textContent.toLowerCase();
-    const observacao = row.querySelector('.obs-row').textContent.toLowerCase();
-    const tags = row.querySelector('.tags-row') ? row.querySelector('.tags-row').textContent.toLowerCase() : "";
-    const mesAno = formatarDataParaMesAno(dataTexto);
+    const uuidContaContabilLinha = row.getAttribute('data-uuid-conta-contabil');
+    const descricao = row.querySelector(".descricao-row").textContent.toUpperCase();
+    const observacaoElemento = row.querySelector(".obs-row").cloneNode(true);
+    const tagsElemento = observacaoElemento.querySelector(".d-block");
+    if (tagsElemento) observacaoElemento.removeChild(tagsElemento);
+    const observacao = observacaoElemento.textContent.toUpperCase();
+    const tags = tagsElemento ? tagsElemento.textContent.toUpperCase() : "";
+    const dataVencimento = new Date(row.querySelector(".vencimento-row").textContent.split('/').reverse().join('-'));
+    const naturezaLancamento = row.getAttribute('data-natureza');
     const idBancoLancamento = row.getAttribute('data-banco-id-liquidacao');
+
+    
+    const contaContabilMatch = uuidsContaContabilSelecionados.length === 0 || uuidsContaContabilSelecionados.includes(uuidContaContabilLinha);
+    const descricaoObservacaoMatch = filtroDescricao === "" || descricao.includes(filtroDescricao) || observacao.includes(filtroDescricao);
+    const tagMatch = filtroTags === "" || tags.includes(filtroTags);
+    const mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => dataVencimento >= intervalo.inicio && dataVencimento <= intervalo.fim);
+    const dataMatch = (!dataInicioObj || dataVencimento >= dataInicioObj) && (!dataFimObj || dataVencimento <= dataFimObj);
+    const naturezaMatch = selecionarTodaNatureza || naturezasSelecionadas.includes(naturezaLancamento);
     const bancoMatch = bancosSelecionados.length === 0 || bancosSelecionados.includes(idBancoLancamento);
 
-    const descricaoMatch = descricao.includes(inputDescricao);
-    const observacaoMatch = observacao.includes(inputDescricao) && !tags.includes(inputDescricao);
-    const tagsMatch = tags.includes(inputTags);
+    row.style.display = descricaoObservacaoMatch && tagMatch && mesMatch && naturezaMatch && dataMatch && contaContabilMatch && bancoMatch ? "" : "none";
 
-    const contaContabilMatch = !contaContabilSelecionada || contaContabil === contaContabilSelecionada;
-    const dataMatch = (!dataInicio || dataLancamento >= dataInicio) && (!dataFim || dataLancamento <= dataFim);
-    
-    // Adaptado para verificar se a natureza da linha está dentro das naturezas selecionadas
-    const naturezaMatch = naturezasSelecionadas.length === 0 || naturezasSelecionadas.includes(natureza);
-    
-    const mesMatch = mesesSelecionados.length === 0 || mesesSelecionados.includes(mesAno);
-
-    if (contaContabilMatch && dataMatch && naturezaMatch && mesMatch && (descricaoMatch || observacaoMatch) && tagsMatch && bancoMatch) {
-      row.style.display = "";
-      let dataFormatadaParaConjunto = partesData[1] + "/" + partesData[2]; // Formato MM/YYYY
-      mesesExibidos.add(dataFormatadaParaConjunto);
-    } else {
-      row.style.display = "none";
+    if (row.style.display === "") {
+      let mesAno = dataVencimento.toLocaleString('default', { month: '2-digit', year: 'numeric' });
+      mesesAnosVisiveis.add(mesAno);
     }
   });
 
-  document.querySelectorAll('.linha-total-mes').forEach(row => {
-    let textoMesAno = row.cells[1].textContent;
-    let mesAno = textoMesAno.match(/\d{2}\/\d{4}$/);
-    if (mesAno && mesesExibidos.has(mesAno[0])) {
-      row.style.display = "";
-    } else {
-      row.style.display = "none";
-    }
+  // Simplificação na filtragem das linhas de total do mês
+  document.querySelectorAll("#tabela-lancamentos .linha-total-mes").forEach(row => {
+    let textoMesAno = row.querySelector("td:nth-child(2)").textContent;
+    let mesAnoMatch = textoMesAno.match(/\d{2}\/\d{4}$/); // Captura MM/YYYY
+    row.style.display = mesAnoMatch && mesesAnosVisiveis.has(mesAnoMatch[0]) ? "" : "none";
   });
 
   atualizarSaldoTotalBancos();
@@ -662,20 +580,8 @@ function filtrarTabela() {
 
 document.getElementById('caixa-pesquisa').addEventListener('input', filtrarTabela);
 document.getElementById('caixa-pesquisa-tags').addEventListener('input', filtrarTabela);
-document.getElementById('contas-contabeis').addEventListener('change', filtrarTabela);
 document.getElementById('data-inicio').addEventListener('change', filtrarTabela);
 document.getElementById('data-fim').addEventListener('change', filtrarTabela);
-document.getElementById('natureza').addEventListener('change', filtrarTabela);
-document.querySelectorAll('.mes-checkbox').forEach(checkbox => {
-  checkbox.addEventListener('change', filtrarTabela);
-});
-
-// Lembre-se de adicionar listeners para os checkboxes de natureza
-document.addEventListener("DOMContentLoaded", function() {
-  document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').forEach(checkbox => {
-    checkbox.addEventListener('change', filtrarTabela);
-  });
-});
 
 // Inicializa listeners de mudança para os checkboxes dos bancos
 document.querySelectorAll('.banco-checkbox').forEach(checkbox => {
@@ -687,10 +593,10 @@ function atualizarSaldoTotalBancos() {
   let novoSaldoTotal = 0;
   const linhasBancos = document.querySelectorAll('.tabela-bancos .row-bancos');
 
-  linhasBancos.forEach(linha => {
-    const idBanco = linha.getAttribute('data-banco-id');
+  linhasBancos.forEach(row => {
+    const idBanco = row.getAttribute('data-banco-id');
     if (bancosSelecionados.length === 0 || bancosSelecionados.includes(idBanco)) {
-      let valorSaldoTexto = linha.querySelector('.saldo-banco-row').textContent;
+      let valorSaldoTexto = row.querySelector('.saldo-banco-row').textContent;
       valorSaldoTexto = valorSaldoTexto.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
       const valorSaldo = parseFloat(valorSaldoTexto);
       novoSaldoTotal += valorSaldo;
@@ -715,8 +621,8 @@ function atualizarSaldosDasLinhas() {
 
   // Itera sobre as linhas de lançamento de baixo para cima
   for (let i = linhas.length - 1; i >= 0; i--) {
-    const linha = linhas[i];
-    const idBancoLancamento = linha.getAttribute('data-banco-id-liquidacao');
+    const row = linhas[i];
+    const idBancoLancamento = row.getAttribute('data-banco-id-liquidacao');
 
     // Se um único banco está selecionado e esta linha não pertence a ele, pular para a próxima
     if (bancosSelecionados.length === 1 && bancosSelecionados[0] !== idBancoLancamento) {
@@ -724,21 +630,21 @@ function atualizarSaldosDasLinhas() {
     }
 
     // Obter a natureza da linha e ajustar o saldo
-    const natureza = linha.getAttribute('data-natureza').trim();
+    const natureza = row.getAttribute('data-natureza').trim();
     let valor = 0;
 
     if (natureza === 'Crédito') {
-      const valorCredito = linha.querySelector('.credito-row').textContent;
+      const valorCredito = row.querySelector('.credito-row').textContent;
       valor = parseFloat(valorCredito.replace('R$', '').replace(/\./g, '').replace(',', '.').trim());
       saldoAtual -= valor; // Crédito subtrai do saldo
     } else if (natureza === 'Débito') {
-      const valorDebito = linha.querySelector('.debito-row').textContent;
+      const valorDebito = row.querySelector('.debito-row').textContent;
       valor = parseFloat(valorDebito.replace('R$', '').replace(/\./g, '').replace(',', '.').trim());
       saldoAtual += valor; // Débito soma ao saldo
     }
     
     // Atualizar o saldo da linha
-    linha.querySelector('.saldo-row').textContent = saldoAtual.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    row.querySelector('.saldo-row').textContent = saldoAtual.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   }
 }
 
@@ -754,4 +660,15 @@ document.addEventListener("DOMContentLoaded", function() {
   // Chamada inicial para configurar o saldo
   coletarBancosSelecionados();
   atualizarSaldoTotalBancos();
+});
+
+document.querySelectorAll('.saldo-total-row').forEach(function(cell) {
+  var saldoTexto = cell.textContent.replace(/\s/g, '');
+  var saldo = parseFloat(saldoTexto.replace('.', '').replace(',', '.'));
+    if (!isNaN(saldo) && saldo < 0) {
+        cell.style.color = '#740000';
+    }
+    else {
+      cell.style.color = '#000acf';
+  }
 });

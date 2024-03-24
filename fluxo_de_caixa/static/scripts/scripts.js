@@ -1115,16 +1115,13 @@ function getCurrentYear() {
   return config.today.getFullYear();
 }
 
-// Funções de manipulação de checkboxes
 function marcarMesesAnterioresAteAtual(index, currentYear) {
   const checkboxesMeses = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
   checkboxesMeses.forEach(checkbox => {
     const [mesCheckbox, anoCheckbox] = checkbox.value.split('/');
     const mesIndex = config.meses.indexOf(mesCheckbox);
     const ano = parseInt(anoCheckbox, 10);
-    if ((ano < currentYear) || (ano === currentYear && mesIndex <= index)) {
-      checkbox.checked = true;
-    }
+    checkbox.checked = (ano < currentYear) || (ano === currentYear && mesIndex <= index);
   });
   updateButtonTextMeses();
   filtrarTabela();
@@ -1134,34 +1131,24 @@ function encontrarEMarcarMesAtualOuProximo() {
   let currentMonthIndex = getCurrentMonthIndex();
   let currentYear = getCurrentYear();
   const checkboxesMeses = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
-  let encontrado = false;
-  let tentativas = 0;
 
-  while (!encontrado && tentativas < 12) {
+  for (let tentativas = 0; tentativas < 12; tentativas++) {
     const mesAnoProcurado = `${config.meses[currentMonthIndex]}/${currentYear}`;
-    encontrado = [...checkboxesMeses].some(checkbox => {
-      if (checkbox.value === mesAnoProcurado) {
-        marcarMesesAnterioresAteAtual(currentMonthIndex, currentYear);
-        return true;
-      }
-      return false;
-    });
+    const encontrado = [...checkboxesMeses].some(checkbox => checkbox.value === mesAnoProcurado);
 
-    if (!encontrado) {
-      currentMonthIndex = (currentMonthIndex + 1) % 12;
-      if (currentMonthIndex === 0) currentYear++;
+    if (encontrado) {
+      marcarMesesAnterioresAteAtual(currentMonthIndex, currentYear);
+      return;
     }
-    tentativas++;
+
+    currentMonthIndex = (currentMonthIndex + 1) % 12;
+    if (currentMonthIndex === 0) currentYear++;
   }
 
-  if (!encontrado) {
-    console.error('Nenhum mês válido encontrado. Considere revisar os valores dos checkboxes.');
-  }
+  console.error('Nenhum mês válido encontrado. Considere revisar os valores dos checkboxes.');
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  encontrarEMarcarMesAtualOuProximo();
-});
+document.addEventListener('DOMContentLoaded', encontrarEMarcarMesAtualOuProximo);
 
 // Adiciona listeners para checkboxes
 function addListenerAndUpdate(selector, updateFunction, filterFunction = null, isExclusive = false) {
@@ -1194,7 +1181,6 @@ addListenerAndUpdate('#dropdown-content-bancos .banco-checkbox', updateButtonTex
 addListenerAndUpdate('#dropdown-content-natureza .natureza-checkbox', updateButtonTextNatureza, filtrarTabela);
 addListenerAndUpdate('#dropdown-content-contas-recebimentos .conta-checkbox', updateButtonTextContasRecebimentos, null, true);
 addListenerAndUpdate('#dropdown-content-contas-pagamentos .conta-checkbox', updateButtonTextContasPagamentos, null, true);
-addListenerAndUpdate('.conta-checkbox', updateButtonTextContas, filtrarTabela);
 
 // Adiciona o listener para click fora do dropdown
 document.addEventListener('click', function(event) {
@@ -1245,7 +1231,6 @@ function toggleDropdownModals(dropdownId, event) {
     dropdown.classList.add("show");
     Object.assign(dropdown.style, {
       position: 'fixed',
-      top: `${window.scrollY + buttonRect.bottom}px`,
       left: `${window.scrollX + buttonRect.left}px`,
       maxHeight: '250px',
       overflowY: 'auto'
@@ -1327,13 +1312,8 @@ function updateButtonTextContasPagamentos() {
   document.getElementById('dropdown-button-contas-pagamentos').textContent = selectedText;
 }
 
-function updateButtonTextContas() {
-  updateButtonText('dropdown-button-contas', '#dropdown-content-contas .conta-checkbox', 'Selecione');
-}
-
 // Filtros
 function filtrarTabela() {
-  // Simplificação na obtenção dos intervalos selecionados e naturezas selecionadas
   const uuidsContaContabilSelecionados = Array.from(document.querySelectorAll('#dropdown-content-contas .conta-checkbox:checked')).map(checkbox => checkbox.value);
   const intervalosMesesSelecionados = Array.from(document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked')).map(checkbox => ({
     inicio: new Date(checkbox.getAttribute('data-inicio-mes')),
@@ -1352,28 +1332,28 @@ function filtrarTabela() {
   const dataFimObj = document.getElementById("data-fim").value ? new Date(document.getElementById("data-fim").value) : null;
   let mesesAnosVisiveis = new Set();
 
-  document.querySelectorAll("#tabela-lancamentos .row-lancamentos").forEach(linha => {
-    const uuidContaContabilLinha = linha.getAttribute('data-uuid-conta-contabil');
-    const descricao = linha.querySelector(".descricao-row").textContent.toUpperCase();
-    const observacaoElemento = linha.querySelector(".obs-row").cloneNode(true);
+  document.querySelectorAll("#tabela-lancamentos .row-lancamentos").forEach(row => {
+    const uuidContaContabilLinha = row.getAttribute('data-uuid-conta-contabil');
+    const descricao = row.querySelector(".descricao-row").textContent.toUpperCase();
+    const observacaoElemento = row.querySelector(".obs-row").cloneNode(true);
     const tagsElemento = observacaoElemento.querySelector(".d-block");
     if (tagsElemento) observacaoElemento.removeChild(tagsElemento);
     const observacao = observacaoElemento.textContent.toUpperCase();
     const tags = tagsElemento ? tagsElemento.textContent.toUpperCase() : "";
-    const dataVencimento = new Date(linha.querySelector(".vencimento-row").textContent.split('/').reverse().join('-'));
-    const naturezaLancamento = linha.getAttribute('data-natureza');
+    const dataVencimento = new Date(row.querySelector(".vencimento-row").textContent.split('/').reverse().join('-'));
+    const naturezaLancamento = row.getAttribute('data-natureza');
 
     // Centraliza a lógica de correspondência
+    const contaContabilMatch = uuidsContaContabilSelecionados.length === 0 || uuidsContaContabilSelecionados.includes(uuidContaContabilLinha);
     const descricaoObservacaoMatch = filtroDescricao === "" || descricao.includes(filtroDescricao) || observacao.includes(filtroDescricao);
     const tagMatch = filtroTags === "" || tags.includes(filtroTags);
     const mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => dataVencimento >= intervalo.inicio && dataVencimento <= intervalo.fim);
-    const naturezaMatch = selecionarTodaNatureza || naturezasSelecionadas.includes(naturezaLancamento);
     const dataMatch = (!dataInicioObj || dataVencimento >= dataInicioObj) && (!dataFimObj || dataVencimento <= dataFimObj);
-    const contaContabilMatch = uuidsContaContabilSelecionados.length === 0 || uuidsContaContabilSelecionados.includes(uuidContaContabilLinha);
+    const naturezaMatch = selecionarTodaNatureza || naturezasSelecionadas.includes(naturezaLancamento);
 
-    linha.style.display = descricaoObservacaoMatch && tagMatch && mesMatch && naturezaMatch && dataMatch && contaContabilMatch ? "" : "none";
+    row.style.display = descricaoObservacaoMatch && tagMatch && mesMatch && naturezaMatch && dataMatch && contaContabilMatch ? "" : "none";
 
-    if (linha.style.display === "") {
+    if (row.style.display === "") {
       let mesAno = dataVencimento.toLocaleString('default', { month: '2-digit', year: 'numeric' });
       mesesAnosVisiveis.add(mesAno);
     }
@@ -1404,8 +1384,8 @@ function atualizarSaldoTotalBancos() {
   var linhasBanco = document.querySelectorAll(".row-bancos");
   var saldoTotal = 0;
 
-  linhasBanco.forEach(function(linha) {
-    var celulaSaldo = linha.querySelector(".saldo-banco-row");
+  linhasBanco.forEach(function(row) {
+    var celulaSaldo = row.querySelector(".saldo-banco-row");
     if (celulaSaldo) {
       var saldo = parseSaldo(celulaSaldo.textContent);
       saldoTotal += saldo;
@@ -1436,20 +1416,20 @@ function atualizarSaldosFluxoCaixa(saldoInicial) {
   var linhasFluxoCaixa = document.querySelectorAll("#tabela-lancamentos .row-lancamentos");
   var saldoAtual = saldoInicial;
 
-  linhasFluxoCaixa.forEach(function(linha) {
-    var debitoCelula = linha.querySelector(".debito-row");
-    var creditoCelula = linha.querySelector(".credito-row");
+  linhasFluxoCaixa.forEach(function(row) {
+    var debitoCelula = row.querySelector(".debito-row");
+    var creditoCelula = row.querySelector(".credito-row");
     var debito = debitoCelula && debitoCelula.textContent ? parseSaldo(debitoCelula.textContent) : 0;
     var credito = creditoCelula && creditoCelula.textContent ? parseSaldo(creditoCelula.textContent) : 0;
     
     saldoAtual += credito - debito;
     
-    var saldoCelula = linha.querySelector(".saldo-row");
+    var saldoCelula = row.querySelector(".saldo-row");
     if (saldoCelula) {
       saldoCelula.textContent = formatarComoMoeda(saldoAtual);
     }
     else {
-      linha.style.display = "none"; 
+      row.style.display = "none"; 
     }
   });
 }
@@ -1466,15 +1446,15 @@ function filtrarBancos() {
 
   var saldoTotal = 0;
 
-  linhas.forEach(linha => {
-      var bancoLinhaId = linha.getAttribute("data-banco-id");
+  linhas.forEach(row => {
+      var bancoLinhaId = row.getAttribute("data-banco-id");
       
       if (todosSelecionados || bancosSelecionados.includes(bancoLinhaId)) {
-          linha.style.display = ""; // Mostra a linha
-          var saldoBanco = parseSaldo(linha.querySelector(".saldo-banco-row").textContent);
+          row.style.display = ""; // Mostra a linha
+          var saldoBanco = parseSaldo(row.querySelector(".saldo-banco-row").textContent);
           saldoTotal += saldoBanco;
       } else {
-          linha.style.display = "none"; // Esconde a linha
+          row.style.display = "none"; // Esconde a linha
       }
   });
 
@@ -1498,10 +1478,10 @@ function calcularSaldoAcumulado() {
   // Seleciona todas as linhas visíveis do fluxo de caixa.
   var linhasFluxoCaixa = document.querySelectorAll("#tabela-lancamentos .row-lancamentos");
   
-  linhasFluxoCaixa.forEach(function(linha) {
-    if (linha.style.display !== "none") {
-      var debitoCelula = linha.querySelector(".debito-row");
-      var creditoCelula = linha.querySelector(".credito-row");
+  linhasFluxoCaixa.forEach(function(row) {
+    if (row.style.display !== "none") {
+      var debitoCelula = row.querySelector(".debito-row");
+      var creditoCelula = row.querySelector(".credito-row");
       var debito = debitoCelula && debitoCelula.textContent ? parseSaldo(debitoCelula.textContent) : 0;
       var credito = creditoCelula && creditoCelula.textContent ? parseSaldo(creditoCelula.textContent) : 0;
       
@@ -1509,7 +1489,7 @@ function calcularSaldoAcumulado() {
       saldoAtual += credito - debito;
       
       // Atualiza a célula de saldo da linha atual.
-      var saldoCelula = linha.querySelector(".saldo-row");
+      var saldoCelula = row.querySelector(".saldo-row");
       if (saldoCelula) {
         saldoCelula.textContent = formatarComoMoeda(saldoAtual);
       }

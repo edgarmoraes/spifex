@@ -38,24 +38,37 @@
                     <div class="box-grid-filters">
                         <!-- ############### Filtro Contas Contábeis ############### -->
                         <section class="flex">
-                            <label for="contas-contabeis">Contas Contábeis</label>
-                            <select id="contas-contabeis" name = "contas_contabeis">
-                                <option value="" disabled selected hidden>Selecione</option>
-                                <option value="Receita 1">Receita 1</option>
-                                <option value="Receita 2">Receita 2</option>
-                                <option value="Receita 3">Despesa 1</option>
-                                <option value="Receita 4">Despesa 2</option>
-                            </select>
+                            <label for="dropdown-button-contas">Contas Contábeis</label>
+                            <div class="dropdown-multiselect">
+                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-contas', event)" id="dropdown-button-contas" class="dropdown-button">Selecione</button>
+                                <div id="dropdown-content-contas" class="dropdown-content">
+                                    <div class="dropdown-header">
+                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-contas', true)">Selecionar Todos</button>
+                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-contas', false)">Desmarcar Todos</button>
+                                    </div>
+                                    <div class="dropdown-options">
+                                        {% for subgroup, accounts in accounts_by_subgroup.items %}
+                                            <div class="subgroup-label" data-nature="{{ accounts.0.nature }}">{{ subgroup }}</div>
+                                            {% for account in accounts %}
+                                                <label class="label-filters">
+                                                    <input type="checkbox" name="contas" value="{{ account.uuid }}" class="conta-checkbox">
+                                                    {{ account.account }}
+                                                </label>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
                         </section>
                         <!-- ############### Filtro Meses ############### -->
                         <section class="flex">
                             <label for="dropdown-button-meses">Meses</label>
                             <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdownMeses(event)" id="dropdown-button-meses" class="dropdown-button">Selecione</button>
+                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-meses', event)" id="dropdown-button-meses" class="dropdown-button">Selecione</button>
                                 <div id="dropdown-content-meses" class="dropdown-content">
                                     <div class="dropdown-header">
-                                        <button class="button-selecionar-todos" type="button" onclick="selectAllMeses(event)">Selecionar Todos</button>
-                                        <button class="button-desmarcar-todos" type="button" onclick="deselectAllMeses(event)">Desmarcar Todos</button>
+                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', true)">Selecionar Todos</button>
+                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
                                         {% for total in totais_mes_realizado %}
@@ -72,11 +85,11 @@
                         <section class="flex">
                             <label for="dropdown-button-bancos">Bancos</label>
                             <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdownBancos(event)" id="dropdown-button-bancos" class="dropdown-button">Selecione</button>
+                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-bancos', event)" id="dropdown-button-bancos" class="dropdown-button">Selecione</button>
                                 <div id="dropdown-content-bancos" class="dropdown-content">
                                     <div class="dropdown-header">
-                                        <button class="button-selecionar-todos" type="button" onclick="selectAllBancos(event)">Selecionar Todos</button>
-                                        <button class="button-desmarcar-todos" type="button" onclick="deselectAllBancos(event)">Desmarcar Todos</button>
+                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-bancos', true)">Selecionar Todos</button>
+                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-bancos', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
                                         {% for banco in bancos %}
@@ -103,11 +116,11 @@
                         <section class="flex">
                             <label for="dropdown-button-natureza">Natureza</label>
                             <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdownNatureza(event)" id="dropdown-button-natureza" class="dropdown-button">Crédito, Débito</button>
+                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-natureza', event)" id="dropdown-button-natureza" class="dropdown-button">Crédito, Débito</button>
                                 <div id="dropdown-content-natureza" class="dropdown-content">
                                     <div class="dropdown-header">
-                                        <button class="button-selecionar-todos" type="button" onclick="selectAllNatureza(event)">Selecionar Todos</button>
-                                        <button class="button-desmarcar-todos" type="button" onclick="deselectAllNatureza(event)">Desmarcar Todos</button>
+                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-natureza', true)">Selecionar Todos</button>
+                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-natureza', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
                                         <label class="label-filters">
