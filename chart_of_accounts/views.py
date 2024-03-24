@@ -1,5 +1,5 @@
 import openpyxl
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import UploadFileForm
 from .models import Chart_of_accounts
 from .forms import AccountForm
@@ -58,7 +58,10 @@ def add_account(request):
         form = AccountForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('plano_de_contas')
+            messages.success(request, 'Conta adicionada com sucesso!')
+            return redirect('plano_de_contas:plano_de_contas')
+        else:
+            print(form.errors)  # Isso ajudará a ver os erros no console do servidor
     else:
         form = AccountForm()
     return render(request, 'add_account_form.html', {'form': form})
@@ -73,3 +76,18 @@ def get_subgroups(request):
     group = request.GET.get('group')
     subgroups = Chart_of_accounts.objects.filter(group=group).values_list('subgroup', flat=True).distinct()
     return JsonResponse(list(subgroups), safe=False)
+
+def edit_account(request, account_id):
+    # Busca a conta pelo ID ou retorna 404 se não encontrada
+    account = get_object_or_404(Chart_of_accounts, id=account_id)
+    
+    if request.method == 'POST':
+        form = AccountForm(request.POST, instance=account)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Conta atualizada com sucesso!')
+            return redirect('plano_de_contas:plano_de_contas')
+    else:
+        form = AccountForm(instance=account)
+    
+    return render(request, 'edit_account_form.html', {'form': form, 'account_id': account_id})

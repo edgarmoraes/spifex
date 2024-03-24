@@ -43,7 +43,11 @@
                     <div class="content sub-content" style="max-height: none; display: block;">
                         <ul>
                             {% for item in sub_items %}
-                                <li style="margin-bottom: 10px;">{{ item.account }}</li>
+                            <li style="margin-bottom: 10px;">
+                                {{ item.account }}
+                                <!-- Botão para editar a conta -->
+                                <a href="{% url 'plano_de_contas:edit_account' item.id %}" class="edit-account-btn">Editar</a>
+                            </li>
                             {% endfor %}
                             <!-- Botão Adicione uma conta -->
                             <a href="{% url 'plano_de_contas:adicionar-conta' %}" class="add-account-btn">Adicione uma conta</a>

@@ -8,4 +8,5 @@ urlpatterns = [
     path('adicionar-conta/', views.add_account, name='adicionar-conta'),
     path('get-groups/', views.get_groups, name='get-groups'),
     path('get-subgroups/', views.get_subgroups, name='get-subgroups'),
+    path('editar-conta/<int:account_id>/', views.edit_account, name='edit_account'),
 ]

@@ -28,7 +28,7 @@
 </header>
     <div class="container">
         <h2>Adicionar Nova Conta</h2>
-        <form method="post">
+        <form method="post" action="{% url 'plano_de_contas:adicionar-conta' %}"> <!-- Garanta que o URL está correto -->
             {% csrf_token %}
             <div class="form-group">
                 <label for="group">Grupo:</label>
@@ -44,7 +44,7 @@
             </div>
             <div class="form-group">
                 <label for="accountName">Nome da Conta:</label>
-                <input type="text" id="accountName" name="accountName" class="form-control" required>
+                <input type="text" id="accountName" name="account" class="form-control" required>
             </div>
             <button type="submit" class="btn btn-primary">Salvar</button>
         </form>
