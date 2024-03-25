@@ -320,22 +320,6 @@ function atualizarLancamento(lancamentoId, dataRealizado, descricaoRealizado, ob
   .catch(error => console.error('Erro ao atualizar o lançamento:', error));
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Filtro de meses
 function selecionarMesAtualEfiltrar() {
   const hoje = new Date();
