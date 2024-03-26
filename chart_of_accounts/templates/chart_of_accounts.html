@@ -26,11 +26,10 @@
     </nav>
 </header>
 <body>
-    <form id="input-excel" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Atualizar</button>
-    </form>
+    <section class="container-button-back">
+        <a href="{% url 'configuracoes:configuracoes' %}"><input type="submit" class="button-back" name="button-back" value="Voltar"></a>
+    </section>
+
     {% if messages %}
     <div class="messages">
         {% for message in messages %}
@@ -61,6 +60,11 @@
             </div>
         {% endfor %}
     </div>
+    <form id="input-excel" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Atualizar</button>
+    </form>
     <script src="{% static 'scripts/chart_of_account.js' %}"></script>
 </body>
 </html>
