@@ -31,12 +31,16 @@
         {{ form.as_p }}
         <button type="submit">Atualizar</button>
     </form>
-
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
     <div id="report-container">
         {% for group, items in chart_of_accounts|groupby:"group" %}
-            <button class="collapsible" style="max-height: none;">{{ group }}
-                <a href="{% url 'plano_de_contas:adicionar-conta' %}" class="add-account-btn">Adicione um subgrupo</a>
-            </button>
+            <button class="collapsible" style="max-height: none;">{{ group }}</button>
             <div class="content" style="max-height: none; display: block;">
                 {% for sub_group, sub_items in items|groupby:"subgroup" %}
                     <button class="collapsible sub-collapsible" style="max-height: none;">{{ sub_group }}</button>
@@ -50,7 +54,7 @@
                             </li>
                             {% endfor %}
                             <!-- Botão Adicione uma conta -->
-                            <a href="{% url 'plano_de_contas:adicionar-conta' %}" class="add-account-btn">Adicione uma conta</a>
+                            <a href="{% url 'plano_de_contas:adicionar_conta' %}" class="add-account-btn">Adicione uma conta</a>
                         </ul>
                     </div>
                 {% endfor %}

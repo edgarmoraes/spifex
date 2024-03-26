@@ -28,7 +28,7 @@
 </header>
     <div class="container">
         <h2>Adicionar Nova Conta</h2>
-        <form method="post" action="{% url 'plano_de_contas:adicionar-conta' %}"> <!-- Garanta que o URL está correto -->
+        <form method="post" action="{% url 'plano_de_contas:adicionar_conta' %}"> <!-- Garanta que o URL está correto -->
             {% csrf_token %}
             <div class="form-group">
                 <label for="group">Grupo:</label>
@@ -50,8 +50,8 @@
         </form>
     </div>
     <script type="text/javascript">
-        var getSubgroupsUrl = "{% url 'plano_de_contas:get-subgroups' %}";
-        var getGroupsUrl = "{% url 'plano_de_contas:get-groups' %}";
+        var getSubgroupsUrl = "{% url 'plano_de_contas:get_subgroups' %}";
+        var getGroupsUrl = "{% url 'plano_de_contas:get_groups' %}";
     </script>
     <script src="{% static 'scripts/chart_of_account.js' %}"></script>
 </body>

@@ -1,10 +1,47 @@
-{% block content %}
-<div class="container">
-    <h2>Editar Conta</h2>
-    <form method="post" action="{% url 'plano_de_contas:edit_account' account_id %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-success">Salvar Alterações</button>
-    </form>
-</div>
-{% endblock %}
+{% load static %}
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/chart_of_accounts.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+        <link rel="icon" href="{% static 'favicon.png' %}" type="image/x-icon">
+        <title>Sppiff | Plano de Contas</title>
+    </head>
+<header class="header">
+    <!-- ############### Barra de Navegação Fixa ############### -->
+    <nav class="nav-bar">
+        <a class="logo" href="{% url 'realizado:realizado' %}">SPPIFF</a>
+        <ul class="nav-list">
+            <li class="nav-fluxo-de-caixa"><a href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">Fluxo de Caixa</a></li>
+            <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">Realizado</a></li>
+            <li class="nav-relatorios"><a href="#">Relatórios</a></li>
+            <li class="nav-line"><div class="line"></div></li>
+            <li class="nav-configuracoes"><a href="{% url 'configuracoes:configuracoes' %}">Configurações</a></li>
+            <li class="nav-meu-perfil"><a href="meu-perfil.html">Meu Perfil</a></li>
+        </ul>
+    </nav>
+</header>
+<body>
+    {% block content %}
+    <div class="container">
+        <h2>Editar Conta</h2>
+        <form method="post" action="{% url 'plano_de_contas:edit_account' account_id %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success">Salvar Alterações</button>
+            <a href="{% url 'plano_de_contas:delete_account' account_id %}" class="btn btn-danger" onclick="return confirm('Tem certeza de que deseja excluir esta conta?')">Excluir Conta</a>
+        </form>
+    </div>
+    {% endblock %}
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</body>
