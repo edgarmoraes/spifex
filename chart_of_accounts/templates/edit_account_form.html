@@ -26,8 +26,11 @@
     </nav>
 </header>
 <body>
+    <section class="container-button-back">
+        <a href="{% url 'plano_de_contas:plano_de_contas' %}"><input type="submit" class="button-back" name="button-back" value="Voltar"></a>
+    </section>
     {% block content %}
-    <div class="container">
+    <div class="edit-account-container">
         <h2>Editar Conta</h2>
         <form method="post" action="{% url 'plano_de_contas:edit_account' account_id %}">
             {% csrf_token %}
