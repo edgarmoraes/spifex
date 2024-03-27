@@ -14,7 +14,7 @@
 <header class="header">
     <!-- ############### Barra de Navegação Fixa ############### -->
     <nav class="nav-bar">
-        <a class="logo" href="{% url 'realizado:realizado' %}">SPPIFF</a>
+        <a class="logo" href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">SPPIFF</a>
         <ul class="nav-list">
             <li class="nav-fluxo-de-caixa"><a href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">Fluxo de Caixa</a></li>
             <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">Realizado</a></li>
@@ -45,12 +45,12 @@
                     <div class="content sub-content" style="max-height: none; display: block;">
                         <ul>
                             {% for item in sub_items %}
-                            <li class="account" style="margin-bottom: 10px;">
+                            <li class="account">
                                 {{ item.account }}
                                 <a href="{% url 'plano_de_contas:edit_account' item.id %}" class="edit-account-btn">Editar</a>
                             </li>
                             {% endfor %}
-                            <a href="{% url 'plano_de_contas:adicionar_conta' %}" class="add-account-btn">Adicione uma conta</a>
+                            <li><a href="{% url 'plano_de_contas:adicionar_conta' %}" class=" add-account-btn">Adicione uma conta</a></li>
                         </ul>
                     </div>
                 {% endfor %}
