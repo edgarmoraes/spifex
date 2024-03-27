@@ -36,7 +36,7 @@
         {% endfor %}
     </div>
     {% endif %}
-    <div id="report-container">
+    <div id="report-container" class="report-container">
         {% for group, items in chart_of_accounts|groupby:"group" %}
             <button class="collapsible" style="max-height: none;">{{ group }}</button>
             <div class="content" style="max-height: none; display: block;">
@@ -45,7 +45,7 @@
                     <div class="content sub-content" style="max-height: none; display: block;">
                         <ul>
                             {% for item in sub_items %}
-                            <li style="margin-bottom: 10px;">
+                            <li class="account" style="margin-bottom: 10px;">
                                 {{ item.account }}
                                 <a href="{% url 'plano_de_contas:edit_account' item.id %}" class="edit-account-btn">Editar</a>
                             </li>
