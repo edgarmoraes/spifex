@@ -75,14 +75,17 @@ def add_account(request):
     return render(request, 'add_account_form.html', {'form': form})
 
 def get_groups(request):
-    groups = request.GET.get('group')
-    groups = Chart_of_accounts.objects.values_list('group', flat=True)\
-                                      .distinct()
-    return JsonResponse(list(groups), safe=False)
+    groups = Chart_of_accounts.objects.values('group').distinct()
+    groups_with_nature = [
+        {'name': group['group'], 'nature': 'Crédito' if group['group'] in ['Receitas Operacionais', 'Receitas Não Operacionais'] else 'Débito'}
+        for group in groups
+    ]
+    return JsonResponse(groups_with_nature, safe=False)
 
 def get_subgroups(request):
     group = request.GET.get('group')
-    subgroups = Chart_of_accounts.objects.filter(group=group).values_list('subgroup', flat=True).distinct()
+    nature = request.GET.get('nature')
+    subgroups = Chart_of_accounts.objects.filter(group=group, nature=nature).values_list('subgroup', flat=True).distinct()
     return JsonResponse(list(subgroups), safe=False)
 
 def edit_account(request, account_id):

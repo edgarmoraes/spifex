@@ -12,9 +12,6 @@
     <title>Sppiff | Plano de Contas</title>
 </head>
 <body>
-    <section class="container-button-back">
-        <a href="{% url 'plano_de_contas:plano_de_contas' %}"><input type="submit" class="button-back" name="button-back" value="Voltar"></a>
-    </section>
 <header class="header">
     <!-- Barra de Navegação Fixa -->
     <nav class="nav-bar">
@@ -29,28 +26,33 @@
         </ul>
     </nav>
 </header>
-    <div class="container">
-        <h2>Adicionar Nova Conta</h2>
-        <form method="post" action="{% url 'plano_de_contas:adicionar_conta' %}"> <!-- Garanta que o URL está correto -->
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="group">Grupo:</label>
-                <select name="group" id="group" class="form-control">
-                    <!-- Opções de grupo serão inseridas aqui dinamicamente com JavaScript -->
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="subgroup">Subgrupo:</label>
-                <select name="subgroup" id="subgroup" class="form-control">
-                    <!-- Opções de subgrupo serão inseridas aqui dinamicamente com JavaScript -->
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="accountName">Nome da Conta:</label>
-                <input type="text" id="accountName" name="account" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Salvar</button>
-        </form>
+    <div class="content-container">
+        <section class="container-button-back">
+            <a href="{% url 'plano_de_contas:plano_de_contas' %}"><input type="submit" class="button-back" name="button-back" value="Voltar"></a>
+        </section>
+        <div class="add-account-container">
+            <h2>Adicionar Nova Conta</h2>
+            <form method="post" action="{% url 'plano_de_contas:adicionar_conta' %}"> <!-- Garanta que o URL está correto -->
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="group">Grupo:</label>
+                    <select name="group" id="group" class="form-control">
+                        <!-- Opções de grupo serão inseridas aqui dinamicamente com JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="subgroup">Subgrupo:</label>
+                    <select name="subgroup" id="subgroup" class="form-control">
+                        <!-- Opções de subgrupo serão inseridas aqui dinamicamente com JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="accountName">Nome da Conta:</label>
+                    <input type="text" id="accountName" name="account" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </form>
+        </div>
     </div>
     <script type="text/javascript">
         var getSubgroupsUrl = "{% url 'plano_de_contas:get_subgroups' %}";
