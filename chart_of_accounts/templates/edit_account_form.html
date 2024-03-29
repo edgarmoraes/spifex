@@ -33,25 +33,27 @@
         {% block content %}
         <div class="edit-account-container">
             <h2>Editar Conta</h2>
-            <form method="post" action="{% url 'plano_de_contas:edit_account' account_id %}">
+            <form class="edit-account-form" method="post" action="{% url 'plano_de_contas:edit_account' account_id %}">
                 {% csrf_token %}
                 <label for="group">Grupo:</label>
-                <select name="group" id="group">
+                <select class="edit-field" name="group" id="group">
                     <option value="" disabled selected>Selecione um grupo</option>
                     <!-- Opções de grupo serão preenchidas pelo JavaScript -->
                 </select>
         
                 <label for="subgroup">Subgrupo:</label>
-                <select name="subgroup" id="subgroup" disabled>
+                <select class="edit-field" name="subgroup" id="subgroup" disabled>
                     <option value="" disabled selected>Selecione um subgrupo</option>
                     <!-- Opções de subgrupo serão preenchidas pelo JavaScript -->
                 </select>
         
                 <label for="account">Conta:</label>
-                <input type="text" id="account" name="account">
+                <input class="edit-field" type="text" id="account" name="account">
         
-                <button type="submit" class="btn btn-success">Salvar Alterações</button>
-                <a href="{% url 'plano_de_contas:delete_account' account_id %}" class="btn btn-danger" onclick="return confirm('Tem certeza de que deseja excluir esta conta?')">Excluir Conta</a>
+                <section class="btn-section">
+                    <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                    <a href="{% url 'plano_de_contas:delete_account' account_id %}" class="btn btn-delete" onclick="return confirm('Tem certeza de que deseja excluir esta conta?')">Excluir Conta</a>
+                </section>
             </form>
         </div>
         {% endblock %}

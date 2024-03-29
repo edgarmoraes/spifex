@@ -11,16 +11,15 @@ class Chart_of_accounts(models.Model):
         ('Receitas Não Operacionais', 'Receitas Não Operacionais'),
         ('Despesas Operacionais', 'Despesas Operacionais'),
         ('Despesas Não Operacionais', 'Despesas Não Operacionais'),
-    ]  # 'Transferência entre Contas' removed
+    ]
 
     nature = models.CharField(max_length=255, choices=CREDITO_DEBITO_CHOICES, editable=False)
     group = models.CharField(max_length=255, choices=GROUP_CHOICES)
-    subgroup = models.CharField(max_length=255)  # Subgrupo
-    account = models.CharField(max_length=255)  # Nome da conta
+    subgroup = models.CharField(max_length=255)
+    account = models.CharField(max_length=255)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
 
     def save(self, *args, **kwargs):
-        # Logic simplified since 'Transferência entre Contas' is removed
         if self.group in ['Receitas Operacionais', 'Receitas Não Operacionais']:
             self.nature = 'Crédito'
         else:
