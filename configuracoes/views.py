@@ -1,8 +1,9 @@
 import json
+import uuid
 from decimal import Decimal
 from django.shortcuts import render
 from django.http import JsonResponse
-from fluxo_de_caixa.models import Bancos
+from fluxo_de_caixa.models import Bancos, Departamentos
 from realizado.models import Tabela_realizado
 from django.db.models import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
@@ -20,6 +21,15 @@ def bancos_e_contas(request):
             'bancos': lista_bancos,
         }
         return render(request, 'bancos_e_contas.html', context)
+    
+def departments(request):
+    if request.method =="GET":
+        lista_departamentos = Departamentos.objects.all().order_by('id')
+
+        context = {
+            'departamentos': lista_departamentos,
+        }
+        return render(request, 'departments.html', context)
     
 @csrf_exempt
 def salvar_banco(request):
@@ -69,3 +79,17 @@ def verificar_e_excluir_banco(request, idBanco):
     except Bancos.DoesNotExist:
         # Banco não encontrado
         return JsonResponse({'success': False, 'error': 'Banco não encontrado.'})
+    
+@require_POST
+def salvar_departamento(request):
+    nome_departamento = request.POST.get('departamento')
+
+    # Cria um novo departamento com um UUID único
+    novo_departamento = Departamentos(
+        departamento=nome_departamento,
+        uuid_departamento=uuid.uuid4()
+    )
+    novo_departamento.save()
+
+    # Retorna uma resposta JSON indicando sucesso
+    return JsonResponse({'success': True, 'message': 'Departamento adicionado com sucesso.'})

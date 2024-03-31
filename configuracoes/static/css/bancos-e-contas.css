@@ -1,8 +1,3 @@
-/* Compartilhado */
-.nav-configuracoes a {
-  color: var(--color7);
-}
-
 /* Tabelas Bancos */
 .box-grid-bancos {
     width: 80%;
@@ -14,13 +9,43 @@
     box-shadow: var(--box-shadow1);
 }
 
-/* Botão de Adicionar */
-section {
-    margin: 4.5rem auto 1rem auto;
+/* Botão de Voltar e Adicionar */
+.container-buttons {
+  display: flex;
+  position: relative;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin: 4.5rem 1rem 1rem 1rem;
 }
 
-.botao {
-    margin: 10px auto;
+/* Voltar */
+.button-back {
+  position: absolute;
+  border: none;
+  height: 45px;
+  color: var(--branco);
+  font-weight: 700;
+  padding: 0.7rem 1rem;
+  border-radius: 5px;
+  background-color: var(--color7);
+  top: 50%;
+  transform: translateY(-50%);
+  transition: var(--transition-effect1) var(--transition-duration2);
+}
+
+.button-back:hover {
+  background-color: var(--color7);
+  box-shadow: var(--box-shadow2);
+}
+
+.button-back:focus {
+  outline: none;
+}
+
+/* Adicionar */
+.botao-adicionar {
+    margin: 0px auto;
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -49,7 +74,7 @@ section {
     fill: var(--branco);
 }
   
-.botao:hover {
+.botao-adicionar:hover {
     width: 140px;
     border-radius: 50px;
     transition-duration: var(--transition-duration1);
@@ -60,7 +85,7 @@ section {
     background-color: var(--color3);
 }
   
-.botao:hover .svgIcon {
+.botao-adicionar:hover .svgIcon {
     width: 100px;
     transition-duration: var(--transition-duration1);
     transform: translateY(4%);
@@ -74,18 +99,18 @@ section {
     font-size: 2px;
 }
 
-.botao:hover.adicionar-bancos::before {
+.botao-adicionar:hover.adicionar-bancos::before {
     content: "Adicionar";
 }
   
-.botao:hover::before {
+.botao-adicionar:hover::before {
     font-size: 13px;
     opacity: 1;
     transform: translateY(30px);
     transition-duration: var(--transition-duration1);
 }
 
-.botao:focus {
+.botao-adicionar:focus {
     outline: none;
 }
 
@@ -219,7 +244,6 @@ input:focus {
 /* Tabela Bancos */
 .cadastro-contas-bancos-col {
   width: 20%;
-  border-radius: 20px 0px 0px 20px;
 }
 
 .cadastro-ag-bancos-col {
@@ -240,5 +264,4 @@ input:focus {
 
 .cadastro-status-bancos-col {
   width: 10%;
-  border-radius: 0px 20px 20px 0px;
 }

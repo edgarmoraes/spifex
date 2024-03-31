@@ -1,22 +1,21 @@
-import re
 import uuid
 import json
 from decimal import Decimal
 from datetime import datetime
+from itertools import groupby
 from django.db.models import Sum
 from django.utils import timezone
+from collections import OrderedDict
 from django.contrib import messages
 from django.dispatch import receiver
 from django.http import JsonResponse
 from realizado.models import Tabela_realizado
 from dateutil.relativedelta import relativedelta
 from django.views.decorators.csrf import csrf_exempt
-from django.core.exceptions import ObjectDoesNotExist
+from chart_of_accounts.models import Chart_of_accounts
 from django.db.models.signals import post_save, post_delete
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Tabela_fluxo, TabelaTemporaria, Totais_mes_fluxo, Bancos
-from collections import defaultdict
-from itertools import groupby
 
 def fluxo_de_caixa(request):
     if request.method == "GET":
@@ -26,37 +25,42 @@ def fluxo_de_caixa(request):
 
 def exibir_fluxo_de_caixa(request):
     bancos_ativos = Bancos.objects.filter(status=True)
-    Tabela_fluxo_list = Tabela_fluxo.objects.all().order_by('vencimento', '-valor', 'descricao')
+    tabela_fluxo_list = Tabela_fluxo.objects.all().order_by('vencimento', '-valor', 'descricao')
     totais_mes_fluxo = Totais_mes_fluxo.objects.all()
+    chart_of_accounts_queryset = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
+    
+    # Agrupando as contas por subgroup usando OrderedDict para manter a ordem
+    accounts_by_subgroup = OrderedDict()
+    for account in chart_of_accounts_queryset:
+        if account.subgroup not in accounts_by_subgroup:
+            accounts_by_subgroup[account.subgroup] = []
+        accounts_by_subgroup[account.subgroup].append(account)
 
-    # Convertendo QuerySet para lista para manipulação
-    Tabela_fluxo_list = list(Tabela_fluxo_list)
+    tabela_fluxo_list = list(tabela_fluxo_list)
 
-    # Preparando a lista para incluir totais de cada mês
     lancamentos_com_totais = []
-
-    for key, group in groupby(Tabela_fluxo_list, key=lambda x: x.vencimento.strftime('%Y-%m')):
+    for key, group in groupby(tabela_fluxo_list, key=lambda x: x.vencimento.strftime('%Y-%m')):
         lista_grupo = list(group)
         lancamentos_com_totais.extend(lista_grupo)
 
         total_debito = sum(item.valor for item in lista_grupo if item.natureza == 'Débito')
         total_credito = sum(item.valor for item in lista_grupo if item.natureza == 'Crédito')
-        saldo_total = total_credito - total_debito  # Cálculo do saldo total
+        saldo_total = total_credito - total_debito
 
-        # Inserir o total do mês, incluindo agora o saldo
         lancamentos_com_totais.append({
             'vencimento': datetime.strptime(key + "-01", '%Y-%m-%d'),
             'descricao': 'Total do Mês',
             'debito': total_debito,
             'credito': total_credito,
-            'saldo': saldo_total,  # Incluindo o saldo no dicionário
+            'saldo': saldo_total,
             'is_total': True,
         })
 
     context = {
         'Tabela_fluxo_list': lancamentos_com_totais,
-        'totais_mes_fluxo': totais_mes_fluxo,  # Mantém a variável, caso seja útil em outra parte do seu template
+        'totais_mes_fluxo': totais_mes_fluxo,
         'bancos': bancos_ativos,
+        'accounts_by_subgroup': accounts_by_subgroup,  # Passando o OrderedDict para o contexto
     }
     return render(request, 'fluxo_de_caixa.html', context)
 
@@ -82,6 +86,13 @@ def processar_fluxo_de_caixa(request):
 def extrair_dados_formulario(request):
     """Extrai e retorna os dados do formulário."""
     natureza = 'Crédito' if 'salvar_recebimento' in request.POST else 'Débito'
+
+    if natureza == 'Crédito':
+        conta_contabil_uuid = request.POST.get('conta_contabil_uuid_recebimentos')
+        conta_contabil_nome = request.POST.get('conta_contabil_nome_recebimentos')
+    else:
+        conta_contabil_uuid = request.POST.get('conta_contabil_uuid_pagamentos')
+        conta_contabil_nome = request.POST.get('conta_contabil_nome_pagamentos')
     
     # Escolhe o campo de ID correto com base na natureza da transação
     lancamento_id_recebimentos = request.POST.get('lancamento_id_recebimentos')
@@ -116,7 +127,8 @@ def extrair_dados_formulario(request):
         'descricao': descricao,
         'observacao': observacao,
         'valor': valor,
-        'conta_contabil': conta_contabil,
+        'conta_contabil_uuid': conta_contabil_uuid,
+        'conta_contabil_nome': conta_contabil_nome,
         'parcelas_total': parcelas_total,
         'parcelas_total_originais': parcelas_total_originais,
         'tags': tags,
@@ -125,14 +137,24 @@ def extrair_dados_formulario(request):
     }
 
 def atualizar_fluxo_existente(dados):
+    # Busca o fluxo de caixa pelo ID
     fluxo_de_caixa = get_object_or_404(Tabela_fluxo, id=dados['lancamento_id'])
-    parcelas_total_originais = fluxo_de_caixa.parcelas_total  # Obter o valor original de parcelas_total
+    
+    # Atualiza campos comuns diretamente
+    fluxo_de_caixa.descricao = dados['descricao']
+    fluxo_de_caixa.observacao = dados['observacao']
+    fluxo_de_caixa.valor = dados['valor']
+    fluxo_de_caixa.natureza = dados['natureza']
+    # Não altera parcelas_total se já é parte de uma série de parcelas
+    if fluxo_de_caixa.parcelas_total <= 1 or 'parcelas_total' not in dados:
+        fluxo_de_caixa.parcelas_total = dados.get('parcelas_total', fluxo_de_caixa.parcelas_total)
+    fluxo_de_caixa.tags = dados['tags']
 
-    for campo, valor in dados.items():
-        # Não atualizar parcelas_total se for um lançamento de múltiplas parcelas
-        if campo == 'parcelas_total' and parcelas_total_originais > 1:
-            continue
-        setattr(fluxo_de_caixa, campo, valor)
+    # Atualiza a conta contábil e seu UUID
+    fluxo_de_caixa.conta_contabil = dados['conta_contabil_nome']
+    fluxo_de_caixa.uuid_conta_contabil = dados['conta_contabil_uuid']
+
+    # Salva as alterações no banco de dados
     fluxo_de_caixa.save()
 
 def criar_novos_fluxos(dados, iniciar_desde_o_atual=False):
@@ -156,7 +178,8 @@ def criar_novos_fluxos(dados, iniciar_desde_o_atual=False):
             descricao=dados['descricao'],
             observacao=dados['observacao'],
             valor=dados['valor'],
-            conta_contabil=dados['conta_contabil'],
+            conta_contabil=dados['conta_contabil_nome'],  # Usar o nome da conta contábil
+            uuid_conta_contabil=dados['conta_contabil_uuid'],  # Armazenar o UUID da conta contábil
             parcela_atual=i,
             parcelas_total=total_parcelas,
             tags=dados['tags'],
@@ -205,6 +228,7 @@ def criar_registro_temporario(objeto):
         observacao=objeto.observacao,
         valor=objeto.valor,
         conta_contabil=objeto.conta_contabil,
+        uuid_conta_contabil=objeto.uuid_conta_contabil,
         parcela_atual=objeto.parcela_atual,
         parcelas_total=objeto.parcelas_total,
         tags=objeto.tags,
@@ -313,6 +337,7 @@ def processar_liquidacao(request):
                     observacao=item['observacao'],
                     valor=valor_parcial if is_liquidacao_parcial else valor_total,
                     conta_contabil=registro_original.conta_contabil,
+                    uuid_conta_contabil=registro_original.uuid_conta_contabil,
                     parcela_atual=registro_original.parcela_atual,
                     parcelas_total=registro_original.parcelas_total,
                     tags=registro_original.tags,
@@ -322,7 +347,7 @@ def processar_liquidacao(request):
                     banco_liquidacao=item.get('banco_liquidacao', ''),
                     banco_id_liquidacao=item.get('banco_id_liquidacao', ''),
                     uuid_correlacao=uuid_correlacao,
-                    uuid_correlacao_parcelas=uuid_correlacao  # Aqui é adicionado o mesmo UUID a uuid_correlacao_parcelas
+                    uuid_correlacao_parcelas=uuid_correlacao
                 )
 
                 # Remove o registro original se for uma liquidação total ou a última liquidação parcial

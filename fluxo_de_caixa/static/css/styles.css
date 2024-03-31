@@ -186,7 +186,7 @@ nav {
   background-color: #f9f9f9;
   color: black;
   padding: 8px;
-  border: none;
+  border: none !important;
   cursor: pointer;
   width: 100%;
   font-family: var(--primary-font);
@@ -227,6 +227,21 @@ nav {
 
 .dropdown-header button {
   cursor: pointer;
+}
+
+.subgroup-label {
+  display: block;
+  padding: 10px 10px 0px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.subgroup-label[data-nature="Crédito"] {
+  color: var(--color7);
+}
+
+.subgroup-label[data-nature="Débito"] {
+  color: var(--color6);
 }
 
 .dropdown-options label {
@@ -419,6 +434,7 @@ nav {
   font-family: var(--primary-font);
   border-left: var(--border1);
   border-right: var(--border1);
+  border-bottom: var(--border1);
   color: #202020;
   border-spacing: 0;
 }

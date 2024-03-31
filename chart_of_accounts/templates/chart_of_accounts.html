@@ -1,0 +1,74 @@
+{% load static %}
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/chart_of_accounts.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+        <link rel="icon" href="{% static 'favicon.png' %}" type="image/x-icon">
+        <title>Sppiff | Plano de Contas</title>
+    </head>
+<header class="header">
+    <!-- ############### Barra de Navegação Fixa ############### -->
+    <nav class="nav-bar">
+        <a class="logo" href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">SPPIFF</a>
+        <ul class="nav-list">
+            <li class="nav-fluxo-de-caixa"><a href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">Fluxo de Caixa</a></li>
+            <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">Realizado</a></li>
+            <li class="nav-relatorios"><a href="#">Relatórios</a></li>
+            <li class="nav-line"><div class="line"></div></li>
+            <li class="nav-configuracoes"><a href="{% url 'configuracoes:configuracoes' %}">Configurações</a></li>
+            <li class="nav-meu-perfil"><a href="meu-perfil.html">Meu Perfil</a></li>
+        </ul>
+    </nav>
+</header>
+<body>
+    <div class="content-container">
+        <section class="container-button-back">
+            <a href="{% url 'configuracoes:configuracoes' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
+        </section>
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div id="report-container" class="report-container">
+            {% for group, items in chart_of_accounts|groupby:"group" %}
+                <button class="collapsible" style="max-height: none;">{{ group }}</button>
+                <div class="content" style="max-height: none; display: block;">
+                    {% for sub_group, sub_items in items|groupby:"subgroup" %}
+                        <button class="collapsible sub-collapsible" style="max-height: none;">{{ sub_group }}</button>
+                        <div class="content sub-content" style="max-height: none; display: block;">
+                            <ul>
+                                {% for item in sub_items %}
+                                <li id="account" class="account">
+                                    {{ item.account }}
+                                <a href="{% url 'plano_de_contas:edit_account' item.id %}" class="edit-account-btn" 
+                                   data-nature="{{ item.nature }}" 
+                                   data-group="{{ item.group }}"
+                                   data-subgroup="{{ item.subgroup }}"
+                                   data-account="{{ item.account }}"
+                                   data-uuid="{{ item.uuid }}">Editar</a>
+                                </li>
+                                {% endfor %}
+                                <li><a href="{% url 'plano_de_contas:adicionar_conta' %}" class=" add-account-btn">Adicione uma conta</a></li>
+                            </ul>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <form id="input-excel" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Atualizar</button>
+    </form>
+    <script src="{% static 'scripts/chart_of_account.js' %}"></script>
+</body>
+</html>

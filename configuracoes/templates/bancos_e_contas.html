@@ -9,14 +9,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{% static 'css/bancos-e-contas.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
-    <link rel="icon" href="{% static 'wayeasi-favicon.png' %}" type="image/x-icon">
-    <title>WayEasi | Bancos e Contas</title>
+    <link rel="icon" href="{% static 'favicon.png' %}" type="image/x-icon">
+    <title>Sppiff | Bancos e Contas</title>
 </head>
 <body>
     <header class="header">
         <!-- ############### Barra de Navegação Fixa ############### -->
         <nav class="nav-bar">
-            <a class="logo" href="{% url 'realizado:realizado' %}">WAYEASI</a>
+            <a class="logo" href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">SPPIFF</a>
             <ul class="nav-list">
                 <li class="nav-fluxo-de-caixa"><a href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">Fluxo de Caixa</a></li>
                 <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">Realizado</a></li>
@@ -27,15 +27,14 @@
             </ul>
         </nav>
     </header>
-
-    <section>
-        <button class="botao adicionar-bancos">
+    <section class="container-buttons">
+        <a href="{% url 'configuracoes:configuracoes' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
+        <button class="botao-adicionar adicionar-bancos">
             <svg class="svgIcon" width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M11 17C11 17.5523 11.4477 18 12 18C12.5523 18 13 17.5523 13 17V13H17C17.5523 13 18 12.5523 18 12C18 11.4477 17.5523 11 17 11H13V7C13 6.44771 12.5523 6 12 6C11.4477 6 11 6.44771 11 7V11H7C6.44772 11 6 11.4477 6 12C6 12.5523 6.44772 13 7 13H11V17Z" fill="#000000"/>
                 </svg>
         </button>
     </section>
-
     <div class="box-grid-bancos">
         <div class="conteudo-tabela-bancos">
             <table class="tabela-bancos">

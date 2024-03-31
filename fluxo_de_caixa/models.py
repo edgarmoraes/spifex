@@ -14,6 +14,7 @@ class Tabela_fluxo(models.Model):
     natureza = models.CharField(max_length=50)
     data_criacao = models.DateTimeField(auto_now_add=True)
     uuid_correlacao = models.UUIDField(null=True, blank=True)
+    uuid_conta_contabil = models.UUIDField(null=True, blank=True)
 
 class Totais_mes_fluxo(models.Model):
     inicio_mes = models.DateField(null=True, blank=True)
@@ -32,6 +33,7 @@ class TabelaTemporaria(models.Model):
     observacao = models.CharField(max_length = 100)
     valor = models.DecimalField(max_digits=13, decimal_places=2)
     conta_contabil = models.CharField(max_length = 100)
+    uuid_conta_contabil = models.UUIDField(null=True, blank=True)
     parcela_atual = models.IntegerField()
     parcelas_total = models.IntegerField()
     tags = models.CharField(max_length = 100)
@@ -62,3 +64,7 @@ class Bancos(models.Model):
             # Para instâncias existentes, atualiza saldo_consolidado com base no saldo_atual
             self.saldo_consolidado = self.saldo_inicial + self.saldo_atual
         super().save(*args, **kwargs)
+
+class Departamentos(models.Model):
+    departamento = models.CharField(max_length = 256)
+    uuid_departamento = models.UUIDField(null=True, blank=True)

@@ -93,21 +93,20 @@ a.accordion-title {
   padding: 15px;
   cursor: pointer;
   background-color: var(--color2);
-  border-bottom: 1px solid #ddd;
+
   transition: background-color 0.3s ease;
 }
 
 .accordion-content {
-  padding: 10px;
-  max-height: 1px; /* Inicialmente definido para 1px para ocultar completamente o conteúdo */
+  max-height: 0px;
   overflow-y: hidden;
-  transition: max-height 0.3s ease, padding 0.3s ease; /* Adicionando transições suaves */
-  pointer-events: none; /* Desativando a interação durante a transição */
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  pointer-events: none;
 }
 
 .accordion-section.open .accordion-content {
-  overflow-y: hidden; /* Adicionando scroll quando o conteúdo ultrapassar a altura máxima */
-  pointer-events: auto; /* Reativando a interação quando a seção está aberta */
+  overflow-y: hidden;
+  pointer-events: auto;
 }
 
 .accordion-section-stakeholders {

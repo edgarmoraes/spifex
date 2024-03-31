@@ -402,6 +402,7 @@ document.getElementById('salvar-liquidacao').addEventListener('click', async fun
       observacao: campoObservacao ? campoObservacao.value : '',
       valor: campoValorTotal.value,
       conta_contabil: row.getAttribute('data-conta-contabil'),
+      uuid_conta_contabil: row.getAttribute('data-uuid-conta-contabil'),
       parcela_atual: row.getAttribute('parcela-atual'),
       parcelas_total: row.getAttribute('parcelas-total'),
       natureza: row.querySelector('.debito-row').textContent ? 'Débito' : 'Crédito',
@@ -571,182 +572,161 @@ document.addEventListener('DOMContentLoaded', function () {
     
     checkboxes.forEach(function (checkbox) {
       checkbox.addEventListener('change', function () {
-            const algumaCheckboxMarcada = Array.from(checkboxes).some(checkbox => checkbox.checked);
+        const algumaCheckboxMarcada = Array.from(checkboxes).some(checkbox => checkbox.checked);
 
-            if (algumaCheckboxMarcada) {
-                // Pelo menos uma checkbox marcada, exibir os botões e adicionar a margem
-                botoesAcoes.style.display = 'flex';
-                botoesAcoes.classList.add('mostrar');
-                tabelaLancamentos.style.marginBottom = '6.5rem';
-              } else {
-                // Nenhuma checkbox marcada, ocultar os botões e remover a margem
-                botoesAcoes.classList.remove('mostrar');
-                tabelaLancamentos.style.marginBottom = '0';
-              }
-            });
-          });
-          
-          cancelarButton.addEventListener('click', function () {
-            checkboxes.forEach(function (checkbox) {
-            checkbox.checked = false;
-          });
-          
-          // Ocultar os botões e remover a margem
-          botoesAcoes.classList.remove('mostrar');
-          tabelaLancamentos.style.marginBottom = '0';
-        });
-
-          apagarButton.addEventListener('click', function () {
+        if (algumaCheckboxMarcada) {
+            // Pelo menos uma checkbox marcada, exibir os botões e adicionar a margem
+            botoesAcoes.style.display = 'flex';
+            botoesAcoes.classList.add('mostrar');
+            tabelaLancamentos.style.marginBottom = '6.5rem';
+          } else {
+            // Nenhuma checkbox marcada, ocultar os botões e remover a margem
             botoesAcoes.classList.remove('mostrar');
             tabelaLancamentos.style.marginBottom = '0';
-        });
+          }
+      });
+    });
+      
+    cancelarButton.addEventListener('click', function () {
+      checkboxes.forEach(function (checkbox) {
+      checkbox.checked = false;
+    });
+    
+      // Ocultar os botões e remover a margem
+      botoesAcoes.classList.remove('mostrar');
+      tabelaLancamentos.style.marginBottom = '0';
+    });
+
+    apagarButton.addEventListener('click', function () {
+      botoesAcoes.classList.remove('mostrar');
+      tabelaLancamentos.style.marginBottom = '0';
+  });
 });
       
       
 // Modais
-function abrirModal(openBtn, modal) {
-  openBtn.addEventListener('click', () => {
-    modalAberto = modal;
-    modal.showModal();
-    document.body.style.overflow = 'hidden';
-    document.body.style.marginRight = '17px';
-    document.querySelector('.nav-bar').style.marginRight = '17px';
-  });
-}
+// Função auxiliar para resetar campos específicos de cada modal
+function resetModalFields(formSelector, dropdownId = '', tagInputId = '', tagsHiddenInputId = '', tagContainerId = '') {
+  const form = document.querySelector(formSelector);
+  form?.reset();
 
-function fecharModal(closeBtn, modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId) {
-  closeBtn.addEventListener('click', () => {
-    fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId);
-  });
-  
-  modal.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId);
-    }
-  });
-
-  modal.addEventListener('close', () => {
-    fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId);
-  });
-}
-
-function fechar(modal, formSelector, tagInputId, tagsHiddenInputId, tagContainerId) {
-  modal.close();
-  modalAberto = null;
-  document.body.style.overflow = '';
-  document.body.style.marginRight = '';
-  document.querySelector('.nav-bar').style.marginRight = '';
-  document.querySelector(formSelector).reset();
-
-  // Verifica se o tagContainer existe antes de tentar manipulá-lo
-  const tagContainer = document.getElementById(tagContainerId);
-  if (tagContainer) {
-      while (tagContainer.firstChild) {
-          tagContainer.removeChild(tagContainer.firstChild);
-      }
+  // Reset do botão dropdown e checkboxes de contas contábeis
+  if (dropdownId) {
+    const dropdownBtn = document.getElementById(dropdownId);
+    dropdownBtn.textContent = 'Selecione';
+    document.querySelectorAll(`#${dropdownId}-content .conta-checkbox`).forEach(checkbox => checkbox.checked = false);
   }
 
-  // Verifica se o tagInput existe antes de tentar manipulá-lo
+  // Reset dos inputs de tags
   const tagInput = document.getElementById(tagInputId);
   if (tagInput) {
-      tagInput.value = '';
+    tagInput.value = '';
+  }
+  
+  // Reset do contêiner de tags
+  const tagContainer = document.getElementById(tagContainerId);
+  while (tagContainer && tagContainer.firstChild) {
+    tagContainer.removeChild(tagContainer.firstChild);
   }
 
-  // Verifica se o tagsHiddenInput existe antes de tentar manipulá-lo
+  // Reset do input oculto que armazena as tags serializadas
   const tagsHiddenInput = document.getElementById(tagsHiddenInputId);
   if (tagsHiddenInput) {
-      tagsHiddenInput.value = '';
+    tagsHiddenInput.value = '';
   }
-
-  // Oculta as seções de liquidação parcial e remove a classe 'ativo' dos elementos ajustáveis
-  const secoesValorParcial = document.querySelectorAll('.valor-parcial-liquidacao');
-  secoesValorParcial.forEach(secao => {
-    secao.style.display = 'none';
-  });
-
-  const elementosParaAjustar = document.querySelectorAll('.lancamentos-selecionados, .label-lancamentos-selecionados');
-  elementosParaAjustar.forEach(el => {
-    el.classList.remove('ativo');
-  });
-
-  const labelParcial = document.querySelector('.label-parcial');
-  if (labelParcial) labelParcial.style.display = 'none';
-
-  // Desmarca todos os checkboxes 'botao-parcial'
-  const todosBotoesParcial = document.querySelectorAll('.botao-parcial');
-  todosBotoesParcial.forEach(checkbox => {
-    checkbox.checked = false;
-  });
-
-  // Atualiza o estado das colunas para refletir a remoção da classe 'ativo'
-  atualizarEstadoColunas();
 }
 
+// Função unificada para manipular a abertura e fechamento de modais
+function handleModal(openBtnSelector, modalSelector, formSelector, config = {}) {
+  const openBtn = document.querySelector(openBtnSelector);
+  const modal = document.querySelector(modalSelector);
 
-// Elementos do DOM
-const openModalRecebimentos = document.querySelector('.recebimentos');
-const openModalPagamentos = document.querySelector('.pagamentos');
-const openModalTransferencias = document.querySelector('.transferencias');
-const openModalLiquidacoes = document.querySelector('.liquidar-button');
+  openBtn.addEventListener('click', () => {
+    modal.showModal();
+    document.body.style.overflow = 'hidden';
+  });
+  
+  openBtn.addEventListener('click', () => {
+    modal.showModal();
+    document.body.classList.add('modal-open');
+  });
 
-const closeModalRecebimentos = document.querySelector('.modal-fechar-recebimentos');
-const closeModalPagamentos = document.querySelector('.modal-fechar-pagamentos');
-const closeModalTransferencias = document.querySelector('.modal-fechar-transferencias');
-const closeModalLiquidacoes = document.querySelector('.modal-fechar-liquidacoes');
+  // Fechamento do modal
+  const closeModalFunc = () => {
+    modal.close();
+    document.body.style.overflow = '';
+    document.body.classList.remove('modal-open');
+    resetModalFields(formSelector, config.dropdownId, config.tagInputId, config.tagsHiddenInputId, config.tagContainerId);
+  };
 
-const modalRecebimentos = document.querySelector('.modal-recebimentos');
-const modalPagamentos = document.querySelector('.modal-pagamentos');
-const modalTransferencias = document.querySelector('.modal-transferencias');
-const modalLiquidacoes = document.querySelector('.modal-liquidacoes');
+  const closeBtn = document.querySelector(config.closeBtnSelector);
+  closeBtn?.addEventListener('click', closeModalFunc);
+  modal.addEventListener('keydown', (e) => e.key === 'Escape' && closeModalFunc());
+  modal.addEventListener('close', closeModalFunc);
+}
 
-// Event Listeners
-abrirModal(openModalRecebimentos, modalRecebimentos, ".modal-form-recebimentos", 'tagInput-recebimentos', 'tagsHiddenInput-recebimentos', 'tag-container-recebimentos');
-fecharModal(closeModalRecebimentos, modalRecebimentos, ".modal-form-recebimentos", 'tagInput-recebimentos', 'tagsHiddenInput-recebimentos', 'tag-container-recebimentos', "parcelas-section-recebimentos");
+document.addEventListener('DOMContentLoaded', () => {
+  // Configurações dos modais
+  const modalConfigs = [
+    {openBtn: '.recebimentos', modal: '.modal-recebimentos', form: '.modal-form-recebimentos', config: {closeBtnSelector: '.modal-fechar-recebimentos', dropdownId: 'dropdown-button-contas-recebimentos', tagInputId: 'tagInput-recebimentos', 
+    tagsHiddenInputId: 'tagsHiddenInput-recebimentos', tagContainerId: 'tag-container-recebimentos'}},
+    {openBtn: '.pagamentos', modal: '.modal-pagamentos', form: '.modal-form-pagamentos', config: {closeBtnSelector: '.modal-fechar-pagamentos', dropdownId: 'dropdown-button-contas-pagamentos', tagInputId: 'tagInput-pagamentos', 
+    tagsHiddenInputId: 'tagsHiddenInput-recebimentos', tagContainerId: 'tag-container-pagamentos'}},
+    {openBtn: '.transferencias', modal: '.modal-transferencias', form: '.modal-form-transferencias', config: {closeBtnSelector: '.modal-fechar-transferencias'}},
+    {openBtn: '.liquidar-button', modal: '.modal-liquidacoes', form: '.modal-form-liquidacoes', config: {closeBtnSelector: '.modal-fechar-liquidacoes'}},
+  ];
 
-abrirModal(openModalPagamentos, modalPagamentos, ".modal-form-pagamentos", 'tagInput-pagamentos', 'tagsHiddenInput-pagamentos', 'tag-container-pagamentos');
-fecharModal(closeModalPagamentos, modalPagamentos, ".modal-form-pagamentos", 'tagInput-pagamentos', 'tagsHiddenInput-pagamentos', 'tag-container-pagamentos', "parcelas-section-pagamentos");
+  // Aplicar configurações para cada modal
+  modalConfigs.forEach(({openBtn, modal, form, config}) => {
+    handleModal(openBtn, modal, form, config);
+  });
+});
 
-abrirModal(openModalTransferencias, modalTransferencias, ".modal-form-transferencias");
-fecharModal(closeModalTransferencias, modalTransferencias, ".modal-form-transferencias");
-
-abrirModal(openModalLiquidacoes, modalLiquidacoes, ".modal-form-liquidacoes");
-fecharModal(closeModalLiquidacoes, modalLiquidacoes, ".modal-form-liquidacoes");
+document.querySelectorAll('.conta-checkbox').forEach(checkbox => {
+  checkbox.addEventListener('change', function() {
+    if (this.checked) {
+      // Determinar se é um recebimento ou pagamento
+      const isRecebimento = this.name === "contas_recebimentos";
+      const uuidFieldId = isRecebimento ? "conta_contabil_uuid_recebimentos" : "conta_contabil_uuid_pagamentos";
+      const nomeFieldId = isRecebimento ? "conta_contabil_nome_recebimentos" : "conta_contabil_nome_pagamentos";
+      
+      // Atualizar campos ocultos
+      document.getElementById(uuidFieldId).value = this.dataset.uuidAccount;
+      document.getElementById(nomeFieldId).value = this.dataset.account;
+    }
+  });
+});
 
 
 // Evento para editar lançamentos ao clicar duas vezes nas células da tabela
-// Variáveis Globais
 let estaEditando = false;
 
 // Event Listeners Principais
 document.addEventListener('DOMContentLoaded', function() {
-    configurarEventosModais();
-    configurarEventosTabela();
+  configurarEventos();
 });
 
-function configurarEventosModais() {
-    // Fechar modais ao pressionar a tecla Escape
-    document.addEventListener('keydown', event => {
-        if (event.key === 'Escape') {
-            fecharModais();
-        }
-    });
-
-    // Configuração do fechamento do modal
-    document.getElementById('modal-recebimentos').onclose = function() {
-        onModalClose('recebimentos');
-    };
-    document.getElementById('modal-pagamentos').onclose = function() {
-        onModalClose('pagamentos');
-    };
+function configurarEventos() {
+  document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') {
+          fecharModais();
+      }
+  });
+  ['recebimentos', 'pagamentos'].forEach(tipo => {
+      document.getElementById(`modal-${tipo}`).onclose = function() {
+          onModalClose(tipo);
+      };
+  });
+  configurarEventosTabela();
 }
 
 function configurarEventosTabela() {
-    // Evento para editar lançamentos ao clicar duas vezes nas células da tabela
-    document.querySelectorAll('.row-lancamentos td:not(.checkbox-row)').forEach(cell => {
-        cell.addEventListener('dblclick', function() {
-            handleCellDoubleClick(cell);
-        });
+  const cells = document.querySelectorAll('.row-lancamentos td');
+  cells.forEach(cell => {
+    cell.addEventListener('dblclick', function() {
+      handleCellDoubleClick(this);
     });
+  });
 }
 
 // Funções de Eventos de Tabela
@@ -758,104 +738,149 @@ function handleCellDoubleClick(cell) {
 // Funções de Manipulação de Modais
 function abrirModalEdicao(row) {
   const natureza = row.getAttribute('data-natureza');
+  const tipo = natureza === 'Crédito' ? 'recebimentos' : 'pagamentos';
+  abrirModalEdicaoGeral(row, tipo);
+}
 
-  if (natureza === 'Crédito') {
-      abrirModalRecebimentosEdicao(row);
-  } else if (natureza === 'Débito') {
-      abrirModalPagamentosEdicao(row);
-  }
+function abrirModalEdicaoGeral(row, tipo) {
+  estaEditando = true;
+  preencherDadosModal(row, tipo);
+  mostrarParcelas(row, tipo);
+  const modal = document.getElementById(`modal-${tipo}`);
+  modal.showModal();
+  document.body.style.overflow = 'hidden';
+  document.body.style.marginRight = '17px';
+  document.querySelector('.nav-bar').style.marginRight = '17px';
 }
 
 function fecharModais() {
-    if (document.getElementById('modal-recebimentos').open) {
-        var form = document.querySelector(".modal-form-recebimentos"); // Adapte o seletor conforme necessário
-        form.reset(); // Reseta o formulário
-        document.getElementById('modal-recebimentos').close();
-    }
-    if (document.getElementById('modal-pagamentos').open) {
-        var form = document.querySelector(".modal-form-pagamentos"); // Adapte o seletor conforme necessário
-        form.reset(); // Reseta o formulário
-        document.getElementById('modal-pagamentos').close();
-    }
+  ['recebimentos', 'pagamentos'].forEach(tipo => {
+      const modal = document.getElementById(`modal-${tipo}`);
+      if (modal.open) {
+          const form = document.querySelector(`.modal-form-${tipo}`);
+          form.reset();
+          modal.close();
+      }
+  });
 }
-
-function abrirModalRecebimentosEdicao(row) {
-    estaEditando = true;
-    preencherDadosModal(row, 'recebimentos');
-    mostrarParcelasRecebimentos(row);
-    document.getElementById('modal-recebimentos').showModal();
-    document.body.style.overflow = 'hidden';
-    document.body.style.marginRight = '17px';
-    document.querySelector('.nav-bar').style.marginRight = '17px';
-}
-
-function abrirModalPagamentosEdicao(row) {
-    estaEditando = true;
-    preencherDadosModal(row, 'pagamentos');
-    mostrarParcelasPagamentos(row);
-    document.getElementById('modal-pagamentos').showModal();
-    document.body.style.overflow = 'hidden';
-    document.body.style.marginRight = '17px';
-    document.querySelector('.nav-bar').style.marginRight = '17px';
-}
-
+  
 function onModalClose(tipo) {
-    estaEditando = false;
-    limparCamposModal(tipo);
-    redefinirCampoParcelas(tipo);
+  document.body.style.overflow = '';
+  document.body.style.marginRight = '';
+  document.querySelector('.nav-bar').style.marginRight = '';
+  configurarCamposAtivos(tipo, true);
+  limparCamposModal(tipo);
+  estaEditando = false;
+  redefinirCampoParcelas(tipo);
 }
 
-// Funções Auxiliares de Modais
+function limparCamposModal(tipo) {
+  const inputs = document.querySelectorAll(`.modal-form-${tipo} input`);
+  inputs.forEach(input => {
+      if (input.type !== 'submit' && input.name !== 'csrfmiddlewaretoken') {
+          input.value = '';
+      }
+  });
+}
+
+// Função auxiliar para ativar ou desativar campos
+function configurarCamposAtivos(tipo, ativar) {
+  const campos = {
+    valor: document.getElementById(`valor-${tipo}`),
+    recorrencia: document.getElementById(`recorrencia-${tipo}`),
+    dropdownButton: document.getElementById(`dropdown-button-contas-${tipo}`),
+    checkboxes: document.querySelectorAll(`#dropdown-content-contas-${tipo} .conta-checkbox`)
+  };
+
+  if (ativar) {
+    campos.valor.readOnly = false;
+    configurarElemento(campos.valor, { backgroundColor: '', color: '', cursor: '' });
+    campos.recorrencia.disabled = false;
+    configurarElemento(campos.recorrencia, { backgroundColor: '', color: '', cursor: '' });
+    campos.dropdownButton.disabled = false;
+    configurarElemento(campos.dropdownButton, { backgroundColor: '', color: '', cursor: '' });
+    campos.checkboxes.forEach(checkbox => checkbox.disabled = false);
+  } else {
+    campos.valor.readOnly = true;
+    configurarElemento(campos.valor, { backgroundColor: '#B5B5B5', color: '#FFFFFF', cursor: 'default' });
+    campos.recorrencia.disabled = true;
+    configurarElemento(campos.recorrencia, { backgroundColor: '#B5B5B5', color: '#FFFFFF', cursor: 'default' });
+    campos.dropdownButton.disabled = true;
+    configurarElemento(campos.dropdownButton, { backgroundColor: '#B5B5B5', color: '#FFFFFF', cursor: 'default' });
+    campos.checkboxes.forEach(checkbox => checkbox.disabled = true);
+  }
+}
+
+function configurarElemento(elemento, propriedades) {
+  Object.keys(propriedades).forEach(prop => {
+    elemento.style[prop] = propriedades[prop];
+  });
+}
+
 function preencherDadosModal(row, tipo) {
-    const parcelasTotalOriginais = row.getAttribute('parcelas-total');
-    document.getElementById(`parcelas-total-originais-${tipo}`).value = parcelasTotalOriginais;
+  const parcelasTotalOriginais = row.getAttribute('parcelas-total');
+  document.getElementById(`parcelas-total-originais-${tipo}`).value = parcelasTotalOriginais;
 
-    const vencimento = row.querySelector('.vencimento-row').textContent.trim();
-    document.getElementById(`data-${tipo}`).value = formatarDataParaInput(vencimento);
+  const vencimento = row.querySelector('.vencimento-row').textContent.trim();
+  document.getElementById(`data-${tipo}`).value = formatarDataParaInput(vencimento);
 
-    const valor = row.querySelector(`.${tipo === 'recebimentos' ? 'credito' : 'debito'}-row`).textContent.trim();
-    document.getElementById(`valor-${tipo}`).value = "R$ "+valor;
+  const valor = row.querySelector(`.${tipo === 'recebimentos' ? 'credito' : 'debito'}-row`).textContent.trim();
+  document.getElementById(`valor-${tipo}`).value = "R$ " + valor;
 
-    document.getElementById(`descricao-${tipo}`).value = row.querySelector('.descricao-row').textContent.trim();
-    document.getElementById(`observacao-${tipo}`).value = row.querySelector('.obs-row').childNodes[0].textContent.trim();
+  document.getElementById(`descricao-${tipo}`).value = row.querySelector('.descricao-row').textContent.trim();
+  document.getElementById(`observacao-${tipo}`).value = row.querySelector('.obs-row').childNodes[0].textContent.trim();
 
-    const tagsString = extrairTags(row);
-    adicionarTagsAoContainer(tagsString, tipo);
+  const tagsString = extrairTags(row);
+  adicionarTagsAoContainer(tagsString, tipo);
 
-    document.getElementById(`conta-contabil-${tipo}`).value = row.dataset.contaContabil;
+  const contaContabilUuid = row.getAttribute('data-uuid-conta-contabil');
+  document.getElementById(`conta_contabil_uuid_${tipo}`).value = contaContabilUuid;
+  selecionarContaContabilDropdown(tipo, contaContabilUuid);
 
-    const lancamentoId = row.querySelector('.checkbox-personalizado').getAttribute('data-id');
-    document.querySelector(`[name="lancamento_id_${tipo}"]`).value = lancamentoId;
+  const lancamentoId = row.querySelector('.checkbox-personalizado').getAttribute('data-id');
+  document.querySelector(`[name="lancamento_id_${tipo}"]`).value = lancamentoId;
 
-    const uuid = row.querySelector('.checkbox-personalizado').getAttribute('data-uuid-row');
-    document.querySelector(`[name="uuid_${tipo}"]`).value = uuid;
+  const uuid = row.getAttribute('data-uuid-row');
+  configurarCamposAtivos(tipo, uuid === 'None');
+}
 
-      // Bloqueia a edição do campo 'valor' caso o 'data-uuid-row' seja diferente de 'none'
-    if (uuid !== 'None') {
-      var element = document.getElementById(`valor-${tipo}`);
-      element.readOnly = true;
-      element.style.backgroundColor = '#B5B5B5';
-      element.style.color = '#FFFFFF';
+function selecionarContaContabilDropdown(tipo, contaContabilUuid) {
+  const checkboxesContaContabil = document.querySelectorAll(`#dropdown-content-contas-${tipo} .conta-checkbox`);
+  checkboxesContaContabil.forEach(checkbox => {
+    if (checkbox.dataset.uuidAccount === contaContabilUuid) {
+      checkbox.checked = true;
+      document.getElementById(`dropdown-button-contas-${tipo}`).textContent = checkbox.dataset.account;
     } else {
-        document.getElementById(`valor-${tipo}`).readOnly = false;
-        document.getElementById(`valor-${tipo}`).style.backgroundColor = '#F4F2F2';
-        document.getElementById(`valor-${tipo}`).style.color = '#202020';
+      checkbox.checked = false;
     }
+  });
+}
 
-    simularEnter(`tagInput-${tipo}`);
+// Função para mostrar campo de recorrência
+function mostrarParcelas(row, tipo) {
+  const select = document.getElementById(`recorrencia-${tipo}`);
+  const section = document.getElementById(`parcelas-section-${tipo}`);
+  const input = document.getElementById(`parcelas-${tipo}`);
+
+  section.style.display = select.value === 'sim' ? 'block' : 'none';
+  if (estaEditando) {
+      const parcelasTotal = row.getAttribute('parcelas-total') ? parseInt(row.getAttribute('parcelas-total')) : 1;
+      const parcelaAtual = row.getAttribute('parcela-atual') ? parseInt(row.getAttribute('parcela-atual')) : 1;
+      input.value = parcelaAtual;
+      input.disabled = parcelasTotal > 1;
+  } else {
+      input.value = select.value === 'sim' ? '' : '1';
+      input.disabled = false;
+  }
 }
 
 function adicionarTagsAoContainer(tagsString, tipo) {
   const containerId = `tag-container-${tipo}`;
   const hiddenInputId = `tagsHiddenInput-${tipo}`;
   const tagContainer = document.getElementById(containerId);
-
-  // Limpa as tags existentes no container para evitar duplicação
   while (tagContainer.firstChild) {
       tagContainer.removeChild(tagContainer.firstChild);
   }
-
-  // Divide a string de tags e adiciona cada tag individualmente
   const tags = tagsString.split(',');
   tags.forEach(tag => {
       if (tag.trim()) {
@@ -864,62 +889,15 @@ function adicionarTagsAoContainer(tagsString, tipo) {
   });
 }
 
-function limparCamposModal(tipo) {
-    const inputs = document.querySelectorAll(`.modal-form-${tipo} input`);
-    inputs.forEach(input => {
-        if (input.type !== 'submit' && input.name !== 'csrfmiddlewaretoken') {
-            input.value = '';
-        }
-    });
-}
-
 function redefinirCampoParcelas(tipo) {
-    var select = document.getElementById(`recorrencia-${tipo}`);
-    var input = document.getElementById(`parcelas-${tipo}`);
-    var section = document.getElementById(`parcelas-section-${tipo}`);
-
-    section.style.display = select.value === 'sim' ? 'block' : 'none';
-    input.value = select.value === 'sim' ? '' : '1';
-    input.disabled = false;
-}
-
-// Função para mostrar campo de recorrência
-function mostrarParcelasRecebimentos(row) {
-  var select = document.getElementById('recorrencia-recebimentos');
-  var section = document.getElementById('parcelas-section-recebimentos');
-  var input = document.getElementById('parcelas-recebimentos');
+  var select = document.getElementById(`recorrencia-${tipo}`);
+  var input = document.getElementById(`parcelas-${tipo}`);
+  var section = document.getElementById(`parcelas-section-${tipo}`);
 
   section.style.display = select.value === 'sim' ? 'block' : 'none';
-  if (estaEditando) {
-      var parcelasTotal = row.getAttribute('parcelas-total') ? parseInt(row.getAttribute('parcelas-total')) : 1;
-      var parcelaAtual = row.getAttribute('parcela-atual') ? parseInt(row.getAttribute('parcela-atual')) : 1;
-
-      input.value = parcelaAtual;
-      input.disabled = parcelasTotal > 1;
-  } else {
-      input.value = select.value === 'sim' ? '' : '1';
-      input.disabled = false;
-  }
+  input.value = select.value === 'sim' ? '' : '1';
+  input.disabled = false;
 }
-
-function mostrarParcelasPagamentos(row) {
-  var select = document.getElementById('recorrencia-pagamentos');
-  var section = document.getElementById('parcelas-section-pagamentos');
-  var input = document.getElementById('parcelas-pagamentos');
-
-  section.style.display = select.value === 'sim' ? 'block' : 'none';
-  if (estaEditando) {
-      var parcelasTotal = row.getAttribute('parcelas-total') ? parseInt(row.getAttribute('parcelas-total')) : 1;
-      var parcelaAtual = row.getAttribute('parcela-atual') ? parseInt(row.getAttribute('parcela-atual')) : 1;
-
-      input.value = parcelaAtual;
-      input.disabled = parcelasTotal > 1;
-  } else {
-      input.value = select.value === 'sim' ? '' : '1';
-      input.disabled = false;
-  }
-}
-
 
 // Funções de Formatação e Utilidades
 function desformatarNumero(valorFormatado) {
@@ -997,87 +975,84 @@ function moverParaProximoCampo(campoAtual) {
 
 // Tags
 function initializeTagInputs(inputId, containerId, hiddenInputId) {
-    document.getElementById(inputId).addEventListener('keydown', function(event) {
-      if (event.key === 'Enter' || event.key === ',') {
-        event.preventDefault();
-        addTag(this.value.trim(), containerId, hiddenInputId);
-        this.value = ''; // Limpar o campo de entrada após adicionar uma tag
-      }
+  document.getElementById(inputId).addEventListener('keydown', function(event) {
+    if (event.key === 'Enter' || event.key === ',') {
+      event.preventDefault();
+      addTag(this.value.trim(), containerId, hiddenInputId);
+      this.value = ''; // Limpar o campo de entrada após adicionar uma tag
+    }
+  });
+}
+
+function addTag(tag, containerId, hiddenInputId) {
+  if (tag !== '') {
+    const tagContainer = document.getElementById(containerId);
+    const tagElement = document.createElement('div');
+    const tagText = document.createElement('span');
+    const tagInput = document.createElement('input');
+
+    tagElement.classList.add('tag');
+    tagText.textContent = tag;
+    tagElement.appendChild(tagText);
+
+    tagInput.value = tag;
+    tagInput.addEventListener('blur', function() {
+      saveTagEdit(tagInput, tagText);
+      updateHiddenInput(containerId, hiddenInputId);
     });
-  }
 
-  function addTag(tag, containerId, hiddenInputId) {
-    if (tag !== '') {
-      const tagContainer = document.getElementById(containerId);
-      const tagElement = document.createElement('div');
-      const tagText = document.createElement('span');
-      const tagInput = document.createElement('input');
-
-      tagElement.classList.add('tag');
-      tagText.textContent = tag;
-      tagElement.appendChild(tagText);
-
-      tagInput.value = tag;
-      tagInput.addEventListener('blur', function() {
+    tagInput.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
         saveTagEdit(tagInput, tagText);
         updateHiddenInput(containerId, hiddenInputId);
-      });
-
-      tagInput.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-          saveTagEdit(tagInput, tagText);
-          updateHiddenInput(containerId, hiddenInputId);
-        }
-      });
-      
-      tagElement.addEventListener('click', function() {
-        let singleClick = true;
-        
-        setTimeout(function() {
-            if (singleClick) {
-                tagInput.style.display = 'inline';
-                tagText.style.display = 'none';
-                tagInput.focus();
-            }
-        }, 500); // Tempo de intervalo para contar o click único
-    
-        tagElement.addEventListener('dblclick', function() {
-          const isBeingEdited = tagInput.style.display === 'inline';
-      
-          setTimeout(() => {
-              if (!isBeingEdited) {
-                  this.remove();
-                  updateHiddenInput(containerId, hiddenInputId);
-              }
-          }, 250); // Ajuste o tempo conforme necessário
-      });
+      }
     });
-
-      tagElement.appendChild(tagInput);
-      tagContainer.appendChild(tagElement);
-      updateHiddenInput(containerId, hiddenInputId);
-    }
-  }
-
-  function saveTagEdit(tagInput, tagText) {
-    tagText.textContent = tagInput.value;
-    tagInput.style.display = 'none';
-    tagText.style.display = 'inline';
-  }
-
-  function updateHiddenInput(containerId, hiddenInputId) {
-    const tagsHiddenInput = document.getElementById(hiddenInputId);
-    const tagElements = document.querySelectorAll(`#${containerId} .tag span`);
-    const tagsArray = Array.from(tagElements).map(tag => tag.textContent);
-    tagsHiddenInput.value = tagsArray.join(',');
-  }
-
-  // Initialize for recebimentos
-  initializeTagInputs('tagInput-recebimentos', 'tag-container-recebimentos', 'tagsHiddenInput-recebimentos');
+    
+    tagElement.addEventListener('click', function() {
+      let singleClick = true;
+      
+      setTimeout(function() {
+          if (singleClick) {
+              tagInput.style.display = 'inline';
+              tagText.style.display = 'none';
+              tagInput.focus();
+          }
+      }, 500); // Tempo de intervalo para contar o click único
   
-  // Initialize for pagamentos
-  initializeTagInputs('tagInput-pagamentos', 'tag-container-pagamentos', 'tagsHiddenInput-pagamentos');
+      tagElement.addEventListener('dblclick', function() {
+        const isBeingEdited = tagInput.style.display === 'inline';
+    
+        setTimeout(() => {
+            if (!isBeingEdited) {
+                this.remove();
+                updateHiddenInput(containerId, hiddenInputId);
+            }
+        }, 250); // Ajuste o tempo conforme necessário
+    });
+  });
+
+    tagElement.appendChild(tagInput);
+    tagContainer.appendChild(tagElement);
+    updateHiddenInput(containerId, hiddenInputId);
+  }
+}
+
+function saveTagEdit(tagInput, tagText) {
+  tagText.textContent = tagInput.value;
+  tagInput.style.display = 'none';
+  tagText.style.display = 'inline';
+}
+
+function updateHiddenInput(containerId, hiddenInputId) {
+  const tagsHiddenInput = document.getElementById(hiddenInputId);
+  const tagElements = document.querySelectorAll(`#${containerId} .tag span`);
+  const tagsArray = Array.from(tagElements).map(tag => tag.textContent);
+  tagsHiddenInput.value = tagsArray.join(',');
+}
+
+initializeTagInputs('tagInput-recebimentos', 'tag-container-recebimentos', 'tagsHiddenInput-recebimentos');
+initializeTagInputs('tagInput-pagamentos', 'tag-container-pagamentos', 'tagsHiddenInput-pagamentos');
 
 
 // Soma de valores no campo de liquidar
@@ -1124,286 +1099,269 @@ document.querySelectorAll('.checkbox-personalizado').forEach(checkbox => {
 calcularTotal();
 
 
+// Filtro de meses
+const config = {
+  meses: ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'],
+  today: new Date(),
+};
 
+function getCurrentMonthIndex() {
+  return config.today.getMonth();
+}
 
-// Filtro de meses e bancos
-document.addEventListener("DOMContentLoaded", function() {
-  const meses = [
-      'jan', 'fev', 'mar', 'abr', 'mai', 'jun',
-      'jul', 'ago', 'set', 'out', 'nov', 'dez'
-  ];
+function getCurrentYear() {
+  return config.today.getFullYear();
+}
 
-  const today = new Date();
-  let currentMonthIndex = today.getMonth(); // Obtém o índice do mês atual (0-11)
-  const currentYear = today.getFullYear();
+function marcarMesesAnterioresAteAtual(index, currentYear) {
+  const checkboxesMeses = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
+  checkboxesMeses.forEach(checkbox => {
+    const [mesCheckbox, anoCheckbox] = checkbox.value.split('/');
+    const mesIndex = config.meses.indexOf(mesCheckbox);
+    const ano = parseInt(anoCheckbox, 10);
+    checkbox.checked = (ano < currentYear) || (ano === currentYear && mesIndex <= index);
+  });
+  updateButtonTextMeses();
+  filtrarTabela();
+}
 
-  // Função para marcar checkboxes de meses anteriores e o mês atual
-  function marcarMesesAnterioresAteAtual(index) {
-      const checkboxesMeses = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
-      checkboxesMeses.forEach(checkbox => {
-          const [mesCheckbox, anoCheckbox] = checkbox.value.split('/');
-          const mesIndex = meses.indexOf(mesCheckbox);
-          const ano = parseInt(anoCheckbox, 10);
-          if ((ano < currentYear) || (ano === currentYear && mesIndex <= index)) {
-              checkbox.checked = true;
-          }
-      });
-      updateButtonTextMeses();
-      filtrarTabela();
+function encontrarEMarcarMesAtualOuProximo() {
+  let currentMonthIndex = getCurrentMonthIndex();
+  let currentYear = getCurrentYear();
+  const checkboxesMeses = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
+
+  for (let tentativas = 0; tentativas < 12; tentativas++) {
+    const mesAnoProcurado = `${config.meses[currentMonthIndex]}/${currentYear}`;
+    const encontrado = [...checkboxesMeses].some(checkbox => checkbox.value === mesAnoProcurado);
+
+    if (encontrado) {
+      marcarMesesAnterioresAteAtual(currentMonthIndex, currentYear);
+      return;
+    }
+
+    currentMonthIndex = (currentMonthIndex + 1) % 12;
+    if (currentMonthIndex === 0) currentYear++;
   }
 
-  // Função para encontrar e marcar o mês atual ou o próximo mês disponível
-  function encontrarEMarcarMesAtualOuProximo() {
-      const checkboxesMeses = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
-      let mesAtualOuProximoEncontrado = false;
-      let tentativas = 0;
+  console.error('Nenhum mês válido encontrado. Considere revisar os valores dos checkboxes.');
+}
 
-      while (!mesAtualOuProximoEncontrado && tentativas < 12) {
-          const mesAnoProcurado = `${meses[currentMonthIndex]}/${currentYear}`;
-          for (const checkbox of checkboxesMeses) {
-              if (checkbox.value === mesAnoProcurado) {
-                  mesAtualOuProximoEncontrado = true;
-                  marcarMesesAnterioresAteAtual(currentMonthIndex);
-                  break;
-              }
-          }
+document.addEventListener('DOMContentLoaded', encontrarEMarcarMesAtualOuProximo);
 
-          if (!mesAtualOuProximoEncontrado) {
-              currentMonthIndex = (currentMonthIndex + 1) % 12;
-              if (currentMonthIndex === 0) {
-                  // Se passar por todos os meses e começar um novo ciclo, aumenta o ano
-                  currentYear++;
-              }
-          }
-          tentativas++;
-      }
-
-      if (!mesAtualOuProximoEncontrado) {
-          console.error('Nenhum mês válido encontrado. Considere revisar os valores dos checkboxes.');
-      }
-  }
-
-  encontrarEMarcarMesAtualOuProximo();
-
-  // Adiciona listeners para checkboxes de meses
-  document.querySelectorAll('#dropdown-content-meses .mes-checkbox').forEach(checkbox => {
-      checkbox.addEventListener('change', function() {
-          updateButtonTextMeses();
-          filtrarTabela();
-      });
-  });
-
-  // Adiciona listeners para checkboxes de bancos
-  document.querySelectorAll('#dropdown-content-bancos .banco-checkbox').forEach(checkbox => {
-      checkbox.addEventListener('change', function() {
-          updateButtonTextBancos();
-          filtrarBancos();
-      });
-  });
-
-  // Adiciona listeners para checkboxes de natureza
-  document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').forEach(checkbox => {
+// Adiciona listeners para checkboxes
+function addListenerAndUpdate(selector, updateFunction, filterFunction = null, isExclusive = false) {
+  document.querySelectorAll(selector).forEach(checkbox => {
     checkbox.addEventListener('change', function() {
-        updateButtonTextNatureza();
-        filtrarTabela();
+      if (isExclusive && checkbox.checked) {
+        // Se é exclusivo e a checkbox é selecionada, desmarque todas as outras
+        document.querySelectorAll(selector).forEach(box => {
+          if (box !== checkbox) box.checked = false;
+        });
+      }
+      // A função de atualização é chamada após um atraso se necessário
+      if (selector.includes('recebimentos') || selector.includes('pagamentos')) {
+        setTimeout(updateFunction, 0);
+      } else {
+        updateFunction();
+      }
+      // Chama a função de filtragem se for fornecida
+      if (filterFunction) {
+        filterFunction();
+      }
     });
   });
+}
 
-  // Listener para fechar os dropdowns ao clicar fora
-  document.addEventListener('click', function(event) {
-      if (!event.target.closest("#dropdown-content-meses") && !event.target.closest("#dropdown-button-meses")) {
-          document.getElementById("dropdown-content-meses").classList.remove("show");
+// Adicionando os listeners para cada grupo de checkboxes
+addListenerAndUpdate('#dropdown-content-contas .conta-checkbox', updateButtonTextContas, filtrarTabela);
+addListenerAndUpdate('#dropdown-content-meses .mes-checkbox', updateButtonTextMeses, filtrarTabela);
+addListenerAndUpdate('#dropdown-content-bancos .banco-checkbox', updateButtonTextBancos, filtrarBancos);
+addListenerAndUpdate('#dropdown-content-natureza .natureza-checkbox', updateButtonTextNatureza, filtrarTabela);
+addListenerAndUpdate('#dropdown-content-contas-recebimentos .conta-checkbox', updateButtonTextContasRecebimentos, null, true);
+addListenerAndUpdate('#dropdown-content-contas-pagamentos .conta-checkbox', updateButtonTextContasPagamentos, null, true);
+
+// Adiciona o listener para click fora do dropdown
+document.addEventListener('click', function(event) {
+  const dropdowns = [
+      {button: "#dropdown-button-contas", content: "dropdown-content-contas"},
+      {button: "#dropdown-button-meses", content: "dropdown-content-meses"},
+      {button: "#dropdown-button-bancos", content: "dropdown-content-bancos"},
+      {button: "#dropdown-button-natureza", content: "dropdown-content-natureza"},
+      {button: "#dropdown-button-contas-recebimentos", content: "dropdown-content-contas-recebimentos"},
+      {button: "#dropdown-button-contas-pagamentos", content: "dropdown-content-contas-pagamentos"}
+  ];
+
+  dropdowns.forEach(function(dropdown) {
+      if (!event.target.closest(dropdown.button) && !event.target.closest(`#${dropdown.content}`)) {
+          const content = document.getElementById(dropdown.content);
+          if (content && content.classList.contains('show')) {
+              content.classList.remove('show');
+          }
       }
-      if (!event.target.closest("#dropdown-content-bancos") && !event.target.closest("#dropdown-button-bancos")) {
-          document.getElementById("dropdown-content-bancos").classList.remove("show");
-      }
-      if (!event.target.closest("#dropdown-content-natureza") && !event.target.closest("#dropdown-button-natureza")) {
-        document.getElementById("dropdown-content-natureza").classList.remove("show");
-    }
-  });
-
-  // Inicializa a filtragem para configurar a visualização inicial com base nos filtros padrão
-  filtrarBancos();
-
-  document.querySelectorAll('.saldo-total-row').forEach(function(cell) {
-    // Extrai o texto, remove o símbolo de moeda e espaços, substitui a vírgula por ponto e verifica se é negativo
-    var saldoTexto = cell.textContent.replace(/\s/g, ''); // Remove espaços
-    var saldo = parseFloat(saldoTexto.replace('.', '').replace(',', '.')); // Remove pontos e troca vírgulas por pontos antes de converter
-
-      // Verifica se o número é negativo e altera a cor do texto
-      if (!isNaN(saldo) && saldo < 0) {
-          cell.style.color = '#740000'; // Cor vermelha
-      }
-      else {
-        cell.style.color = '#000acf';
-    }
   });
 });
 
-
 // Funções para manipular os eventos de abertura dos dropdowns
-function toggleDropdownMeses(event) {
+function toggleDropdownFilters(dropdownId, event) {
   event.stopPropagation();
-  document.getElementById("dropdown-content-meses").classList.toggle("show");
+  const dropdown = document.getElementById(dropdownId);
+  dropdown.classList.toggle("show");
 }
 
-function toggleDropdownBancos(event) {
+function toggleDropdownModals(dropdownId, event) {
   event.stopPropagation();
-  document.getElementById("dropdown-content-bancos").classList.toggle("show");
-}
+  const dropdown = document.getElementById(dropdownId);
+  const buttonRect = event.target.getBoundingClientRect();
 
-function toggleDropdownNatureza(event) {
-  event.stopPropagation();
-  document.getElementById("dropdown-content-natureza").classList.toggle("show");
+  if (dropdown.classList.contains("show")) {
+    // Hide the dropdown
+    dropdown.classList.remove("show");
+    // Reset styles
+    Object.assign(dropdown.style, {
+      maxHeight: null,
+      position: null,
+      top: null,
+      left: null,
+      overflowY: null
+    });
+  } else {
+    // Show the dropdown and adjust its position and styles
+    dropdown.classList.add("show");
+    Object.assign(dropdown.style, {
+      position: 'fixed',
+      left: `${window.scrollX + buttonRect.left}px`,
+      maxHeight: '250px',
+      overflowY: 'auto'
+    });
+  }
 }
 
 // Funções para selecionar e desmarcar todos os checkboxes
-function selectAllMeses(event) {
-  event.stopPropagation();
-  const checkboxes = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
-  checkboxes.forEach(checkbox => checkbox.checked = true);
-  updateButtonTextMeses();
-  filtrarTabela();
+function toggleAllCheckboxes(containerSelector, shouldCheck) {
+  const checkboxes = document.querySelectorAll(`${containerSelector} .dropdown-options input[type="checkbox"]`);
+  checkboxes.forEach(checkbox => checkbox.checked = shouldCheck);
+  
+  // Atualiza o texto do botão e filtra a tabela conforme o container
+  switch (containerSelector) {
+    case '#dropdown-content-contas':
+      updateButtonTextContas();
+      filtrarTabela();
+      break;
+    case '#dropdown-content-meses':
+      updateButtonTextMeses();
+      filtrarTabela();
+      break;
+    case '#dropdown-content-bancos':
+      updateButtonTextBancos();
+      filtrarBancos();
+      break;
+    case '#dropdown-content-natureza':
+      updateButtonTextNatureza();
+      filtrarTabela();
+      break;
+  }
 }
 
-function deselectAllMeses(event) {
-  event.stopPropagation();
-  const checkboxes = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
-  checkboxes.forEach(checkbox => checkbox.checked = false);
-  updateButtonTextMeses();
-  filtrarTabela();
-}
-
-function selectAllBancos(event) {
-  event.stopPropagation();
-  const checkboxes = document.querySelectorAll('#dropdown-content-bancos .banco-checkbox');
-  checkboxes.forEach(checkbox => checkbox.checked = true);
-  updateButtonTextBancos();
-  filtrarBancos();
-}
-
-function deselectAllBancos(event) {
-  event.stopPropagation();
-  const checkboxes = document.querySelectorAll('#dropdown-content-bancos .banco-checkbox');
-  checkboxes.forEach(checkbox => checkbox.checked = false);
-  updateButtonTextBancos();
-  filtrarBancos();
-}
-
-function selectAllNatureza(event) {
-  event.stopPropagation();
-  const checkboxes = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox');
-  checkboxes.forEach(checkbox => checkbox.checked = true);
-  updateButtonTextNatureza();
-  filtrarTabela();
-}
-
-function deselectAllNatureza(event) {
-  event.stopPropagation();
-  const checkboxes = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox');
-  checkboxes.forEach(checkbox => checkbox.checked = false);
-  updateButtonTextNatureza();
-  filtrarTabela();
-}
-
-// Funções para atualizar o texto dos botões de dropdown
-function updateButtonTextMeses() {
-  const selectedCount = document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked').length;
-  const totalOptions = document.querySelectorAll('#dropdown-content-meses .mes-checkbox').length;
-  const buttonText = selectedCount === 0 ? "Selecione" : 
-                     selectedCount === totalOptions ? "Todos Selecionados" : 
+// Função para atualizar o texto dos botões de dropdown
+function updateButtonText(dropdownId, checkboxesSelector, defaultText, allSelectedText = "Todos Selecionados") {
+  const selectedCount = document.querySelectorAll(`${checkboxesSelector}:checked`).length;
+  const totalOptions = document.querySelectorAll(checkboxesSelector).length;
+  const buttonText = selectedCount === 0 ? defaultText : 
+                     selectedCount === totalOptions ? allSelectedText : 
                      `${selectedCount} Selecionado(s)`;
-  document.getElementById('dropdown-button-meses').textContent = buttonText;
+  document.getElementById(dropdownId).textContent = buttonText;
+}
+
+// Chamadas específicas para cada dropdown
+function updateButtonTextContas() {
+  updateButtonText('dropdown-button-contas', '#dropdown-content-contas .conta-checkbox', 'Selecione');
+}
+
+function updateButtonTextMeses() {
+  updateButtonText('dropdown-button-meses', '#dropdown-content-meses .mes-checkbox', 'Selecione');
 }
 
 function updateButtonTextBancos() {
-  const selectedCount = document.querySelectorAll('#dropdown-content-bancos .banco-checkbox:checked').length;
-  const totalOptions = document.querySelectorAll('#dropdown-content-bancos .banco-checkbox').length;
-  const buttonText = selectedCount === 0 ? "Selecione" : 
-                     selectedCount === totalOptions ? "Todos Selecionados" : 
-                     `${selectedCount} Selecionado(s)`;
-  document.getElementById('dropdown-button-bancos').textContent = buttonText;
+  updateButtonText('dropdown-button-bancos', '#dropdown-content-bancos .banco-checkbox', 'Selecione');
 }
 
 function updateButtonTextNatureza() {
-  const selectedCount = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked').length;
-  const totalOptions = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').length;
-  const buttonText = selectedCount === 0 ? "Crédito, Débito" : 
-                     selectedCount === totalOptions ? "Crédito, Débito" : 
-                     `${selectedCount} Selecionado(s)`;
+  const checkboxes = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox');
+  const selectedCheckboxes = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked');
+  const selectedCount = selectedCheckboxes.length;
+  const totalOptions = checkboxes.length;
+  let buttonText = "Crédito, Débito";
+  if (selectedCount > 0 && selectedCount < totalOptions) {
+    buttonText = Array.from(selectedCheckboxes).map(cb => cb.nextSibling.textContent.trim()).join(", ");
+  }
   document.getElementById('dropdown-button-natureza').textContent = buttonText;
+}
+
+// Chamadas para contas de recebimentos e pagamentos
+function updateButtonTextContasRecebimentos() {
+  const selectedCheckbox = document.querySelector('#dropdown-content-contas-recebimentos .conta-checkbox:checked');
+  const selectedText = selectedCheckbox ? selectedCheckbox.nextSibling.textContent.trim() : "Selecione";
+  document.getElementById('dropdown-button-contas-recebimentos').textContent = selectedText;
+}
+
+function updateButtonTextContasPagamentos() {
+  const selectedCheckbox = document.querySelector('#dropdown-content-contas-pagamentos .conta-checkbox:checked');
+  const selectedText = selectedCheckbox ? selectedCheckbox.nextSibling.textContent.trim() : "Selecione";
+  document.getElementById('dropdown-button-contas-pagamentos').textContent = selectedText;
 }
 
 // Filtros
 function filtrarTabela() {
-  const totalCheckboxesMeses = document.querySelectorAll('#dropdown-content-meses .mes-checkbox').length;
-  const checkboxesMesesSelecionados = document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked');
-  const totalCheckboxesNatureza = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox').length;
-  const checkboxesNaturezaSelecionados = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked');
-  
-  var intervalosMesesSelecionados = Array.from(checkboxesMesesSelecionados).map(checkbox => ({
-      inicio: new Date(checkbox.getAttribute('data-inicio-mes')),
-      fim: new Date(checkbox.getAttribute('data-fim-mes'))
+  const uuidsContaContabilSelecionados = Array.from(document.querySelectorAll('#dropdown-content-contas .conta-checkbox:checked')).map(checkbox => checkbox.value);
+  const intervalosMesesSelecionados = Array.from(document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked')).map(checkbox => ({
+    inicio: new Date(checkbox.getAttribute('data-inicio-mes')),
+    fim: new Date(checkbox.getAttribute('data-fim-mes'))
   }));
+  const naturezasSelecionadas = Array.from(document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked'), cb => cb.value);
 
-  let naturezasSelecionadas = Array.from(checkboxesNaturezaSelecionados).map(checkbox => checkbox.value);
+  // Verificações de seleção total ou nenhuma seleção simplificadas
+  const selecionarTodosMeses = intervalosMesesSelecionados.length === 0;
+  const selecionarTodaNatureza = naturezasSelecionadas.length === 0;
 
-  let selecionarTodosMeses = checkboxesMesesSelecionados.length === 0 || checkboxesMesesSelecionados.length === totalCheckboxesMeses;
-  let selecionarTodaNatureza = checkboxesNaturezaSelecionados.length === 0 || checkboxesNaturezaSelecionados.length === totalCheckboxesNatureza;
-
-  var dataInicio = document.getElementById("data-inicio").value;
-  var dataFim = document.getElementById("data-fim").value;
-  var filtroDescricao = document.getElementById("caixa-pesquisa").value.toUpperCase();
-  var filtroTags = document.getElementById("caixa-pesquisa-tags").value.toUpperCase();
-  var filtroContaContabil = document.getElementById("contas-contabeis").value.toUpperCase();
-
-  var dataInicioObj = dataInicio ? new Date(dataInicio) : null;
-  var dataFimObj = dataFim ? new Date(dataFim) : null;
+  // Obtenção dos filtros de texto e datas
+  const filtroDescricao = document.getElementById("caixa-pesquisa").value.toUpperCase();
+  const filtroTags = document.getElementById("caixa-pesquisa-tags").value.toUpperCase();
+  const dataInicioObj = document.getElementById("data-inicio").value ? new Date(document.getElementById("data-inicio").value) : null;
+  const dataFimObj = document.getElementById("data-fim").value ? new Date(document.getElementById("data-fim").value) : null;
   let mesesAnosVisiveis = new Set();
-  
-  var trLancamentos = document.querySelectorAll("#tabela-lancamentos .row-lancamentos");
-  
-  trLancamentos.forEach(function(linha) {
-      var descricao = linha.querySelector(".descricao-row").textContent.toUpperCase();
-      var observacao = linha.querySelector(".obs-row").textContent.toUpperCase();
-      var contaContabil = linha.getAttribute('data-conta-contabil').toUpperCase();
-      var dataVencimento = new Date(linha.querySelector(".vencimento-row").textContent.split('/').reverse().join('-'));
-      var tags = linha.querySelector(".d-block") ? linha.querySelector(".d-block").textContent.toUpperCase() : "";
 
-      var debitoCelula = linha.querySelector(".debito-row").textContent.trim();
-      var naturezaLancamento = debitoCelula === "" ? "Crédito" : "Débito";
+  document.querySelectorAll("#tabela-lancamentos .row-lancamentos").forEach(row => {
+    const uuidContaContabilLinha = row.getAttribute('data-uuid-conta-contabil');
+    const descricao = row.querySelector(".descricao-row").textContent.toUpperCase();
+    const observacaoElemento = row.querySelector(".obs-row").cloneNode(true);
+    const tagsElemento = observacaoElemento.querySelector(".d-block");
+    if (tagsElemento) observacaoElemento.removeChild(tagsElemento);
+    const observacao = observacaoElemento.textContent.toUpperCase();
+    const tags = tagsElemento ? tagsElemento.textContent.toUpperCase() : "";
+    const dataVencimento = new Date(row.querySelector(".vencimento-row").textContent.split('/').reverse().join('-'));
+    const naturezaLancamento = row.getAttribute('data-natureza');
 
-      var descricaoObservacaoMatch = descricao.includes(filtroDescricao) || observacao.includes(filtroDescricao);
-      var tagMatch = filtroTags === "" || tags.includes(filtroTags);
-      var contaContabilMatch = filtroContaContabil === "" || contaContabil.includes(filtroContaContabil);
-      var mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => {
-        var dataVencimento = new Date(linha.querySelector(".vencimento-row").textContent.split('/').reverse().join('-'));
-        return dataVencimento >= intervalo.inicio && dataVencimento <= intervalo.fim;
-      });
-      var naturezaLancamento = linha.getAttribute('data-natureza');
-      var naturezaMatch = selecionarTodaNatureza || naturezasSelecionadas.includes(naturezaLancamento);
-      var dataMatch = (!dataInicioObj || dataVencimento >= dataInicioObj) && (!dataFimObj || dataVencimento <= dataFimObj);
+    // Centraliza a lógica de correspondência
+    const contaContabilMatch = uuidsContaContabilSelecionados.length === 0 || uuidsContaContabilSelecionados.includes(uuidContaContabilLinha);
+    const descricaoObservacaoMatch = filtroDescricao === "" || descricao.includes(filtroDescricao) || observacao.includes(filtroDescricao);
+    const tagMatch = filtroTags === "" || tags.includes(filtroTags);
+    const mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => dataVencimento >= intervalo.inicio && dataVencimento <= intervalo.fim);
+    const dataMatch = (!dataInicioObj || dataVencimento >= dataInicioObj) && (!dataFimObj || dataVencimento <= dataFimObj);
+    const naturezaMatch = selecionarTodaNatureza || naturezasSelecionadas.includes(naturezaLancamento);
 
-      if (descricaoObservacaoMatch && tagMatch && contaContabilMatch && mesMatch && naturezaMatch && dataMatch) {
-        linha.style.display = "";
+    row.style.display = descricaoObservacaoMatch && tagMatch && mesMatch && naturezaMatch && dataMatch && contaContabilMatch ? "" : "none";
 
-        // Adiciona o mês/ano ao conjunto de meses/anos visíveis se a linha estiver visível
-        let mesAno = new Date(linha.querySelector(".vencimento-row").textContent.split('/').reverse().join('-')).toLocaleString('default', { month: '2-digit', year: 'numeric' });
-        mesesAnosVisiveis.add(mesAno);
-      } else {
-        linha.style.display = "none";
-      }
+    if (row.style.display === "") {
+      let mesAno = dataVencimento.toLocaleString('default', { month: '2-digit', year: 'numeric' });
+      mesesAnosVisiveis.add(mesAno);
+    }
   });
 
-  // Filtrar as linhas 'linha-total-mes'
+  // Simplificação na filtragem das linhas de total do mês
   document.querySelectorAll("#tabela-lancamentos .linha-total-mes").forEach(row => {
     let textoMesAno = row.querySelector("td:nth-child(2)").textContent;
     let mesAnoMatch = textoMesAno.match(/\d{2}\/\d{4}$/); // Captura MM/YYYY
-    if (mesAnoMatch && mesesAnosVisiveis.has(mesAnoMatch[0])) {
-        row.style.display = "";
-    } else {
-        row.style.display = "none";
-    }
+    row.style.display = mesAnoMatch && mesesAnosVisiveis.has(mesAnoMatch[0]) ? "" : "none";
   });
 
   calcularSaldoAcumulado();
@@ -1412,19 +1370,8 @@ function filtrarTabela() {
 // Event listeners para os elementos de filtro
 document.getElementById('caixa-pesquisa').addEventListener('keyup', filtrarTabela);
 document.getElementById('caixa-pesquisa-tags').addEventListener('keyup', filtrarTabela);
-document.getElementById('contas-contabeis').addEventListener('change', filtrarTabela);
 document.getElementById('data-inicio').addEventListener('change', filtrarTabela);
 document.getElementById('data-fim').addEventListener('change', filtrarTabela);
-
-// Adiciona ouvintes de evento para os checkboxes de meses para refiltrar a tabela quando eles mudam
-document.addEventListener("DOMContentLoaded", function() {
-  document.querySelectorAll('.dropdown-options input[type="checkbox"]').forEach(checkbox => {
-    checkbox.addEventListener('change', filtrarTabela);
-  });
-  // Inicializa a tabela com o filtro aplicado
-  filtrarTabela();
-});
-
 
 // Calcula o saldo total dos bancos, sem filtragem
 document.addEventListener("DOMContentLoaded", function() {
@@ -1435,8 +1382,8 @@ function atualizarSaldoTotalBancos() {
   var linhasBanco = document.querySelectorAll(".row-bancos");
   var saldoTotal = 0;
 
-  linhasBanco.forEach(function(linha) {
-    var celulaSaldo = linha.querySelector(".saldo-banco-row");
+  linhasBanco.forEach(function(row) {
+    var celulaSaldo = row.querySelector(".saldo-banco-row");
     if (celulaSaldo) {
       var saldo = parseSaldo(celulaSaldo.textContent);
       saldoTotal += saldo;
@@ -1467,20 +1414,20 @@ function atualizarSaldosFluxoCaixa(saldoInicial) {
   var linhasFluxoCaixa = document.querySelectorAll("#tabela-lancamentos .row-lancamentos");
   var saldoAtual = saldoInicial;
 
-  linhasFluxoCaixa.forEach(function(linha) {
-    var debitoCelula = linha.querySelector(".debito-row");
-    var creditoCelula = linha.querySelector(".credito-row");
+  linhasFluxoCaixa.forEach(function(row) {
+    var debitoCelula = row.querySelector(".debito-row");
+    var creditoCelula = row.querySelector(".credito-row");
     var debito = debitoCelula && debitoCelula.textContent ? parseSaldo(debitoCelula.textContent) : 0;
     var credito = creditoCelula && creditoCelula.textContent ? parseSaldo(creditoCelula.textContent) : 0;
     
     saldoAtual += credito - debito;
     
-    var saldoCelula = linha.querySelector(".saldo-row");
+    var saldoCelula = row.querySelector(".saldo-row");
     if (saldoCelula) {
       saldoCelula.textContent = formatarComoMoeda(saldoAtual);
     }
     else {
-      linha.style.display = "none"; 
+      row.style.display = "none"; 
     }
   });
 }
@@ -1497,15 +1444,15 @@ function filtrarBancos() {
 
   var saldoTotal = 0;
 
-  linhas.forEach(linha => {
-      var bancoLinhaId = linha.getAttribute("data-banco-id");
+  linhas.forEach(row => {
+      var bancoLinhaId = row.getAttribute("data-banco-id");
       
       if (todosSelecionados || bancosSelecionados.includes(bancoLinhaId)) {
-          linha.style.display = ""; // Mostra a linha
-          var saldoBanco = parseSaldo(linha.querySelector(".saldo-banco-row").textContent);
+          row.style.display = ""; // Mostra a linha
+          var saldoBanco = parseSaldo(row.querySelector(".saldo-banco-row").textContent);
           saldoTotal += saldoBanco;
       } else {
-          linha.style.display = "none"; // Esconde a linha
+          row.style.display = "none"; // Esconde a linha
       }
   });
 
@@ -1529,10 +1476,10 @@ function calcularSaldoAcumulado() {
   // Seleciona todas as linhas visíveis do fluxo de caixa.
   var linhasFluxoCaixa = document.querySelectorAll("#tabela-lancamentos .row-lancamentos");
   
-  linhasFluxoCaixa.forEach(function(linha) {
-    if (linha.style.display !== "none") {
-      var debitoCelula = linha.querySelector(".debito-row");
-      var creditoCelula = linha.querySelector(".credito-row");
+  linhasFluxoCaixa.forEach(function(row) {
+    if (row.style.display !== "none") {
+      var debitoCelula = row.querySelector(".debito-row");
+      var creditoCelula = row.querySelector(".credito-row");
       var debito = debitoCelula && debitoCelula.textContent ? parseSaldo(debitoCelula.textContent) : 0;
       var credito = creditoCelula && creditoCelula.textContent ? parseSaldo(creditoCelula.textContent) : 0;
       
@@ -1540,7 +1487,7 @@ function calcularSaldoAcumulado() {
       saldoAtual += credito - debito;
       
       // Atualiza a célula de saldo da linha atual.
-      var saldoCelula = linha.querySelector(".saldo-row");
+      var saldoCelula = row.querySelector(".saldo-row");
       if (saldoCelula) {
         saldoCelula.textContent = formatarComoMoeda(saldoAtual);
       }
@@ -1557,17 +1504,13 @@ function formatarComoMoeda(valor) {
   return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-  document.querySelectorAll('.saldo-total-row').forEach(function(cell) {
-      var saldoTexto = cell.textContent;
-      // Remove caracteres de formatação exceto o sinal de menos, ponto e vírgula
-      var saldoNumerico = saldoTexto.replace(/[^\d,-]/g, '').replace('.', '').replace(',', '.');
-      // Converte para float
-      var saldo = parseFloat(saldoNumerico);
-
-      // Verifica se o número é negativo
-      if (saldo < 0) {
-          cell.style.color = '#740000'; // Muda a cor para vermelho
-      }
-  });
+document.querySelectorAll('.saldo-total-row').forEach(function(cell) {
+  var saldoTexto = cell.textContent.replace(/\s/g, '');
+  var saldo = parseFloat(saldoTexto.replace('.', '').replace(',', '.'));
+    if (!isNaN(saldo) && saldo < 0) {
+        cell.style.color = '#740000';
+    }
+    else {
+      cell.style.color = '#000acf';
+  }
 });

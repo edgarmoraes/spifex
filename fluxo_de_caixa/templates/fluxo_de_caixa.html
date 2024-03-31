@@ -10,16 +10,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{% static 'css/fluxo-de-caixa.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
-    <link rel="icon" href="{% static 'wayeasi-favicon.png' %}" type="image/x-icon">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
-    <title>WayEasi | Fluxo de Caixa</title>
+    <link rel="icon" href="{% static 'favicon.png' %}" type="image/x-icon">
+    <title>Sppiff | Fluxo de Caixa</title>
 </head>
 <body>
     <header class="header">
         <button class="openbtn" onclick="toggleNav()">☰</button>
         <!-- ############### Barra de Navegação Fixa ############### -->
         <nav class="nav-bar">
-            <a class="logo" href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">WAYEASI</a>
+            <a class="logo" href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">SPPIFF</a>
             <ul class="nav-list">
                 <li class="nav-fluxo-de-caixa"><a href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">Fluxo de Caixa</a></li>
                 <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">Realizado</a></li>
@@ -40,24 +39,37 @@
                     <div class="box-grid-filters">
                         <!-- ############### Filtro Contas Contábeis ############### -->
                         <section class="flex">
-                            <label for="contas-contabeis">Contas Contábeis</label>
-                            <select id="contas-contabeis" name = "contas_contabeis">
-                                <option value="" disabled selected hidden>Selecione</option>
-                                <option value="Receita 1">Receita 1</option>
-                                <option value="Receita 2">Receita 2</option>
-                                <option value="Receita 3">Despesa 1</option>
-                                <option value="Receita 4">Despesa 2</option>
-                            </select>
+                            <label for="dropdown-button-contas">Contas Contábeis</label>
+                            <div class="dropdown-multiselect">
+                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-contas', event)" id="dropdown-button-contas" class="dropdown-button">Selecione</button>
+                                <div id="dropdown-content-contas" class="dropdown-content">
+                                    <div class="dropdown-header">
+                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-contas', true)">Selecionar Todos</button>
+                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-contas', false)">Desmarcar Todos</button>
+                                    </div>
+                                    <div class="dropdown-options">
+                                        {% for subgroup, accounts in accounts_by_subgroup.items %}
+                                            <div class="subgroup-label" data-nature="{{ accounts.0.nature }}">{{ subgroup }}</div>
+                                            {% for account in accounts %}
+                                                <label class="label-filters">
+                                                    <input type="checkbox" name="contas" value="{{ account.uuid }}" class="conta-checkbox">
+                                                    {{ account.account }}
+                                                </label>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
                         </section>
                         <!-- ############### Filtro Meses ############### -->
                         <section class="flex">
                             <label for="dropdown-button-meses">Meses</label>
                             <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdownMeses(event)" id="dropdown-button-meses" class="dropdown-button">Selecione</button>
+                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-meses', event)" id="dropdown-button-meses" class="dropdown-button">Selecione</button>
                                 <div id="dropdown-content-meses" class="dropdown-content">
                                     <div class="dropdown-header">
-                                        <button class="button-selecionar-todos" type="button" onclick="selectAllMeses(event)">Selecionar Todos</button>
-                                        <button class="button-desmarcar-todos" type="button" onclick="deselectAllMeses(event)">Desmarcar Todos</button>
+                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', true)">Selecionar Todos</button>
+                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
                                         {% for total in totais_mes_fluxo %}
@@ -74,11 +86,11 @@
                         <section class="flex">
                             <label for="dropdown-button-bancos">Bancos</label>
                             <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdownBancos(event)" id="dropdown-button-bancos" class="dropdown-button">Selecione</button>
+                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-bancos', event)" id="dropdown-button-bancos" class="dropdown-button">Selecione</button>
                                 <div id="dropdown-content-bancos" class="dropdown-content">
                                     <div class="dropdown-header">
-                                        <button class="button-selecionar-todos" type="button" onclick="selectAllBancos(event)">Selecionar Todos</button>
-                                        <button class="button-desmarcar-todos" type="button" onclick="deselectAllBancos(event)">Desmarcar Todos</button>
+                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-bancos', true)">Selecionar Todos</button>
+                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-bancos', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
                                         {% for banco in bancos %}
@@ -105,11 +117,11 @@
                         <section class="flex">
                             <label for="dropdown-button-natureza">Natureza</label>
                             <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdownNatureza(event)" id="dropdown-button-natureza" class="dropdown-button">Crédito, Débito</button>
+                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-natureza', event)" id="dropdown-button-natureza" class="dropdown-button">Crédito, Débito</button>
                                 <div id="dropdown-content-natureza" class="dropdown-content">
                                     <div class="dropdown-header">
-                                        <button class="button-selecionar-todos" type="button" onclick="selectAllNatureza(event)">Selecionar Todos</button>
-                                        <button class="button-desmarcar-todos" type="button" onclick="deselectAllNatureza(event)">Desmarcar Todos</button>
+                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-natureza', true)">Selecionar Todos</button>
+                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-natureza', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
                                         <label class="label-filters">
@@ -225,17 +237,32 @@
                 </section>
             
                 <section class="modal-flex">
-                    <label for="conta-contabil-recebimentos">Conta Contábil</label>
-                    <select class="modal-conta-contabil" id="conta-contabil-recebimentos" type="text" name="conta_contabil" required>
-                    <option value="Receita 1">Receita 1</option>
-                    <option value="Receita 2">Receita 2</option>
-                    <option value="Receita 3">Receita 3</option>
-                    </select><br>
+                    <label for="dropdown-button-contas-recebimentos">Conta Contábil</label>
+                    <div class="dropdown-multiselect">
+                        <button type="button" onclick="toggleDropdownModals('dropdown-content-contas-recebimentos', event)" id="dropdown-button-contas-recebimentos" class="dropdown-button">Selecione</button>
+                        <div id="dropdown-content-contas-recebimentos" class="dropdown-content">
+                            <div class="dropdown-options">
+                                {% for subgroup, accounts in accounts_by_subgroup.items %}
+                                    {% if accounts.0.nature == 'Crédito' %}
+                                        <div class="subgroup-label">{{ subgroup }}</div>
+                                        {% for account in accounts %}
+                                            <label class="label-filters">
+                                                <input type="checkbox" name="contas_recebimentos" data-uuid-account="{{ account.uuid }}" data-account="{{ account.account }}" class="conta-checkbox">
+                                                {{ account.account }}
+                                            </label>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                                <input type="hidden" id="conta_contabil_uuid_recebimentos" name="conta_contabil_uuid_recebimentos" value="">
+                                <input type="hidden" id="conta_contabil_nome_recebimentos" name="conta_contabil_nome_recebimentos" value="">
+                            </div>
+                        </div>
+                    </div>
                 </section>
             
                 <section class="modal-flex" id="recorrencia-section">
                     <label for="recorrencia-recebimentos" class="recorrencia-label">Recorrência</label>
-                    <select class="modal-recorrencia" id="recorrencia-recebimentos" name="recorrencia" required onchange="mostrarParcelasRecebimentos()">
+                    <select class="modal-recorrencia" id="recorrencia-recebimentos" name="recorrencia" required onchange="mostrarParcelas(null, 'recebimentos')">
                         <option value="nao">Não</option>
                         <option value="sim">Sim</option>
                     </select><br>
@@ -288,17 +315,32 @@
                 </section>
             
                 <section class="modal-flex">
-                    <label for="conta-contabil-pagamentos">Conta Contábil</label>
-                    <select class="modal-conta-contabil" id="conta-contabil-pagamentos" type="text" name="conta_contabil" required>
-                    <option value="conta1">Conta 1</option>
-                    <option value="conta2">Conta 2</option>
-                    <option value="conta3">Conta 3</option>
-                    </select><br>
+                    <label for="dropdown-button-contas-pagamentos">Conta Contábil</label>
+                    <div class="dropdown-multiselect">
+                        <button type="button" onclick="toggleDropdownModals('dropdown-content-contas-pagamentos', event)" id="dropdown-button-contas-pagamentos" class="dropdown-button">Selecione</button>
+                        <div id="dropdown-content-contas-pagamentos" class="dropdown-content">
+                            <div class="dropdown-options">
+                                {% for subgroup, accounts in accounts_by_subgroup.items %}
+                                    {% if accounts.0.nature == 'Débito' %}
+                                        <div class="subgroup-label">{{ subgroup }}</div>
+                                        {% for account in accounts %}
+                                            <label class="label-filters">
+                                                <input type="checkbox" name="contas_pagamentos" data-uuid-account="{{ account.uuid }}" data-account="{{ account.account }}" class="conta-checkbox">
+                                                {{ account.account }}
+                                            </label>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                                <input type="hidden" id="conta_contabil_uuid_pagamentos" name="conta_contabil_uuid_pagamentos" value="">
+                                <input type="hidden" id="conta_contabil_nome_pagamentos" name="conta_contabil_nome_pagamentos" value="">
+                            </div>
+                        </div>
+                    </div>
                 </section>
             
                 <section class="modal-flex">
                     <label for="recorrencia-pagamentos" class="recorrencia-label">Recorrência</label>
-                    <select class="modal-recorrencia" id="recorrencia-pagamentos" name="recorrencia" required onchange="mostrarParcelasPagamentos()">
+                    <select class="modal-recorrencia" id="recorrencia-pagamentos" name="recorrencia" required onchange="mostrarParcelas(null, 'pagamentos')">
                         <option value="nao">Não</option>
                         <option value="sim">Sim</option>
                     </select><br>
@@ -395,7 +437,7 @@
                                 <td class="saldo-total-row">{{ fluxo_de_caixa.saldo|format_number }}</td>
                             </tr>
                         {% else %}
-                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ fluxo_de_caixa.id }}" data-conta-contabil="{{ fluxo_de_caixa.conta_contabil }}" data-natureza="{{ fluxo_de_caixa.natureza }}" parcela-atual="{{ fluxo_de_caixa.parcela_atual }}" parcelas-total="{{ fluxo_de_caixa.parcelas_total }}" data-uuid-row="{{ fluxo_de_caixa.uuid_correlacao }}" scope="row">
+                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ fluxo_de_caixa.id }}" data-conta-contabil="{{ fluxo_de_caixa.conta_contabil }}" data-uuid-conta-contabil="{{ fluxo_de_caixa.uuid_conta_contabil }}" data-natureza="{{ fluxo_de_caixa.natureza }}" parcela-atual="{{ fluxo_de_caixa.parcela_atual }}" parcelas-total="{{ fluxo_de_caixa.parcelas_total }}" data-uuid-row="{{ fluxo_de_caixa.uuid_correlacao }}" scope="row">
                                 <td class="checkbox-row"><label class="checkbox-container"><input id="checkbox-personalizado-{{ fluxo_de_caixa.id }}" class="checkbox-personalizado" type="checkbox" data-id="{{ fluxo_de_caixa.id }}" data-uuid-row="{{ fluxo_de_caixa.uuid_correlacao }}"><span class="checkmark"></span></label></td>
                                 <td class="vencimento-row">{{ fluxo_de_caixa.vencimento|date:"d/m/Y" }}</td>
                                 <td class="descricao-row">{{ fluxo_de_caixa.descricao }}</td>
