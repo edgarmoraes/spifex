@@ -434,6 +434,7 @@ nav {
   font-family: var(--primary-font);
   border-left: var(--border1);
   border-right: var(--border1);
+  border-bottom: var(--border1);
   color: #202020;
   border-spacing: 0;
 }

@@ -4,10 +4,12 @@ from django.db import transaction
 from .forms import UploadFileForm
 from django.contrib import messages
 from django.http import JsonResponse
-from .models import Chart_of_accounts
+from .models import Chart_of_accounts, Groups_list, Subgroups_list, Accounts_list
 from realizado.models import Tabela_realizado
 from fluxo_de_caixa.models import Tabela_fluxo
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 
 def upload_and_save(request):
     if request.method == 'POST':
@@ -66,7 +68,6 @@ def add_account(request):
         form = AccountForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Conta adicionada com sucesso!')
             return redirect('plano_de_contas:plano_de_contas')
         else:
             print(form.errors)  # Isso ajudará a ver os erros no console do servidor
@@ -89,14 +90,12 @@ def get_subgroups(request):
     return JsonResponse(list(subgroups), safe=False)
 
 def edit_account(request, account_id):
-    # Busca a conta pelo ID ou retorna 404 se não encontrada
     account = get_object_or_404(Chart_of_accounts, id=account_id)
     
     if request.method == 'POST':
         form = AccountForm(request.POST, instance=account)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Conta atualizada com sucesso!')
         account_uuid = account.uuid
         Tabela_realizado.objects.filter(uuid_conta_contabil=account_uuid).update(conta_contabil=account.account)
         Tabela_fluxo.objects.filter(uuid_conta_contabil=account_uuid).update(conta_contabil=account.account)
@@ -110,13 +109,55 @@ def edit_account(request, account_id):
 def delete_account(request, account_id):
     account = get_object_or_404(Chart_of_accounts, id=account_id)
 
-    # Check if the account is used in other models
     if Tabela_fluxo.objects.filter(uuid_conta_contabil=account.uuid).exists() or \
        Tabela_realizado.objects.filter(uuid_conta_contabil=account.uuid).exists():
         messages.error(request, 'Esta conta está sendo utilizada e não pode ser excluída.')
         return redirect('plano_de_contas:edit_account', account_id)
 
-    # If not used, delete the account
     account.delete()
-    messages.success(request, 'Conta excluída com sucesso!')
     return redirect('plano_de_contas:plano_de_contas')
+
+@receiver(post_save, sender=Chart_of_accounts)
+def update_lists_after_save(sender, instance, **kwargs):
+    update_groups_list()
+    update_subgroups_list()
+    update_accounts_list()
+
+@receiver(post_delete, sender=Chart_of_accounts)
+def update_lists_after_delete(sender, instance, **kwargs):
+    update_groups_list()
+    update_subgroups_list()
+    update_accounts_list()
+
+def update_groups_list():
+    existing_groups = set(Groups_list.objects.values_list('groups_list', flat=True))
+    current_groups = set(Chart_of_accounts.objects.values_list('group', flat=True))
+    
+    for group in current_groups - existing_groups:
+        Groups_list.objects.create(groups_list=group)
+    
+    for group in existing_groups - current_groups:
+        Groups_list.objects.filter(groups_list=group).delete()
+
+def update_subgroups_list():
+    existing_subgroups = set(Subgroups_list.objects.values_list('subgroups_list', flat=True))
+    current_subgroups = set(Chart_of_accounts.objects.values_list('subgroup', flat=True))
+    
+    for subgroup in current_subgroups - existing_subgroups:
+        Subgroups_list.objects.create(subgroups_list=subgroup)
+    
+    for subgroup in existing_subgroups - current_subgroups:
+        Subgroups_list.objects.filter(subgroups_list=subgroup).delete()
+
+def update_accounts_list():
+    current_accounts = Chart_of_accounts.objects.all().values_list('uuid', 'account')
+    current_accounts_dict = {str(uuid): account for uuid, account in current_accounts}
+    existing_accounts_uuids = set(Accounts_list.objects.values_list('uuid_accounts_list', flat=True))
+
+    for uuid, account in current_accounts_dict.items():
+        if uuid not in existing_accounts_uuids:
+            Accounts_list.objects.create(accounts_list=account, uuid_accounts_list=uuid)
+    
+    for uuid in existing_accounts_uuids:
+        if uuid not in current_accounts_dict:
+            Accounts_list.objects.filter(uuid_accounts_list=uuid).delete()

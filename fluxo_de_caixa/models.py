@@ -64,3 +64,7 @@ class Bancos(models.Model):
             # Para instâncias existentes, atualiza saldo_consolidado com base no saldo_atual
             self.saldo_consolidado = self.saldo_inicial + self.saldo_atual
         super().save(*args, **kwargs)
+
+class Departamentos(models.Model):
+    departamento = models.CharField(max_length = 256)
+    uuid_departamento = models.UUIDField(null=True, blank=True)

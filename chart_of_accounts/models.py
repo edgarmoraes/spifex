@@ -28,3 +28,13 @@ class Chart_of_accounts(models.Model):
 
     def __str__(self):
         return f"{self.account} ({self.nature})"
+    
+class Groups_list(models.Model):
+    groups_list = models.CharField(max_length=255)
+    
+class Subgroups_list(models.Model):
+    subgroups_list = models.CharField(max_length=255)
+    
+class Accounts_list(models.Model):
+    accounts_list = models.CharField(max_length=255)
+    uuid_accounts_list = models.CharField(max_length=255)

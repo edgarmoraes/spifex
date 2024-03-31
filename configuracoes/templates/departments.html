@@ -1,0 +1,80 @@
+{% load static %}
+{% load currency_filters %}
+{% load number_filters %}
+{% load add_decimal %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/departments.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}" type="image/x-icon">
+    <title>Sppiff | Departamentos</title>
+</head>
+<body>
+    <header class="header">
+        <!-- ############### Barra de Navegação Fixa ############### -->
+        <nav class="nav-bar">
+            <a class="logo" href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">SPPIFF</a>
+            <ul class="nav-list">
+                <li class="nav-fluxo-de-caixa"><a href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">Fluxo de Caixa</a></li>
+                <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">Realizado</a></li>
+                <li class="nav-relatorios"><a href="#">Relatórios</a></li>
+                <li class="nav-line"><div class="line"></div></li>
+                <li class="nav-configuracoes"><a href="{% url 'configuracoes:configuracoes' %}">Configurações</a></li>
+                <li class="nav-meu-perfil"><a href="meu-perfil.html">Meu Perfil</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="container-buttons">
+        <a href="{% url 'configuracoes:configuracoes' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
+        <button class="botao-adicionar adicionar-departamentos">
+            <svg class="svgIcon" width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M11 17C11 17.5523 11.4477 18 12 18C12.5523 18 13 17.5523 13 17V13H17C17.5523 13 18 12.5523 18 12C18 11.4477 17.5523 11 17 11H13V7C13 6.44771 12.5523 6 12 6C11.4477 6 11 6.44771 11 7V11H7C6.44772 11 6 11.4477 6 12C6 12.5523 6.44772 13 7 13H11V17Z" fill="#000000"/>
+                </svg>
+        </button>
+    </section>
+    <div class="box-grid-departamentos">
+        <div class="conteudo-tabela-departamentos">
+            <table class="tabela-departamentos">
+                <thead class="cabecalho-departamentos">
+                    <tr class="linha-cabecalho-departamentos">
+                        <th class="cadastro-departamentos-col" scope="col">Departamentos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for departamento in departamentos %}
+                    <tr class="row-departamentos" scope="row" data-saldo-inicial="{{ departamento.saldo_inicial }}" data-id-departamentos="{{ departamento.id }}" data-uuid-departamentos="{{ departamento.uuid_departamento }}">
+                        <td class="departamentos-row">{{ departamento.departamento }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <dialog class="modal-departamentos">
+
+        <h1 class="modal-titulo">Departamentos</h1>
+        
+        <form class="modal-form-departamentos" action="/salvar_departamento/" method="POST">{% csrf_token %}
+            <input type="hidden" name="id_departamentos" value="{{ departamento.id }}">
+            <input type="hidden" name="uuid_departamentos" value="{{ departamento.uuid_departamento }}">
+            <section class="modal-flex">
+                <label for="departamento">Nome do departamento</label>
+                <input class="modal-departamentos" id="departamento" type="text" name="departamento" required><br>
+            </section>
+
+            <section class="modal-botoes">
+                <input class="modal-salvar-departamentos" type="submit" value="Salvar">
+                <button class="modal-apagar-departamentos" style="display:none;">Apagar</button>
+                <button class="modal-fechar-departamentos">Cancelar</button>
+            </section>
+        </form>
+    </dialog>
+
+    <script src="{% static 'scripts/scripts-departments.js' %}"></script>
+</body>
+</html>

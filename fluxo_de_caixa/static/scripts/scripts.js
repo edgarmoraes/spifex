@@ -1099,8 +1099,6 @@ document.querySelectorAll('.checkbox-personalizado').forEach(checkbox => {
 calcularTotal();
 
 
-
-
 // Filtro de meses
 const config = {
   meses: ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'],

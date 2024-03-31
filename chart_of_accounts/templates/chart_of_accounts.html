@@ -28,7 +28,7 @@
 <body>
     <div class="content-container">
         <section class="container-button-back">
-            <a href="{% url 'configuracoes:configuracoes' %}"><input type="submit" class="button-back" name="button-back" value="Voltar"></a>
+            <a href="{% url 'configuracoes:configuracoes' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
         </section>
         {% if messages %}
         <div class="messages">
@@ -46,9 +46,14 @@
                         <div class="content sub-content" style="max-height: none; display: block;">
                             <ul>
                                 {% for item in sub_items %}
-                                <li class="account">
+                                <li id="account" class="account">
                                     {{ item.account }}
-                                    <a href="{% url 'plano_de_contas:edit_account' item.id %}" class="edit-account-btn">Editar</a>
+                                <a href="{% url 'plano_de_contas:edit_account' item.id %}" class="edit-account-btn" 
+                                   data-nature="{{ item.nature }}" 
+                                   data-group="{{ item.group }}"
+                                   data-subgroup="{{ item.subgroup }}"
+                                   data-account="{{ item.account }}"
+                                   data-uuid="{{ item.uuid }}">Editar</a>
                                 </li>
                                 {% endfor %}
                                 <li><a href="{% url 'plano_de_contas:adicionar_conta' %}" class=" add-account-btn">Adicione uma conta</a></li>

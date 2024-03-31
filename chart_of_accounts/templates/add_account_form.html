@@ -28,29 +28,28 @@
 </header>
     <div class="content-container">
         <section class="container-button-back">
-            <a href="{% url 'plano_de_contas:plano_de_contas' %}"><input type="submit" class="button-back" name="button-back" value="Voltar"></a>
+            <a href="{% url 'plano_de_contas:plano_de_contas' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
         </section>
         <div class="add-account-container">
             <h2>Adicionar Nova Conta</h2>
-            <form method="post" action="{% url 'plano_de_contas:adicionar_conta' %}"> <!-- Garanta que o URL está correto -->
+            <form class="edit-account-form" method="post" action="{% url 'plano_de_contas:adicionar_conta' %}">
                 {% csrf_token %}
-                <div class="form-group">
-                    <label for="group">Grupo:</label>
-                    <select name="group" id="group" class="form-control">
-                        <!-- Opções de grupo serão inseridas aqui dinamicamente com JavaScript -->
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="subgroup">Subgrupo:</label>
-                    <select name="subgroup" id="subgroup" class="form-control">
-                        <!-- Opções de subgrupo serão inseridas aqui dinamicamente com JavaScript -->
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="accountName">Nome da Conta:</label>
-                    <input type="text" id="accountName" name="account" class="form-control" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Salvar</button>
+                <label for="group">Grupo:</label>
+                <select class="edit-field" name="group" id="group" required>
+                    <option value="" disabled selected>Selecione um grupo</option>
+                </select>
+
+                <label for="subgroup">Subgrupo:</label>
+                <select class="edit-field" name="subgroup" id="subgroup" required disabled>
+                    <option value="" disabled selected>Selecione um grupo</option>
+                </select>
+
+                <label for="accountName">Nome da Conta:</label>
+                <input class="edit-field" type="text" id="accountName" name="account" required>
+
+                <section class="btn-section">
+                    <button type="submit" class="btn btn-success">Salvar</button>
+                </section>
             </form>
         </div>
     </div>
@@ -58,6 +57,6 @@
         var getSubgroupsUrl = "{% url 'plano_de_contas:get_subgroups' %}";
         var getGroupsUrl = "{% url 'plano_de_contas:get_groups' %}";
     </script>
-    <script src="{% static 'scripts/chart_of_account.js' %}"></script>
+    <script src="{% static 'scripts/add_account_form.js' %}"></script>
 </body>
 </html>

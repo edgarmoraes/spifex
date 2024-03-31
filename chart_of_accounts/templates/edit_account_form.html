@@ -2,15 +2,16 @@
 {% load custom_filters %}
 
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" type="text/css" href="{% static 'css/chart_of_accounts.css' %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
-        <link rel="icon" href="{% static 'favicon.png' %}" type="image/x-icon">
-        <title>Sppiff | Plano de Contas</title>
-    </head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/chart_of_accounts.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}" type="image/x-icon">
+    <title>Sppiff | Plano de Contas</title>
+</head>
+<body>
 <header class="header">
     <!-- ############### Barra de Navegação Fixa ############### -->
     <nav class="nav-bar">
@@ -25,10 +26,9 @@
         </ul>
     </nav>
 </header>
-<body>
     <div class="content-container">
         <section class="container-button-back">
-            <a href="{% url 'plano_de_contas:plano_de_contas' %}"><input type="submit" class="button-back" name="button-back" value="Voltar"></a>
+            <a href="{% url 'plano_de_contas:plano_de_contas' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
         </section>
         {% block content %}
         <div class="edit-account-container">
@@ -36,19 +36,17 @@
             <form class="edit-account-form" method="post" action="{% url 'plano_de_contas:edit_account' account_id %}">
                 {% csrf_token %}
                 <label for="group">Grupo:</label>
-                <select class="edit-field" name="group" id="group">
+                <select class="edit-field" name="group" id="group" required>
                     <option value="" disabled selected>Selecione um grupo</option>
-                    <!-- Opções de grupo serão preenchidas pelo JavaScript -->
                 </select>
         
                 <label for="subgroup">Subgrupo:</label>
-                <select class="edit-field" name="subgroup" id="subgroup" disabled>
+                <select class="edit-field" name="subgroup" id="subgroup" required disabled>
                     <option value="" disabled selected>Selecione um subgrupo</option>
-                    <!-- Opções de subgrupo serão preenchidas pelo JavaScript -->
                 </select>
         
                 <label for="account">Conta:</label>
-                <input class="edit-field" type="text" id="account" name="account">
+                <input class="edit-field" type="text" id="account" name="account" required>
         
                 <section class="btn-section">
                     <button type="submit" class="btn btn-success">Salvar Alterações</button>
@@ -69,6 +67,6 @@
         var getSubgroupsUrl = "{% url 'plano_de_contas:get_subgroups' %}";
         var getGroupsUrl = "{% url 'plano_de_contas:get_groups' %}";
     </script>
-    <script src="{% static 'scripts/chart_of_account.js' %}"></script>
+    <script src="{% static 'scripts/edit_account_form.js' %}"></script>
 </body>
 </html>

@@ -74,7 +74,7 @@
     fill: var(--branco);
 }
   
-.botao:hover {
+.botao-adicionar:hover {
     width: 140px;
     border-radius: 50px;
     transition-duration: var(--transition-duration1);
@@ -85,7 +85,7 @@
     background-color: var(--color3);
 }
   
-.botao:hover .svgIcon {
+.botao-adicionar:hover .svgIcon {
     width: 100px;
     transition-duration: var(--transition-duration1);
     transform: translateY(4%);
@@ -99,18 +99,18 @@
     font-size: 2px;
 }
 
-.botao:hover.adicionar-bancos::before {
+.botao-adicionar:hover.adicionar-bancos::before {
     content: "Adicionar";
 }
   
-.botao:hover::before {
+.botao-adicionar:hover::before {
     font-size: 13px;
     opacity: 1;
     transform: translateY(30px);
     transition-duration: var(--transition-duration1);
 }
 
-.botao:focus {
+.botao-adicionar:focus {
     outline: none;
 }
 
@@ -244,7 +244,6 @@ input:focus {
 /* Tabela Bancos */
 .cadastro-contas-bancos-col {
   width: 20%;
-  border-radius: 20px 0px 0px 20px;
 }
 
 .cadastro-ag-bancos-col {
@@ -265,5 +264,4 @@ input:focus {
 
 .cadastro-status-bancos-col {
   width: 10%;
-  border-radius: 0px 20px 20px 0px;
 }
