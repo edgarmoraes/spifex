@@ -93,7 +93,7 @@
             
             <section class="modal-flex">
                 <label for="saldo-inicial">Saldo Inicial</label>
-                <input class="modal-valor" type="text" id="saldo-inicial" name="saldo-inicial" oninput="formatarCampoValorBancos(this)" value="" required><br>
+                <input class="modal-valor" type="text" id="saldo-inicial" name="saldo-inicial" oninput="formatarCampoValor(this)" value="R$ " required><br>
             </section>
         
             <section class="modal-flex">
@@ -106,8 +106,8 @@
 
             <section class="modal-botoes">
                 <input class="modal-salvar-bancos" type="submit" value="Salvar">
-                <button class="modal-apagar-bancos" style="display:none;">Apagar</button>
-                <button class="modal-fechar-bancos">Cancelar</button>
+                <button type="button" class="modal-apagar-bancos" style="display:none;">Apagar</button>
+                <button type="button" class="modal-fechar-bancos">Cancelar</button>
             </section>
         </form>
     </dialog>

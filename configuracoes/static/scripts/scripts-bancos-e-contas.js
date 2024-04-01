@@ -1,77 +1,67 @@
-// Modais
-function abrirModal(openBtn, modal) {
+// Função auxiliar para resetar campos específicos de cada modal
+function resetModalFields(formSelector) {
+  const form = document.querySelector(formSelector);
+  form?.reset();
+  
+  // Reset específico para o modal de bancos
+  document.querySelectorAll(".modal-apagar-bancos").forEach(botao => botao.style.display = 'none');
+  
+  const inputs = document.querySelectorAll(`${formSelector} input`);
+  inputs.forEach(input => {
+    if (input.type !== 'submit' && input.name !== 'csrfmiddlewaretoken') {
+      input.value = '';
+    }
+  });
+}
+
+// Função unificada para manipular a abertura e fechamento de modais
+function handleModal(openBtnSelector, modalSelector, formSelector, config = {}) {
+  const openBtn = document.querySelector(openBtnSelector);
+  const modal = document.querySelector(modalSelector);
+
   openBtn.addEventListener('click', () => {
-    modalAberto = modal;
     modal.showModal();
     document.body.style.overflow = 'hidden';
   });
+
+  const closeModalFunc = () => {
+    modal.close();
+    document.body.style.overflow = '';
+    resetModalFields(formSelector);
+    document.getElementById('saldo-inicial').value = "R$ "
+  };
+
+  const closeBtn = document.querySelector(config.closeBtnSelector);
+  closeBtn?.addEventListener('click', closeModalFunc);
+  modal.addEventListener('keydown', (e) => e.key === 'Escape' && closeModalFunc());
+  modal.addEventListener('close', closeModalFunc);
 }
 
-function fecharModal(closeBtn, modal, formSelector) {
-  closeBtn.addEventListener('click', () => {
-    fechar(modal, formSelector);
-  });
+document.addEventListener('DOMContentLoaded', () => {
+  // Configuração do modal de bancos
+  const modalConfig = {
+    openBtn: '.adicionar-bancos', 
+    modal: '.modal-bancos', 
+    form: '.modal-form-bancos', 
+    config: {closeBtnSelector: '.modal-fechar-bancos'}
+  };
 
-  modal.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      fechar(modal, formSelector);
-    }
-  });
+  // Aplicar configuração para o modal de bancos
+  handleModal(modalConfig.openBtn, modalConfig.modal, modalConfig.form, modalConfig.config);
+});
 
-  modal.addEventListener('close', () => {
-    fechar(modal, formSelector);
-  });
-}
-
-function fechar(modal, formSelector) {
-  modal.close();
-  document.body.style.overflow = '';
-  document.querySelectorAll(".modal-apagar-bancos").forEach(botao => botao.style.display = 'none');
-  limparCamposModal()
-  document.querySelector(formSelector).reset();
-}
-
-// Elementos do DOM
-const openModalBancos = document.querySelector('.adicionar-bancos');
-
-const closeModalBancos = document.querySelector('.modal-fechar-bancos');
-
-const modalBancos = document.querySelector('.modal-bancos');
-
-function limparCamposModal() {
-  const inputs = document.querySelectorAll(`.modal-bancos input`);
-  inputs.forEach(input => {
-      if (input.type !== 'submit' && input.name !== 'csrfmiddlewaretoken') {
-          input.value = '';
-      }
-  });
-}
-
-// Event Listeners
-abrirModal(openModalBancos, modalBancos, ".modal-form-bancos");
-fecharModal(closeModalBancos, modalBancos, ".modal-form-bancos");
 
 // Função para formatar o valor de um campo como moeda brasileira
-function formatarCampoValorBancos(input) {
-  // Remover caracteres não numéricos
-  let valor = input.value.replace(/\D/g, '');
-
-  // Remover zeros à esquerda
-  valor = valor.replace(/^0+/, '');
-
-  // Adicionar o ponto decimal nas duas últimas casas decimais
-  if (valor.length > 2) {
-      valor = valor.slice(0, -2) + '.' + valor.slice(-2);
-  } else if (valor.length === 2) {
-      valor = '0.' + valor;
-  } else if (valor.length === 1) {
-      valor = '0.0' + valor;
-  } else {
-      valor = '0.00';
+function formatarCampoValor(input) {
+  let valorNumerico = input.value.replace(/\D/g, '');
+  let valorFloat = parseFloat(valorNumerico) / 100;
+  let valorFormatado = valorFloat.toFixed(2)
+    .replace('.', ',')
+    .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  input.value = valorNumerico ? `R$ ${valorFormatado}` : 'R$ 0,00';
+  if (input.value === 'R$ 0,00') {
+    input.value = 'R$ 0,00';
   }
-
-  // Atualizar o valor do campo
-  input.value = valor;
 }
 
 // Edição de banco
@@ -91,14 +81,14 @@ document.addEventListener('DOMContentLoaded', function () {
           const banco = linha.querySelector('.banco-row').textContent;
           const agencia = linha.querySelector('.ag-row').textContent;
           const conta = linha.querySelector('.conta-row').textContent;
-          const saldoInicial = linha.getAttribute('data-saldo-inicial').replace(',', '.');
+          const saldoInicial = linha.querySelector('.saldo-banco-row').textContent;
           const idBanco = linha.getAttribute('data-id-banco');
           const statusBanco = linha.querySelector('.status-row').textContent.trim(); // Use trim() para remover espaços em branco
 
           document.getElementById('descricao-bancos').value = banco;
           document.getElementById('agencia-banco').value = agencia;
           document.getElementById('conta-banco').value = conta;
-          document.getElementById('saldo-inicial').value = saldoInicial;
+          document.getElementById('saldo-inicial').value = "R$ " + saldoInicial;
           document.querySelector('[name="id_banco"]').value = idBanco;
           const selectStatusBanco = document.querySelector('#status-banco');
           selectStatusBanco.value = statusBanco.toLowerCase() === 'ativo' ? 'ativo' : 'inativo';
@@ -114,68 +104,55 @@ document.addEventListener('DOMContentLoaded', function () {
       // Torna o botão de apagar invisível
       document.querySelectorAll(".modal-apagar-bancos").forEach(botao => botao.style.display = 'none');
   });
-  document.querySelector('.modal-apagar-bancos').addEventListener('click', function () {
-    const idBanco = document.querySelector('[name="id_banco"]').value; // Obtém o ID do banco a ser excluído
-    if (!confirm("Tem certeza que deseja apagar este banco?")) return; // Confirmação antes de excluir
-    
-    fetch(`/configuracoes/verificar_e_excluir_banco/${idBanco}/`, {
-      method: 'POST',
-      headers: {
-          'X-CSRFToken': getCsrfToken() // Inclui CSRF token
-      },
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Falha na requisição');
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
-            alert("Banco excluído com sucesso.");
-            window.location.reload(); // Recarrega a página para atualizar a lista de bancos
-        } else {
-            alert(data.error); // Exibe mensagem de erro retornada pelo servidor
-        }
-    })
-    .catch(error => {
-        console.error('Erro:', error);
-        alert("Falha ao tentar excluir o banco.");
-    });
-
-    // Torna o botão de apagar invisível novamente e fecha o modal
-    this.style.display = 'none';
-    document.querySelector('.modal-bancos').close();
 });
 
-// Função para obter CSRF token do cookie
-function getCsrfToken() {
-    return document.querySelector('input[name="csrfmiddlewaretoken"]').value;
-}
-});
+document.addEventListener('DOMContentLoaded', function() {
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value; // Assume que o token CSRF está disponível
 
+  // Configuração para adicionar ou atualizar um banco
+  const formBancos = document.querySelector('.modal-form-bancos');
+  formBancos.addEventListener('submit', function(e) {
+      e.preventDefault();
 
-document.querySelector('.modal-form-bancos').addEventListener('submit', function(e) {
-  e.preventDefault();  // Impede o envio tradicional do formulário
+      const formData = new FormData(this);
+      formData.append('csrfmiddlewaretoken', csrftoken); // Adiciona o CSRF token ao formData
 
-  // Dados do formulário
-  var formData = new FormData(this);
+      fetch('/configuracoes/salvar_banco/', { // Ajuste o caminho conforme necessário
+          method: 'POST',
+          body: formData,
+          headers: { "X-CSRFToken": csrftoken },
+      })
+      .then(response => response.json())
+      .then(data => {
+          alert(data.success ? 'Operação realizada com sucesso.' : 'Erro ao realizar operação.');
+          if(data.success) {
+              window.location.reload(); // Recarrega a página para mostrar as atualizações
+          }
+      })
+      .catch(error => console.error('Erro:', error));
+  });
 
-  // Requisição AJAX
-  fetch('/configuracoes/salvar_banco/', {
-      method: 'POST',
-      body: formData
-  })
-  .then(response => response.json())
-  .then(data => {
-      if(data.success) {
-          // Feche o modal aqui
-          document.querySelector('.modal-bancos').close();
-          // Torna o botão de apagar invisível
-          document.querySelectorAll(".modal-apagar-bancos").forEach(botao => botao.style.display = 'none');
-          window.location.reload();
-          // Atualize a lista de bancos aqui
-      } else {
-          alert("Houve um erro ao salvar as informações.");
-      }
-  })
-  .catch(error => console.error('Error:', error));
+  // Configuração para apagar um banco
+  document.querySelectorAll('.modal-apagar-bancos').forEach(button => {
+      button.addEventListener('click', function() {
+          const idBanco = document.querySelector('input[name="id_banco"]').value;
+
+          fetch(`/configuracoes/verificar_e_excluir_banco/${idBanco}/`, {
+              method: 'POST',
+              headers: {
+                  "X-CSRFToken": csrftoken,
+                  "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ "csrfmiddlewaretoken": csrftoken }) // O corpo da requisição precisa ser um JSON válido
+          })
+          .then(response => response.json())
+          .then(data => {
+              alert(data.success ? 'Banco excluído com sucesso.' : 'Erro ao excluir banco.');
+              if(data.success) {
+                  window.location.reload(); // Recarrega a página para remover o banco excluído da listagem
+              }
+          })
+          .catch(error => console.error('Erro:', error));
+      });
+  });
 });
