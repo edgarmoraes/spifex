@@ -115,7 +115,6 @@ def extrair_dados_formulario(request):
     # Processa outros campos com segurança
     descricao = request.POST.get('descricao', '')
     observacao = request.POST.get('observacao', '')
-    conta_contabil = request.POST.get('conta_contabil', '')
     parcelas = request.POST.get('parcelas', '1')
     parcelas_total = int(parcelas) if parcelas.isdigit() else 1
     parcelas_total_originais = int(request.POST.get('parcelas_total_originais', '1'))
@@ -141,6 +140,7 @@ def atualizar_fluxo_existente(dados):
     fluxo_de_caixa = get_object_or_404(Tabela_fluxo, id=dados['lancamento_id'])
     
     # Atualiza campos comuns diretamente
+    fluxo_de_caixa.vencimento = dados['vencimento']
     fluxo_de_caixa.descricao = dados['descricao']
     fluxo_de_caixa.observacao = dados['observacao']
     fluxo_de_caixa.valor = dados['valor']

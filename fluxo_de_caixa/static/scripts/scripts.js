@@ -772,6 +772,7 @@ function onModalClose(tipo) {
   limparCamposModal(tipo);
   estaEditando = false;
   redefinirCampoParcelas(tipo);
+  document.getElementById(`valor-${tipo}`).value = "R$ "
 }
 
 function limparCamposModal(tipo) {
@@ -922,21 +923,12 @@ function extrairTags(row) {
 
 // Função para formatar o valor de um campo como moeda brasileira
 function formatarCampoValor(input) {
-  // Extrair apenas os números do valor do campo
   let valorNumerico = input.value.replace(/\D/g, '');
-
-  // Converter o valor numérico para float para manipulação
   let valorFloat = parseFloat(valorNumerico) / 100;
-
-  // Formatar o número para incluir separador de milhar '.' e decimal ','
-  let valorFormatado = valorFloat.toFixed(2) // Garantir duas casas decimais
-    .replace('.', ',') // Substituir ponto por vírgula para separador decimal
-    .replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Adicionar '.' como separador de milhar
-
-  // Atualizar o valor do campo, mantendo o "R$" fixo na frente
+  let valorFormatado = valorFloat.toFixed(2)
+    .replace('.', ',')
+    .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   input.value = valorNumerico ? `R$ ${valorFormatado}` : 'R$ 0,00';
-
-  // Tratar caso especial quando o campo é limpo para mostrar 'R$ 0,00'
   if (input.value === 'R$ 0,00') {
     input.value = 'R$ 0,00';
   }
