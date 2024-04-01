@@ -36,26 +36,34 @@ def salvar_banco(request):
     # Retorna erro se não for uma requisição POST
     if request.method != 'POST':
         return JsonResponse({"success": False, "error": "Método não permitido."}, status=405)
+    
+    saldo_inicial_str = request.POST.get('saldo-inicial', 'R$ 0,00').replace('R$ ', '').replace('.', '').replace(',', '.')
+    saldo_inicial = Decimal(saldo_inicial_str) if saldo_inicial_str else Decimal('0.00')
 
     id_banco = request.POST.get('id_banco')
     descricao = request.POST.get('descricao')
     agencia = request.POST.get('agencia')
     conta = request.POST.get('conta')
-    saldo_inicial = Decimal(request.POST.get('saldo-inicial').replace(',', '.'))
     status_banco = request.POST.get('status-banco') == 'ativo'
 
     try:
         if id_banco:  # Atualização
             banco = Bancos.objects.get(pk=id_banco)
+            was_updated = banco.banco != descricao  # Verifica se a descrição do banco foi atualizada
         else:  # Criação
             banco = Bancos()
-        
+            was_updated = False
+
         banco.banco = descricao
         banco.agencia = agencia
         banco.conta = conta
         banco.saldo_inicial = saldo_inicial
         banco.status = status_banco
         banco.save()
+
+        # Se a descrição do banco foi atualizada, atualiza também em Tabela_realizado
+        if was_updated:
+            Tabela_realizado.objects.filter(banco_id_liquidacao=banco.id).update(banco_liquidacao=descricao)
 
         # Resposta JSON para atualização dinâmica
         return JsonResponse({"success": True, "id": banco.id})
@@ -82,14 +90,42 @@ def verificar_e_excluir_banco(request, idBanco):
     
 @require_POST
 def salvar_departamento(request):
+    id_departamento = request.POST.get('id_departamentos')
     nome_departamento = request.POST.get('departamento')
 
-    # Cria um novo departamento com um UUID único
-    novo_departamento = Departamentos(
-        departamento=nome_departamento,
-        uuid_departamento=uuid.uuid4()
-    )
-    novo_departamento.save()
+    if id_departamento:
+        # Atualizar um departamento existente
+        try:
+            departamento = Departamentos.objects.get(pk=id_departamento)
+            # Verifica se o nome é diferente para evitar conflito de nome único
+            if departamento.departamento != nome_departamento and Departamentos.objects.filter(departamento=nome_departamento).exists():
+                return JsonResponse({'success': False, 'message': 'Por favor, escolha um nome diferente para o departamento.'})
+            departamento.departamento = nome_departamento
+            departamento.save()
+            return JsonResponse({'success': True, 'message': 'Departamento atualizado com sucesso.'})
+        except Departamentos.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Departamento não encontrado.'})
+    else:
+        # Criar um novo departamento
+        if Departamentos.objects.filter(departamento=nome_departamento).exists():
+            return JsonResponse({'success': False, 'message': 'Por favor, escolha um nome diferente para o departamento.'})
+        
+        novo_departamento = Departamentos(
+            departamento=nome_departamento,
+            uuid_departamento=uuid.uuid4()
+        )
+        novo_departamento.save()
 
-    # Retorna uma resposta JSON indicando sucesso
-    return JsonResponse({'success': True, 'message': 'Departamento adicionado com sucesso.'})
+        return JsonResponse({'success': True, 'message': 'Departamento adicionado com sucesso.'})
+
+@require_POST
+def verificar_e_excluir_departamento(request, idDepartamento):
+    try:
+        # Tenta encontrar e excluir o departamento
+        departamento = Departamentos.objects.get(pk=idDepartamento)
+        departamento.delete()
+        # Departamento excluído com sucesso
+        return JsonResponse({'success': True})
+    except Departamentos.DoesNotExist:
+        # Departamento não encontrado
+        return JsonResponse({'success': False, 'error': 'Departamento não encontrado.'})

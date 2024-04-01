@@ -10,4 +10,5 @@ urlpatterns = [
     path('salvar_banco/', views.salvar_banco, name='salvar_banco'),
     path('salvar_departamento/', views.salvar_departamento, name='salvar_departamento'),
     path('verificar_e_excluir_banco/<int:idBanco>/', views.verificar_e_excluir_banco, name='verificar_e_excluir_banco'),
+    path('verificar_e_excluir_departamento/<int:idDepartamento>/', views.verificar_e_excluir_departamento, name='verificar_e_excluir_departamento'),
 ]
