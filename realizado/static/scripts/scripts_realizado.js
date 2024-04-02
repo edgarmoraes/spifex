@@ -153,8 +153,11 @@ function moverParaProximoCampo(campoAtual) {
 
 document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.row-lancamentos').forEach(row => {
-      row.addEventListener('dblclick', function() {
-          abrirModalEdicao(this);
+      row.addEventListener('dblclick', function(event) {
+          // Verifica se o clique duplo ocorreu dentro de um elemento com a classe 'checkbox-row'
+          if (!event.target.closest('.checkbox-row')) {
+              abrirModalEdicao(this);
+          }
       });
   });
 

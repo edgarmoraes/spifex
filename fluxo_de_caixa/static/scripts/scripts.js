@@ -721,7 +721,7 @@ function configurarEventos() {
 }
 
 function configurarEventosTabela() {
-  const cells = document.querySelectorAll('.row-lancamentos td');
+  const cells = document.querySelectorAll('.row-lancamentos td:not(.checkbox-row)');
   cells.forEach(cell => {
     cell.addEventListener('dblclick', function() {
       handleCellDoubleClick(this);
@@ -731,8 +731,10 @@ function configurarEventosTabela() {
 
 // Funções de Eventos de Tabela
 function handleCellDoubleClick(cell) {
-  const row = cell.closest('.row-lancamentos');
-  abrirModalEdicao(row);
+  if (!cell.classList.contains('checkbox-row')) {
+    const row = cell.closest('.row-lancamentos');
+    abrirModalEdicao(row);
+  }
 }
 
 // Funções de Manipulação de Modais
