@@ -130,6 +130,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'fluxo_de_caixa', 'static'),
     os.path.join(BASE_DIR, 'realizado', 'static'),
     os.path.join(BASE_DIR, 'configuracoes', 'static'),
+    os.path.join(BASE_DIR, 'chart_of_accounts', 'static'),
 ]
 
 # Default primary key field type

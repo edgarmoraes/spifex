@@ -18,9 +18,9 @@
         <button class="openbtn" onclick="toggleNav()">☰</button>
         <!-- ############### Barra de Navegação Fixa ############### -->
         <nav class="nav-bar">
-            <a class="logo" href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">Spifex</a>
+            <a class="logo" href="{% url 'cash_flow:cash_flow' %}">Spifex</a>
             <ul class="nav-list">
-                <li class="nav-fluxo-de-caixa"><a href="{% url 'fluxo_de_caixa:fluxo_de_caixa' %}">Fluxo de Caixa</a></li>
+                <li class="nav-fluxo-de-caixa"><a href="{% url 'cash_flow:cash_flow' %}">Fluxo de Caixa</a></li>
                 <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">Realizado</a></li>
                 <li class="nav-relatorios"><a href="#">Relatórios</a></li>
                 <li class="nav-line"><div class="line"></div></li>
@@ -427,35 +427,35 @@
                     </tr>
                 </thead>
                 <tbody id="tabela-lancamentos">
-                    {% for fluxo_de_caixa in Tabela_fluxo_list %}
-                        {% if fluxo_de_caixa.is_total %}
+                    {% for cash_flow_item in Tabela_fluxo_list %}
+                        {% if cash_flow_item.is_total %}
                             <tr class="linha-total-mes">
                                 <td></td>
-                                <td colspan="4">Total do Mês {{ fluxo_de_caixa.vencimento|date:"m/Y" }}</td>
-                                <td class="debito-total-row">{{ fluxo_de_caixa.debito|format_number }}</td>
-                                <td class="credito-total-row">{{ fluxo_de_caixa.credito|format_number }}</td>
-                                <td class="saldo-total-row">{{ fluxo_de_caixa.saldo|format_number }}</td>
+                                <td colspan="4">Total do Mês {{ cash_flow_item.vencimento|date:"m/Y" }}</td>
+                                <td class="debito-total-row">{{ cash_flow_item.debito|format_number }}</td>
+                                <td class="credito-total-row">{{ cash_flow_item.credito|format_number }}</td>
+                                <td class="saldo-total-row">{{ cash_flow_item.saldo|format_number }}</td>
                             </tr>
                         {% else %}
-                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ fluxo_de_caixa.id }}" data-conta-contabil="{{ fluxo_de_caixa.conta_contabil }}" data-uuid-conta-contabil="{{ fluxo_de_caixa.uuid_conta_contabil }}" data-natureza="{{ fluxo_de_caixa.natureza }}" parcela-atual="{{ fluxo_de_caixa.parcela_atual }}" parcelas-total="{{ fluxo_de_caixa.parcelas_total }}" data-uuid-row="{{ fluxo_de_caixa.uuid_correlacao }}" scope="row">
-                                <td class="checkbox-row"><label class="checkbox-container"><input id="checkbox-personalizado-{{ fluxo_de_caixa.id }}" class="checkbox-personalizado" type="checkbox" data-id="{{ fluxo_de_caixa.id }}" data-uuid-row="{{ fluxo_de_caixa.uuid_correlacao }}"><span class="checkmark"></span></label></td>
-                                <td class="vencimento-row">{{ fluxo_de_caixa.vencimento|date:"d/m/Y" }}</td>
-                                <td class="descricao-row">{{ fluxo_de_caixa.descricao }}</td>
+                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ cash_flow_item.id }}" data-conta-contabil="{{ cash_flow_item.conta_contabil }}" data-uuid-conta-contabil="{{ cash_flow_item.uuid_conta_contabil }}" data-natureza="{{ cash_flow_item.natureza }}" parcela-atual="{{ cash_flow_item.parcela_atual }}" parcelas-total="{{ cash_flow_item.parcelas_total }}" data-uuid-row="{{ cash_flow_item.uuid_correlacao }}" scope="row">
+                                <td class="checkbox-row"><label class="checkbox-container"><input id="checkbox-personalizado-{{ cash_flow_item.id }}" class="checkbox-personalizado" type="checkbox" data-id="{{ cash_flow_item.id }}" data-uuid-row="{{ cash_flow_item.uuid_correlacao }}"><span class="checkmark"></span></label></td>
+                                <td class="vencimento-row">{{ cash_flow_item.vencimento|date:"d/m/Y" }}</td>
+                                <td class="descricao-row">{{ cash_flow_item.descricao }}</td>
                                 <td class="obs-row">
-                                    {{ fluxo_de_caixa.observacao }}
-                                    <small class="d-block">Tags: {{ fluxo_de_caixa.tags }}</small>
+                                    {{ cash_flow_item.observacao }}
+                                    <small class="d-block">Tags: {{ cash_flow_item.tags }}</small>
                                 </td>
-                                <td class="parcela-row">{{ fluxo_de_caixa.parcela_atual }}/{{ fluxo_de_caixa.parcelas_total }}</td>
+                                <td class="parcela-row">{{ cash_flow_item.parcela_atual }}/{{ cash_flow_item.parcelas_total }}</td>
                                 <input type="hidden" id="parcelas-total-originais-recebimentos" name="parcelas_total_originais">
                                 <input type="hidden" id="parcelas-total-originais-pagamentos" name="parcelas_total_originais">
-                                {% if fluxo_de_caixa.natureza == 'Débito' %}
-                                    <td class="debito-row">{{ fluxo_de_caixa.valor|format_number }}</td>
+                                {% if cash_flow_item.natureza == 'Débito' %}
+                                    <td class="debito-row">{{ cash_flow_item.valor|format_number }}</td>
                                     <td class="credito-row"></td>
                                 {% else %}
                                     <td class="debito-row"></td>
-                                    <td class="credito-row">{{ fluxo_de_caixa.valor|format_number }}</td>
+                                    <td class="credito-row">{{ cash_flow_item.valor|format_number }}</td>
                                 {% endif %}
-                                <td class="saldo-row">{{ fluxo_de_caixa.saldo|format_number }}</td>
+                                <td class="saldo-row">{{ cash_flow_item.saldo|format_number }}</td>
                             </tr>
                         {% endif %}
                     {% endfor %}

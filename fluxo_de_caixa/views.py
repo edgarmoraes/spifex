@@ -17,13 +17,13 @@ from django.db.models.signals import post_save, post_delete
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Tabela_fluxo, TabelaTemporaria, Totais_mes_fluxo, Bancos
 
-def fluxo_de_caixa(request):
+def cash_flow(request):
     if request.method == "GET":
-        return exibir_fluxo_de_caixa(request)
+        return display_cash_flow(request)
     elif request.method == "POST":
-        return processar_fluxo_de_caixa(request)
+        return process_cash_flow(request)
 
-def exibir_fluxo_de_caixa(request):
+def display_cash_flow(request):
     bancos_ativos = Bancos.objects.filter(status=True)
     tabela_fluxo_list = Tabela_fluxo.objects.all().order_by('vencimento', '-valor', 'descricao')
     totais_mes_fluxo = Totais_mes_fluxo.objects.all()
@@ -64,26 +64,26 @@ def exibir_fluxo_de_caixa(request):
     }
     return render(request, 'fluxo_de_caixa.html', context)
 
-def processar_fluxo_de_caixa(request):
+def process_cash_flow(request):
     if 'transferencias' in request.POST and request.POST['transferencias'] == 'transferencia':
-        return processar_transferencia(request)
+        return process_transfer(request)
     else:
-        dados = extrair_dados_formulario(request)
+        dados = extract_form_data(request)
     if dados['lancamento_id']:
         if dados['parcelas_total'] > 1:
             if dados['parcelas_total_originais'] > 1:
-                atualizar_fluxo_existente(dados)  # Manter parcelas_total se for uma série de parcelas
+                update_existing_flow(dados)  # Manter parcelas_total se for uma série de parcelas
             else:
                 # Criar novos fluxos se o número de parcelas foi alterado para mais de um
                 Tabela_fluxo.objects.filter(id=dados['lancamento_id']).delete()
-                criar_novos_fluxos(dados)
+                create_new_flows(dados)
         else:
-            atualizar_fluxo_existente(dados)  # Atualização normal para lançamentos de uma única parcela
+            update_existing_flow(dados)  # Atualização normal para lançamentos de uma única parcela
     else:
-        criar_novos_fluxos(dados)
+        create_new_flows(dados)
     return redirect(request.path)
 
-def extrair_dados_formulario(request):
+def extract_form_data(request):
     """Extrai e retorna os dados do formulário."""
     natureza = 'Crédito' if 'salvar_recebimento' in request.POST else 'Débito'
 
@@ -135,36 +135,36 @@ def extrair_dados_formulario(request):
         'natureza': natureza,
     }
 
-def atualizar_fluxo_existente(dados):
+def update_existing_flow(dados):
     # Busca o fluxo de caixa pelo ID
-    fluxo_de_caixa = get_object_or_404(Tabela_fluxo, id=dados['lancamento_id'])
+    cash_flow_table = get_object_or_404(Tabela_fluxo, id=dados['lancamento_id'])
     
     # Atualiza campos comuns diretamente
-    fluxo_de_caixa.vencimento = dados['vencimento']
-    fluxo_de_caixa.descricao = dados['descricao']
-    fluxo_de_caixa.observacao = dados['observacao']
-    fluxo_de_caixa.valor = dados['valor']
-    fluxo_de_caixa.natureza = dados['natureza']
+    cash_flow_table.vencimento = dados['vencimento']
+    cash_flow_table.descricao = dados['descricao']
+    cash_flow_table.observacao = dados['observacao']
+    cash_flow_table.valor = dados['valor']
+    cash_flow_table.natureza = dados['natureza']
     # Não altera parcelas_total se já é parte de uma série de parcelas
-    if fluxo_de_caixa.parcelas_total <= 1 or 'parcelas_total' not in dados:
-        fluxo_de_caixa.parcelas_total = dados.get('parcelas_total', fluxo_de_caixa.parcelas_total)
-    fluxo_de_caixa.tags = dados['tags']
+    if cash_flow_table.parcelas_total <= 1 or 'parcelas_total' not in dados:
+        cash_flow_table.parcelas_total = dados.get('parcelas_total', cash_flow_table.parcelas_total)
+    cash_flow_table.tags = dados['tags']
 
     # Atualiza a conta contábil e seu UUID
-    fluxo_de_caixa.conta_contabil = dados['conta_contabil_nome']
-    fluxo_de_caixa.uuid_conta_contabil = dados['conta_contabil_uuid']
+    cash_flow_table.conta_contabil = dados['conta_contabil_nome']
+    cash_flow_table.uuid_conta_contabil = dados['conta_contabil_uuid']
 
     # Salva as alterações no banco de dados
-    fluxo_de_caixa.save()
+    cash_flow_table.save()
 
-def criar_novos_fluxos(dados, iniciar_desde_o_atual=False):
+def create_new_flows(dados, iniciar_desde_o_atual=False):
     if 'vencimento' not in dados or dados['vencimento'] is None:
         return JsonResponse({'error': 'Data de vencimento é necessária.'}, status=400)
 
     parcela_inicial = dados.get('parcela_atual', 1)
     total_parcelas = dados['parcelas_total']
 
-    # Verifica se 'vencimento' já é um objeto datetime.datetime
+    # Verifica se 'vencimento' já é um object datetime.datetime
     if isinstance(dados['vencimento'], datetime):
         vencimento_base = dados['vencimento'].date()
     else:
@@ -188,9 +188,9 @@ def criar_novos_fluxos(dados, iniciar_desde_o_atual=False):
         )
 
 @csrf_exempt
-def deletar_entradas(request):
+def delete_entries(request):
     if request.method == 'POST':
-        ids_para_apagar = extrair_ids_para_apagar(request)
+        ids_para_apagar = extract_ids_to_delete(request)
 
         # Verifica se algum dos lançamentos selecionados tem uuid_correlacao não nulo
         lancamentos_com_dependencia = Tabela_fluxo.objects.filter(id__in=ids_para_apagar, uuid_correlacao__isnull=False)
@@ -200,43 +200,43 @@ def deletar_entradas(request):
             return JsonResponse({'status': 'error', 'message': 'Este lançamento tem dependências liquidadas.'}, status=400)
         
         # Procede com a exclusão se todos os lançamentos puderem ser excluídos
-        processar_ids(ids_para_apagar)
+        process_ids(ids_para_apagar)
         return JsonResponse({'status': 'success'})
 
-def extrair_ids_para_apagar(request):
+def extract_ids_to_delete(request):
     """ Extrai os IDs do corpo da solicitação """
     data = json.loads(request.body)
     return data.get('ids', [])  # Retorna uma lista vazia se 'ids' não estiver presente
 
-def processar_ids(ids_para_apagar):
-    """ Processa cada ID para apagar o objeto correspondente e criar um registro na TabelaTemporaria """
+def process_ids(ids_para_apagar):
+    """ Processa cada ID para apagar o object correspondente e criar um registro na TabelaTemporaria """
     for id_str in ids_para_apagar:
         try:
             id = int(id_str)  # Convertendo o ID para inteiro
-            objeto = Tabela_fluxo.objects.get(id=id)
-            criar_registro_temporario(objeto)
-            objeto.delete()  # Apagando o objeto original
+            object = Tabela_fluxo.objects.get(id=id)
+            create_temporary_record(object)
+            object.delete()  # Apagando o object original
         except Tabela_fluxo.DoesNotExist:
             # Se o ID não for encontrado, pula para o próximo
             continue
 
-def criar_registro_temporario(objeto):
-    """ Cria um novo registro na TabelaTemporaria com base no objeto da Tabela_fluxo """
+def create_temporary_record(object):
+    """ Cria um novo registro na TabelaTemporaria com base no object da Tabela_fluxo """
     TabelaTemporaria.objects.create(
-        vencimento=objeto.vencimento,
-        descricao=objeto.descricao,
-        observacao=objeto.observacao,
-        valor=objeto.valor,
-        conta_contabil=objeto.conta_contabil,
-        uuid_conta_contabil=objeto.uuid_conta_contabil,
-        parcela_atual=objeto.parcela_atual,
-        parcelas_total=objeto.parcelas_total,
-        tags=objeto.tags,
-        natureza=objeto.natureza,
-        data_criacao=objeto.data_criacao
+        vencimento=object.vencimento,
+        descricao=object.descricao,
+        observacao=object.observacao,
+        valor=object.valor,
+        conta_contabil=object.conta_contabil,
+        uuid_conta_contabil=object.uuid_conta_contabil,
+        parcela_atual=object.parcela_atual,
+        parcelas_total=object.parcelas_total,
+        tags=object.tags,
+        natureza=object.natureza,
+        data_criacao=object.data_criacao
     )
 
-def processar_transferencia(request):
+def process_transfer(request):
     banco_saida_data = request.POST.get('banco_saida').split('|')
     banco_entrada_data = request.POST.get('banco_entrada').split('|')
 
@@ -297,7 +297,7 @@ def processar_transferencia(request):
     return redirect(request.path)
 
 @csrf_exempt
-def processar_liquidacao(request):
+def process_settlement(request):
     if request.method == 'POST':
         dados = json.loads(request.body)
         resposta = {'status': 'success', 'messages': []}
@@ -366,14 +366,14 @@ def processar_liquidacao(request):
 # SIGNAL HANDLERS ############################################################################
 
 @receiver(post_save, sender=Tabela_fluxo)
-def save_update_data_unica(sender, instance, **kwargs):
-    recalcular_totais()
+def save_update_single_date(sender, instance, **kwargs):
+    recalculate_totals()
 
 @receiver(post_delete, sender=Tabela_fluxo)
-def delete_update_data_unica(sender, instance, **kwargs):
-    recalcular_totais()
+def delete_update_single_date(sender, instance, **kwargs):
+    recalculate_totals()
 
-def recalcular_totais():
+def recalculate_totals():
     """ Sinal para atualizar Totais_mes_fluxo quando um FluxoDeCaixa for salvo """
     # Apaga todos os registros existentes em Totais_mes_fluxo
     Totais_mes_fluxo.objects.all().delete()
@@ -408,11 +408,11 @@ def recalcular_totais():
 
 # FUNÇÕES ÚNICAS ############################################################################
 
-def meses_filtro(request):
+def filter_months(request):
     totais_mes_fluxo = Totais_mes_fluxo.objects.all().order_by('data_formatada')
     context = {'totais_mes_fluxo': totais_mes_fluxo}
     return render(request, 'fluxo_de_caixa.html', context)
 
-def exibir_bancos(request):
+def display_banks(request):
     bancos = Bancos.objects.all()
     return render(request, 'fluxo_de_caixa.html', {'bancos': bancos})
