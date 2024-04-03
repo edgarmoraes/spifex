@@ -11,7 +11,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
-def upload_and_save(request):
+def chart_of_accounts(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
@@ -68,7 +68,7 @@ def add_account(request):
         form = AccountForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('plano_de_contas:plano_de_contas')
+            return redirect('/plano_de_contas/')
         else:
             print(form.errors)  # Isso ajudará a ver os erros no console do servidor
     else:
@@ -100,7 +100,7 @@ def edit_account(request, account_id):
         Tabela_realizado.objects.filter(uuid_conta_contabil=account_uuid).update(conta_contabil=account.account)
         Tabela_fluxo.objects.filter(uuid_conta_contabil=account_uuid).update(conta_contabil=account.account)
 
-        return redirect('plano_de_contas:plano_de_contas')
+        return redirect('/plano_de_contas/')
     else:
         form = AccountForm(instance=account)
     
@@ -115,7 +115,7 @@ def delete_account(request, account_id):
         return redirect('plano_de_contas:edit_account', account_id)
 
     account.delete()
-    return redirect('plano_de_contas:plano_de_contas')
+    return redirect('/plano_de_contas/')
 
 @receiver(post_save, sender=Chart_of_accounts)
 def update_lists_after_save(sender, instance, **kwargs):

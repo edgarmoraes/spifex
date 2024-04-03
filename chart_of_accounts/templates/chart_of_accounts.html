@@ -30,13 +30,6 @@
         <section class="container-button-back">
             <a href="{% url 'configuracoes:configuracoes' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
         </section>
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-            <div class="{{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-        {% endif %}
         <div id="report-container" class="report-container">
             {% for group, items in chart_of_accounts|groupby:"group" %}
                 <button class="collapsible" style="max-height: none;">{{ group }}</button>
@@ -69,6 +62,13 @@
         {{ form.as_p }}
         <button type="submit">Atualizar</button>
     </form>
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
     <script src="{% static 'scripts/chart_of_account.js' %}"></script>
 </body>
 </html>

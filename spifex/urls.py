@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from registration import views
-from chart_of_accounts.views import upload_and_save
+from chart_of_accounts.views import chart_of_accounts
 
 urlpatterns = [
     path('admin/', admin.site.urls),
