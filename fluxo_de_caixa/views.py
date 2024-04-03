@@ -60,7 +60,7 @@ def display_cash_flow(request):
         'Cash_flow_table_list': entries_with_totals,
         'Months_list': months_list,
         'Banks_list': active_banks,
-        'Accounts_by_subgroup_list': accounts_by_subgroup,  # Passando o OrderedDict para o contexto
+        'Accounts_by_subgroup_list': accounts_by_subgroup,
     }
     return render(request, 'cash_flow.html', context)
 
@@ -78,7 +78,7 @@ def process_cash_flow(request):
                 Tabela_fluxo.objects.filter(id=form_data['lancamento_id']).delete()
                 create_new_flows(form_data)
         else:
-            update_existing_flow(form_data)  # Atualização normal para lançamentos de uma única parcela
+            update_existing_flow(form_data)
     else:
         create_new_flows(form_data)
     return redirect(request.path)
@@ -178,8 +178,8 @@ def create_new_flows(form_data, iniciar_desde_o_atual=False):
             descricao=form_data['descricao'],
             observacao=form_data['observacao'],
             valor=form_data['valor'],
-            conta_contabil=form_data['conta_contabil_nome'],  # Usar o nome da conta contábil
-            uuid_conta_contabil=form_data['conta_contabil_uuid'],  # Armazenar o UUID da conta contábil
+            conta_contabil=form_data['conta_contabil_nome'],
+            uuid_conta_contabil=form_data['conta_contabil_uuid'],
             parcela_atual=i,
             parcelas_total=total_installments,
             tags=form_data['tags'],
@@ -318,8 +318,8 @@ def process_settlement(request):
                         original_record.uuid_correlacao = uuid_correlation
                         original_record.save()
                     if partial_amount < total_amount:
-                        new_amount = total_amount - partial_amount
-                        original_record.valor = new_amount
+                        novo_valor = total_amount - partial_amount
+                        original_record.valor = novo_valor
                         original_record.save()
                     # Se for a última liquidação parcial, o UUID já está definido
 
@@ -381,18 +381,18 @@ def recalculate_totals():
     # Encontra todas as datas únicas de vencimento em Tabela_fluxo
     unique_dates = Tabela_fluxo.objects.dates('vencimento', 'month', order='ASC')
 
-    for data_unica in unique_dates:
-        start_of_month = data_unica
-        start_of_month = start_of_month + relativedelta(months=1, days=-1)
+    for unique_date in unique_dates:
+        start_of_month = unique_date
+        end_of_month = start_of_month + relativedelta(months=1, days=-1)
 
         # Calcula os totais de crédito e débito para cada mês
         total_credit = Tabela_fluxo.objects.filter(
-            vencimento__range=(start_of_month, start_of_month),
+            vencimento__range=(start_of_month, end_of_month),
             natureza='Crédito'
         ).aggregate(Sum('valor'))['valor__sum'] or 0
 
         total_debit = Tabela_fluxo.objects.filter(
-            vencimento__range=(start_of_month, start_of_month),
+            vencimento__range=(start_of_month, end_of_month),
             natureza='Débito'
         ).aggregate(Sum('valor'))['valor__sum'] or 0
 
@@ -400,7 +400,7 @@ def recalculate_totals():
         Totais_mes_fluxo.objects.create(
             data_formatada=start_of_month.strftime('%b/%Y'),
             inicio_mes=start_of_month,
-            fim_mes=start_of_month,
+            fim_mes=end_of_month,
             total_credito=total_credit,
             total_debito=total_debit,
             saldo_mensal=total_credit - total_debit
@@ -410,7 +410,7 @@ def recalculate_totals():
 
 def filter_months(request):
     months_list = Totais_mes_fluxo.objects.all().order_by('data_formatada')
-    context = {'Months_list': months_list}
+    context = {'totais_mes_fluxo': months_list}
     return render(request, 'cash_flow.html', context)
 
 def display_banks(request):

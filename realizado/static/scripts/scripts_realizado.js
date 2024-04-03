@@ -331,30 +331,35 @@ function selecionarMesAtualEfiltrar() {
   const checkboxes = document.querySelectorAll('#dropdown-content-meses .mes-checkbox');
   const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 
-  let mesAnoAtual = `${meses[mesAtual]}/${anoAtual}`;
-  let checkboxEncontrado = Array.from(checkboxes).find(checkbox => checkbox.value.toLowerCase() === mesAnoAtual.toLowerCase());
+  let checkboxEncontrado = null;
 
-  // Se não encontrar o checkbox para o mês/ano atual, tenta o mês anterior
-  if (!checkboxEncontrado && mesAtual === 0) {
-    // Se estiver em janeiro, volta para dezembro do ano anterior
-    mesAnoAtual = `dez/${anoAtual - 1}`;
+  // Tenta encontrar o checkbox para o mês/ano atual ou para os meses anteriores, se necessário
+  while (!checkboxEncontrado && mesAtual >= 0) {
+    let mesAnoAtual = `${meses[mesAtual]}/${anoAtual}`;
     checkboxEncontrado = Array.from(checkboxes).find(checkbox => checkbox.value.toLowerCase() === mesAnoAtual.toLowerCase());
-  } else if (!checkboxEncontrado) {
-    // Volta um mês no mesmo ano
-    mesAnoAtual = `${meses[mesAtual - 1]}/${anoAtual}`;
-    checkboxEncontrado = Array.from(checkboxes).find(checkbox => checkbox.value.toLowerCase() === mesAnoAtual.toLowerCase());
+
+    if (!checkboxEncontrado) {
+      mesAtual -= 1; // Vai para o mês anterior
+      if (mesAtual < 0) {
+        // Se chegou a dezembro do ano anterior
+        mesAtual = 11; // Mês de dezembro
+        anoAtual -= 1; // Ano anterior
+      }
+    }
   }
 
+  // Se encontrar o checkbox, marca como selecionado e atualiza
   if (checkboxEncontrado) {
     checkboxEncontrado.checked = true;
     updateButtonTextMeses();
     filtrarTabela();
   } else {
-    console.error('Nenhum checkbox correspondente ao mês atual ou imediatamente anterior encontrado.');
+    console.error('Nenhum checkbox correspondente ao mês atual ou aos anteriores foi encontrado.');
   }
 }
 
 document.addEventListener('DOMContentLoaded', selecionarMesAtualEfiltrar);
+
 
 // Adiciona listeners para checkboxes
 function addListenerAndUpdate(selector, updateFunction, filterFunction = null, isExclusive = false) {

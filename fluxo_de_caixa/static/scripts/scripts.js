@@ -836,6 +836,10 @@ function preencherDadosModal(row, tipo) {
   const tagsString = extrairTags(row);
   adicionarTagsAoContainer(tagsString, tipo);
 
+  const contaContabilNome = row.getAttribute('data-conta-contabil');
+  document.getElementById(`conta_contabil_nome_${tipo}`).value = contaContabilNome;
+  selecionarContaContabilDropdown(tipo, contaContabilNome);
+
   const contaContabilUuid = row.getAttribute('data-uuid-conta-contabil');
   document.getElementById(`conta_contabil_uuid_${tipo}`).value = contaContabilUuid;
   selecionarContaContabilDropdown(tipo, contaContabilUuid);
