@@ -41,7 +41,7 @@
                                 {% for item in sub_items %}
                                 <li id="account" class="account">
                                     {{ item.account }}
-                                <a href="{% url 'plano_de_contas:edit_account' item.id %}" class="edit-account-btn" 
+                                <a href="{% url 'chart_of_accounts:edit_account' item.id %}" class="edit-account-btn" 
                                    data-nature="{{ item.nature }}" 
                                    data-group="{{ item.group }}"
                                    data-subgroup="{{ item.subgroup }}"
@@ -49,7 +49,7 @@
                                    data-uuid="{{ item.uuid }}">Editar</a>
                                 </li>
                                 {% endfor %}
-                                <li><a href="{% url 'plano_de_contas:adicionar_conta' %}" class=" add-account-btn">Adicione uma conta</a></li>
+                                <li><a href="{% url 'chart_of_accounts:adicionar_conta' %}" class=" add-account-btn">Adicione uma conta</a></li>
                             </ul>
                         </div>
                     {% endfor %}

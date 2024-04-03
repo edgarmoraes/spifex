@@ -112,7 +112,7 @@ def delete_account(request, account_id):
     if Tabela_fluxo.objects.filter(uuid_conta_contabil=account.uuid).exists() or \
        Tabela_realizado.objects.filter(uuid_conta_contabil=account.uuid).exists():
         messages.error(request, 'Esta conta está sendo utilizada e não pode ser excluída.')
-        return redirect('plano_de_contas:edit_account', account_id)
+        return redirect('chart_of_accounts:edit_account', account_id)
 
     account.delete()
     return redirect('/plano_de_contas/')

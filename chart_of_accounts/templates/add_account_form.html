@@ -28,11 +28,11 @@
 </header>
     <div class="content-container">
         <section class="container-button-back">
-            <a href="{% url 'plano_de_contas:plano_de_contas' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
+            <a href="{% url 'chart_of_accounts:chart_of_accounts' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
         </section>
         <div class="add-account-container">
             <h2>Adicionar Nova Conta</h2>
-            <form class="edit-account-form" method="post" action="{% url 'plano_de_contas:adicionar_conta' %}">
+            <form class="edit-account-form" method="post" action="{% url 'chart_of_accounts:adicionar_conta' %}">
                 {% csrf_token %}
                 <label for="group">Grupo:</label>
                 <select class="edit-field" name="group" id="group" required>
@@ -54,8 +54,8 @@
         </div>
     </div>
     <script type="text/javascript">
-        var getSubgroupsUrl = "{% url 'plano_de_contas:get_subgroups' %}";
-        var getGroupsUrl = "{% url 'plano_de_contas:get_groups' %}";
+        var getSubgroupsUrl = "{% url 'chart_of_accounts:get_subgroups' %}";
+        var getGroupsUrl = "{% url 'chart_of_accounts:get_groups' %}";
     </script>
     <script src="{% static 'scripts/add_account_form.js' %}"></script>
 </body>

@@ -28,12 +28,12 @@
 </header>
     <div class="content-container">
         <section class="container-button-back">
-            <a href="{% url 'plano_de_contas:plano_de_contas' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
+            <a href="{% url 'chart_of_accounts:chart_of_accounts' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
         </section>
         {% block content %}
         <div class="edit-account-container">
             <h2>Editar Conta</h2>
-            <form class="edit-account-form" method="post" action="{% url 'plano_de_contas:edit_account' account_id %}">
+            <form class="edit-account-form" method="post" action="{% url 'chart_of_accounts:edit_account' account_id %}">
                 {% csrf_token %}
                 <label for="group">Grupo:</label>
                 <select class="edit-field" name="group" id="group" required>
@@ -50,7 +50,7 @@
         
                 <section class="btn-section">
                     <button type="submit" class="btn btn-success">Salvar Alterações</button>
-                    <a href="{% url 'plano_de_contas:delete_account' account_id %}" class="btn btn-delete" onclick="return confirm('Tem certeza de que deseja excluir esta conta?')">Excluir Conta</a>
+                    <a href="{% url 'chart_of_accounts:delete_account' account_id %}" class="btn btn-delete" onclick="return confirm('Tem certeza de que deseja excluir esta conta?')">Excluir Conta</a>
                 </section>
             </form>
         </div>
@@ -64,8 +64,8 @@
         {% endif %}
     </div>
     <script type="text/javascript">
-        var getSubgroupsUrl = "{% url 'plano_de_contas:get_subgroups' %}";
-        var getGroupsUrl = "{% url 'plano_de_contas:get_groups' %}";
+        var getSubgroupsUrl = "{% url 'chart_of_accounts:get_subgroups' %}";
+        var getGroupsUrl = "{% url 'chart_of_accounts:get_groups' %}";
     </script>
     <script src="{% static 'scripts/edit_account_form.js' %}"></script>
 </body>
