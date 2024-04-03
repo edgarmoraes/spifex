@@ -48,7 +48,7 @@
                                         <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-contas', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
-                                        {% for subgroup, accounts in accounts_by_subgroup.items %}
+                                        {% for subgroup, accounts in Accounts_by_subgroup_list.items %}
                                             <div class="subgroup-label" data-nature="{{ accounts.0.nature }}">{{ subgroup }}</div>
                                             {% for account in accounts %}
                                                 <label class="label-filters">
@@ -72,10 +72,10 @@
                                         <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
-                                        {% for total in totais_mes_fluxo %}
+                                        {% for months in Months_list %}
                                         <label class="label-filters">
-                                            <input type="checkbox" name="meses" value="{{ total.data_formatada }}" class="mes-checkbox" data-inicio-mes="{{ total.inicio_mes|date:'Y-m-d' }}" data-fim-mes="{{ total.fim_mes|date:'Y-m-d' }}">
-                                            {{ total.data_formatada }}
+                                            <input type="checkbox" name="meses" value="{{ months.data_formatada }}" class="mes-checkbox" data-inicio-mes="{{ months.inicio_mes|date:'Y-m-d' }}" data-fim-mes="{{ months.fim_mes|date:'Y-m-d' }}">
+                                            {{ months.data_formatada }}
                                         </label>
                                         {% endfor %}
                                     </div>
@@ -93,10 +93,10 @@
                                         <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-bancos', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
-                                        {% for banco in bancos %}
+                                        {% for banks_item in Banks_list %}
                                         <label>
-                                            <input id="banco-checkbox-{{ banco.id }}" type="checkbox" class="banco-checkbox" value="{{ banco.id }}" data-banco-id="{{ banco.id }}">
-                                            {{ banco.banco }}
+                                            <input id="banco-checkbox-{{ banks_item.id }}" type="checkbox" class="banco-checkbox" value="{{ banks_item.id }}" data-banco-id="{{ banks_item.id }}">
+                                            {{ banks_item.banco }}
                                         </label>
                                         {% endfor %}
                                     </div>
@@ -186,12 +186,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for banco in bancos %}
-                            <tr class="row-bancos" scope="row" name="banco-id" data-banco-id="{{ banco.id }}">
-                                <td class="banco-row" name="banco">{{ banco.banco }}</td>
-                                <td class="ag-row" name="agencia">{{ banco.agencia }}</td>
-                                <td class="conta-row" name="conta">{{ banco.conta }}</td>
-                                <td class="saldo-banco-row" name="saldo_inicial">{{ banco.saldo_inicial|add_decimal:banco.saldo_atual|format_number }}</td>
+                            {% for banks_item in Banks_list %}
+                            <tr class="row-bancos" scope="row" name="banco-id" data-banco-id="{{ banks_item.id }}">
+                                <td class="banco-row" name="banco">{{ banks_item.banco }}</td>
+                                <td class="ag-row" name="agencia">{{ banks_item.agencia }}</td>
+                                <td class="conta-row" name="conta">{{ banks_item.conta }}</td>
+                                <td class="saldo-banco-row" name="saldo_inicial">{{ banks_item.saldo_inicial|add_decimal:banks_item.saldo_atual|format_number }}</td>
                             </tr>
                             {% endfor %}
                             <tr class="totais-row" scope="row">
@@ -242,7 +242,7 @@
                         <button type="button" onclick="toggleDropdownModals('dropdown-content-contas-recebimentos', event)" id="dropdown-button-contas-recebimentos" class="dropdown-button">Selecione</button>
                         <div id="dropdown-content-contas-recebimentos" class="dropdown-content">
                             <div class="dropdown-options">
-                                {% for subgroup, accounts in accounts_by_subgroup.items %}
+                                {% for subgroup, accounts in Accounts_by_subgroup_list.items %}
                                     {% if accounts.0.nature == 'Crédito' %}
                                         <div class="subgroup-label">{{ subgroup }}</div>
                                         {% for account in accounts %}
@@ -320,7 +320,7 @@
                         <button type="button" onclick="toggleDropdownModals('dropdown-content-contas-pagamentos', event)" id="dropdown-button-contas-pagamentos" class="dropdown-button">Selecione</button>
                         <div id="dropdown-content-contas-pagamentos" class="dropdown-content">
                             <div class="dropdown-options">
-                                {% for subgroup, accounts in accounts_by_subgroup.items %}
+                                {% for subgroup, accounts in Accounts_by_subgroup_list.items %}
                                     {% if accounts.0.nature == 'Débito' %}
                                         <div class="subgroup-label">{{ subgroup }}</div>
                                         {% for account in accounts %}
@@ -385,8 +385,8 @@
                     <label for="banco-saida">Do banco</label>
                     <select class="modal-banco-saida" id="banco-saida" name="banco_saida" required>
                         <option value="" disabled selected hidden>Selecione</option>
-                        {% for bancos in bancos %}
-                        <option value="{{ bancos.id }}|{{ bancos.banco }}">{{ bancos.banco }}</option>
+                        {% for banks_item in Banks_list %}
+                        <option value="{{ banks_item.id }}|{{ banks_item.banco }}">{{ banks_item.banco }}</option>
                         {% endfor %}
                     </select><br>
                 </section>
@@ -394,8 +394,8 @@
                     <label for="banco-entrada">Para o banco</label>
                     <select class="modal-banco-entrada" id="banco-entrada" name="banco_entrada" required>
                         <option value="" disabled selected hidden>Selecione</option>
-                        {% for bancos in bancos %}
-                        <option value="{{ bancos.id }}|{{ bancos.banco }}">{{ bancos.banco }}</option>
+                        {% for banks_item in Banks_list %}
+                        <option value="{{ banks_item.id }}|{{ banks_item.banco }}">{{ banks_item.banco }}</option>
                         {% endfor %}
                     </select><br>
                 </section>
@@ -427,7 +427,7 @@
                     </tr>
                 </thead>
                 <tbody id="tabela-lancamentos">
-                    {% for cash_flow_item in Tabela_fluxo_list %}
+                    {% for cash_flow_item in Cash_flow_table_list %}
                         {% if cash_flow_item.is_total %}
                             <tr class="linha-total-mes">
                                 <td></td>
@@ -531,7 +531,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for banco in bancos %}
+                                    {% for banco in Banks_list %}
                                     <tr class="row-bancos" scope="row">
                                         <td class="checkbox-row"><label class="checkbox-container"><input id="checkbox-personalizado-liquidacao-{{ banco.id }}" class="checkbox-personalizado-liquidacao" type="checkbox"><span class="checkmark-liquidacao"></span></label></td>
                                         <td class="banco-row banco-liquidacao" name="banco" data-nome-banco="{{ banco.banco }}" data-id-banco="{{ banco.id }}">{{ banco.banco }}</td>
