@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Tabela_fluxo
+from .models import CashFlowEntry
 
 # Register your models here.
-admin.site.register(Tabela_fluxo)
+admin.site.register(CashFlowEntry)

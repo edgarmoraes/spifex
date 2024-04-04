@@ -46,6 +46,14 @@ a:hover {
   opacity: 0.7;
 }
 
+.main {
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  top: 8vh;
+  height: calc(100vh - 8vh);
+}
+
 /* Barra de Navegação Fixa */
 
 .openbtn {
@@ -73,11 +81,15 @@ a:hover {
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 999;
+  z-index: 5000;
 }
 
 nav {
   display: flex;
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  width: 100%;
   justify-content: space-around;
   align-items: center;
   height: 8vh;
@@ -86,6 +98,7 @@ nav {
   border-bottom: solid 1px #ececec;
   backdrop-filter: blur(5px);
   box-shadow: var(--box-shadow1);
+  z-index: 1000;
 }
 
 .nav-list {
@@ -601,7 +614,7 @@ td.saldo-total-banco-liquidacao-row {
   width: 40px;
 }
 
-.vencimento-col {
+.due_date-col {
   width: 100px;
 }
 
@@ -627,7 +640,7 @@ td.saldo-total-banco-liquidacao-row {
   text-align: center;
 }
 
-.vencimento-row,
+.due_date-row,
 .parcela-row,
 .debito-row,
 .credito-row,
@@ -1164,7 +1177,7 @@ td.saldo-total-banco-liquidacao-row {
     width: 10px;
   }
   
-  .vencimento-col {
+  .due_date-col {
       width: 80px;
   }
 
@@ -1179,7 +1192,7 @@ td.saldo-total-banco-liquidacao-row {
   }
 
   /* Ajustes para as células para melhor visualização */
-  .vencimento-row,
+  .due_date-row,
   .debito-row,
   .credito-row,
   .saldo-row {
@@ -1187,7 +1200,7 @@ td.saldo-total-banco-liquidacao-row {
       text-overflow: clip;
   }
 
-  .vencimento-row {
+  .due_date-row {
     letter-spacing: -.9px;
   }
 

@@ -13,7 +13,7 @@
   flex-direction: column;
   width: 700px;
   height: auto;
-  margin: 4.5rem auto 1rem auto;
+  margin: 1.5rem auto 1rem auto;
   background-color: var(--branco);
   border-radius: 1rem;
   box-shadow: var(--box-shadow1);
@@ -138,7 +138,7 @@
   grid-template-columns: repeat(1, 1fr);
   width: 700px;
   height: 338px;
-  margin: 4.5rem auto 1rem auto;
+  margin: 1.5rem auto 1rem auto;
   padding: 1.625rem 1.625rem;
   background-color: var(--branco);
   border-radius: 1rem;
@@ -195,7 +195,6 @@
 .modal-recebimentos::backdrop,
 .modal-pagamentos::backdrop,
 .modal-transferencias::backdrop {
-  overflow-y: scroll !important;
   max-height: 100% !important;
 }
 

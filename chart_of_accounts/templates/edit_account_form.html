@@ -12,57 +12,59 @@
     <title>Spifex | Plano de Contas</title>
 </head>
 <body>
-<header class="header">
-    <!-- ############### Barra de Navegação Fixa ############### -->
-    <nav class="nav-bar">
-        <a class="logo" href="{% url 'cash_flow:cash_flow' %}">Spifex</a>
-        <ul class="nav-list">
-            <li class="nav-fluxo-de-caixa"><a href="{% url 'cash_flow:cash_flow' %}">Fluxo de Caixa</a></li>
-            <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">Realizado</a></li>
-            <li class="nav-relatorios"><a href="#">Relatórios</a></li>
-            <li class="nav-line"><div class="line"></div></li>
-            <li class="nav-configuracoes"><a href="{% url 'configuracoes:configuracoes' %}">Configurações</a></li>
-            <li class="nav-meu-perfil"><a href="meu-perfil.html">Meu Perfil</a></li>
-        </ul>
-    </nav>
-</header>
-    <div class="content-container">
-        <section class="container-button-back">
-            <a href="{% url 'chart_of_accounts:chart_of_accounts' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
-        </section>
-        {% block content %}
-        <div class="edit-account-container">
-            <h2>Editar Conta</h2>
-            <form class="edit-account-form" method="post" action="{% url 'chart_of_accounts:edit_account' account_id %}">
-                {% csrf_token %}
-                <label for="group">Grupo:</label>
-                <select class="edit-field" name="group" id="group" required>
-                    <option value="" disabled selected>Selecione um grupo</option>
-                </select>
+    <header class="header">
+        <!-- ############### Barra de Navegação Fixa ############### -->
+        <nav class="nav-bar">
+            <a class="logo" href="{% url 'cash_flow:cash_flow' %}">Spifex</a>
+            <ul class="nav-list">
+                <li class="nav-fluxo-de-caixa"><a href="{% url 'cash_flow:cash_flow' %}">Fluxo de Caixa</a></li>
+                <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">Realizado</a></li>
+                <li class="nav-relatorios"><a href="#">Relatórios</a></li>
+                <li class="nav-line"><div class="line"></div></li>
+                <li class="nav-configuracoes"><a href="{% url 'configuracoes:configuracoes' %}">Configurações</a></li>
+                <li class="nav-meu-perfil"><a href="meu-perfil.html">Meu Perfil</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main class="main">
+        <div class="content-container">
+            <section class="container-button-back">
+                <a href="{% url 'chart_of_accounts:chart_of_accounts' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
+            </section>
+            {% block content %}
+            <div class="edit-account-container">
+                <h2>Editar Conta</h2>
+                <form class="edit-account-form" method="post" action="{% url 'chart_of_accounts:edit_account' account_id %}">
+                    {% csrf_token %}
+                    <label for="group">Grupo:</label>
+                    <select class="edit-field" name="group" id="group" required>
+                        <option value="" disabled selected>Selecione um grupo</option>
+                    </select>
         
-                <label for="subgroup">Subgrupo:</label>
-                <select class="edit-field" name="subgroup" id="subgroup" required disabled>
-                    <option value="" disabled selected>Selecione um subgrupo</option>
-                </select>
+                    <label for="subgroup">Subgrupo:</label>
+                    <select class="edit-field" name="subgroup" id="subgroup" required disabled>
+                        <option value="" disabled selected>Selecione um subgrupo</option>
+                    </select>
         
-                <label for="account">Conta:</label>
-                <input class="edit-field" type="text" id="account" name="account" required>
+                    <label for="account">Conta:</label>
+                    <input class="edit-field" type="text" id="account" name="account" required>
         
-                <section class="btn-section">
-                    <button type="submit" class="btn btn-success">Salvar Alterações</button>
-                    <a href="{% url 'chart_of_accounts:delete_account' account_id %}" class="btn btn-delete" onclick="return confirm('Tem certeza de que deseja excluir esta conta?')">Excluir Conta</a>
-                </section>
-            </form>
+                    <section class="btn-section">
+                        <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                        <a href="{% url 'chart_of_accounts:delete_account' account_id %}" class="btn btn-delete" onclick="return confirm('Tem certeza de que deseja excluir esta conta?')">Excluir Conta</a>
+                    </section>
+                </form>
+            </div>
+            {% endblock %}
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
         </div>
-        {% endblock %}
-        {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            <li class="{{ message.tags }}">{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-    </div>
+    </main>
     <script type="text/javascript">
         var getSubgroupsUrl = "{% url 'chart_of_accounts:get_subgroups' %}";
         var getGroupsUrl = "{% url 'chart_of_accounts:get_groups' %}";

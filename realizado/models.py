@@ -2,9 +2,9 @@ import uuid
 from django.db import models
 from fluxo_de_caixa.models import Bancos
 
-class Tabela_realizado(models.Model):
+class SettledEntry(models.Model):
     fluxo_id = models.IntegerField(null=True, blank=True)
-    vencimento = models.DateField()
+    due_date = models.DateField()
     descricao = models.CharField(max_length = 100)
     observacao = models.CharField(max_length = 100)
     valor = models.DecimalField(max_digits=13, decimal_places=2)

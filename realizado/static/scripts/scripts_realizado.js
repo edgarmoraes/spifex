@@ -9,7 +9,7 @@ document.getElementById('retornar-button').addEventListener('click', function() 
         let credito = row.querySelector('.credito-row').textContent.trim();
         dataToSend.push({
             id: checkbox.getAttribute('data-id'),
-            vencimento: row.querySelector('.vencimento-row').textContent,
+            due_date: row.querySelector('.due_date-row').textContent,
             descricao: row.querySelector('.descricao-row').textContent,
             valor: debito || credito, // Usa débito se disponível, senão credito
             conta_contabil: row.getAttribute('data-conta-contabil'),
@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function abrirModalEdicao(row) {
   const id = row.getAttribute('data-id-row');
-  const vencimento = row.querySelector('.vencimento-row').textContent.trim();
+  const due_date = row.querySelector('.due_date-row').textContent.trim();
   const descricao = row.querySelector('.descricao-row').textContent.trim();
   const observacao = row.querySelector('.obs-row').textContent.split('Tags:')[0].trim().replace(/\s+/g, ' ');
   const valor = row.querySelector('.debito-row').textContent.trim() || row.querySelector('.credito-row').textContent.trim();
@@ -185,17 +185,14 @@ function abrirModalEdicao(row) {
   const uuid = row.getAttribute('data-uuid-correlacao');
   const uuidParcelas = row.getAttribute('data-uuid-correlacao-parcelas');
 
-  preencherDadosModalRealizado(id, vencimento, descricao, observacao, valor, contaContabil, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas);
+  preencherDadosModalRealizado(id, due_date, descricao, observacao, valor, contaContabil, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas);
 
   document.getElementById('modal-realizado').showModal();
-  document.body.style.overflow = 'hidden';
-  document.body.style.marginRight = '17px';
-  document.querySelector('.nav-bar').style.marginRight = '17px';
 }
 
-function preencherDadosModalRealizado(id, vencimento, descricao, observacao, valor, contaContabil, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas) {
+function preencherDadosModalRealizado(id, due_date, descricao, observacao, valor, contaContabil, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas) {
   document.querySelector('.modal-form-realizado [name="lancamento_id_realizado"]').value = id;
-  document.getElementById('data-realizado').value = formatarDataParaInput(vencimento);
+  document.getElementById('data-realizado').value = formatarDataParaInput(due_date);
   document.getElementById('descricao-realizado').value = descricao;
   document.getElementById('observacao-realizado').value = observacao;
   document.getElementById('valor-realizado').value = "R$ "+valor;
@@ -230,13 +227,10 @@ function adicionarTag(tag, containerId) {
 
 // Função para fechar o modal e voltar às configurações iniciais
 function fecharModal(modal) {
-  modal.close();
-  document.body.style.overflow = '';
-  document.body.style.marginRight = '';
-  document.querySelector('.nav-bar').style.marginRight = '';
   const form = document.querySelector(".modal-form-realizado");
+  document.getElementById('tag-container-realizado').innerHTML = '';
+  modal.close();
   form.reset();
-  document.getElementById('tag-container-realizado').innerHTML = ''; // Limpa as tags
 }
 
 document.querySelector('.modal-fechar-realizado').addEventListener('click', function() {
@@ -304,7 +298,7 @@ function atualizarDataLancamentosRelacionados(uuid, novaData) {
 }
 
 function atualizarLancamento(lancamentoId, dataRealizado, descricaoRealizado, observacaoRealizado) {
-  const dados = { vencimento: dataRealizado, descricao: descricaoRealizado, observacao: observacaoRealizado };
+  const dados = { due_date: dataRealizado, descricao: descricaoRealizado, observacao: observacaoRealizado };
   const url = `/realizado/atualizar-lancamento/${lancamentoId}/`;
 
   fetch(url, {
@@ -547,7 +541,7 @@ function filtrarTabela() {
     if (tagsElemento) observacaoElemento.removeChild(tagsElemento);
     const observacao = observacaoElemento.textContent.toUpperCase();
     const tags = tagsElemento ? tagsElemento.textContent.toUpperCase() : "";
-    const dataVencimento = new Date(row.querySelector(".vencimento-row").textContent.split('/').reverse().join('-'));
+    const dueDate = new Date(row.querySelector(".due_date-row").textContent.split('/').reverse().join('-'));
     const naturezaLancamento = row.getAttribute('data-natureza');
     const idBancoLancamento = row.getAttribute('data-banco-id-liquidacao');
 
@@ -555,15 +549,15 @@ function filtrarTabela() {
     const contaContabilMatch = uuidsContaContabilSelecionados.length === 0 || uuidsContaContabilSelecionados.includes(uuidContaContabilLinha);
     const descricaoObservacaoMatch = filtroDescricao === "" || descricao.includes(filtroDescricao) || observacao.includes(filtroDescricao);
     const tagMatch = filtroTags === "" || tags.includes(filtroTags);
-    const mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => dataVencimento >= intervalo.inicio && dataVencimento <= intervalo.fim);
-    const dataMatch = (!dataInicioObj || dataVencimento >= dataInicioObj) && (!dataFimObj || dataVencimento <= dataFimObj);
+    const mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => dueDate >= intervalo.inicio && dueDate <= intervalo.fim);
+    const dataMatch = (!dataInicioObj || dueDate >= dataInicioObj) && (!dataFimObj || dueDate <= dataFimObj);
     const naturezaMatch = selecionarTodaNatureza || naturezasSelecionadas.includes(naturezaLancamento);
     const bancoMatch = bancosSelecionados.length === 0 || bancosSelecionados.includes(idBancoLancamento);
 
     row.style.display = descricaoObservacaoMatch && tagMatch && mesMatch && naturezaMatch && dataMatch && contaContabilMatch && bancoMatch ? "" : "none";
 
     if (row.style.display === "") {
-      let mesAno = dataVencimento.toLocaleString('default', { month: '2-digit', year: 'numeric' });
+      let mesAno = dueDate.toLocaleString('default', { month: '2-digit', year: 'numeric' });
       mesesAnosVisiveis.add(mesAno);
     }
   });

@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.shortcuts import render
 from django.http import JsonResponse
 from fluxo_de_caixa.models import Bancos, Departamentos
-from realizado.models import Tabela_realizado
+from realizado.models import SettledEntry
 from django.db.models import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
@@ -61,9 +61,9 @@ def salvar_banco(request):
         banco.status = status_banco
         banco.save()
 
-        # Se a descrição do banco foi atualizada, atualiza também em Tabela_realizado
+        # Se a descrição do banco foi atualizada, atualiza também em SettledEntry
         if was_updated:
-            Tabela_realizado.objects.filter(banco_id_liquidacao=banco.id).update(banco_liquidacao=descricao)
+            SettledEntry.objects.filter(banco_id_liquidacao=banco.id).update(banco_liquidacao=descricao)
 
         # Resposta JSON para atualização dinâmica
         return JsonResponse({"success": True, "id": banco.id})
@@ -73,8 +73,8 @@ def salvar_banco(request):
 
 @require_POST
 def verificar_e_excluir_banco(request, idBanco):
-    # Verifica se o banco está sendo utilizado na Tabela_realizado
-    if Tabela_realizado.objects.filter(banco_id_liquidacao=idBanco).exists():
+    # Verifica se o banco está sendo utilizado na SettledEntry
+    if SettledEntry.objects.filter(banco_id_liquidacao=idBanco).exists():
         # Banco está sendo utilizado, não pode ser excluído
         return JsonResponse({'success': False, 'error': 'Este banco está sendo utilizado e não pode ser excluído.'})
 

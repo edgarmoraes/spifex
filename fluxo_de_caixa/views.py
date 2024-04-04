@@ -9,13 +9,13 @@ from collections import OrderedDict
 from django.contrib import messages
 from django.dispatch import receiver
 from django.http import JsonResponse
-from realizado.models import Tabela_realizado
+from realizado.models import SettledEntry
 from dateutil.relativedelta import relativedelta
 from django.views.decorators.csrf import csrf_exempt
 from chart_of_accounts.models import Chart_of_accounts
 from django.db.models.signals import post_save, post_delete
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Tabela_fluxo, TabelaTemporaria, Totais_mes_fluxo, Bancos
+from .models import CashFlowEntry, TabelaTemporaria, Totais_mes_fluxo, Bancos
 
 def cash_flow(request):
     if request.method == "GET":
@@ -25,7 +25,7 @@ def cash_flow(request):
 
 def display_cash_flow(request):
     active_banks = Bancos.objects.filter(status=True)
-    cash_flow_table_list = Tabela_fluxo.objects.all().order_by('vencimento', '-valor', 'descricao')
+    cash_flow_table_list = CashFlowEntry.objects.all().order_by('due_date', '-valor', 'descricao')
     months_list = Totais_mes_fluxo.objects.all()
     chart_of_accounts_queryset_list = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
     
@@ -39,7 +39,7 @@ def display_cash_flow(request):
     cash_flow_table_list = list(cash_flow_table_list)
 
     entries_with_totals = []
-    for key, group in groupby(cash_flow_table_list, key=lambda x: x.vencimento.strftime('%Y-%m')):
+    for key, group in groupby(cash_flow_table_list, key=lambda x: x.due_date.strftime('%Y-%m')):
         group_list = list(group)
         entries_with_totals.extend(group_list)
 
@@ -48,7 +48,7 @@ def display_cash_flow(request):
         total_balance = total_credit - total_debit
 
         entries_with_totals.append({
-            'vencimento': datetime.strptime(key + "-01", '%Y-%m-%d'),
+            'due_date': datetime.strptime(key + "-01", '%Y-%m-%d'),
             'descricao': 'Total do Mês',
             'debito': total_debit,
             'credito': total_credit,
@@ -75,7 +75,7 @@ def process_cash_flow(request):
                 update_existing_flow(form_data)  # Manter parcelas_total se for uma série de parcelas
             else:
                 # Criar novos fluxos se o número de parcelas foi alterado para mais de um
-                Tabela_fluxo.objects.filter(id=form_data['lancamento_id']).delete()
+                CashFlowEntry.objects.filter(id=form_data['lancamento_id']).delete()
                 create_new_flows(form_data)
         else:
             update_existing_flow(form_data)
@@ -105,8 +105,8 @@ def extract_form_data(request):
     elif transaction_type == 'Débito' and payment_entry_id:
         entry_id = int(payment_entry_id)
     
-    # Verifica e processa o campo 'vencimento'
-    due_date_str = request.POST.get('vencimento')
+    # Verifica e processa o campo 'due_date'
+    due_date_str = request.POST.get('due_date')
     due_date = datetime.strptime(due_date_str, '%Y-%m-%d') if due_date_str else None
 
     transaction_amount_str = request.POST.get('valor', 'R$ 0,00').replace('R$ ', '').replace('.', '').replace(',', '.')
@@ -122,7 +122,7 @@ def extract_form_data(request):
 
     # Retorna um dicionário com os dados processados
     return {
-        'vencimento': due_date,
+        'due_date': due_date,
         'descricao': entry_description,
         'observacao': entry_observation,
         'valor': transaction_amount,
@@ -137,10 +137,10 @@ def extract_form_data(request):
 
 def update_existing_flow(form_data):
     # Busca o fluxo de caixa pelo ID
-    cash_flow_table = get_object_or_404(Tabela_fluxo, id=form_data['lancamento_id'])
+    cash_flow_table = get_object_or_404(CashFlowEntry, id=form_data['lancamento_id'])
     
     # Atualiza campos comuns diretamente
-    cash_flow_table.vencimento = form_data['vencimento']
+    cash_flow_table.due_date = form_data['due_date']
     cash_flow_table.descricao = form_data['descricao']
     cash_flow_table.observacao = form_data['observacao']
     cash_flow_table.valor = form_data['valor']
@@ -158,23 +158,23 @@ def update_existing_flow(form_data):
     cash_flow_table.save()
 
 def create_new_flows(form_data, iniciar_desde_o_atual=False):
-    if 'vencimento' not in form_data or form_data['vencimento'] is None:
-        return JsonResponse({'error': 'Data de vencimento é necessária.'}, status=400)
+    if 'due_date' not in form_data or form_data['due_date'] is None:
+        return JsonResponse({'error': 'Data de due_date é necessária.'}, status=400)
 
     initial_installment = form_data.get('parcela_atual', 1)
     total_installments = form_data['parcelas_total']
 
-    # Verifica se 'vencimento' já é um object datetime.datetime
-    if isinstance(form_data['vencimento'], datetime):
-        base_due_date = form_data['vencimento'].date()
+    # Verifica se 'due_date' já é um object datetime.datetime
+    if isinstance(form_data['due_date'], datetime):
+        base_due_date = form_data['due_date'].date()
     else:
-        # Converte de string para datetime.datetime se 'vencimento' for uma string
-        base_due_date = datetime.strptime(form_data['vencimento'], '%Y-%m-%d').date()
+        # Converte de string para datetime.datetime se 'due_date' for uma string
+        base_due_date = datetime.strptime(form_data['due_date'], '%Y-%m-%d').date()
 
     for i in range(initial_installment, total_installments + 1):
         installment_due_date = base_due_date + relativedelta(months=i - initial_installment)
-        Tabela_fluxo.objects.create(
-            vencimento=installment_due_date,
+        CashFlowEntry.objects.create(
+            due_date=installment_due_date,
             descricao=form_data['descricao'],
             observacao=form_data['observacao'],
             valor=form_data['valor'],
@@ -193,7 +193,7 @@ def delete_entries(request):
         ids_to_delete = extract_ids_to_delete(request)
 
         # Verifica se algum dos lançamentos selecionados tem uuid_correlacao não nulo
-        entries_with_dependencies = Tabela_fluxo.objects.filter(id__in=ids_to_delete, uuid_correlacao__isnull=False)
+        entries_with_dependencies = CashFlowEntry.objects.filter(id__in=ids_to_delete, uuid_correlacao__isnull=False)
 
         if entries_with_dependencies.exists():
             # Retorna uma mensagem de erro se algum lançamento tem dependência
@@ -213,17 +213,17 @@ def process_ids(ids_to_delete):
     for id_str in ids_to_delete:
         try:
             id = int(id_str)  # Convertendo o ID para inteiro
-            object = Tabela_fluxo.objects.get(id=id)
+            object = CashFlowEntry.objects.get(id=id)
             create_temporary_record(object)
             object.delete()  # Apagando o object original
-        except Tabela_fluxo.DoesNotExist:
+        except CashFlowEntry.DoesNotExist:
             # Se o ID não for encontrado, pula para o próximo
             continue
 
 def create_temporary_record(object):
-    """ Cria um novo registro na TabelaTemporaria com base no object da Tabela_fluxo """
+    """ Cria um novo registro na TabelaTemporaria com base no object da CashFlowEntry """
     TabelaTemporaria.objects.create(
-        vencimento=object.vencimento,
+        due_date=object.due_date,
         descricao=object.descricao,
         observacao=object.observacao,
         valor=object.valor,
@@ -257,8 +257,8 @@ def process_transfer(request):
         return redirect('cash_flow')
     
     # Cria o lançamento de saída
-    withdrawal_entry = Tabela_realizado(
-        vencimento=settlement_date,
+    withdrawal_entry = SettledEntry(
+        due_date=settlement_date,
         descricao=f'Transferência para {deposit_bank_name}',
         banco_id_liquidacao=withdrawal_bank_id,
         banco_liquidacao=withdrawal_bank_name,
@@ -276,8 +276,8 @@ def process_transfer(request):
     withdrawal_entry.save()
 
     # Cria o lançamento de entrada
-    deposit_entry = Tabela_realizado(
-        vencimento=settlement_date,
+    deposit_entry = SettledEntry(
+        due_date=settlement_date,
         descricao=f'Transferência de {withdrawal_bank_name}',
         banco_id_liquidacao=deposit_bank_id,
         banco_liquidacao=deposit_bank_name,
@@ -304,7 +304,7 @@ def process_settlement(request):
 
         for item in form_data:
             try:
-                original_record = Tabela_fluxo.objects.get(id=item['id'])
+                original_record = CashFlowEntry.objects.get(id=item['id'])
                 total_amount = original_record.valor
                 partial_amount = Decimal(item.get('valor_parcial', 0))
                 is_partial_settlement = partial_amount > 0 and partial_amount <= total_amount
@@ -324,15 +324,15 @@ def process_settlement(request):
                     # Se for a última liquidação parcial, o UUID já está definido
 
                 settlement_date_aware = timezone.make_aware(datetime.strptime(item['data_liquidacao'], '%Y-%m-%d'))
-                installment_number = Tabela_realizado.objects.filter(uuid_correlacao=uuid_correlation).count() + 1 if uuid_correlation else 1
+                installment_number = SettledEntry.objects.filter(uuid_correlacao=uuid_correlation).count() + 1 if uuid_correlation else 1
 
                 updated_entry_description = original_record.descricao
                 if is_partial_settlement:
                     updated_entry_description += f" | Parcela ({installment_number})"
 
-                Tabela_realizado.objects.create(
+                SettledEntry.objects.create(
                     fluxo_id=original_record.id,
-                    vencimento=original_record.vencimento,
+                    due_date=original_record.due_date,
                     descricao=updated_entry_description,
                     observacao=item['observacao'],
                     valor=partial_amount if is_partial_settlement else total_amount,
@@ -354,7 +354,7 @@ def process_settlement(request):
                 if completing_settlement or not is_partial_settlement:
                     original_record.delete()
 
-            except Tabela_fluxo.DoesNotExist:
+            except CashFlowEntry.DoesNotExist:
                 response['messages'].append(f'Registro {item["id"]} não encontrado.')
                 continue
 
@@ -365,11 +365,11 @@ def process_settlement(request):
 
 # SIGNAL HANDLERS ############################################################################
 
-@receiver(post_save, sender=Tabela_fluxo)
+@receiver(post_save, sender=CashFlowEntry)
 def save_update_single_date(sender, instance, **kwargs):
     recalculate_totals()
 
-@receiver(post_delete, sender=Tabela_fluxo)
+@receiver(post_delete, sender=CashFlowEntry)
 def delete_update_single_date(sender, instance, **kwargs):
     recalculate_totals()
 
@@ -378,21 +378,21 @@ def recalculate_totals():
     # Apaga todos os registros existentes em Totais_mes_fluxo
     Totais_mes_fluxo.objects.all().delete()
 
-    # Encontra todas as datas únicas de vencimento em Tabela_fluxo
-    unique_dates = Tabela_fluxo.objects.dates('vencimento', 'month', order='ASC')
+    # Encontra todas as datas únicas de due_date em CashFlowEntry
+    unique_dates = CashFlowEntry.objects.dates('due_date', 'month', order='ASC')
 
     for unique_date in unique_dates:
         start_of_month = unique_date
         end_of_month = start_of_month + relativedelta(months=1, days=-1)
 
         # Calcula os totais de crédito e débito para cada mês
-        total_credit = Tabela_fluxo.objects.filter(
-            vencimento__range=(start_of_month, end_of_month),
+        total_credit = CashFlowEntry.objects.filter(
+            due_date__range=(start_of_month, end_of_month),
             natureza='Crédito'
         ).aggregate(Sum('valor'))['valor__sum'] or 0
 
-        total_debit = Tabela_fluxo.objects.filter(
-            vencimento__range=(start_of_month, end_of_month),
+        total_debit = CashFlowEntry.objects.filter(
+            due_date__range=(start_of_month, end_of_month),
             natureza='Débito'
         ).aggregate(Sum('valor'))['valor__sum'] or 0
 

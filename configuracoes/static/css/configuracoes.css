@@ -1,11 +1,3 @@
-/* Específicos Configurações */
-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
 /* Compartilhado */
 .nav-configuracoes a {
   color: var(--color7);
@@ -23,7 +15,7 @@ h2 {
   flex-direction: column;
   justify-items: center;
   align-items: center;
-  margin: 4.5rem auto 1rem auto;
+  margin: 1.5rem auto 1rem auto;
   width: 100%;
 }
 

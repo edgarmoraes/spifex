@@ -5,8 +5,8 @@ from .forms import UploadFileForm
 from django.contrib import messages
 from django.http import JsonResponse
 from .models import Chart_of_accounts, Groups_list, Subgroups_list, Accounts_list
-from realizado.models import Tabela_realizado
-from fluxo_de_caixa.models import Tabela_fluxo
+from realizado.models import SettledEntry
+from fluxo_de_caixa.models import CashFlowEntry
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
@@ -28,10 +28,10 @@ def chart_of_accounts(request):
 
             # Check for used accounts
             used_accounts = set(
-                Tabela_fluxo.objects.filter(conta_contabil__in=Chart_of_accounts.objects.values_list('account', flat=True))
+                CashFlowEntry.objects.filter(conta_contabil__in=Chart_of_accounts.objects.values_list('account', flat=True))
                 .values_list('conta_contabil', flat=True)
             ).union(
-                Tabela_realizado.objects.filter(conta_contabil__in=Chart_of_accounts.objects.values_list('account', flat=True))
+                SettledEntry.objects.filter(conta_contabil__in=Chart_of_accounts.objects.values_list('account', flat=True))
                 .values_list('conta_contabil', flat=True)
             )
 
@@ -97,8 +97,8 @@ def edit_account(request, account_id):
         if form.is_valid():
             form.save()
         account_uuid = account.uuid
-        Tabela_realizado.objects.filter(uuid_conta_contabil=account_uuid).update(conta_contabil=account.account)
-        Tabela_fluxo.objects.filter(uuid_conta_contabil=account_uuid).update(conta_contabil=account.account)
+        SettledEntry.objects.filter(uuid_conta_contabil=account_uuid).update(conta_contabil=account.account)
+        CashFlowEntry.objects.filter(uuid_conta_contabil=account_uuid).update(conta_contabil=account.account)
 
         return redirect('/plano_de_contas/')
     else:
@@ -109,8 +109,8 @@ def edit_account(request, account_id):
 def delete_account(request, account_id):
     account = get_object_or_404(Chart_of_accounts, id=account_id)
 
-    if Tabela_fluxo.objects.filter(uuid_conta_contabil=account.uuid).exists() or \
-       Tabela_realizado.objects.filter(uuid_conta_contabil=account.uuid).exists():
+    if CashFlowEntry.objects.filter(uuid_conta_contabil=account.uuid).exists() or \
+       SettledEntry.objects.filter(uuid_conta_contabil=account.uuid).exists():
         messages.error(request, 'Esta conta está sendo utilizada e não pode ser excluída.')
         return redirect('chart_of_accounts:edit_account', account_id)
 

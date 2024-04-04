@@ -242,7 +242,7 @@ function extrairDadosLancamento(checkbox) {
   return {
       id: id,
       descricao: row.querySelector('.descricao-row').textContent,
-      vencimento: row.querySelector('.vencimento-row').textContent,
+      due_date: row.querySelector('.due_date-row').textContent,
       observacao: extrairObservacao(row),
       valor: extrairValor(row),
       natureza: extrairNatureza(row)
@@ -264,12 +264,12 @@ function extrairNatureza(row) {
   return row.querySelector('.debito-row').textContent ? "Débito" : "Crédito";
 }
 
-function montarDivLancamento({id, descricao, vencimento, observacao, valor, natureza}) {
+function montarDivLancamento({id, descricao, due_date, observacao, valor, natureza}) {
   const div = document.createElement('div');
   div.classList.add('lancamentos-selecionados');
   div.innerHTML = `
     <section class="modal-flex data-liquidacao">
-        <input class="modal-data data-liquidacao" id="data-liquidacao-${id}" type="date" name="data-liquidacao-${id}" value="${formatarDataParaInput(vencimento)}" required>
+        <input class="modal-data data-liquidacao" id="data-liquidacao-${id}" type="date" name="data-liquidacao-${id}" value="${formatarDataParaInput(due_date)}" required>
     </section>
     <section class="modal-flex">
         <input class="modal-descricao" id="descricao-liquidacao-${id}" maxlength="100" type="text" name="descricao-liquidacao-${id}" value="${descricao}" readonly style="background-color: #B5B5B5; color: #FFFFFF;">
@@ -292,7 +292,7 @@ function montarDivLancamento({id, descricao, vencimento, observacao, valor, natu
       <input class="modal-valor valor-parcial" id="valor-parcial-liquidacao-${id}" type="text" name="valor-parcial-liquidacao-${id}" oninput="formatarCampoValor(this)" value="R$ " required>
     </section>
     `;
-  ajustarDataDeLiquidacaoSeNecessario(div, id, vencimento);
+  ajustarDataDeLiquidacaoSeNecessario(div, id, due_date);
   return div;
 }
   
@@ -304,12 +304,12 @@ function configurarEstadoInicialValor(div, id) {
     });
 }
 
-function ajustarDataDeLiquidacaoSeNecessario(div, id, vencimentoOriginal) {
+function ajustarDataDeLiquidacaoSeNecessario(div, id, originalDueDate) {
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0); // Zera o horário para comparar apenas as datas
-  const dataVencimento = converterDataStringParaDate(formatarDataParaInput(vencimentoOriginal));
+  const dueDate = converterDataStringParaDate(formatarDataParaInput(originalDueDate));
 
-  if (dataVencimento > hoje) {
+  if (dueDate > hoje) {
     const campoDataLiquidacao = div.querySelector(`#data-liquidacao-${id}`);
     campoDataLiquidacao.value = formatarDataAtualParaInput();
   }
@@ -397,7 +397,7 @@ document.getElementById('salvar-liquidacao').addEventListener('click', async fun
 
     let itemData = {
       id: id,
-      vencimento: row.querySelector('.vencimento-row').textContent,
+      due_date: row.querySelector('.due_date-row').textContent,
       descricao: row.querySelector('.descricao-row').textContent,
       observacao: campoObservacao ? campoObservacao.value : '',
       valor: campoValorTotal.value,
@@ -750,9 +750,6 @@ function abrirModalEdicaoGeral(row, tipo) {
   mostrarParcelas(row, tipo);
   const modal = document.getElementById(`modal-${tipo}`);
   modal.showModal();
-  document.body.style.overflow = 'hidden';
-  document.body.style.marginRight = '17px';
-  document.querySelector('.nav-bar').style.marginRight = '17px';
 }
 
 function fecharModais() {
@@ -767,9 +764,6 @@ function fecharModais() {
 }
   
 function onModalClose(tipo) {
-  document.body.style.overflow = '';
-  document.body.style.marginRight = '';
-  document.querySelector('.nav-bar').style.marginRight = '';
   configurarCamposAtivos(tipo, true);
   limparCamposModal(tipo);
   estaEditando = false;
@@ -824,8 +818,8 @@ function preencherDadosModal(row, tipo) {
   const parcelasTotalOriginais = row.getAttribute('parcelas-total');
   document.getElementById(`parcelas-total-originais-${tipo}`).value = parcelasTotalOriginais;
 
-  const vencimento = row.querySelector('.vencimento-row').textContent.trim();
-  document.getElementById(`data-${tipo}`).value = formatarDataParaInput(vencimento);
+  const due_date = row.querySelector('.due_date-row').textContent.trim();
+  document.getElementById(`data-${tipo}`).value = formatarDataParaInput(due_date);
 
   const valor = row.querySelector(`.${tipo === 'recebimentos' ? 'credito' : 'debito'}-row`).textContent.trim();
   document.getElementById(`valor-${tipo}`).value = "R$ " + valor;
@@ -1336,21 +1330,21 @@ function filtrarTabela() {
     if (tagsElemento) observacaoElemento.removeChild(tagsElemento);
     const observacao = observacaoElemento.textContent.toUpperCase();
     const tags = tagsElemento ? tagsElemento.textContent.toUpperCase() : "";
-    const dataVencimento = new Date(row.querySelector(".vencimento-row").textContent.split('/').reverse().join('-'));
+    const dueDate = new Date(row.querySelector(".due_date-row").textContent.split('/').reverse().join('-'));
     const naturezaLancamento = row.getAttribute('data-natureza');
 
     // Centraliza a lógica de correspondência
     const contaContabilMatch = uuidsContaContabilSelecionados.length === 0 || uuidsContaContabilSelecionados.includes(uuidContaContabilLinha);
     const descricaoObservacaoMatch = filtroDescricao === "" || descricao.includes(filtroDescricao) || observacao.includes(filtroDescricao);
     const tagMatch = filtroTags === "" || tags.includes(filtroTags);
-    const mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => dataVencimento >= intervalo.inicio && dataVencimento <= intervalo.fim);
-    const dataMatch = (!dataInicioObj || dataVencimento >= dataInicioObj) && (!dataFimObj || dataVencimento <= dataFimObj);
+    const mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => dueDate >= intervalo.inicio && dueDate <= intervalo.fim);
+    const dataMatch = (!dataInicioObj || dueDate >= dataInicioObj) && (!dataFimObj || dueDate <= dataFimObj);
     const naturezaMatch = selecionarTodaNatureza || naturezasSelecionadas.includes(naturezaLancamento);
 
     row.style.display = descricaoObservacaoMatch && tagMatch && mesMatch && naturezaMatch && dataMatch && contaContabilMatch ? "" : "none";
 
     if (row.style.display === "") {
-      let mesAno = dataVencimento.toLocaleString('default', { month: '2-digit', year: 'numeric' });
+      let mesAno = dueDate.toLocaleString('default', { month: '2-digit', year: 'numeric' });
       mesesAnosVisiveis.add(mesAno);
     }
   });

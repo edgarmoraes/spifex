@@ -218,7 +218,7 @@
                 <input type="hidden" name="uuid_recebimentos" value="{{ fluxo_de_caixa.uuid_correlacao }}">
                 <section class="modal-flex">
                     <label for="data-recebimentos">Data</label>
-                    <input class="modal-data" id="data-recebimentos" type="date" name="vencimento" required><br>
+                    <input class="modal-data" id="data-recebimentos" type="date" name="due_date" required><br>
                 </section>
             
                 <section class="modal-flex">
@@ -296,7 +296,7 @@
                 <input type="hidden" name="uuid_pagamentos" value="{{ fluxo_de_caixa.uuid_correlacao }}">
                 <section class="modal-flex">
                     <label for="data-pagamentos">Data</label>
-                    <input class="modal-data" type="date" id="data-pagamentos" name="vencimento" required><br>
+                    <input class="modal-data" type="date" id="data-pagamentos" name="due_date" required><br>
                 </section>
             
                 <section class="modal-flex">
@@ -417,7 +417,7 @@
                 <thead class="cabecalho-lancamentos">
                     <tr class="linha-cabecalho-lancamentos">
                         <th class="checkbox-col" scope="col"></th>
-                        <th class="vencimento-col" scope="col">Vencimento</th>
+                        <th class="due_date-col" scope="col">Vencimento</th>
                         <th class="descricao-col" scope="col">Descrição</th>
                         <th class="obs-col" scope="col">Observação</th>
                         <th class="parcela-col" scope="col">Parcela</th>
@@ -431,7 +431,7 @@
                         {% if cash_flow_item.is_total %}
                             <tr class="linha-total-mes">
                                 <td></td>
-                                <td colspan="4">Total do Mês {{ cash_flow_item.vencimento|date:"m/Y" }}</td>
+                                <td colspan="4">Total do Mês {{ cash_flow_item.due_date|date:"m/Y" }}</td>
                                 <td class="debito-total-row">{{ cash_flow_item.debito|format_number }}</td>
                                 <td class="credito-total-row">{{ cash_flow_item.credito|format_number }}</td>
                                 <td class="saldo-total-row">{{ cash_flow_item.saldo|format_number }}</td>
@@ -439,7 +439,7 @@
                         {% else %}
                             <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ cash_flow_item.id }}" data-conta-contabil="{{ cash_flow_item.conta_contabil }}" data-uuid-conta-contabil="{{ cash_flow_item.uuid_conta_contabil }}" data-natureza="{{ cash_flow_item.natureza }}" parcela-atual="{{ cash_flow_item.parcela_atual }}" parcelas-total="{{ cash_flow_item.parcelas_total }}" data-uuid-row="{{ cash_flow_item.uuid_correlacao }}" scope="row">
                                 <td class="checkbox-row"><label class="checkbox-container"><input id="checkbox-personalizado-{{ cash_flow_item.id }}" class="checkbox-personalizado" type="checkbox" data-id="{{ cash_flow_item.id }}" data-uuid-row="{{ cash_flow_item.uuid_correlacao }}"><span class="checkmark"></span></label></td>
-                                <td class="vencimento-row">{{ cash_flow_item.vencimento|date:"d/m/Y" }}</td>
+                                <td class="due_date-row">{{ cash_flow_item.due_date|date:"d/m/Y" }}</td>
                                 <td class="descricao-row">{{ cash_flow_item.descricao }}</td>
                                 <td class="obs-row">
                                     {{ cash_flow_item.observacao }}

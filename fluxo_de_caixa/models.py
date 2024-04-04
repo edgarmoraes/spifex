@@ -2,8 +2,8 @@ from django.db import models
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-class Tabela_fluxo(models.Model):
-    vencimento = models.DateField()
+class CashFlowEntry(models.Model):
+    due_date = models.DateField()
     descricao = models.CharField(max_length = 100)
     observacao = models.CharField(max_length = 100)
     valor = models.DecimalField(max_digits=13, decimal_places=2)
@@ -28,7 +28,7 @@ class Totais_mes_fluxo(models.Model):
         return self.data_formatada
 
 class TabelaTemporaria(models.Model):
-    vencimento = models.DateField()
+    due_date = models.DateField()
     descricao = models.CharField(max_length = 100)
     observacao = models.CharField(max_length = 100)
     valor = models.DecimalField(max_digits=13, decimal_places=2)
