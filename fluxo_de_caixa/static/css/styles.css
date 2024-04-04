@@ -10,8 +10,10 @@
   --transition-effect1: all ease-in-out;
   --box-shadow1: 0 0 1em #00000013;
   --box-shadow2: 0 0 1em #00000023;
-  --branco: #FFFFFF;
-  --preto: #000000;
+  --main-color: #F46A35;
+  --secondary-color: #9BE7E2;
+  --white: #FFFFFF;
+  --black: var(--black);
   --color1: #F0EEEE;
   --color2: #F4F2F2;
   --color3: #B1C381;
@@ -21,7 +23,6 @@
   --color7: #7F4FFF;
   --color8: #F87C7C;
   --color9: #FFEB24;
-  --color10: #FFFAFA;
   --border1: solid 1px #ececec;
   --border2: solid 10px #ececec;
 }
@@ -37,7 +38,7 @@ html {
 }
 
 a {
-  color: #202020;
+  color: var(--black);
   text-decoration: none;
   transition: var(--transition-duration1);
 }
@@ -59,7 +60,7 @@ a:hover {
 .openbtn {
   font-size: 20px;
   cursor: pointer;
-  color: var(--color7);
+  color: var(--main-color);
   background-color: #3d3d40bf;
   color: #b4b4b4;
   padding: 10px 15px;
@@ -94,7 +95,7 @@ nav {
   align-items: center;
   height: 8vh;
   font-family: var(--primary-font);
-  background-color: var(--branco);
+  background-color: var(--white);
   border-bottom: solid 1px #ececec;
   backdrop-filter: blur(5px);
   box-shadow: var(--box-shadow1);
@@ -113,32 +114,12 @@ nav {
 }
 
 .line {
-  border: 0.5px solid #202020;
+  border: 0.5px solid var(--black);
   margin-top: 1.8px;
   height: 16px;
 }
 
-/* Componentes da Caixa de Filtros
-... */
-
-/* .box-grid {
-  display: flex;
-  flex-direction: column;
-  width: 700px;
-  height: auto;
-  margin: 4.5rem auto 1rem auto;
-  background-color: var(--branco);
-  border-radius: 1rem;
-  box-shadow: var(--box-shadow1);
-} */
-
-/* .box-grid-filters {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  width: 700px;
-  padding: 1rem;
-  padding-bottom: 0rem;
-} */
+/* Componentes da Caixa de Filtros */
 
 .filter-boxes {
   display: grid;
@@ -160,7 +141,7 @@ nav {
   align-items: center;
   margin: 10px;
   font-family: var(--primary-font);
-  color: #202020;
+  color: var(--black);
   font-weight: 700;
   font-size: 14px;
 }
@@ -169,8 +150,8 @@ nav {
 
 .button-selecionar-todos,
 .button-desmarcar-todos {
-  background-color: var(--branco);
-  border: solid 1px #202020;
+  background-color: var(--white);
+  border: solid 1px var(--black);
   margin: 2px;
   padding: 5px;
   width: 100%;
@@ -182,7 +163,7 @@ nav {
 
 .button-selecionar-todos:hover,
 .button-desmarcar-todos:hover {
-  background-color: var(--color7);
+  background-color: var(--main-color);
 }
 
 .dropdown-content {
@@ -216,7 +197,7 @@ nav {
 .dropdown-button:hover {
   box-shadow: var(--box-shadow1);
   background-color: var(--color1);
-  color: #202020;
+  color: var(--black);
 }
 
 .dropdown-content {
@@ -250,7 +231,7 @@ nav {
 }
 
 .subgroup-label[data-nature="Crédito"] {
-  color: var(--color7);
+  color: var(--main-color);
 }
 
 .subgroup-label[data-nature="Débito"] {
@@ -297,7 +278,7 @@ nav {
 .flex input:focus {
   box-shadow: var(--box-shadow1);
   background-color: var(--color1);
-  color: #202020;
+  color: var(--black);
 }
 
 /* Botões Mobile */
@@ -307,7 +288,7 @@ nav {
   margin: 10px auto;
   padding: 0.8em 1.7em;
   width: 300px;
-  color: var(--color7);
+  color: var(--main-color);
   background-color: transparent;
   border-radius: 30px;
   position: relative;
@@ -335,7 +316,7 @@ nav {
   position: absolute;
   border-radius: 50%;
   z-index: -1;
-  background-color: var(--color7);
+  background-color: var(--main-color);
   transition: .5s ease;
 }
 
@@ -362,7 +343,7 @@ nav {
 .toggle-filters-btn:hover,
 .toggle-banks-btn:hover {
   color: var(--color9);
-  border-color: var(--color7);
+  border-color: var(--main-color);
 }
 
 .toggle-filters-btn:active,
@@ -387,7 +368,7 @@ nav {
   width: 100%;
   background-color: var(--color2);
   font-family: var(--primary-font);
-  color: #202020;
+  color: var(--black);
   font-size: 15px;
   border: var(--border1);
   border-radius: 30px;
@@ -422,7 +403,7 @@ nav {
   width: 100%;
   background-color: var(--color2);
   font-family: var(--primary-font);
-  color: #202020;
+  color: var(--black);
   font-size: 15px;
   border: var(--border1);
   border-radius: 30px;
@@ -448,7 +429,7 @@ nav {
   border-left: var(--border1);
   border-right: var(--border1);
   border-bottom: var(--border1);
-  color: #202020;
+  color: var(--black);
   border-spacing: 0;
 }
 
@@ -457,7 +438,7 @@ nav {
   padding: 0;
   font-size: 14px;
   font-weight: 700;
-  color: #202020;
+  color: var(--black);
 }
 
 .tabela-bancos td,
@@ -486,7 +467,7 @@ nav {
   background-color: var(--color2);
   z-index: 1;
   backdrop-filter: (5px);
-  color: #202020;
+  color: var(--black);
 }
 
 .row-bancos {
@@ -545,9 +526,9 @@ td.saldo-total-banco-liquidacao-row {
   display: flex;
   justify-content: center;
   font-family: var(--primary-font);
-  background-color: var(--branco);
+  background-color: var(--white);
   font-weight: 300;
-  color: var(--preto);
+  color: var(--black);
 }
 
 .tabela-lancamentos {
@@ -568,9 +549,9 @@ td.saldo-total-banco-liquidacao-row {
   padding: 0;
   font-size: 14px;
   font-weight: 700;
-  background-color: var(--color10);
+  background-color: var(--color2);
   height: 35px;
-  color: #202020;
+  color: var(--black);
 }
 
 .tabela-lancamentos td {
@@ -581,7 +562,7 @@ td.saldo-total-banco-liquidacao-row {
 .tabela-lancamentos th small,
 .tabela-lancamentos td small {
   display: block;
-  color: var(--preto);
+  color: var(--black);
   font-weight: 400;
   padding-top: 2px;
 }
@@ -602,7 +583,7 @@ td.saldo-total-banco-liquidacao-row {
 
 .linha-total-mes {
   height: 30px;
-  background-color: var(--color10);
+  background-color: var(--color2);
   border-bottom: 1px solid var(--color2);
 }
 
@@ -666,7 +647,7 @@ td.saldo-total-banco-liquidacao-row {
 }
 
 .mes-checkbox {
-  background-color: var(--color7);
+  background-color: var(--main-color);
 }
 
 /* Checkbox */
@@ -718,7 +699,7 @@ td.saldo-total-banco-liquidacao-row {
   top: 5px;
   width: 5px;
   height: 10px;
-  border: solid var(--branco);
+  border: solid var(--white);
   border-width: 0 3px 3px 0;
   transform: rotate(45deg);
 }
@@ -743,13 +724,13 @@ td.saldo-total-banco-liquidacao-row {
   top: 2.5px;
   width: 4px;
   height: 8px;
-  border: solid var(--branco);
+  border: solid var(--white);
   border-width: 0 3px 3px 0;
   transform: rotate(45deg);
 }
 
 .checkbox-personalizado-liquidacao:checked ~ .checkmark-liquidacao {
-  background-color: var(--color7);
+  background-color: var(--main-color);
   box-shadow: 0 3px 7px #2196f34d;
 }
 
@@ -757,7 +738,7 @@ td.saldo-total-banco-liquidacao-row {
   display: block;
 }
 .checkbox-personalizado:checked ~ .checkmark {
-  background-color: var(--color7);
+  background-color: var(--main-color);
   box-shadow: 0 3px 7px #2196f34d;
 }
 
@@ -792,7 +773,7 @@ td.saldo-total-banco-liquidacao-row {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%) translateY(100%);
-  background-color: var(--color10);
+  background-color: var(--color2);
   padding: 10px;
   width: 100%;
   border: var(--border1);
@@ -815,14 +796,14 @@ td.saldo-total-banco-liquidacao-row {
 
 .btn-coluna {
   font-family: var(--primary-font);
-  color: var(--preto);
+  color: var(--black);
   font-size: 14px;
   font-weight: 500;
 }
 
 .total-liquidar-row {
   font-family: var(--primary-font);
-  color: var(--preto);
+  color: var(--black);
   font-size: 14px;
   font-weight: 500;
 }
@@ -863,8 +844,8 @@ td.saldo-total-banco-liquidacao-row {
 }
 
 .liquidar-button:hover {
-  background-color: var(--color7);
-  border: 2px solid var(--color7);
+  background-color: var(--main-color);
+  border: 2px solid var(--main-color);
 }
 
 .liquidar-button:active {
@@ -874,7 +855,7 @@ td.saldo-total-banco-liquidacao-row {
 .nuvem {
   transform: scale(1.0);
   transition: 200ms linear;
-  fill: var(--branco);
+  fill: var(--white);
 }
 
 .liquidar-button:hover > .nuvem {
@@ -882,7 +863,7 @@ td.saldo-total-banco-liquidacao-row {
 }
 
 .liquidar-button:hover > .nuvem path {
-  fill: var(--branco);
+  fill: var(--white);
   cursor: pointer;
 }
 
@@ -921,8 +902,8 @@ td.saldo-total-banco-liquidacao-row {
 }
 
 .apagar-button:hover {
-  background-color: var(--color7);
-  border: 2px solid var(--color7);
+  background-color: var(--main-color);
+  border: 2px solid var(--main-color);
 }
 
 .apagar-button:active {
@@ -961,7 +942,7 @@ td.saldo-total-banco-liquidacao-row {
   width: 55px;
   height: 55px;
   border-radius: 50%;
-  background-color: var(--branco);
+  background-color: var(--white);
   cursor: pointer;
   border: 2px solid var(--color1);
   transition-duration: 0.6s;
@@ -971,8 +952,8 @@ td.saldo-total-banco-liquidacao-row {
 }
 
 .cancelar-button:hover {
-  background-color: var(--color7);
-  border: 2px solid var(--color7);
+  background-color: var(--main-color);
+  border: 2px solid var(--main-color);
 }
 
 .cancelar-button:active {
@@ -990,7 +971,7 @@ td.saldo-total-banco-liquidacao-row {
 }
 
 .cancelar-button:hover > .x-svg path {
-  fill: var(--branco);
+  fill: var(--white);
   cursor: pointer;
 }
 
@@ -1044,8 +1025,8 @@ td.saldo-total-banco-liquidacao-row {
   }
 
   .openbtn:hover {
-      background-color: var(--color7);
-      color: var(--color7);
+      background-color: var(--main-color);
+      color: var(--main-color);
       transition: var(--transition-effect1) var(--transition-duration1);
   }
 

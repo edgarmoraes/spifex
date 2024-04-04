@@ -4,7 +4,7 @@
     height: auto;
     margin: 0 auto;
     padding: 1.625rem 1.625rem;
-    background-color: var(--branco);
+    background-color: var(--white);
     border-radius: 1rem;
     box-shadow: var(--box-shadow1);
 }
@@ -24,18 +24,18 @@
   position: absolute;
   border: none;
   height: 45px;
-  color: var(--branco);
+  color: var(--white);
   font-weight: 700;
   padding: 0.7rem 1rem;
   border-radius: 5px;
-  background-color: var(--color7);
+  background-color: var(--main-color);
   top: 50%;
   transform: translateY(-50%);
   transition: var(--transition-effect1) var(--transition-duration2);
 }
 
 .button-back:hover {
-  background-color: var(--color7);
+  background-color: var(--main-color);
   box-shadow: var(--box-shadow2);
 }
 
@@ -71,7 +71,7 @@
 }
   
 .svgIcon path {
-    fill: var(--branco);
+    fill: var(--white);
 }
   
 .botao-adicionar:hover {
@@ -94,7 +94,7 @@
 .adicionar-bancos::before {
     position: absolute;
     top: -20px;
-    color: var(--branco);
+    color: var(--white);
     transition-duration: var(--transition-duration1);
     font-size: 2px;
 }
@@ -119,7 +119,7 @@
   width: 80%;
   margin: auto auto;
   padding: 2rem;
-  background-color: var(--branco);
+  background-color: var(--white);
   border: none;
   border-radius: 1rem;
   box-shadow: var(--box-shadow1);
@@ -201,7 +201,7 @@ input:focus {
 .modal-apagar-bancos {
   border: none;
   height: 45px;
-  color: var(--branco);
+  color: var(--white);
   font-weight: 700;
   padding: 0.7rem 1rem;
   border-radius: 5px;

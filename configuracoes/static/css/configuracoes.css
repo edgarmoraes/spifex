@@ -1,6 +1,6 @@
 /* Compartilhado */
 .nav-configuracoes a {
-  color: var(--color7);
+  color: var(--main-color);
 }
 
 /* Títulos */
@@ -50,7 +50,7 @@ a.accordion-title {
 .accordion-content ul li:hover {
   list-style: none;
   padding-left: 10px;
-  background-color: var(--color7);
+  background-color: var(--main-color);
   border-radius: 5px;
   transition-duration: .5s;
 }
@@ -117,9 +117,9 @@ button {
   padding-left: 0.9em;
   font-family: var(--primary-font);
   font-size: 13px;
-  color: var(--branco);
+  color: var(--white);
   background: var(--color4);
-  fill: var(--branco);
+  fill: var(--white);
   cursor: pointer;
   border: none;
   border-radius: 15px;
@@ -149,7 +149,7 @@ button:hover .svg-wrapper {
 
 button:hover svg {
   transform: translateX(1.2em) scale(1.1);
-  fill: var(--branco);
+  fill: var(--white);
 }
 
 button:hover span {

@@ -2,7 +2,7 @@
 
 /* Compartilhado */
 .nav-fluxo-de-caixa a {
-  color: var(--color7);
+  color: var(--main-color);
 }
 
 /* Componentes da Caixa de Filtros */
@@ -14,7 +14,7 @@
   width: 700px;
   height: auto;
   margin: 1.5rem auto 1rem auto;
-  background-color: var(--branco);
+  background-color: var(--white);
   border-radius: 1rem;
   box-shadow: var(--box-shadow1);
 }
@@ -68,7 +68,7 @@
 }
 
 .svgIcon path {
-  fill: var(--branco);
+  fill: var(--white);
 }
 
 .botao:hover {
@@ -79,15 +79,15 @@
 }
 
 .recebimentos:hover {
-  background-color: var(--color7);
+  background-color: var(--main-color);
 }
 
 .pagamentos:hover {
-  background-color: var(--color7);
+  background-color: var(--main-color);
 }
 
 .transferencias:hover {
-  background-color: var(--color7);
+  background-color: var(--main-color);
 }
 
 .botao:hover .svgIcon {
@@ -101,7 +101,7 @@
 .transferencias::before {
   position: absolute;
   top: -20px;
-  color: var(--branco);
+  color: var(--white);
   transition-duration: var(--transition-duration1);
   font-size: 2px;
   font-family: var(--primary-font);
@@ -140,7 +140,7 @@
   height: 338px;
   margin: 1.5rem auto 1rem auto;
   padding: 1.625rem 1.625rem;
-  background-color: var(--branco);
+  background-color: var(--white);
   border-radius: 1rem;
   box-shadow: var(--box-shadow1);
 }
@@ -171,7 +171,7 @@
   width: 80%;
   margin: auto auto;
   padding: 2rem;
-  background-color: var(--branco);
+  background-color: var(--white);
   border: none;
   border-radius: 1rem;
   box-shadow: var(--box-shadow1);
@@ -311,7 +311,7 @@ section.modal-flex {
 }
 .form-switch:active input:checked + i::after { transform: translate3d(16px, 2px, 0); }
 .form-switch input { display: none; }
-.form-switch input:checked + i { background-color: var(--color7); }
+.form-switch input:checked + i { background-color: var(--main-color); }
 .form-switch input:checked + i::before { transform: translate3d(18px, 2px, 0) scale3d(0, 0, 0); }
 .form-switch input:checked + i::after { transform: translate3d(22px, 2px, 0); }
 
@@ -329,7 +329,7 @@ section.modal-flex {
 .modal-flex button {
   background-color: var(--color2);
   border: none;
-  color: var(--preto);
+  color: var(--black);
   padding: 0.7rem 1rem;
   border-radius: 5px;
   outline: none;
@@ -366,7 +366,7 @@ section.modal-flex {
 .modal-salvar {
   border: none;
   height: 45px;
-  color: var(--branco);
+  color: var(--white);
   font-weight: 700;
   padding: 0.7rem 1rem;
   border-radius: 5px;
@@ -415,7 +415,7 @@ section.modal-flex {
 }
 
 .tag {
-  background-color: var(--color7);
+  background-color: var(--main-color);
   color: #000000;
   padding: 5px 10px;
   border-radius: 5px;
@@ -425,7 +425,7 @@ section.modal-flex {
 .tag input {
   display: none;
   border: none;
-  background: var(--color7);
+  background: var(--main-color);
   color: var(--color4);
   font-weight: 700;
   width: auto;
@@ -469,7 +469,7 @@ input#tagInput {
   
   .box-grid-filters {
     border-radius: 1rem;
-    background-color: var(--branco);
+    background-color: var(--white);
     box-shadow: var(--box-shadow1);
   }
 
