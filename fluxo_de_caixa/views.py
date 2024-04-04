@@ -25,7 +25,7 @@ def cash_flow(request):
 
 def display_cash_flow(request):
     active_banks = Bancos.objects.filter(status=True)
-    cash_flow_table_list = CashFlowEntry.objects.all().order_by('due_date', '-valor', 'descricao')
+    cash_flow_table_list = CashFlowEntry.objects.all().order_by('due_date', '-valor', 'description')
     months_list = Totais_mes_fluxo.objects.all()
     chart_of_accounts_queryset_list = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
     
@@ -49,7 +49,7 @@ def display_cash_flow(request):
 
         entries_with_totals.append({
             'due_date': datetime.strptime(key + "-01", '%Y-%m-%d'),
-            'descricao': 'Total do Mês',
+            'description': 'Total do Mês',
             'debito': total_debit,
             'credito': total_credit,
             'saldo': total_balance,
@@ -113,7 +113,7 @@ def extract_form_data(request):
     transaction_amount = float(transaction_amount_str) if transaction_amount_str else 0.00
 
     # Processa outros campos com segurança
-    entry_description = request.POST.get('descricao', '')
+    entry_description = request.POST.get('description', '')
     entry_observation = request.POST.get('observacao', '')
     installment = request.POST.get('parcelas', '1')
     total_installments = int(installment) if installment.isdigit() else 1
@@ -123,7 +123,7 @@ def extract_form_data(request):
     # Retorna um dicionário com os dados processados
     return {
         'due_date': due_date,
-        'descricao': entry_description,
+        'description': entry_description,
         'observacao': entry_observation,
         'valor': transaction_amount,
         'conta_contabil_uuid': account_uuid,
@@ -141,7 +141,7 @@ def update_existing_flow(form_data):
     
     # Atualiza campos comuns diretamente
     cash_flow_table.due_date = form_data['due_date']
-    cash_flow_table.descricao = form_data['descricao']
+    cash_flow_table.description = form_data['description']
     cash_flow_table.observacao = form_data['observacao']
     cash_flow_table.valor = form_data['valor']
     cash_flow_table.natureza = form_data['natureza']
@@ -175,7 +175,7 @@ def create_new_flows(form_data, iniciar_desde_o_atual=False):
         installment_due_date = base_due_date + relativedelta(months=i - initial_installment)
         CashFlowEntry.objects.create(
             due_date=installment_due_date,
-            descricao=form_data['descricao'],
+            description=form_data['description'],
             observacao=form_data['observacao'],
             valor=form_data['valor'],
             conta_contabil=form_data['conta_contabil_nome'],
@@ -224,7 +224,7 @@ def create_temporary_record(object):
     """ Cria um novo registro na TabelaTemporaria com base no object da CashFlowEntry """
     TabelaTemporaria.objects.create(
         due_date=object.due_date,
-        descricao=object.descricao,
+        description=object.description,
         observacao=object.observacao,
         valor=object.valor,
         conta_contabil=object.conta_contabil,
@@ -259,7 +259,7 @@ def process_transfer(request):
     # Cria o lançamento de saída
     withdrawal_entry = SettledEntry(
         due_date=settlement_date,
-        descricao=f'Transferência para {deposit_bank_name}',
+        description=f'Transferência para {deposit_bank_name}',
         banco_id_liquidacao=withdrawal_bank_id,
         banco_liquidacao=withdrawal_bank_name,
         observacao=transfer_observation,
@@ -278,7 +278,7 @@ def process_transfer(request):
     # Cria o lançamento de entrada
     deposit_entry = SettledEntry(
         due_date=settlement_date,
-        descricao=f'Transferência de {withdrawal_bank_name}',
+        description=f'Transferência de {withdrawal_bank_name}',
         banco_id_liquidacao=deposit_bank_id,
         banco_liquidacao=deposit_bank_name,
         observacao=transfer_observation,
@@ -326,14 +326,14 @@ def process_settlement(request):
                 settlement_date_aware = timezone.make_aware(datetime.strptime(item['data_liquidacao'], '%Y-%m-%d'))
                 installment_number = SettledEntry.objects.filter(uuid_correlacao=uuid_correlation).count() + 1 if uuid_correlation else 1
 
-                updated_entry_description = original_record.descricao
+                updated_entry_description = original_record.description
                 if is_partial_settlement:
                     updated_entry_description += f" | Parcela ({installment_number})"
 
                 SettledEntry.objects.create(
                     fluxo_id=original_record.id,
                     due_date=original_record.due_date,
-                    descricao=updated_entry_description,
+                    description=updated_entry_description,
                     observacao=item['observacao'],
                     valor=partial_amount if is_partial_settlement else total_amount,
                     conta_contabil=original_record.conta_contabil,

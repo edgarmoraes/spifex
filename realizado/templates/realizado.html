@@ -194,8 +194,8 @@
                 </section>
             
                 <section class="modal-flex">
-                    <label for="descricao-realizado">Descrição</label>
-                    <input class="modal-descricao" id="descricao-realizado" maxlength="100" type="text" name="descricao" required><br>
+                    <label for="description-realizado">Descrição</label>
+                    <input class="modal-description" id="description-realizado" maxlength="100" type="text" name="description" required><br>
                 </section>
             
                 <section class="modal-flex">
@@ -236,7 +236,7 @@
                     <tr class="linha-cabecalho-lancamentos">
                         <th class="checkbox-col" scope="col"></th>
                         <th class="due_date-col" scope="col">Vencimento</th>
-                        <th class="descricao-col" scope="col">Descrição</th>
+                        <th class="description-col" scope="col">Descrição</th>
                         <th class="obs-col" scope="col">Observação</th>
                         <th class="banco-col" scope="col">Banco</th>
                         <th class="parcela-col" scope="col">Parcela</th>
@@ -259,7 +259,7 @@
                             <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ realizado.id }}" data-banco-liquidacao="{{ realizado.banco_liquidacao }}" data-banco-id-liquidacao="{{ realizado.banco_id_liquidacao }}" data-conta-contabil="{{ realizado.conta_contabil }}" data-uuid-conta-contabil="{{ realizado.uuid_conta_contabil }}" parcela-atual="{{ realizado.parcela_atual }}" parcelas-total="{{ realizado.parcelas_total }}" data-natureza="{{ realizado.natureza }}" data-uuid-correlacao="{{ realizado.uuid_correlacao }}" data-uuid-correlacao-parcelas="{{ realizado.uuid_correlacao_parcelas }}" scope="row">
                                 <td class="checkbox-row"><label class="checkbox-container"><input id="checkbox-personalizado-{{ realizado.id }}" class="checkbox-personalizado" type="checkbox" data-id="{{ realizado.id }}" data-uuid-correlacao="{{ realizado.uuid_correlacao }}" data-uuid-correlacao-parcelas="{{ realizado.uuid_correlacao_parcelas }}"><span class="checkmark"></span></label></td>
                                 <td class="due_date-row">{{ realizado.data_liquidacao|date:"d/m/Y" }}</td>
-                                <td class="descricao-row">{{ realizado.descricao }}</td>
+                                <td class="description-row">{{ realizado.description }}</td>
                                 <td class="obs-row">
                                     {{ realizado.observacao }}
                                     <small class="d-block">Tags: {{ realizado.tags }}</small>

@@ -241,7 +241,7 @@ function extrairDadosLancamento(checkbox) {
   const id = checkbox.getAttribute('data-id');
   return {
       id: id,
-      descricao: row.querySelector('.descricao-row').textContent,
+      description: row.querySelector('.description-row').textContent,
       due_date: row.querySelector('.due_date-row').textContent,
       observacao: extrairObservacao(row),
       valor: extrairValor(row),
@@ -264,7 +264,7 @@ function extrairNatureza(row) {
   return row.querySelector('.debito-row').textContent ? "Débito" : "Crédito";
 }
 
-function montarDivLancamento({id, descricao, due_date, observacao, valor, natureza}) {
+function montarDivLancamento({id, description, due_date, observacao, valor, natureza}) {
   const div = document.createElement('div');
   div.classList.add('lancamentos-selecionados');
   div.innerHTML = `
@@ -272,7 +272,7 @@ function montarDivLancamento({id, descricao, due_date, observacao, valor, nature
         <input class="modal-data data-liquidacao" id="data-liquidacao-${id}" type="date" name="data-liquidacao-${id}" value="${formatarDataParaInput(due_date)}" required>
     </section>
     <section class="modal-flex">
-        <input class="modal-descricao" id="descricao-liquidacao-${id}" maxlength="100" type="text" name="descricao-liquidacao-${id}" value="${descricao}" readonly style="background-color: #B5B5B5; color: #FFFFFF;">
+        <input class="modal-description" id="description-liquidacao-${id}" maxlength="100" type="text" name="description-liquidacao-${id}" value="${description}" readonly style="background-color: #B5B5B5; color: #FFFFFF;">
     </section>
     <section class="modal-flex">
         <input class="modal-obs" id="observacao-liquidacao-${id}" maxlength="100" type="text" name="observacao-liquidacao-${id}" value="${observacao}">
@@ -398,7 +398,7 @@ document.getElementById('salvar-liquidacao').addEventListener('click', async fun
     let itemData = {
       id: id,
       due_date: row.querySelector('.due_date-row').textContent,
-      descricao: row.querySelector('.descricao-row').textContent,
+      description: row.querySelector('.description-row').textContent,
       observacao: campoObservacao ? campoObservacao.value : '',
       valor: campoValorTotal.value,
       conta_contabil: row.getAttribute('data-conta-contabil'),
@@ -824,7 +824,7 @@ function preencherDadosModal(row, tipo) {
   const valor = row.querySelector(`.${tipo === 'recebimentos' ? 'credito' : 'debito'}-row`).textContent.trim();
   document.getElementById(`valor-${tipo}`).value = "R$ " + valor;
 
-  document.getElementById(`descricao-${tipo}`).value = row.querySelector('.descricao-row').textContent.trim();
+  document.getElementById(`description-${tipo}`).value = row.querySelector('.description-row').textContent.trim();
   document.getElementById(`observacao-${tipo}`).value = row.querySelector('.obs-row').childNodes[0].textContent.trim();
 
   const tagsString = extrairTags(row);
@@ -1324,7 +1324,7 @@ function filtrarTabela() {
 
   document.querySelectorAll("#tabela-lancamentos .row-lancamentos").forEach(row => {
     const uuidContaContabilLinha = row.getAttribute('data-uuid-conta-contabil');
-    const descricao = row.querySelector(".descricao-row").textContent.toUpperCase();
+    const description = row.querySelector(".description-row").textContent.toUpperCase();
     const observacaoElemento = row.querySelector(".obs-row").cloneNode(true);
     const tagsElemento = observacaoElemento.querySelector(".d-block");
     if (tagsElemento) observacaoElemento.removeChild(tagsElemento);
@@ -1335,7 +1335,7 @@ function filtrarTabela() {
 
     // Centraliza a lógica de correspondência
     const contaContabilMatch = uuidsContaContabilSelecionados.length === 0 || uuidsContaContabilSelecionados.includes(uuidContaContabilLinha);
-    const descricaoObservacaoMatch = filtroDescricao === "" || descricao.includes(filtroDescricao) || observacao.includes(filtroDescricao);
+    const descricaoObservacaoMatch = filtroDescricao === "" || description.includes(filtroDescricao) || observacao.includes(filtroDescricao);
     const tagMatch = filtroTags === "" || tags.includes(filtroTags);
     const mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => dueDate >= intervalo.inicio && dueDate <= intervalo.fim);
     const dataMatch = (!dataInicioObj || dueDate >= dataInicioObj) && (!dataFimObj || dueDate <= dataFimObj);

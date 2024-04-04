@@ -126,7 +126,7 @@
 }
 
 .modal-data,
-.modal-descricao,
+.modal-description,
 .modal-obs {
   background-color: var(--color2);
   border: none;

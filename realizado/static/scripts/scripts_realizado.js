@@ -10,7 +10,7 @@ document.getElementById('retornar-button').addEventListener('click', function() 
         dataToSend.push({
             id: checkbox.getAttribute('data-id'),
             due_date: row.querySelector('.due_date-row').textContent,
-            descricao: row.querySelector('.descricao-row').textContent,
+            description: row.querySelector('.description-row').textContent,
             valor: debito || credito, // Usa débito se disponível, senão credito
             conta_contabil: row.getAttribute('data-conta-contabil'),
             parcela_atual: row.getAttribute('parcela-atual'),
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function abrirModalEdicao(row) {
   const id = row.getAttribute('data-id-row');
   const due_date = row.querySelector('.due_date-row').textContent.trim();
-  const descricao = row.querySelector('.descricao-row').textContent.trim();
+  const description = row.querySelector('.description-row').textContent.trim();
   const observacao = row.querySelector('.obs-row').textContent.split('Tags:')[0].trim().replace(/\s+/g, ' ');
   const valor = row.querySelector('.debito-row').textContent.trim() || row.querySelector('.credito-row').textContent.trim();
   const contaContabil = row.getAttribute('data-conta-contabil');
@@ -185,15 +185,15 @@ function abrirModalEdicao(row) {
   const uuid = row.getAttribute('data-uuid-correlacao');
   const uuidParcelas = row.getAttribute('data-uuid-correlacao-parcelas');
 
-  preencherDadosModalRealizado(id, due_date, descricao, observacao, valor, contaContabil, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas);
+  preencherDadosModalRealizado(id, due_date, description, observacao, valor, contaContabil, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas);
 
   document.getElementById('modal-realizado').showModal();
 }
 
-function preencherDadosModalRealizado(id, due_date, descricao, observacao, valor, contaContabil, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas) {
+function preencherDadosModalRealizado(id, due_date, description, observacao, valor, contaContabil, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas) {
   document.querySelector('.modal-form-realizado [name="lancamento_id_realizado"]').value = id;
   document.getElementById('data-realizado').value = formatarDataParaInput(due_date);
-  document.getElementById('descricao-realizado').value = descricao;
+  document.getElementById('description-realizado').value = description;
   document.getElementById('observacao-realizado').value = observacao;
   document.getElementById('valor-realizado').value = "R$ "+valor;
   document.getElementById('conta-contabil-realizado').value = contaContabil;
@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       const lancamentoId = document.querySelector('[name="lancamento_id_realizado"]').value;
       const dataRealizado = document.getElementById('data-realizado').value;
-      const descricaoRealizado = document.getElementById('descricao-realizado').value;
+      const settledDescription = document.getElementById('description-realizado').value;
       const observacaoRealizado = document.getElementById('observacao-realizado').value;
       const uuid = document.querySelector('[name="uuid_realizado"]').value;
       const uuidParcelas = document.querySelector('[name="uuid_parcelas_realizado"]').value;
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json()) // Garantir que estamos processando a resposta como JSON
             .then(data => {
                 console.log('Lançamentos relacionados atualizados:', data);
-                return atualizarLancamento(lancamentoId, dataRealizado, descricaoRealizado, observacaoRealizado);
+                return atualizarLancamento(lancamentoId, dataRealizado, settledDescription, observacaoRealizado);
             })
             .then(response => response.json())
             .then(data => {
@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => console.error('Erro:', error));
     } else {
-        atualizarLancamento(lancamentoId, dataRealizado, descricaoRealizado, observacaoRealizado)
+        atualizarLancamento(lancamentoId, dataRealizado, settledDescription, observacaoRealizado)
             .then(response => response.json())
             .then(data => {
                 console.log('Lançamento atualizado com sucesso:', data);
@@ -297,8 +297,8 @@ function atualizarDataLancamentosRelacionados(uuid, novaData) {
   });
 }
 
-function atualizarLancamento(lancamentoId, dataRealizado, descricaoRealizado, observacaoRealizado) {
-  const dados = { due_date: dataRealizado, descricao: descricaoRealizado, observacao: observacaoRealizado };
+function atualizarLancamento(lancamentoId, dataRealizado, settledDescription, observacaoRealizado) {
+  const dados = { due_date: dataRealizado, description: settledDescription, observacao: observacaoRealizado };
   const url = `/realizado/atualizar-lancamento/${lancamentoId}/`;
 
   fetch(url, {
@@ -527,7 +527,7 @@ function filtrarTabela() {
   const selecionarTodaNatureza = naturezasSelecionadas.length === 0;
   
   // Obtenção dos filtros de texto e datas
-  const filtroDescricao = document.getElementById("caixa-pesquisa").value.toUpperCase();
+  const descriptionFilter = document.getElementById("caixa-pesquisa").value.toUpperCase();
   const filtroTags = document.getElementById("caixa-pesquisa-tags").value.toUpperCase();
   const dataInicioObj = document.getElementById("data-inicio").value ? new Date(document.getElementById("data-inicio").value) : null;
   const dataFimObj = document.getElementById("data-fim").value ? new Date(document.getElementById("data-fim").value) : null;
@@ -535,7 +535,7 @@ function filtrarTabela() {
 
   document.querySelectorAll('.row-lancamentos').forEach(function(row) {
     const uuidContaContabilLinha = row.getAttribute('data-uuid-conta-contabil');
-    const descricao = row.querySelector(".descricao-row").textContent.toUpperCase();
+    const description = row.querySelector(".description-row").textContent.toUpperCase();
     const observacaoElemento = row.querySelector(".obs-row").cloneNode(true);
     const tagsElemento = observacaoElemento.querySelector(".d-block");
     if (tagsElemento) observacaoElemento.removeChild(tagsElemento);
@@ -547,14 +547,14 @@ function filtrarTabela() {
 
     
     const contaContabilMatch = uuidsContaContabilSelecionados.length === 0 || uuidsContaContabilSelecionados.includes(uuidContaContabilLinha);
-    const descricaoObservacaoMatch = filtroDescricao === "" || descricao.includes(filtroDescricao) || observacao.includes(filtroDescricao);
+    const descriptionObservationMatch = descriptionFilter === "" || description.includes(descriptionFilter) || observacao.includes(descriptionFilter);
     const tagMatch = filtroTags === "" || tags.includes(filtroTags);
     const mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => dueDate >= intervalo.inicio && dueDate <= intervalo.fim);
     const dataMatch = (!dataInicioObj || dueDate >= dataInicioObj) && (!dataFimObj || dueDate <= dataFimObj);
     const naturezaMatch = selecionarTodaNatureza || naturezasSelecionadas.includes(naturezaLancamento);
     const bancoMatch = bancosSelecionados.length === 0 || bancosSelecionados.includes(idBancoLancamento);
 
-    row.style.display = descricaoObservacaoMatch && tagMatch && mesMatch && naturezaMatch && dataMatch && contaContabilMatch && bancoMatch ? "" : "none";
+    row.style.display = descriptionObservationMatch && tagMatch && mesMatch && naturezaMatch && dataMatch && contaContabilMatch && bancoMatch ? "" : "none";
 
     if (row.style.display === "") {
       let mesAno = dueDate.toLocaleString('default', { month: '2-digit', year: 'numeric' });

@@ -222,8 +222,8 @@
                 </section>
             
                 <section class="modal-flex">
-                    <label for="descricao-recebimentos">Descrição</label>
-                    <input class="modal-descricao" id="descricao-recebimentos" maxlength="100" type="text" name="descricao" required><br>
+                    <label for="description-recebimentos">Descrição</label>
+                    <input class="modal-description" id="description-recebimentos" maxlength="100" type="text" name="description" required><br>
                 </section>
             
                 <section class="modal-flex">
@@ -300,8 +300,8 @@
                 </section>
             
                 <section class="modal-flex">
-                    <label for="descricao-pagamentos">Descrição</label>
-                    <input class="modal-descricao" id="descricao-pagamentos" maxlength="100" type="text" name="descricao" required><br>
+                    <label for="description-pagamentos">Descrição</label>
+                    <input class="modal-description" id="description-pagamentos" maxlength="100" type="text" name="description" required><br>
                 </section>
             
                 <section class="modal-flex">
@@ -402,7 +402,7 @@
             
                 <section class="modal-flex mesclar-2">
                     <label for="observacao-transferencia">Observação</label>
-                    <input class="modal-descricao" id="observacao-transferencia" type="text" name="observacao"><br>
+                    <input class="modal-description" id="observacao-transferencia" type="text" name="observacao"><br>
                 </section>
                 <section class="modal-botoes mesclar-2">
                     <input class="modal-salvar" name="salvar_transferencias" type="submit" value="Salvar">
@@ -418,7 +418,7 @@
                     <tr class="linha-cabecalho-lancamentos">
                         <th class="checkbox-col" scope="col"></th>
                         <th class="due_date-col" scope="col">Vencimento</th>
-                        <th class="descricao-col" scope="col">Descrição</th>
+                        <th class="description-col" scope="col">Descrição</th>
                         <th class="obs-col" scope="col">Observação</th>
                         <th class="parcela-col" scope="col">Parcela</th>
                         <th class="debito-col" scope="col">Débito</th>
@@ -440,7 +440,7 @@
                             <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ cash_flow_item.id }}" data-conta-contabil="{{ cash_flow_item.conta_contabil }}" data-uuid-conta-contabil="{{ cash_flow_item.uuid_conta_contabil }}" data-natureza="{{ cash_flow_item.natureza }}" parcela-atual="{{ cash_flow_item.parcela_atual }}" parcelas-total="{{ cash_flow_item.parcelas_total }}" data-uuid-row="{{ cash_flow_item.uuid_correlacao }}" scope="row">
                                 <td class="checkbox-row"><label class="checkbox-container"><input id="checkbox-personalizado-{{ cash_flow_item.id }}" class="checkbox-personalizado" type="checkbox" data-id="{{ cash_flow_item.id }}" data-uuid-row="{{ cash_flow_item.uuid_correlacao }}"><span class="checkmark"></span></label></td>
                                 <td class="due_date-row">{{ cash_flow_item.due_date|date:"d/m/Y" }}</td>
-                                <td class="descricao-row">{{ cash_flow_item.descricao }}</td>
+                                <td class="description-row">{{ cash_flow_item.description }}</td>
                                 <td class="obs-row">
                                     {{ cash_flow_item.observacao }}
                                     <small class="d-block">Tags: {{ cash_flow_item.tags }}</small>

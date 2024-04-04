@@ -19,7 +19,7 @@ def realizado(request):
 
 def exibir_realizado(request):
     bancos_ativos = Bancos.objects.filter(status=True)
-    Tabela_realizado_list = SettledEntry.objects.all().order_by('data_liquidacao', '-valor', 'descricao')
+    Tabela_realizado_list = SettledEntry.objects.all().order_by('data_liquidacao', '-valor', 'description')
     totais_mes_realizado = Totais_mes_realizado.objects.all().order_by('-fim_mes')
     chart_of_accounts_queryset = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
 
@@ -46,7 +46,7 @@ def exibir_realizado(request):
         # Inserir o total do mês, incluindo agora o saldo
         lancamentos_com_totais.append({
             'data_liquidacao': datetime.strptime(key + "-01", '%Y-%m-%d'),
-            'descricao': 'Total do Mês',
+            'description': 'Total do Mês',
             'debito': total_debito,
             'credito': total_credito,
             'saldo': saldo_total,  # Incluindo o saldo no dicionário
@@ -142,7 +142,7 @@ def processar_retorno(request):
 def criar_fluxo_com_registro(registro):
     CashFlowEntry.objects.create(
         due_date=registro.due_date,
-        descricao=registro.descricao,
+        description=registro.description,
         observacao=registro.observacao,
         valor=registro.valor,
         conta_contabil=registro.conta_contabil,
@@ -183,7 +183,7 @@ def unificar_lancamentos_no_fluxo(uuid_correlacao, valor_total, excluir_uuid=Fal
 def criar_fluxo_com_registro_unificado(registro, valor_total, manter_uuid=False):
     CashFlowEntry.objects.create(
         due_date=registro.due_date,
-        descricao=registro.descricao,
+        description=registro.description,
         observacao=registro.observacao,
         valor=valor_total,
         conta_contabil=registro.conta_contabil,
@@ -224,7 +224,7 @@ def atualizar_lancamento(request, id):
                 hora_original = lancamento.data_liquidacao.time() if lancamento.data_liquidacao else datetime.time(12, 0)
                 lancamento.data_liquidacao = datetime.combine(due_date, hora_original)
             
-            lancamento.descricao = data.get('descricao', lancamento.descricao)
+            lancamento.description = data.get('description', lancamento.description)
             lancamento.observacao = data.get('observacao', lancamento.observacao)
 
             lancamento._skip_update_saldo = True

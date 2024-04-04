@@ -4,7 +4,7 @@ from decimal import Decimal
 
 class CashFlowEntry(models.Model):
     due_date = models.DateField()
-    descricao = models.CharField(max_length = 100)
+    description = models.CharField(max_length = 100)
     observacao = models.CharField(max_length = 100)
     valor = models.DecimalField(max_digits=13, decimal_places=2)
     conta_contabil = models.CharField(max_length = 100)
@@ -29,7 +29,7 @@ class Totais_mes_fluxo(models.Model):
 
 class TabelaTemporaria(models.Model):
     due_date = models.DateField()
-    descricao = models.CharField(max_length = 100)
+    description = models.CharField(max_length = 100)
     observacao = models.CharField(max_length = 100)
     valor = models.DecimalField(max_digits=13, decimal_places=2)
     conta_contabil = models.CharField(max_length = 100)
