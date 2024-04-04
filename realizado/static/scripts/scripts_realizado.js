@@ -11,7 +11,7 @@ document.getElementById('retornar-button').addEventListener('click', function() 
             id: checkbox.getAttribute('data-id'),
             due_date: row.querySelector('.due_date-row').textContent,
             description: row.querySelector('.description-row').textContent,
-            valor: debito || credito, // Usa débito se disponível, senão credito
+            totalAmount: debito || credito, // Usa débito se disponível, senão credito
             conta_contabil: row.getAttribute('data-conta-contabil'),
             parcela_atual: row.getAttribute('parcela-atual'),
             parcelas_total: row.getAttribute('parcelas-total'),
@@ -177,7 +177,7 @@ function abrirModalEdicao(row) {
   const due_date = row.querySelector('.due_date-row').textContent.trim();
   const description = row.querySelector('.description-row').textContent.trim();
   const observation = row.querySelector('.obs-row').textContent.split('Tags:')[0].trim().replace(/\s+/g, ' ');
-  const valor = row.querySelector('.debito-row').textContent.trim() || row.querySelector('.credito-row').textContent.trim();
+  const totalAmount = row.querySelector('.debito-row').textContent.trim() || row.querySelector('.credito-row').textContent.trim();
   const contaContabil = row.getAttribute('data-conta-contabil');
   const tags = row.querySelector('.obs-row').textContent.trim().split('Tags:')[1];
   const parcelaAtual = row.getAttribute('parcela-atual');
@@ -185,17 +185,17 @@ function abrirModalEdicao(row) {
   const uuid = row.getAttribute('data-uuid-correlacao');
   const uuidParcelas = row.getAttribute('data-uuid-correlacao-parcelas');
 
-  preencherDadosModalRealizado(id, due_date, description, observation, valor, contaContabil, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas);
+  preencherDadosModalRealizado(id, due_date, description, observation, totalAmount, contaContabil, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas);
 
   document.getElementById('modal-realizado').showModal();
 }
 
-function preencherDadosModalRealizado(id, due_date, description, observation, valor, contaContabil, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas) {
+function preencherDadosModalRealizado(id, due_date, description, observation, totalAmount, contaContabil, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas) {
   document.querySelector('.modal-form-realizado [name="lancamento_id_realizado"]').value = id;
   document.getElementById('data-realizado').value = formatarDataParaInput(due_date);
   document.getElementById('description-realizado').value = description;
   document.getElementById('observation-realizado').value = observation;
-  document.getElementById('valor-realizado').value = "R$ "+valor;
+  document.getElementById('totalAmount-realizado').value = "R$ "+totalAmount;
   document.getElementById('conta-contabil-realizado').value = contaContabil;
   document.getElementById('parcelas-realizado').value = `${parcelaAtual}/${parcelasTotal}`;
   document.querySelector('.modal-form-realizado [name="uuid_realizado"]').value = uuid;
@@ -584,21 +584,21 @@ document.querySelectorAll('.banco-checkbox').forEach(checkbox => {
 
 // 5. Saldo total dos bancos
 function atualizarSaldoTotalBancos() {
-  let novoSaldoTotal = 0;
+  let newTotalBalance = 0;
   const linhasBancos = document.querySelectorAll('.tabela-bancos .row-bancos');
 
   linhasBancos.forEach(row => {
     const idBanco = row.getAttribute('data-banco-id');
     if (bancosSelecionados.length === 0 || bancosSelecionados.includes(idBanco)) {
-      let valorSaldoTexto = row.querySelector('.saldo-banco-row').textContent;
-      valorSaldoTexto = valorSaldoTexto.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
-      const valorSaldo = parseFloat(valorSaldoTexto);
-      novoSaldoTotal += valorSaldo;
+      let strAmount = row.querySelector('.saldo-banco-row').textContent;
+      strAmount = strAmount.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
+      const balance = parseFloat(strAmount);
+      newTotalBalance += balance;
     }
   });
 
   // Atualiza o saldo total global e na interface
-  saldoTotal = novoSaldoTotal;
+  saldoTotal = newTotalBalance;
   const saldoTotalFormatado = saldoTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   document.querySelector('.saldo-total-banco-row').textContent = saldoTotalFormatado;
 
@@ -625,16 +625,16 @@ function atualizarSaldosDasLinhas() {
 
     // Obter a natureza da linha e ajustar o saldo
     const natureza = row.getAttribute('data-natureza').trim();
-    let valor = 0;
+    let amount = 0;
 
     if (natureza === 'Crédito') {
-      const valorCredito = row.querySelector('.credito-row').textContent;
-      valor = parseFloat(valorCredito.replace('R$', '').replace(/\./g, '').replace(',', '.').trim());
-      saldoAtual -= valor; // Crédito subtrai do saldo
+      const creditAmount = row.querySelector('.credito-row').textContent;
+      amount = parseFloat(creditAmount.replace('R$', '').replace(/\./g, '').replace(',', '.').trim());
+      saldoAtual -= amount; // Crédito subtrai do saldo
     } else if (natureza === 'Débito') {
-      const valorDebito = row.querySelector('.debito-row').textContent;
-      valor = parseFloat(valorDebito.replace('R$', '').replace(/\./g, '').replace(',', '.').trim());
-      saldoAtual += valor; // Débito soma ao saldo
+      const debitAmount = row.querySelector('.debito-row').textContent;
+      amount = parseFloat(debitAmount.replace('R$', '').replace(/\./g, '').replace(',', '.').trim());
+      saldoAtual += amount; // Débito soma ao saldo
     }
     
     // Atualizar o saldo da linha

@@ -24,21 +24,21 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 });
 
-// Função para formatar o valor de texto para número
-function formatarValor(valorTexto) {
+// Função para formatar o amount de texto para número
+function formatAmount(strAmount) {
   // Remove pontos e substitui vírgula por ponto para conversão para número
-  // Garante que o valorTexto é uma string antes de fazer as substituições
-  valorTexto = valorTexto.toString();
-  var valorNumerico = valorTexto.replace(/\./g, '').replace(',', '.');
-  return parseFloat(valorNumerico);
+  // Garante que o strAmount é uma string antes de fazer as substituições
+  strAmount = strAmount.toString();
+  var numericAmount = strAmount.replace(/\./g, '').replace(',', '.');
+  return parseFloat(numericAmount);
 }
 
 // Função para atualizar o saldo do banco selecionado
 function atualizarSaldoBanco() {
-  // Inicializar o valor total a liquidar
-  let valorTotalLiquidar = 0;
+  // Inicializar o amount total a liquidar
+  let totalAmountToSettle = 0;
   
-  // Obter o valor total a liquidar dos lançamentos selecionados
+  // Obter o amount total a liquidar dos lançamentos selecionados
   document.querySelectorAll('.row-lancamentos').forEach(row => {
     const checkbox = row.querySelector('.checkbox-personalizado');
     if (checkbox && checkbox.checked) {
@@ -46,10 +46,10 @@ function atualizarSaldoBanco() {
       const debito = row.querySelector('.debito-row').textContent.trim();
 
       if (credito) {
-        valorTotalLiquidar += formatarValor(credito);
+        totalAmountToSettle += formatAmount(credito);
       }
       if (debito) {
-        valorTotalLiquidar -= formatarValor(debito);
+        totalAmountToSettle -= formatAmount(debito);
       }
     }
   });
@@ -59,10 +59,10 @@ function atualizarSaldoBanco() {
     if (checkbox.checked) {
       // Encontrar o elemento de saldo inicial do banco correspondente
       let saldoInicialEl = checkbox.closest('.row-bancos').querySelector('[name="saldo_inicial"]');
-      let saldoInicial = formatarValor(saldoInicialEl.textContent);
+      let saldoInicial = formatAmount(saldoInicialEl.textContent);
       
       // Calcular o novo saldo
-      let novoSaldo = saldoInicial + valorTotalLiquidar;
+      let novoSaldo = saldoInicial + totalAmountToSettle;
 
       // Atualizar o elemento do saldo no formulário
       document.querySelector('[name="saldo-liquidacao"]').textContent = novoSaldo.toLocaleString('pt-BR', {
@@ -92,10 +92,10 @@ document.addEventListener('DOMContentLoaded', function() {
   // dentro do contêiner de lançamentos selecionados
   containerLancamentosSelecionados.addEventListener('change', function(event) {
     if (event.target.classList.contains('botao-parcial')) {
-      // Manipula a visibilidade da seção 'valor-parcial-liquidacao' com base no estado do checkbox
+      // Manipula a visibilidade da seção 'amount-parcial-liquidacao' com base no estado do checkbox
       const lancamentoSelecionado = event.target.closest('.lancamentos-selecionados');
-      const secaoValorParcial = lancamentoSelecionado.querySelector('.valor-parcial-liquidacao');
-      secaoValorParcial.style.display = event.target.checked ? 'block' : 'none';
+      const partialAmountSection = lancamentoSelecionado.querySelector('.amount-parcial-liquidacao');
+      partialAmountSection.style.display = event.target.checked ? 'block' : 'none';
       
       atualizarEstadoColunas();
     }
@@ -131,9 +131,9 @@ document.addEventListener('DOMContentLoaded', function() {
   botaoLiquidacao.addEventListener('click', function() {
       modalLiquidacao.showModal(); // Abre o modal
 
-      // Esconde todos os campos de valor parcial inicialmente
-      document.querySelectorAll('.valor-parcial-liquidacao').forEach(campo => {
-          campo.style.display = 'none'; // Esconde todos os campos de valor parcial inicialmente
+      // Esconde todos os campos de amount parcial inicialmente
+      document.querySelectorAll('.amount-parcial-liquidacao').forEach(campo => {
+          campo.style.display = 'none'; // Esconde todos os campos de amount parcial inicialmente
       });
 
       let algumBotaoParcialAtivado = false;
@@ -154,10 +154,10 @@ document.addEventListener('DOMContentLoaded', function() {
                   // Adiciona classe 'travado' para prevenir desmarcação
                   botaoParcial.classList.add('travado');
 
-                  // Encontra o campo de valor parcial específico para este lançamento e o torna visível
-                  const secaoValorParcial = document.querySelector(`#valor-parcial-liquidacao-${id}`);
-                  if (secaoValorParcial) {
-                      secaoValorParcial.style.display = 'block'; // Mostra o campo de valor parcial específico
+                  // Encontra o campo de amount parcial específico para este lançamento e o torna visível
+                  const partialAmountSection = document.querySelector(`#amount-parcial-liquidacao-${id}`);
+                  if (partialAmountSection) {
+                      partialAmountSection.style.display = 'block'; // Mostra o campo de amount parcial específico
                   }
               }
           }
@@ -170,13 +170,13 @@ document.addEventListener('DOMContentLoaded', function() {
           });
       });
 
-      // Garante que a seção de valor parcial seja visível para botões parciais ativos
+      // Garante que a seção de amount parcial seja visível para botões parciais ativos
       document.querySelectorAll('.botao-parcial').forEach(botao => {
           const lancamentoSelecionado = botao.closest('.lancamentos-selecionados');
           if (botao.checked) {
-              const secaoValorParcial = lancamentoSelecionado.querySelector('.valor-parcial-liquidacao');
-              if (secaoValorParcial) {
-                  secaoValorParcial.style.display = 'block';
+              const partialAmountSection = lancamentoSelecionado.querySelector('.amount-parcial-liquidacao');
+              if (partialAmountSection) {
+                  partialAmountSection.style.display = 'block';
               }
           }
       });
@@ -233,7 +233,7 @@ function criarLancamentoSelecionadoElemento(checkbox) {
   const lancamentoDados = extrairDadosLancamento(checkbox);
   const div = montarDivLancamento(lancamentoDados);
   document.getElementById('lancamentos-selecionados').appendChild(div);
-  configurarEstadoInicialValor(div, lancamentoDados.id);
+  configureInitialValueState(div, lancamentoDados.id);
 }
 
 function extrairDadosLancamento(checkbox) {
@@ -244,7 +244,7 @@ function extrairDadosLancamento(checkbox) {
       description: row.querySelector('.description-row').textContent,
       due_date: row.querySelector('.due_date-row').textContent,
       observation: extractObservation(row),
-      valor: extrairValor(row),
+      amount: extractAmount(row),
       natureza: extrairNatureza(row)
   };
 }
@@ -254,17 +254,17 @@ function extractObservation(row) {
   return observation.split('Tags:')[0].trim();
 }
 
-function extrairValor(row) {
-  const valorDebito = row.querySelector('.debito-row').textContent;
-  const valorCredito = row.querySelector('.credito-row').textContent;
-  return valorDebito || valorCredito;
+function extractAmount(row) {
+  const debitAmount = row.querySelector('.debito-row').textContent;
+  const creditAmount = row.querySelector('.credito-row').textContent;
+  return debitAmount || creditAmount;
 }
 
 function extrairNatureza(row) {
   return row.querySelector('.debito-row').textContent ? "Débito" : "Crédito";
 }
 
-function montarDivLancamento({id, description, due_date, observation, valor, natureza}) {
+function montarDivLancamento({id, description, due_date, observation, amount, natureza}) {
   const div = document.createElement('div');
   div.classList.add('lancamentos-selecionados');
   div.innerHTML = `
@@ -278,7 +278,7 @@ function montarDivLancamento({id, description, due_date, observation, valor, nat
         <input class="modal-obs" id="observation-liquidacao-${id}" maxlength="100" type="text" name="observation-liquidacao-${id}" value="${observation}">
     </section>
     <section class="modal-flex">
-        <input class="modal-valor valor-liquidacao-total" id="valor-liquidacao-${id}" type="text" name="valor-liquidacao-${id}" oninput="formatarCampoValor(this)" value="R$ ${valor}" readonly required style="background-color: #B5B5B5; color: #FFFFFF;">
+        <input class="modal-amount amount-liquidacao-total" id="amount-liquidacao-${id}" type="text" name="amount-liquidacao-${id}" oninput="formatAmount(this)" value="R$ ${amount}" readonly required style="background-color: #B5B5B5; color: #FFFFFF;">
     </section>
     <section class="modal-flex natureza-liquidacao">
         <input class="modal-natureza" id="natureza-liquidacao-${id}" type="text" name="natureza-liquidacao-${id}" value="${natureza}" readonly style="background-color: #B5B5B5; color: #FFFFFF;">
@@ -288,19 +288,19 @@ function montarDivLancamento({id, description, due_date, observation, valor, nat
       <label class="form-switch"><input id="botao-parcial-${id}" class="botao-parcial" type="checkbox"><i></i></label>
       </div>
     </section>
-    <section class="modal-flex valor-parcial-liquidacao" style="display:none;">
-      <input class="modal-valor valor-parcial" id="valor-parcial-liquidacao-${id}" type="text" name="valor-parcial-liquidacao-${id}" oninput="formatarCampoValor(this)" value="R$ " required>
+    <section class="modal-flex amount-parcial-liquidacao" style="display:none;">
+      <input class="modal-amount amount-parcial" id="amount-parcial-liquidacao-${id}" type="text" name="amount-parcial-liquidacao-${id}" oninput="formatAmount(this)" value="R$ " required>
     </section>
     `;
   ajustarDataDeLiquidacaoSeNecessario(div, id, due_date);
   return div;
 }
   
-function configurarEstadoInicialValor(div, id) {
+function configureInitialValueState(div, id) {
     const botaoParcial = div.querySelector('.botao-parcial');
     botaoParcial.addEventListener('change', function() {
-        const campoValorParcial = div.querySelector('.valor-parcial-liquidacao');
-        campoValorParcial.style.display = botaoParcial.checked ? 'block' : 'none';
+        const partialAmountField = div.querySelector('.amount-parcial-liquidacao');
+        partialAmountField.style.display = botaoParcial.checked ? 'block' : 'none';
     });
 }
 
@@ -326,12 +326,6 @@ function formatarDataAtualParaInput() {
 function converterDataStringParaDate(dataString) {
   const partes = dataString.split('-');
   return new Date(partes[0], partes[1] - 1, partes[2]);
-}
-
-function formatarValorDecimal(valor) {
-    valor = valor.replace(/\./g, '').replace(',', '.');
-    const numero = parseFloat(valor);
-    return !isNaN(numero) ? numero.toFixed(2) : '0.00';
 }
 
 
@@ -366,29 +360,29 @@ document.getElementById('salvar-liquidacao').addEventListener('click', async fun
     }
 
     let botaoParcial = document.getElementById(`botao-parcial-${id}`);
-    let campoValorParcial = document.getElementById(`valor-parcial-liquidacao-${id}`);
-    let valorParcial = 0;
+    let partialAmountField = document.getElementById(`amount-parcial-liquidacao-${id}`);
+    let partialAmount = 0;
 
-    if (campoValorParcial && campoValorParcial.value) {
+    if (partialAmountField && partialAmountField.value) {
       // Remover o prefixo 'R$ ' e todos os pontos usados como separadores de milhar
-      let valorFormatado = campoValorParcial.value.replace('R$ ', '').replace(/\./g, '');
+      let formatedAmount = partialAmountField.value.replace('R$ ', '').replace(/\./g, '');
       // Substituir a vírgula por ponto para o separador decimal
-      valorFormatado = valorFormatado.replace(',', '.');
+      formatedAmount = formatedAmount.replace(',', '.');
       // Converter para float
-      valorParcial = parseFloat(valorFormatado);
+      partialAmount = parseFloat(formatedAmount);
     }
 
-    if (botaoParcial.checked && (valorParcial <= 0 || isNaN(valorParcial))) {
-      alert('Por favor, preencha o valor parcial para realizar uma liquidação parcial.');
-      campoValorParcial.focus();
+    if (botaoParcial.checked && (partialAmount <= 0 || isNaN(partialAmount))) {
+      alert('Por favor, preencha o amount parcial para realizar uma liquidação parcial.');
+      partialAmountField.focus();
       return;
     }
     
-    let campoValorTotal = document.getElementById(`valor-liquidacao-${id}`);
-    let valorTotal = parseFloat(campoValorTotal.value.replace(/\D/g, '').replace(',', '.'));
-    if (valorParcial > valorTotal) {
-      alert('O valor parcial não pode ser maior que o valor total da liquidação.');
-      campoValorParcial.focus();
+    let totalAmountField = document.getElementById(`amount-liquidacao-${id}`);
+    let totalAmount = parseFloat(totalAmountField.value.replace(/\D/g, '').replace(',', '.'));
+    if (partialAmount > totalAmount) {
+      alert('O amount parcial não pode ser maior que o amount total da liquidação.');
+      partialAmountField.focus();
       return;
     }
     
@@ -400,7 +394,7 @@ document.getElementById('salvar-liquidacao').addEventListener('click', async fun
       due_date: row.querySelector('.due_date-row').textContent,
       description: row.querySelector('.description-row').textContent,
       observation: observationField ? observationField.value : '',
-      valor: campoValorTotal.value,
+      amount: totalAmountField.value,
       conta_contabil: row.getAttribute('data-conta-contabil'),
       uuid_conta_contabil: row.getAttribute('data-uuid-conta-contabil'),
       parcela_atual: row.getAttribute('parcela-atual'),
@@ -409,7 +403,7 @@ document.getElementById('salvar-liquidacao').addEventListener('click', async fun
       data_liquidacao: campoData ? campoData.value : '',
       banco_liquidacao: nomeBancoSelecionado,
       banco_id_liquidacao: idBancoSelecionado,
-      valor_parcial: valorParcial > 0 ? valorParcial : undefined,
+      partial_amount: partialAmount > 0 ? partialAmount : undefined,
     };
 
     dataToSend.push(itemData);
@@ -768,7 +762,7 @@ function onModalClose(tipo) {
   limparCamposModal(tipo);
   estaEditando = false;
   redefinirCampoParcelas(tipo);
-  document.getElementById(`valor-${tipo}`).value = "R$ "
+  document.getElementById(`amount-${tipo}`).value = "R$ "
 }
 
 function limparCamposModal(tipo) {
@@ -783,23 +777,23 @@ function limparCamposModal(tipo) {
 // Função auxiliar para ativar ou desativar campos
 function configurarCamposAtivos(tipo, ativar) {
   const campos = {
-    valor: document.getElementById(`valor-${tipo}`),
+    amount: document.getElementById(`amount-${tipo}`),
     recorrencia: document.getElementById(`recorrencia-${tipo}`),
     dropdownButton: document.getElementById(`dropdown-button-contas-${tipo}`),
     checkboxes: document.querySelectorAll(`#dropdown-content-contas-${tipo} .conta-checkbox`)
   };
 
   if (ativar) {
-    campos.valor.readOnly = false;
-    configurarElemento(campos.valor, { backgroundColor: '', color: '', cursor: '' });
+    campos.amount.readOnly = false;
+    configurarElemento(campos.amount, { backgroundColor: '', color: '', cursor: '' });
     campos.recorrencia.disabled = false;
     configurarElemento(campos.recorrencia, { backgroundColor: '', color: '', cursor: '' });
     campos.dropdownButton.disabled = false;
     configurarElemento(campos.dropdownButton, { backgroundColor: '', color: '', cursor: '' });
     campos.checkboxes.forEach(checkbox => checkbox.disabled = false);
   } else {
-    campos.valor.readOnly = true;
-    configurarElemento(campos.valor, { backgroundColor: '#B5B5B5', color: '#FFFFFF', cursor: 'default' });
+    campos.amount.readOnly = true;
+    configurarElemento(campos.amount, { backgroundColor: '#B5B5B5', color: '#FFFFFF', cursor: 'default' });
     campos.recorrencia.disabled = true;
     configurarElemento(campos.recorrencia, { backgroundColor: '#B5B5B5', color: '#FFFFFF', cursor: 'default' });
     campos.dropdownButton.disabled = true;
@@ -821,8 +815,8 @@ function preencherDadosModal(row, tipo) {
   const due_date = row.querySelector('.due_date-row').textContent.trim();
   document.getElementById(`data-${tipo}`).value = formatarDataParaInput(due_date);
 
-  const valor = row.querySelector(`.${tipo === 'recebimentos' ? 'credito' : 'debito'}-row`).textContent.trim();
-  document.getElementById(`valor-${tipo}`).value = "R$ " + valor;
+  const amount = row.querySelector(`.${tipo === 'recebimentos' ? 'credito' : 'debito'}-row`).textContent.trim();
+  document.getElementById(`amount-${tipo}`).value = "R$ " + amount;
 
   document.getElementById(`description-${tipo}`).value = row.querySelector('.description-row').textContent.trim();
   document.getElementById(`observation-${tipo}`).value = row.querySelector('.obs-row').childNodes[0].textContent.trim();
@@ -901,8 +895,8 @@ function redefinirCampoParcelas(tipo) {
 }
 
 // Funções de Formatação e Utilidades
-function desformatarNumero(valorFormatado) {
-  return valorFormatado.replace(/\./g, '').replace(',', '.');
+function desformatarNumero(formatedAmount) {
+  return formatedAmount.replace(/\./g, '').replace(',', '.');
 }
 
 function formatarDataParaInput(data) {
@@ -921,14 +915,14 @@ function extrairTags(row) {
 }
 
 
-// Função para formatar o valor de um campo como moeda brasileira
-function formatarCampoValor(input) {
-  let valorNumerico = input.value.replace(/\D/g, '');
-  let valorFloat = parseFloat(valorNumerico) / 100;
-  let valorFormatado = valorFloat.toFixed(2)
+// Função para formatar o amount de um campo como moeda brasileira
+function formatAmount(input) {
+  let numericAmount = input.value.replace(/\D/g, '');
+  let floatAmount = parseFloat(numericAmount) / 100;
+  let formatedAmount = floatAmount.toFixed(2)
     .replace('.', ',')
     .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-  input.value = valorNumerico ? `R$ ${valorFormatado}` : 'R$ 0,00';
+  input.value = numericAmount ? `R$ ${formatedAmount}` : 'R$ 0,00';
   if (input.value === 'R$ 0,00') {
     input.value = 'R$ 0,00';
   }
@@ -1047,11 +1041,11 @@ initializeTagInputs('tagInput-recebimentos', 'tag-container-recebimentos', 'tags
 initializeTagInputs('tagInput-pagamentos', 'tag-container-pagamentos', 'tagsHiddenInput-pagamentos');
 
 
-// Soma de valores no campo de liquidar
+// Soma de amounts no campo de liquidar
 function calcularTotal() {
   let total = 0;
 
-  // Somar os valores apenas das linhas com checkboxes selecionadas
+  // Somar os amounts apenas das linhas com checkboxes selecionadas
   document.querySelectorAll('.row-lancamentos').forEach(row => {
       const checkbox = row.querySelector('.checkbox-personalizado');
 
@@ -1060,11 +1054,11 @@ function calcularTotal() {
           const debito = row.querySelector('.debito-row').textContent.trim();
 
           if (credito) {
-              total += formatarValor(credito);
+              total += formatAmount(credito);
           }
 
           if (debito) {
-              total -= formatarValor(debito);
+              total -= formatAmount(debito);
           }
       }
   });
@@ -1077,9 +1071,9 @@ function calcularTotal() {
   document.querySelector('.total-liquidar-row label').textContent = totalFormatado;
 }
 
-function formatarValor(valorTexto) {
+function formatAmount(strAmount) {
   // Remove pontos e substitui vírgula por ponto para conversão para número
-  return parseFloat(valorTexto.replace(/\./g, '').replace(',', '.'));
+  return parseFloat(strAmount.replace(/\./g, '').replace(',', '.'));
 }
 
 // Adicionar evento listener para as checkboxes para recalcular o total quando uma checkbox é alterada
@@ -1135,7 +1129,7 @@ function encontrarEMarcarMesAtualOuProximo() {
     if (currentMonthIndex === 0) currentYear++;
   }
 
-  console.error('Nenhum mês válido encontrado. Considere revisar os valores dos checkboxes.');
+  console.error('Nenhum mês válido encontrado. Considere revisar os amounts dos checkboxes.');
 }
 
 document.addEventListener('DOMContentLoaded', encontrarEMarcarMesAtualOuProximo);
@@ -1487,13 +1481,13 @@ function calcularSaldoAcumulado() {
   });
 }
 
-function parseSaldo(valorSaldo) {
-  var numero = valorSaldo.replace('R$', '').trim().replace(/\./g, '').replace(',', '.');
+function parseSaldo(balance) {
+  var numero = balance.replace('R$', '').trim().replace(/\./g, '').replace(',', '.');
   return parseFloat(numero) || 0;
 }
 
-function formatarComoMoeda(valor) {
-  return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+function formatarComoMoeda(amount) {
+  return amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
 document.querySelectorAll('.saldo-total-row').forEach(function(cell) {

@@ -232,8 +232,8 @@
                 </section>
                 
                 <section class="modal-flex">
-                    <label for="valor-recebimentos">Valor</label>
-                    <input class="modal-valor" id="valor-recebimentos" type="text" name="valor" oninput="formatarCampoValor(this)" value="R$ " required><br>
+                    <label for="amount-recebimentos">Valor</label>
+                    <input class="modal-amount" id="amount-recebimentos" type="text" name="amount" oninput="formatAmount(this)" value="R$ " required><br>
                 </section>
             
                 <section class="modal-flex">
@@ -310,8 +310,8 @@
                 </section>
                 
                 <section class="modal-flex">
-                    <label for="valor-pagamentos">Valor</label>
-                    <input class="modal-valor" id="valor-pagamentos" type="text" name="valor" oninput="formatarCampoValor(this)" value="R$ " required><br>
+                    <label for="amount-pagamentos">Valor</label>
+                    <input class="modal-amount" id="amount-pagamentos" type="text" name="amount" oninput="formatAmount(this)" value="R$ " required><br>
                 </section>
             
                 <section class="modal-flex">
@@ -377,8 +377,8 @@
                 </section>
                 
                 <section class="modal-flex">
-                    <label for="valor-transferencias">Valor</label>
-                    <input class="modal-valor" id="valor-transferencias" type="text" name="valor" oninput="formatarCampoValor(this)" value="R$ " required><br>
+                    <label for="amount-transferencias">Valor</label>
+                    <input class="modal-amount" id="amount-transferencias" type="text" name="amount" oninput="formatAmount(this)" value="R$ " required><br>
                 </section>
                 
                 <section class="modal-flex">
@@ -449,11 +449,11 @@
                                 <input type="hidden" id="parcelas-total-originais-recebimentos" name="parcelas_total_originais">
                                 <input type="hidden" id="parcelas-total-originais-pagamentos" name="parcelas_total_originais">
                                 {% if cash_flow_item.natureza == 'Débito' %}
-                                    <td class="debito-row">{{ cash_flow_item.valor|format_number }}</td>
+                                    <td class="debito-row">{{ cash_flow_item.amount|format_number }}</td>
                                     <td class="credito-row"></td>
                                 {% else %}
                                     <td class="debito-row"></td>
-                                    <td class="credito-row">{{ cash_flow_item.valor|format_number }}</td>
+                                    <td class="credito-row">{{ cash_flow_item.amount|format_number }}</td>
                                 {% endif %}
                                 <td class="saldo-row">{{ cash_flow_item.saldo|format_number }}</td>
                             </tr>

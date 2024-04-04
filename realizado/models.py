@@ -7,7 +7,7 @@ class SettledEntry(models.Model):
     due_date = models.DateField()
     description = models.CharField(max_length = 100)
     observation = models.CharField(max_length = 100)
-    valor = models.DecimalField(max_digits=13, decimal_places=2)
+    amount = models.DecimalField(max_digits=13, decimal_places=2)
     conta_contabil = models.CharField(max_length = 100)
     parcela_atual = models.IntegerField()
     parcelas_total = models.IntegerField()
@@ -31,9 +31,9 @@ class SettledEntry(models.Model):
     def atualizar_saldo_banco(self):
         banco = Bancos.objects.get(id=self.banco_id_liquidacao)  # Modificado para usar ID
         if self.natureza == 'Crédito':
-            banco.saldo_atual += self.valor
+            banco.saldo_atual += self.amount
         else:  # Débito
-            banco.saldo_atual -= self.valor
+            banco.saldo_atual -= self.amount
         banco.save()
         pass
 

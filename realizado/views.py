@@ -19,7 +19,7 @@ def realizado(request):
 
 def exibir_realizado(request):
     bancos_ativos = Bancos.objects.filter(status=True)
-    Tabela_realizado_list = SettledEntry.objects.all().order_by('data_liquidacao', '-valor', 'description')
+    Tabela_realizado_list = SettledEntry.objects.all().order_by('data_liquidacao', '-amount', 'description')
     totais_mes_realizado = Totais_mes_realizado.objects.all().order_by('-fim_mes')
     chart_of_accounts_queryset = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
 
@@ -39,8 +39,8 @@ def exibir_realizado(request):
         lista_grupo = list(group)
         lancamentos_com_totais.extend(lista_grupo)
 
-        total_debito = sum(item.valor for item in lista_grupo if item.natureza == 'Débito')
-        total_credito = sum(item.valor for item in lista_grupo if item.natureza == 'Crédito')
+        total_debito = sum(item.amount for item in lista_grupo if item.natureza == 'Débito')
+        total_credito = sum(item.amount for item in lista_grupo if item.natureza == 'Crédito')
         saldo_total = total_credito - total_debito  # Cálculo do saldo total
 
         # Inserir o total do mês, incluindo agora o saldo
@@ -90,12 +90,12 @@ def recalcular_totais_realizado():
         total_credito = SettledEntry.objects.filter(
             due_date__range=(inicio_mes, fim_mes),
             natureza='Crédito'
-        ).aggregate(Sum('valor'))['valor__sum'] or 0
+        ).aggregate(Sum('amount'))['amount__sum'] or 0
 
         total_debito = SettledEntry.objects.filter(
             due_date__range=(inicio_mes, fim_mes),
             natureza='Débito'
-        ).aggregate(Sum('valor'))['valor__sum'] or 0
+        ).aggregate(Sum('amount'))['amount__sum'] or 0
 
         # Cria um novo registro em Totais_mes_realizado para cada mês
         Totais_mes_realizado.objects.create(
@@ -144,7 +144,7 @@ def criar_fluxo_com_registro(registro):
         due_date=registro.due_date,
         description=registro.description,
         observation=registro.observation,
-        valor=registro.valor,
+        amount=registro.amount,
         conta_contabil=registro.conta_contabil,
         uuid_conta_contabil=registro.uuid_conta_contabil,
         parcela_atual=registro.parcela_atual,
@@ -160,32 +160,32 @@ def processar_lancamentos_com_uuids_selecionados(uuid_correlacao, uuid_correlaca
     existe_no_fluxo = CashFlowEntry.objects.filter(uuid_correlacao=uuid_correlacao).exists()
 
     registros_selecionados = SettledEntry.objects.filter(id__in=ids_selecionados, uuid_correlacao=uuid_correlacao, uuid_correlacao_parcelas=uuid_correlacao_parcelas)
-    valor_total_selecionados = registros_selecionados.aggregate(Sum('valor'))['valor__sum'] or 0
+    selected_total_amount = registros_selecionados.aggregate(Sum('amount'))['amount__sum'] or 0
 
     if mais_registros and existe_no_fluxo:
-        unificar_lancamentos_no_fluxo(uuid_correlacao, valor_total_selecionados)
+        unificar_lancamentos_no_fluxo(uuid_correlacao, selected_total_amount)
     elif not mais_registros and existe_no_fluxo:
-        unificar_lancamentos_no_fluxo(uuid_correlacao, valor_total_selecionados, excluir_uuid=True)
+        unificar_lancamentos_no_fluxo(uuid_correlacao, selected_total_amount, excluir_uuid=True)
     elif not mais_registros and not existe_no_fluxo:
-        criar_fluxo_com_registro_unificado(registros_selecionados.first(), valor_total_selecionados, manter_uuid=False)
+        criar_fluxo_com_registro_unificado(registros_selecionados.first(), selected_total_amount, manter_uuid=False)
     elif mais_registros and not existe_no_fluxo:
-        criar_fluxo_com_registro_unificado(registros_selecionados.first(), valor_total_selecionados, manter_uuid=True)
+        criar_fluxo_com_registro_unificado(registros_selecionados.first(), selected_total_amount, manter_uuid=True)
 
     registros_selecionados.delete()
 
-def unificar_lancamentos_no_fluxo(uuid_correlacao, valor_total, excluir_uuid=False):
+def unificar_lancamentos_no_fluxo(uuid_correlacao, total_amount, excluir_uuid=False):
     fluxo = CashFlowEntry.objects.get(uuid_correlacao=uuid_correlacao)
-    fluxo.valor += valor_total
+    fluxo.amount += total_amount
     if excluir_uuid:
         fluxo.uuid_correlacao = None
     fluxo.save()
 
-def criar_fluxo_com_registro_unificado(registro, valor_total, manter_uuid=False):
+def criar_fluxo_com_registro_unificado(registro, total_amount, manter_uuid=False):
     CashFlowEntry.objects.create(
         due_date=registro.due_date,
         description=registro.description,
         observation=registro.observation,
-        valor=valor_total,
+        amount=total_amount,
         conta_contabil=registro.conta_contabil,
         uuid_conta_contabil=registro.uuid_conta_contabil,
         parcela_atual=registro.parcela_atual,
@@ -201,9 +201,9 @@ def atualizar_saldo_banco_apos_remocao(sender, instance, **kwargs):
     try:
         banco = Bancos.objects.get(id=instance.banco_id_liquidacao)  # Modificado para usar ID
         if instance.natureza == 'Crédito':
-            banco.saldo_atual -= instance.valor  # Subtrai para créditos
+            banco.saldo_atual -= instance.amount  # Subtrai para créditos
         else:  # Débito
-            banco.saldo_atual += instance.valor  # Adiciona para débitos
+            banco.saldo_atual += instance.amount  # Adiciona para débitos
         banco.save()
     except Bancos.DoesNotExist:
         pass  # Tratar o caso em que o banco não é encontrado, se necessário

@@ -204,8 +204,8 @@
                 </section>
                 
                 <section class="modal-flex">
-                    <label for="valor-realizado">Valor</label>
-                    <input class="modal-valor" id="valor-realizado" type="text" name="valor" required readonly><br>
+                    <label for="amount-realizado">Valor</label>
+                    <input class="modal-amount" id="amount-realizado" type="text" name="amount" required readonly><br>
                 </section>
             
                 <section class="modal-flex">
@@ -269,11 +269,11 @@
                                 <input type="hidden" id="parcelas-total-originais-recebimentos" name="parcelas_total_originais">
                                 <input type="hidden" id="parcelas-total-originais-pagamentos" name="parcelas_total_originais">
                                 {% if realizado.natureza == 'Débito' %}
-                                    <td class="debito-row">{{ realizado.valor|format_number }}</td>
+                                    <td class="debito-row">{{ realizado.amount|format_number }}</td>
                                     <td class="credito-row"></td>
                                 {% else %}
                                     <td class="debito-row"></td>
-                                    <td class="credito-row">{{ realizado.valor|format_number }}</td>
+                                    <td class="credito-row">{{ realizado.amount|format_number }}</td>
                                 {% endif %}
                                 <td class="saldo-row" id = "saldo-row">{{ realizado.saldo|format_number }}</td>
                             </tr>

@@ -25,7 +25,7 @@ def cash_flow(request):
 
 def display_cash_flow(request):
     active_banks = Bancos.objects.filter(status=True)
-    cash_flow_table_list = CashFlowEntry.objects.all().order_by('due_date', '-valor', 'description')
+    cash_flow_table_list = CashFlowEntry.objects.all().order_by('due_date', '-amount', 'description')
     months_list = Totais_mes_fluxo.objects.all()
     chart_of_accounts_queryset_list = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
     
@@ -43,8 +43,8 @@ def display_cash_flow(request):
         group_list = list(group)
         entries_with_totals.extend(group_list)
 
-        total_debit = sum(item.valor for item in group_list if item.natureza == 'Débito')
-        total_credit = sum(item.valor for item in group_list if item.natureza == 'Crédito')
+        total_debit = sum(item.amount for item in group_list if item.natureza == 'Débito')
+        total_credit = sum(item.amount for item in group_list if item.natureza == 'Crédito')
         total_balance = total_credit - total_debit
 
         entries_with_totals.append({
@@ -109,7 +109,7 @@ def extract_form_data(request):
     due_date_str = request.POST.get('due_date')
     due_date = datetime.strptime(due_date_str, '%Y-%m-%d') if due_date_str else None
 
-    transaction_amount_str = request.POST.get('valor', 'R$ 0,00').replace('R$ ', '').replace('.', '').replace(',', '.')
+    transaction_amount_str = request.POST.get('amount', 'R$ 0,00').replace('R$ ', '').replace('.', '').replace(',', '.')
     transaction_amount = float(transaction_amount_str) if transaction_amount_str else 0.00
 
     # Processa outros campos com segurança
@@ -125,7 +125,7 @@ def extract_form_data(request):
         'due_date': due_date,
         'description': entry_description,
         'observation': entry_observation,
-        'valor': transaction_amount,
+        'amount': transaction_amount,
         'conta_contabil_uuid': account_uuid,
         'conta_contabil_nome': account_name,
         'parcelas_total': total_installments,
@@ -143,7 +143,7 @@ def update_existing_flow(form_data):
     cash_flow_table.due_date = form_data['due_date']
     cash_flow_table.description = form_data['description']
     cash_flow_table.observation = form_data['observation']
-    cash_flow_table.valor = form_data['valor']
+    cash_flow_table.amount = form_data['amount']
     cash_flow_table.natureza = form_data['natureza']
     # Não altera parcelas_total se já é parte de uma série de parcelas
     if cash_flow_table.parcelas_total <= 1 or 'parcelas_total' not in form_data:
@@ -177,7 +177,7 @@ def create_new_flows(form_data, iniciar_desde_o_atual=False):
             due_date=installment_due_date,
             description=form_data['description'],
             observation=form_data['observation'],
-            valor=form_data['valor'],
+            amount=form_data['amount'],
             conta_contabil=form_data['conta_contabil_nome'],
             uuid_conta_contabil=form_data['conta_contabil_uuid'],
             parcela_atual=i,
@@ -226,7 +226,7 @@ def create_temporary_record(object):
         due_date=object.due_date,
         description=object.description,
         observation=object.observation,
-        valor=object.valor,
+        amount=object.amount,
         conta_contabil=object.conta_contabil,
         uuid_conta_contabil=object.uuid_conta_contabil,
         parcela_atual=object.parcela_atual,
@@ -245,7 +245,7 @@ def process_transfer(request):
         deposit_bank_id, deposit_bank_name = deposit_bank_data
 
     transfer_date = request.POST.get('data')
-    transfer_transaction_amount_str = request.POST.get('valor', 'R$ 0,00').replace('R$ ', '').replace('.', '').replace(',', '.')
+    transfer_transaction_amount_str = request.POST.get('amount', 'R$ 0,00').replace('R$ ', '').replace('.', '').replace(',', '.')
     transfer_transaction_amount = Decimal(transfer_transaction_amount_str) if transfer_transaction_amount_str else 0.00
     transfer_observation = request.POST.get('observation')
     id_correlation = uuid.uuid4()
@@ -263,7 +263,7 @@ def process_transfer(request):
         banco_id_liquidacao=withdrawal_bank_id,
         banco_liquidacao=withdrawal_bank_name,
         observation=transfer_observation,
-        valor=transfer_transaction_amount,
+        amount=transfer_transaction_amount,
         conta_contabil='Transferência Saída',
         parcela_atual=1,
         parcelas_total=1,
@@ -282,7 +282,7 @@ def process_transfer(request):
         banco_id_liquidacao=deposit_bank_id,
         banco_liquidacao=deposit_bank_name,
         observation=transfer_observation,
-        valor=transfer_transaction_amount,
+        amount=transfer_transaction_amount,
         conta_contabil='Transferência Entrada',
         parcela_atual=1,
         parcelas_total=1,
@@ -305,8 +305,8 @@ def process_settlement(request):
         for item in form_data:
             try:
                 original_record = CashFlowEntry.objects.get(id=item['id'])
-                total_amount = original_record.valor
-                partial_amount = Decimal(item.get('valor_parcial', 0))
+                total_amount = original_record.amount
+                partial_amount = Decimal(item.get('amount_parcial', 0))
                 is_partial_settlement = partial_amount > 0 and partial_amount <= total_amount
                 completing_settlement = partial_amount == total_amount
 
@@ -318,8 +318,8 @@ def process_settlement(request):
                         original_record.uuid_correlacao = uuid_correlation
                         original_record.save()
                     if partial_amount < total_amount:
-                        novo_valor = total_amount - partial_amount
-                        original_record.valor = novo_valor
+                        new_amount = total_amount - partial_amount
+                        original_record.amount = new_amount
                         original_record.save()
                     # Se for a última liquidação parcial, o UUID já está definido
 
@@ -335,7 +335,7 @@ def process_settlement(request):
                     due_date=original_record.due_date,
                     description=updated_entry_description,
                     observation=item['observation'],
-                    valor=partial_amount if is_partial_settlement else total_amount,
+                    amount=partial_amount if is_partial_settlement else total_amount,
                     conta_contabil=original_record.conta_contabil,
                     uuid_conta_contabil=original_record.uuid_conta_contabil,
                     parcela_atual=original_record.parcela_atual,
@@ -389,12 +389,12 @@ def recalculate_totals():
         total_credit = CashFlowEntry.objects.filter(
             due_date__range=(start_of_month, end_of_month),
             natureza='Crédito'
-        ).aggregate(Sum('valor'))['valor__sum'] or 0
+        ).aggregate(Sum('amount'))['amount__sum'] or 0
 
         total_debit = CashFlowEntry.objects.filter(
             due_date__range=(start_of_month, end_of_month),
             natureza='Débito'
-        ).aggregate(Sum('valor'))['valor__sum'] or 0
+        ).aggregate(Sum('amount'))['amount__sum'] or 0
 
         # Cria um novo registro em Totais_mes_fluxo para cada mês
         Totais_mes_fluxo.objects.create(
