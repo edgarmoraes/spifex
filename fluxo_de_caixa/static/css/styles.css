@@ -661,7 +661,7 @@ td.saldo-total-banco-liquidacao-row {
 }
 
 .description-row,
-.obs-row {
+.observation-row {
   padding: 5px 20px;
 }
 
@@ -1163,7 +1163,7 @@ td.saldo-total-banco-liquidacao-row {
   /* Oculta as colunas Observação e Parcela */
   .obs-col,
   .parcela-col,
-  .obs-row,
+  .observation-row,
   .parcela-row {
       display: none;
   }

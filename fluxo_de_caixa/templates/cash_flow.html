@@ -253,8 +253,8 @@
                                         {% endfor %}
                                     {% endif %}
                                 {% endfor %}
-                                <input type="hidden" id="conta_contabil_uuid_recebimentos" name="conta_contabil_uuid_recebimentos" value="">
-                                <input type="hidden" id="conta_contabil_nome_recebimentos" name="conta_contabil_nome_recebimentos" value="">
+                                <input type="hidden" id="general_ledger_account_uuid_recebimentos" name="general_ledger_account_uuid_recebimentos" value="">
+                                <input type="hidden" id="general_ledger_account_nome_recebimentos" name="general_ledger_account_nome_recebimentos" value="">
                             </div>
                         </div>
                     </div>
@@ -331,8 +331,8 @@
                                         {% endfor %}
                                     {% endif %}
                                 {% endfor %}
-                                <input type="hidden" id="conta_contabil_uuid_pagamentos" name="conta_contabil_uuid_pagamentos" value="">
-                                <input type="hidden" id="conta_contabil_nome_pagamentos" name="conta_contabil_nome_pagamentos" value="">
+                                <input type="hidden" id="general_ledger_account_uuid_pagamentos" name="general_ledger_account_uuid_pagamentos" value="">
+                                <input type="hidden" id="general_ledger_account_nome_pagamentos" name="general_ledger_account_nome_pagamentos" value="">
                             </div>
                         </div>
                     </div>
@@ -437,11 +437,11 @@
                                 <td class="saldo-total-row">{{ cash_flow_item.saldo|format_number }}</td>
                             </tr>
                         {% else %}
-                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ cash_flow_item.id }}" data-conta-contabil="{{ cash_flow_item.conta_contabil }}" data-uuid-conta-contabil="{{ cash_flow_item.uuid_conta_contabil }}" data-natureza="{{ cash_flow_item.natureza }}" parcela-atual="{{ cash_flow_item.parcela_atual }}" parcelas-total="{{ cash_flow_item.parcelas_total }}" data-uuid-row="{{ cash_flow_item.uuid_correlacao }}" scope="row">
+                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ cash_flow_item.id }}" data-general-ledger-account="{{ cash_flow_item.general_ledger_account }}" data-uuid-general-ledger-account="{{ cash_flow_item.uuid_general_ledger_account }}" data-natureza="{{ cash_flow_item.natureza }}" parcela-atual="{{ cash_flow_item.parcela_atual }}" parcelas-total="{{ cash_flow_item.parcelas_total }}" data-uuid-row="{{ cash_flow_item.uuid_correlacao }}" scope="row">
                                 <td class="checkbox-row"><label class="checkbox-container"><input id="checkbox-personalizado-{{ cash_flow_item.id }}" class="checkbox-personalizado" type="checkbox" data-id="{{ cash_flow_item.id }}" data-uuid-row="{{ cash_flow_item.uuid_correlacao }}"><span class="checkmark"></span></label></td>
                                 <td class="due_date-row">{{ cash_flow_item.due_date|date:"d/m/Y" }}</td>
                                 <td class="description-row">{{ cash_flow_item.description }}</td>
-                                <td class="obs-row">
+                                <td class="observation-row">
                                     {{ cash_flow_item.observation }}
                                     <small class="d-block">Tags: {{ cash_flow_item.tags }}</small>
                                 </td>

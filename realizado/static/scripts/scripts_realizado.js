@@ -12,7 +12,7 @@ document.getElementById('retornar-button').addEventListener('click', function() 
             due_date: row.querySelector('.due_date-row').textContent,
             description: row.querySelector('.description-row').textContent,
             totalAmount: debito || credito, // Usa débito se disponível, senão credito
-            conta_contabil: row.getAttribute('data-conta-contabil'),
+            general_ledger_account: row.getAttribute('data-general-ledger-account'),
             parcela_atual: row.getAttribute('parcela-atual'),
             parcelas_total: row.getAttribute('parcelas-total'),
             natureza: debito ? 'Débito' : 'Crédito',
@@ -176,27 +176,27 @@ function abrirModalEdicao(row) {
   const id = row.getAttribute('data-id-row');
   const due_date = row.querySelector('.due_date-row').textContent.trim();
   const description = row.querySelector('.description-row').textContent.trim();
-  const observation = row.querySelector('.obs-row').textContent.split('Tags:')[0].trim().replace(/\s+/g, ' ');
+  const observation = row.querySelector('.observation-row').textContent.split('Tags:')[0].trim().replace(/\s+/g, ' ');
   const totalAmount = row.querySelector('.debito-row').textContent.trim() || row.querySelector('.credito-row').textContent.trim();
-  const contaContabil = row.getAttribute('data-conta-contabil');
-  const tags = row.querySelector('.obs-row').textContent.trim().split('Tags:')[1];
+  const generalLedgerAccount = row.getAttribute('data-general-ledger-account');
+  const tags = row.querySelector('.observation-row').textContent.trim().split('Tags:')[1];
   const parcelaAtual = row.getAttribute('parcela-atual');
   const parcelasTotal = row.getAttribute('parcelas-total');
   const uuid = row.getAttribute('data-uuid-correlacao');
   const uuidParcelas = row.getAttribute('data-uuid-correlacao-parcelas');
 
-  preencherDadosModalRealizado(id, due_date, description, observation, totalAmount, contaContabil, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas);
+  preencherDadosModalRealizado(id, due_date, description, observation, totalAmount, generalLedgerAccount, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas);
 
   document.getElementById('modal-realizado').showModal();
 }
 
-function preencherDadosModalRealizado(id, due_date, description, observation, totalAmount, contaContabil, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas) {
+function preencherDadosModalRealizado(id, due_date, description, observation, totalAmount, generalLedgerAccount, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas) {
   document.querySelector('.modal-form-realizado [name="lancamento_id_realizado"]').value = id;
   document.getElementById('data-realizado').value = formatarDataParaInput(due_date);
   document.getElementById('description-realizado').value = description;
   document.getElementById('observation-realizado').value = observation;
-  document.getElementById('totalAmount-realizado').value = "R$ "+totalAmount;
-  document.getElementById('conta-contabil-realizado').value = contaContabil;
+  document.getElementById('amount-realizado').value = "R$ "+ totalAmount;
+  document.getElementById('general-ledger-account-realizado').value = generalLedgerAccount;
   document.getElementById('parcelas-realizado').value = `${parcelaAtual}/${parcelasTotal}`;
   document.querySelector('.modal-form-realizado [name="uuid_realizado"]').value = uuid;
   document.querySelector('.modal-form-realizado [name="uuid_parcelas_realizado"]').value = uuidParcelas;
@@ -515,7 +515,7 @@ function coletarBancosSelecionados() {
 
 // Filtros
 function filtrarTabela() {
-  const uuidsContaContabilSelecionados = Array.from(document.querySelectorAll('#dropdown-content-contas .conta-checkbox:checked')).map(checkbox => checkbox.value);
+  const uuidsGeneralLedgerAccountFilter = Array.from(document.querySelectorAll('#dropdown-content-contas .conta-checkbox:checked')).map(checkbox => checkbox.value);
   const intervalosMesesSelecionados = Array.from(document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked')).map(checkbox => ({
     inicio: new Date(checkbox.getAttribute('data-inicio-mes')),
     fim: new Date(checkbox.getAttribute('data-fim-mes'))
@@ -534,9 +534,9 @@ function filtrarTabela() {
   let mesesAnosVisiveis = new Set();
 
   document.querySelectorAll('.row-lancamentos').forEach(function(row) {
-    const uuidContaContabilLinha = row.getAttribute('data-uuid-conta-contabil');
+    const uuidGeneralLedgerAccount = row.getAttribute('data-uuid-general-ledger-account');
     const description = row.querySelector(".description-row").textContent.toUpperCase();
-    const observationElement = row.querySelector(".obs-row").cloneNode(true);
+    const observationElement = row.querySelector(".observation-row").cloneNode(true);
     const tagsElemento = observationElement.querySelector(".d-block");
     if (tagsElemento) observationElement.removeChild(tagsElemento);
     const observation = observationElement.textContent.toUpperCase();
@@ -546,7 +546,7 @@ function filtrarTabela() {
     const idBancoLancamento = row.getAttribute('data-banco-id-liquidacao');
 
     
-    const contaContabilMatch = uuidsContaContabilSelecionados.length === 0 || uuidsContaContabilSelecionados.includes(uuidContaContabilLinha);
+    const generalLedgerAccountMatch = uuidsGeneralLedgerAccountFilter.length === 0 || uuidsGeneralLedgerAccountFilter.includes(uuidGeneralLedgerAccount);
     const descriptionObservationMatch = descriptionFilter === "" || description.includes(descriptionFilter) || observation.includes(descriptionFilter);
     const tagMatch = filtroTags === "" || tags.includes(filtroTags);
     const mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => dueDate >= intervalo.inicio && dueDate <= intervalo.fim);
@@ -554,7 +554,7 @@ function filtrarTabela() {
     const naturezaMatch = selecionarTodaNatureza || naturezasSelecionadas.includes(naturezaLancamento);
     const bancoMatch = bancosSelecionados.length === 0 || bancosSelecionados.includes(idBancoLancamento);
 
-    row.style.display = descriptionObservationMatch && tagMatch && mesMatch && naturezaMatch && dataMatch && contaContabilMatch && bancoMatch ? "" : "none";
+    row.style.display = descriptionObservationMatch && tagMatch && mesMatch && naturezaMatch && dataMatch && generalLedgerAccountMatch && bancoMatch ? "" : "none";
 
     if (row.style.display === "") {
       let mesAno = dueDate.toLocaleString('default', { month: '2-digit', year: 'numeric' });

@@ -8,7 +8,7 @@ class SettledEntry(models.Model):
     description = models.CharField(max_length = 100)
     observation = models.CharField(max_length = 100)
     amount = models.DecimalField(max_digits=13, decimal_places=2)
-    conta_contabil = models.CharField(max_length = 100)
+    general_ledger_account = models.CharField(max_length = 100)
     parcela_atual = models.IntegerField()
     parcelas_total = models.IntegerField()
     tags = models.CharField(max_length = 100)
@@ -19,7 +19,7 @@ class SettledEntry(models.Model):
     banco_id_liquidacao = models.IntegerField(null=True, blank=True)
     uuid_correlacao = models.UUIDField(null=True, blank=True)
     uuid_correlacao_parcelas = models.UUIDField(null=True, blank=True)
-    uuid_conta_contabil = models.UUIDField(null=True, blank=True)
+    uuid_general_ledger_account = models.UUIDField(null=True, blank=True)
 
     _skip_update_saldo = False
 

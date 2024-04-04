@@ -250,7 +250,7 @@ function extrairDadosLancamento(checkbox) {
 }
 
 function extractObservation(row) {
-  let observation = row.querySelector('.obs-row').textContent.trim();
+  let observation = row.querySelector('.observation-row').textContent.trim();
   return observation.split('Tags:')[0].trim();
 }
 
@@ -395,8 +395,8 @@ document.getElementById('salvar-liquidacao').addEventListener('click', async fun
       description: row.querySelector('.description-row').textContent,
       observation: observationField ? observationField.value : '',
       amount: totalAmountField.value,
-      conta_contabil: row.getAttribute('data-conta-contabil'),
-      uuid_conta_contabil: row.getAttribute('data-uuid-conta-contabil'),
+      general_ledger_account: row.getAttribute('data-general-ledger-account'),
+      uuid_general_ledger_account: row.getAttribute('data-uuid-general-ledger-account'),
       parcela_atual: row.getAttribute('parcela-atual'),
       parcelas_total: row.getAttribute('parcelas-total'),
       natureza: row.querySelector('.debito-row').textContent ? 'Débito' : 'Crédito',
@@ -681,8 +681,8 @@ document.querySelectorAll('.conta-checkbox').forEach(checkbox => {
     if (this.checked) {
       // Determinar se é um recebimento ou pagamento
       const isRecebimento = this.name === "contas_recebimentos";
-      const uuidFieldId = isRecebimento ? "conta_contabil_uuid_recebimentos" : "conta_contabil_uuid_pagamentos";
-      const nomeFieldId = isRecebimento ? "conta_contabil_nome_recebimentos" : "conta_contabil_nome_pagamentos";
+      const uuidFieldId = isRecebimento ? "general_ledger_account_uuid_recebimentos" : "general_ledger_account_uuid_pagamentos";
+      const nomeFieldId = isRecebimento ? "general_ledger_account_nome_recebimentos" : "general_ledger_account_nome_pagamentos";
       
       // Atualizar campos ocultos
       document.getElementById(uuidFieldId).value = this.dataset.uuidAccount;
@@ -819,18 +819,18 @@ function preencherDadosModal(row, tipo) {
   document.getElementById(`amount-${tipo}`).value = "R$ " + amount;
 
   document.getElementById(`description-${tipo}`).value = row.querySelector('.description-row').textContent.trim();
-  document.getElementById(`observation-${tipo}`).value = row.querySelector('.obs-row').childNodes[0].textContent.trim();
+  document.getElementById(`observation-${tipo}`).value = row.querySelector('.observation-row').childNodes[0].textContent.trim();
 
   const tagsString = extrairTags(row);
   adicionarTagsAoContainer(tagsString, tipo);
 
-  const contaContabilNome = row.getAttribute('data-conta-contabil');
-  document.getElementById(`conta_contabil_nome_${tipo}`).value = contaContabilNome;
-  selecionarContaContabilDropdown(tipo, contaContabilNome);
+  const generalLedgerAccount = row.getAttribute('data-general-ledger-account');
+  document.getElementById(`general_ledger_account_nome_${tipo}`).value = generalLedgerAccount;
+  selectGeneralLedgerAccountDropdown(tipo, generalLedgerAccount);
 
-  const contaContabilUuid = row.getAttribute('data-uuid-conta-contabil');
-  document.getElementById(`conta_contabil_uuid_${tipo}`).value = contaContabilUuid;
-  selecionarContaContabilDropdown(tipo, contaContabilUuid);
+  const uuidGeneralLedgerAccount = row.getAttribute('data-uuid-general-ledger-account');
+  document.getElementById(`general_ledger_account_uuid_${tipo}`).value = uuidGeneralLedgerAccount;
+  selectGeneralLedgerAccountDropdown(tipo, uuidGeneralLedgerAccount);
 
   const lancamentoId = row.querySelector('.checkbox-personalizado').getAttribute('data-id');
   document.querySelector(`[name="lancamento_id_${tipo}"]`).value = lancamentoId;
@@ -839,10 +839,10 @@ function preencherDadosModal(row, tipo) {
   configurarCamposAtivos(tipo, uuid === 'None');
 }
 
-function selecionarContaContabilDropdown(tipo, contaContabilUuid) {
-  const checkboxesContaContabil = document.querySelectorAll(`#dropdown-content-contas-${tipo} .conta-checkbox`);
-  checkboxesContaContabil.forEach(checkbox => {
-    if (checkbox.dataset.uuidAccount === contaContabilUuid) {
+function selectGeneralLedgerAccountDropdown(tipo, uuidGeneralLedgerAccount) {
+  const checkboxesGeneralLedgerAccount = document.querySelectorAll(`#dropdown-content-contas-${tipo} .conta-checkbox`);
+  checkboxesGeneralLedgerAccount.forEach(checkbox => {
+    if (checkbox.dataset.uuidAccount === uuidGeneralLedgerAccount) {
       checkbox.checked = true;
       document.getElementById(`dropdown-button-contas-${tipo}`).textContent = checkbox.dataset.account;
     } else {
@@ -1298,7 +1298,7 @@ function updateButtonTextContasPagamentos() {
 
 // Filtros
 function filtrarTabela() {
-  const uuidsContaContabilSelecionados = Array.from(document.querySelectorAll('#dropdown-content-contas .conta-checkbox:checked')).map(checkbox => checkbox.value);
+  const uuidsGeneralLedgerAccountFilter = Array.from(document.querySelectorAll('#dropdown-content-contas .conta-checkbox:checked')).map(checkbox => checkbox.value);
   const intervalosMesesSelecionados = Array.from(document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked')).map(checkbox => ({
     inicio: new Date(checkbox.getAttribute('data-inicio-mes')),
     fim: new Date(checkbox.getAttribute('data-fim-mes'))
@@ -1317,9 +1317,9 @@ function filtrarTabela() {
   let mesesAnosVisiveis = new Set();
 
   document.querySelectorAll("#tabela-lancamentos .row-lancamentos").forEach(row => {
-    const uuidContaContabilLinha = row.getAttribute('data-uuid-conta-contabil');
+    const uuidGeneralLedgerAccount = row.getAttribute('data-uuid-general-ledger-account');
     const description = row.querySelector(".description-row").textContent.toUpperCase();
-    const observationElement = row.querySelector(".obs-row").cloneNode(true);
+    const observationElement = row.querySelector(".observation-row").cloneNode(true);
     const tagsElemento = observationElement.querySelector(".d-block");
     if (tagsElemento) observationElement.removeChild(tagsElemento);
     const observation = observationElement.textContent.toUpperCase();
@@ -1328,14 +1328,14 @@ function filtrarTabela() {
     const naturezaLancamento = row.getAttribute('data-natureza');
 
     // Centraliza a lógica de correspondência
-    const contaContabilMatch = uuidsContaContabilSelecionados.length === 0 || uuidsContaContabilSelecionados.includes(uuidContaContabilLinha);
+    const generalLedgerAccountMatch = uuidsGeneralLedgerAccountFilter.length === 0 || uuidsGeneralLedgerAccountFilter.includes(uuidGeneralLedgerAccount);
     const descriptionObservationMatch = descriptionFilter === "" || description.includes(descriptionFilter) || observation.includes(descriptionFilter);
     const tagMatch = filtroTags === "" || tags.includes(filtroTags);
     const mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => dueDate >= intervalo.inicio && dueDate <= intervalo.fim);
     const dataMatch = (!dataInicioObj || dueDate >= dataInicioObj) && (!dataFimObj || dueDate <= dataFimObj);
     const naturezaMatch = selecionarTodaNatureza || naturezasSelecionadas.includes(naturezaLancamento);
 
-    row.style.display = descriptionObservationMatch && tagMatch && mesMatch && naturezaMatch && dataMatch && contaContabilMatch ? "" : "none";
+    row.style.display = descriptionObservationMatch && tagMatch && mesMatch && naturezaMatch && dataMatch && generalLedgerAccountMatch ? "" : "none";
 
     if (row.style.display === "") {
       let mesAno = dueDate.toLocaleString('default', { month: '2-digit', year: 'numeric' });

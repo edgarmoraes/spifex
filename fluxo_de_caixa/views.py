@@ -88,11 +88,11 @@ def extract_form_data(request):
     transaction_type = 'Crédito' if 'salvar_recebimento' in request.POST else 'Débito'
 
     if transaction_type == 'Crédito':
-        account_uuid = request.POST.get('conta_contabil_uuid_recebimentos')
-        account_name = request.POST.get('conta_contabil_nome_recebimentos')
+        account_uuid = request.POST.get('general_ledger_account_uuid_recebimentos')
+        account_name = request.POST.get('general_ledger_account_nome_recebimentos')
     else:
-        account_uuid = request.POST.get('conta_contabil_uuid_pagamentos')
-        account_name = request.POST.get('conta_contabil_nome_pagamentos')
+        account_uuid = request.POST.get('general_ledger_account_uuid_pagamentos')
+        account_name = request.POST.get('general_ledger_account_nome_pagamentos')
     
     # Escolhe o campo de ID correto com base na natureza da transação
     receipt_entry_id = request.POST.get('lancamento_id_recebimentos')
@@ -126,8 +126,8 @@ def extract_form_data(request):
         'description': entry_description,
         'observation': entry_observation,
         'amount': transaction_amount,
-        'conta_contabil_uuid': account_uuid,
-        'conta_contabil_nome': account_name,
+        'general_ledger_account_uuid': account_uuid,
+        'general_ledger_account_nome': account_name,
         'parcelas_total': total_installments,
         'parcelas_total_originais': original_total_installments,
         'tags': entry_tags,
@@ -151,8 +151,8 @@ def update_existing_flow(form_data):
     cash_flow_table.tags = form_data['tags']
 
     # Atualiza a conta contábil e seu UUID
-    cash_flow_table.conta_contabil = form_data['conta_contabil_nome']
-    cash_flow_table.uuid_conta_contabil = form_data['conta_contabil_uuid']
+    cash_flow_table.general_ledger_account = form_data['general_ledger_account_nome']
+    cash_flow_table.uuid_general_ledger_account = form_data['general_ledger_account_uuid']
 
     # Salva as alterações no banco de dados
     cash_flow_table.save()
@@ -178,8 +178,8 @@ def create_new_flows(form_data, iniciar_desde_o_atual=False):
             description=form_data['description'],
             observation=form_data['observation'],
             amount=form_data['amount'],
-            conta_contabil=form_data['conta_contabil_nome'],
-            uuid_conta_contabil=form_data['conta_contabil_uuid'],
+            general_ledger_account=form_data['general_ledger_account_nome'],
+            uuid_general_ledger_account=form_data['general_ledger_account_uuid'],
             parcela_atual=i,
             parcelas_total=total_installments,
             tags=form_data['tags'],
@@ -227,8 +227,8 @@ def create_temporary_record(object):
         description=object.description,
         observation=object.observation,
         amount=object.amount,
-        conta_contabil=object.conta_contabil,
-        uuid_conta_contabil=object.uuid_conta_contabil,
+        general_ledger_account=object.general_ledger_account,
+        uuid_general_ledger_account=object.uuid_general_ledger_account,
         parcela_atual=object.parcela_atual,
         parcelas_total=object.parcelas_total,
         tags=object.tags,
@@ -264,7 +264,7 @@ def process_transfer(request):
         banco_liquidacao=withdrawal_bank_name,
         observation=transfer_observation,
         amount=transfer_transaction_amount,
-        conta_contabil='Transferência Saída',
+        general_ledger_account='Transferência Saída',
         parcela_atual=1,
         parcelas_total=1,
         tags='Transferência',
@@ -283,7 +283,7 @@ def process_transfer(request):
         banco_liquidacao=deposit_bank_name,
         observation=transfer_observation,
         amount=transfer_transaction_amount,
-        conta_contabil='Transferência Entrada',
+        general_ledger_account='Transferência Entrada',
         parcela_atual=1,
         parcelas_total=1,
         tags='Transferência',
@@ -336,8 +336,8 @@ def process_settlement(request):
                     description=updated_entry_description,
                     observation=item['observation'],
                     amount=partial_amount if is_partial_settlement else total_amount,
-                    conta_contabil=original_record.conta_contabil,
-                    uuid_conta_contabil=original_record.uuid_conta_contabil,
+                    general_ledger_account=original_record.general_ledger_account,
+                    uuid_general_ledger_account=original_record.uuid_general_ledger_account,
                     parcela_atual=original_record.parcela_atual,
                     parcelas_total=original_record.parcelas_total,
                     tags=original_record.tags,

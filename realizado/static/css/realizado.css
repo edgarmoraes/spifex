@@ -109,7 +109,7 @@
 
 /* Modais */
 .modal-amount,
-.modal-conta-contabil,
+.modal-general-ledger-account,
 .modal-parcelas {
   background-color: #B5B5B5;
   color: var(--branco);
@@ -120,7 +120,7 @@
 }
 
 .modal-amount:focus,
-.modal-conta-contabil:focus,
+.modal-general-ledger-account:focus,
 .modal-parcelas:focus {
   background-color: #B5B5B5 !important;
 }

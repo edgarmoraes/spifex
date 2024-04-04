@@ -209,8 +209,8 @@
                 </section>
             
                 <section class="modal-flex">
-                    <label for="conta-contabil-realizado">Conta Contábil</label>
-                    <input class="modal-conta-contabil" id="conta-contabil-realizado" type="text" name="conta_contabil" required readonly>
+                    <label for="general-ledger-account-realizado">Conta Contábil</label>
+                    <input class="modal-general-ledger-account" id="general-ledger-account-realizado" type="text" name="general_ledger_account" required readonly>
                     </input><br>
                 </section>
             
@@ -256,11 +256,11 @@
                                 <td class="saldo-total-row">{{ realizado.saldo|format_number }}</td>
                             </tr>
                         {% else %}
-                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ realizado.id }}" data-banco-liquidacao="{{ realizado.banco_liquidacao }}" data-banco-id-liquidacao="{{ realizado.banco_id_liquidacao }}" data-conta-contabil="{{ realizado.conta_contabil }}" data-uuid-conta-contabil="{{ realizado.uuid_conta_contabil }}" parcela-atual="{{ realizado.parcela_atual }}" parcelas-total="{{ realizado.parcelas_total }}" data-natureza="{{ realizado.natureza }}" data-uuid-correlacao="{{ realizado.uuid_correlacao }}" data-uuid-correlacao-parcelas="{{ realizado.uuid_correlacao_parcelas }}" scope="row">
+                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ realizado.id }}" data-banco-liquidacao="{{ realizado.banco_liquidacao }}" data-banco-id-liquidacao="{{ realizado.banco_id_liquidacao }}" data-general-ledger-account="{{ realizado.general_ledger_account }}" data-uuid-general-ledger-account="{{ realizado.uuid_general_ledger_account }}" parcela-atual="{{ realizado.parcela_atual }}" parcelas-total="{{ realizado.parcelas_total }}" data-natureza="{{ realizado.natureza }}" data-uuid-correlacao="{{ realizado.uuid_correlacao }}" data-uuid-correlacao-parcelas="{{ realizado.uuid_correlacao_parcelas }}" scope="row">
                                 <td class="checkbox-row"><label class="checkbox-container"><input id="checkbox-personalizado-{{ realizado.id }}" class="checkbox-personalizado" type="checkbox" data-id="{{ realizado.id }}" data-uuid-correlacao="{{ realizado.uuid_correlacao }}" data-uuid-correlacao-parcelas="{{ realizado.uuid_correlacao_parcelas }}"><span class="checkmark"></span></label></td>
                                 <td class="due_date-row">{{ realizado.data_liquidacao|date:"d/m/Y" }}</td>
                                 <td class="description-row">{{ realizado.description }}</td>
-                                <td class="obs-row">
+                                <td class="observation-row">
                                     {{ realizado.observation }}
                                     <small class="d-block">Tags: {{ realizado.tags }}</small>
                                 </td>
