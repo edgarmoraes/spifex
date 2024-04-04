@@ -199,8 +199,8 @@
                 </section>
             
                 <section class="modal-flex">
-                    <label for="observacao-realizado">Observação</label>
-                    <input class="modal-obs" id="observacao-realizado" maxlength="100" type="text" name="observacao"></input><br>
+                    <label for="observation-realizado">Observação</label>
+                    <input class="modal-obs" id="observation-realizado" maxlength="100" type="text" name="observation"></input><br>
                 </section>
                 
                 <section class="modal-flex">
@@ -261,7 +261,7 @@
                                 <td class="due_date-row">{{ realizado.data_liquidacao|date:"d/m/Y" }}</td>
                                 <td class="description-row">{{ realizado.description }}</td>
                                 <td class="obs-row">
-                                    {{ realizado.observacao }}
+                                    {{ realizado.observation }}
                                     <small class="d-block">Tags: {{ realizado.tags }}</small>
                                 </td>
                                 <td class="banco-row">{{ realizado.banco_liquidacao }}</td>

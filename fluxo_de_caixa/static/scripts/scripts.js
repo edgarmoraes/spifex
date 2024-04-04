@@ -243,15 +243,15 @@ function extrairDadosLancamento(checkbox) {
       id: id,
       description: row.querySelector('.description-row').textContent,
       due_date: row.querySelector('.due_date-row').textContent,
-      observacao: extrairObservacao(row),
+      observation: extractObservation(row),
       valor: extrairValor(row),
       natureza: extrairNatureza(row)
   };
 }
 
-function extrairObservacao(row) {
-  let observacao = row.querySelector('.obs-row').textContent.trim();
-  return observacao.split('Tags:')[0].trim();
+function extractObservation(row) {
+  let observation = row.querySelector('.obs-row').textContent.trim();
+  return observation.split('Tags:')[0].trim();
 }
 
 function extrairValor(row) {
@@ -264,7 +264,7 @@ function extrairNatureza(row) {
   return row.querySelector('.debito-row').textContent ? "Débito" : "Crédito";
 }
 
-function montarDivLancamento({id, description, due_date, observacao, valor, natureza}) {
+function montarDivLancamento({id, description, due_date, observation, valor, natureza}) {
   const div = document.createElement('div');
   div.classList.add('lancamentos-selecionados');
   div.innerHTML = `
@@ -275,7 +275,7 @@ function montarDivLancamento({id, description, due_date, observacao, valor, natu
         <input class="modal-description" id="description-liquidacao-${id}" maxlength="100" type="text" name="description-liquidacao-${id}" value="${description}" readonly style="background-color: #B5B5B5; color: #FFFFFF;">
     </section>
     <section class="modal-flex">
-        <input class="modal-obs" id="observacao-liquidacao-${id}" maxlength="100" type="text" name="observacao-liquidacao-${id}" value="${observacao}">
+        <input class="modal-obs" id="observation-liquidacao-${id}" maxlength="100" type="text" name="observation-liquidacao-${id}" value="${observation}">
     </section>
     <section class="modal-flex">
         <input class="modal-valor valor-liquidacao-total" id="valor-liquidacao-${id}" type="text" name="valor-liquidacao-${id}" oninput="formatarCampoValor(this)" value="R$ ${valor}" readonly required style="background-color: #B5B5B5; color: #FFFFFF;">
@@ -392,14 +392,14 @@ document.getElementById('salvar-liquidacao').addEventListener('click', async fun
       return;
     }
     
-    let campoObservacao = document.getElementById(`observacao-liquidacao-${id}`);
+    let observationField = document.getElementById(`observation-liquidacao-${id}`);
 
 
     let itemData = {
       id: id,
       due_date: row.querySelector('.due_date-row').textContent,
       description: row.querySelector('.description-row').textContent,
-      observacao: campoObservacao ? campoObservacao.value : '',
+      observation: observationField ? observationField.value : '',
       valor: campoValorTotal.value,
       conta_contabil: row.getAttribute('data-conta-contabil'),
       uuid_conta_contabil: row.getAttribute('data-uuid-conta-contabil'),
@@ -825,7 +825,7 @@ function preencherDadosModal(row, tipo) {
   document.getElementById(`valor-${tipo}`).value = "R$ " + valor;
 
   document.getElementById(`description-${tipo}`).value = row.querySelector('.description-row').textContent.trim();
-  document.getElementById(`observacao-${tipo}`).value = row.querySelector('.obs-row').childNodes[0].textContent.trim();
+  document.getElementById(`observation-${tipo}`).value = row.querySelector('.obs-row').childNodes[0].textContent.trim();
 
   const tagsString = extrairTags(row);
   adicionarTagsAoContainer(tagsString, tipo);
@@ -1316,7 +1316,7 @@ function filtrarTabela() {
   const selecionarTodaNatureza = naturezasSelecionadas.length === 0;
 
   // Obtenção dos filtros de texto e datas
-  const filtroDescricao = document.getElementById("caixa-pesquisa").value.toUpperCase();
+  const descriptionFilter = document.getElementById("caixa-pesquisa").value.toUpperCase();
   const filtroTags = document.getElementById("caixa-pesquisa-tags").value.toUpperCase();
   const dataInicioObj = document.getElementById("data-inicio").value ? new Date(document.getElementById("data-inicio").value) : null;
   const dataFimObj = document.getElementById("data-fim").value ? new Date(document.getElementById("data-fim").value) : null;
@@ -1325,23 +1325,23 @@ function filtrarTabela() {
   document.querySelectorAll("#tabela-lancamentos .row-lancamentos").forEach(row => {
     const uuidContaContabilLinha = row.getAttribute('data-uuid-conta-contabil');
     const description = row.querySelector(".description-row").textContent.toUpperCase();
-    const observacaoElemento = row.querySelector(".obs-row").cloneNode(true);
-    const tagsElemento = observacaoElemento.querySelector(".d-block");
-    if (tagsElemento) observacaoElemento.removeChild(tagsElemento);
-    const observacao = observacaoElemento.textContent.toUpperCase();
+    const observationElement = row.querySelector(".obs-row").cloneNode(true);
+    const tagsElemento = observationElement.querySelector(".d-block");
+    if (tagsElemento) observationElement.removeChild(tagsElemento);
+    const observation = observationElement.textContent.toUpperCase();
     const tags = tagsElemento ? tagsElemento.textContent.toUpperCase() : "";
     const dueDate = new Date(row.querySelector(".due_date-row").textContent.split('/').reverse().join('-'));
     const naturezaLancamento = row.getAttribute('data-natureza');
 
     // Centraliza a lógica de correspondência
     const contaContabilMatch = uuidsContaContabilSelecionados.length === 0 || uuidsContaContabilSelecionados.includes(uuidContaContabilLinha);
-    const descricaoObservacaoMatch = filtroDescricao === "" || description.includes(filtroDescricao) || observacao.includes(filtroDescricao);
+    const descriptionObservationMatch = descriptionFilter === "" || description.includes(descriptionFilter) || observation.includes(descriptionFilter);
     const tagMatch = filtroTags === "" || tags.includes(filtroTags);
     const mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => dueDate >= intervalo.inicio && dueDate <= intervalo.fim);
     const dataMatch = (!dataInicioObj || dueDate >= dataInicioObj) && (!dataFimObj || dueDate <= dataFimObj);
     const naturezaMatch = selecionarTodaNatureza || naturezasSelecionadas.includes(naturezaLancamento);
 
-    row.style.display = descricaoObservacaoMatch && tagMatch && mesMatch && naturezaMatch && dataMatch && contaContabilMatch ? "" : "none";
+    row.style.display = descriptionObservationMatch && tagMatch && mesMatch && naturezaMatch && dataMatch && contaContabilMatch ? "" : "none";
 
     if (row.style.display === "") {
       let mesAno = dueDate.toLocaleString('default', { month: '2-digit', year: 'numeric' });

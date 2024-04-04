@@ -114,7 +114,7 @@ def extract_form_data(request):
 
     # Processa outros campos com segurança
     entry_description = request.POST.get('description', '')
-    entry_observation = request.POST.get('observacao', '')
+    entry_observation = request.POST.get('observation', '')
     installment = request.POST.get('parcelas', '1')
     total_installments = int(installment) if installment.isdigit() else 1
     original_total_installments = int(request.POST.get('parcelas_total_originais', '1'))
@@ -124,7 +124,7 @@ def extract_form_data(request):
     return {
         'due_date': due_date,
         'description': entry_description,
-        'observacao': entry_observation,
+        'observation': entry_observation,
         'valor': transaction_amount,
         'conta_contabil_uuid': account_uuid,
         'conta_contabil_nome': account_name,
@@ -142,7 +142,7 @@ def update_existing_flow(form_data):
     # Atualiza campos comuns diretamente
     cash_flow_table.due_date = form_data['due_date']
     cash_flow_table.description = form_data['description']
-    cash_flow_table.observacao = form_data['observacao']
+    cash_flow_table.observation = form_data['observation']
     cash_flow_table.valor = form_data['valor']
     cash_flow_table.natureza = form_data['natureza']
     # Não altera parcelas_total se já é parte de uma série de parcelas
@@ -176,7 +176,7 @@ def create_new_flows(form_data, iniciar_desde_o_atual=False):
         CashFlowEntry.objects.create(
             due_date=installment_due_date,
             description=form_data['description'],
-            observacao=form_data['observacao'],
+            observation=form_data['observation'],
             valor=form_data['valor'],
             conta_contabil=form_data['conta_contabil_nome'],
             uuid_conta_contabil=form_data['conta_contabil_uuid'],
@@ -225,7 +225,7 @@ def create_temporary_record(object):
     TabelaTemporaria.objects.create(
         due_date=object.due_date,
         description=object.description,
-        observacao=object.observacao,
+        observation=object.observation,
         valor=object.valor,
         conta_contabil=object.conta_contabil,
         uuid_conta_contabil=object.uuid_conta_contabil,
@@ -247,7 +247,7 @@ def process_transfer(request):
     transfer_date = request.POST.get('data')
     transfer_transaction_amount_str = request.POST.get('valor', 'R$ 0,00').replace('R$ ', '').replace('.', '').replace(',', '.')
     transfer_transaction_amount = Decimal(transfer_transaction_amount_str) if transfer_transaction_amount_str else 0.00
-    transfer_observation = request.POST.get('observacao')
+    transfer_observation = request.POST.get('observation')
     id_correlation = uuid.uuid4()
     
     settlement_date = datetime.strptime(transfer_date, '%Y-%m-%d')
@@ -262,7 +262,7 @@ def process_transfer(request):
         description=f'Transferência para {deposit_bank_name}',
         banco_id_liquidacao=withdrawal_bank_id,
         banco_liquidacao=withdrawal_bank_name,
-        observacao=transfer_observation,
+        observation=transfer_observation,
         valor=transfer_transaction_amount,
         conta_contabil='Transferência Saída',
         parcela_atual=1,
@@ -281,7 +281,7 @@ def process_transfer(request):
         description=f'Transferência de {withdrawal_bank_name}',
         banco_id_liquidacao=deposit_bank_id,
         banco_liquidacao=deposit_bank_name,
-        observacao=transfer_observation,
+        observation=transfer_observation,
         valor=transfer_transaction_amount,
         conta_contabil='Transferência Entrada',
         parcela_atual=1,
@@ -334,7 +334,7 @@ def process_settlement(request):
                     fluxo_id=original_record.id,
                     due_date=original_record.due_date,
                     description=updated_entry_description,
-                    observacao=item['observacao'],
+                    observation=item['observation'],
                     valor=partial_amount if is_partial_settlement else total_amount,
                     conta_contabil=original_record.conta_contabil,
                     uuid_conta_contabil=original_record.uuid_conta_contabil,

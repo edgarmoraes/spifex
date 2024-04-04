@@ -227,8 +227,8 @@
                 </section>
             
                 <section class="modal-flex">
-                    <label for="observacao-recebimentos">Observação</label>
-                    <input class="modal-obs" id="observacao-recebimentos" maxlength="100" type="text" name="observacao"></input><br>
+                    <label for="observation-recebimentos">Observação</label>
+                    <input class="modal-obs" id="observation-recebimentos" maxlength="100" type="text" name="observation"></input><br>
                 </section>
                 
                 <section class="modal-flex">
@@ -305,8 +305,8 @@
                 </section>
             
                 <section class="modal-flex">
-                    <label for="observacao-pagamentos">Observação</label>
-                    <input class="modal-obs" id="observacao-pagamentos" maxlength="100" type="text" name="observacao"></input><br>
+                    <label for="observation-pagamentos">Observação</label>
+                    <input class="modal-obs" id="observation-pagamentos" maxlength="100" type="text" name="observation"></input><br>
                 </section>
                 
                 <section class="modal-flex">
@@ -401,8 +401,8 @@
                 </section>
             
                 <section class="modal-flex mesclar-2">
-                    <label for="observacao-transferencia">Observação</label>
-                    <input class="modal-description" id="observacao-transferencia" type="text" name="observacao"><br>
+                    <label for="observation-transferencia">Observação</label>
+                    <input class="modal-description" id="observation-transferencia" type="text" name="observation"><br>
                 </section>
                 <section class="modal-botoes mesclar-2">
                     <input class="modal-salvar" name="salvar_transferencias" type="submit" value="Salvar">
@@ -442,7 +442,7 @@
                                 <td class="due_date-row">{{ cash_flow_item.due_date|date:"d/m/Y" }}</td>
                                 <td class="description-row">{{ cash_flow_item.description }}</td>
                                 <td class="obs-row">
-                                    {{ cash_flow_item.observacao }}
+                                    {{ cash_flow_item.observation }}
                                     <small class="d-block">Tags: {{ cash_flow_item.tags }}</small>
                                 </td>
                                 <td class="parcela-row">{{ cash_flow_item.parcela_atual }}/{{ cash_flow_item.parcelas_total }}</td>

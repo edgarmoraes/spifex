@@ -6,7 +6,7 @@ class SettledEntry(models.Model):
     fluxo_id = models.IntegerField(null=True, blank=True)
     due_date = models.DateField()
     description = models.CharField(max_length = 100)
-    observacao = models.CharField(max_length = 100)
+    observation = models.CharField(max_length = 100)
     valor = models.DecimalField(max_digits=13, decimal_places=2)
     conta_contabil = models.CharField(max_length = 100)
     parcela_atual = models.IntegerField()

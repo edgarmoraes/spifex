@@ -176,7 +176,7 @@ function abrirModalEdicao(row) {
   const id = row.getAttribute('data-id-row');
   const due_date = row.querySelector('.due_date-row').textContent.trim();
   const description = row.querySelector('.description-row').textContent.trim();
-  const observacao = row.querySelector('.obs-row').textContent.split('Tags:')[0].trim().replace(/\s+/g, ' ');
+  const observation = row.querySelector('.obs-row').textContent.split('Tags:')[0].trim().replace(/\s+/g, ' ');
   const valor = row.querySelector('.debito-row').textContent.trim() || row.querySelector('.credito-row').textContent.trim();
   const contaContabil = row.getAttribute('data-conta-contabil');
   const tags = row.querySelector('.obs-row').textContent.trim().split('Tags:')[1];
@@ -185,16 +185,16 @@ function abrirModalEdicao(row) {
   const uuid = row.getAttribute('data-uuid-correlacao');
   const uuidParcelas = row.getAttribute('data-uuid-correlacao-parcelas');
 
-  preencherDadosModalRealizado(id, due_date, description, observacao, valor, contaContabil, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas);
+  preencherDadosModalRealizado(id, due_date, description, observation, valor, contaContabil, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas);
 
   document.getElementById('modal-realizado').showModal();
 }
 
-function preencherDadosModalRealizado(id, due_date, description, observacao, valor, contaContabil, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas) {
+function preencherDadosModalRealizado(id, due_date, description, observation, valor, contaContabil, tags, parcelaAtual, parcelasTotal, uuid, uuidParcelas) {
   document.querySelector('.modal-form-realizado [name="lancamento_id_realizado"]').value = id;
   document.getElementById('data-realizado').value = formatarDataParaInput(due_date);
   document.getElementById('description-realizado').value = description;
-  document.getElementById('observacao-realizado').value = observacao;
+  document.getElementById('observation-realizado').value = observation;
   document.getElementById('valor-realizado').value = "R$ "+valor;
   document.getElementById('conta-contabil-realizado').value = contaContabil;
   document.getElementById('parcelas-realizado').value = `${parcelaAtual}/${parcelasTotal}`;
@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const lancamentoId = document.querySelector('[name="lancamento_id_realizado"]').value;
       const dataRealizado = document.getElementById('data-realizado').value;
       const settledDescription = document.getElementById('description-realizado').value;
-      const observacaoRealizado = document.getElementById('observacao-realizado').value;
+      const settledObservation = document.getElementById('observation-realizado').value;
       const uuid = document.querySelector('[name="uuid_realizado"]').value;
       const uuidParcelas = document.querySelector('[name="uuid_parcelas_realizado"]').value;
 
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json()) // Garantir que estamos processando a resposta como JSON
             .then(data => {
                 console.log('Lançamentos relacionados atualizados:', data);
-                return atualizarLancamento(lancamentoId, dataRealizado, settledDescription, observacaoRealizado);
+                return atualizarLancamento(lancamentoId, dataRealizado, settledDescription, settledObservation);
             })
             .then(response => response.json())
             .then(data => {
@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => console.error('Erro:', error));
     } else {
-        atualizarLancamento(lancamentoId, dataRealizado, settledDescription, observacaoRealizado)
+        atualizarLancamento(lancamentoId, dataRealizado, settledDescription, settledObservation)
             .then(response => response.json())
             .then(data => {
                 console.log('Lançamento atualizado com sucesso:', data);
@@ -297,8 +297,8 @@ function atualizarDataLancamentosRelacionados(uuid, novaData) {
   });
 }
 
-function atualizarLancamento(lancamentoId, dataRealizado, settledDescription, observacaoRealizado) {
-  const dados = { due_date: dataRealizado, description: settledDescription, observacao: observacaoRealizado };
+function atualizarLancamento(lancamentoId, dataRealizado, settledDescription, settledObservation) {
+  const dados = { due_date: dataRealizado, description: settledDescription, observation: settledObservation };
   const url = `/realizado/atualizar-lancamento/${lancamentoId}/`;
 
   fetch(url, {
@@ -536,10 +536,10 @@ function filtrarTabela() {
   document.querySelectorAll('.row-lancamentos').forEach(function(row) {
     const uuidContaContabilLinha = row.getAttribute('data-uuid-conta-contabil');
     const description = row.querySelector(".description-row").textContent.toUpperCase();
-    const observacaoElemento = row.querySelector(".obs-row").cloneNode(true);
-    const tagsElemento = observacaoElemento.querySelector(".d-block");
-    if (tagsElemento) observacaoElemento.removeChild(tagsElemento);
-    const observacao = observacaoElemento.textContent.toUpperCase();
+    const observationElement = row.querySelector(".obs-row").cloneNode(true);
+    const tagsElemento = observationElement.querySelector(".d-block");
+    if (tagsElemento) observationElement.removeChild(tagsElemento);
+    const observation = observationElement.textContent.toUpperCase();
     const tags = tagsElemento ? tagsElemento.textContent.toUpperCase() : "";
     const dueDate = new Date(row.querySelector(".due_date-row").textContent.split('/').reverse().join('-'));
     const naturezaLancamento = row.getAttribute('data-natureza');
@@ -547,7 +547,7 @@ function filtrarTabela() {
 
     
     const contaContabilMatch = uuidsContaContabilSelecionados.length === 0 || uuidsContaContabilSelecionados.includes(uuidContaContabilLinha);
-    const descriptionObservationMatch = descriptionFilter === "" || description.includes(descriptionFilter) || observacao.includes(descriptionFilter);
+    const descriptionObservationMatch = descriptionFilter === "" || description.includes(descriptionFilter) || observation.includes(descriptionFilter);
     const tagMatch = filtroTags === "" || tags.includes(filtroTags);
     const mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => dueDate >= intervalo.inicio && dueDate <= intervalo.fim);
     const dataMatch = (!dataInicioObj || dueDate >= dataInicioObj) && (!dataFimObj || dueDate <= dataFimObj);

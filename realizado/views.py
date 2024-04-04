@@ -143,7 +143,7 @@ def criar_fluxo_com_registro(registro):
     CashFlowEntry.objects.create(
         due_date=registro.due_date,
         description=registro.description,
-        observacao=registro.observacao,
+        observation=registro.observation,
         valor=registro.valor,
         conta_contabil=registro.conta_contabil,
         uuid_conta_contabil=registro.uuid_conta_contabil,
@@ -184,7 +184,7 @@ def criar_fluxo_com_registro_unificado(registro, valor_total, manter_uuid=False)
     CashFlowEntry.objects.create(
         due_date=registro.due_date,
         description=registro.description,
-        observacao=registro.observacao,
+        observation=registro.observation,
         valor=valor_total,
         conta_contabil=registro.conta_contabil,
         uuid_conta_contabil=registro.uuid_conta_contabil,
@@ -225,7 +225,7 @@ def atualizar_lancamento(request, id):
                 lancamento.data_liquidacao = datetime.combine(due_date, hora_original)
             
             lancamento.description = data.get('description', lancamento.description)
-            lancamento.observacao = data.get('observacao', lancamento.observacao)
+            lancamento.observation = data.get('observation', lancamento.observation)
 
             lancamento._skip_update_saldo = True
             
