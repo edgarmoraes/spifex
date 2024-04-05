@@ -161,7 +161,7 @@ def create_new_flows(form_data, iniciar_desde_o_atual=False):
     if 'due_date' not in form_data or form_data['due_date'] is None:
         return JsonResponse({'error': 'Data de due_date é necessária.'}, status=400)
 
-    initial_installment = form_data.get('parcela_atual', 1)
+    initial_installment = form_data.get('current_installment', 1)
     total_installments = form_data['parcelas_total']
 
     # Verifica se 'due_date' já é um object datetime.datetime
@@ -180,7 +180,7 @@ def create_new_flows(form_data, iniciar_desde_o_atual=False):
             amount=form_data['amount'],
             general_ledger_account=form_data['general_ledger_account_nome'],
             uuid_general_ledger_account=form_data['general_ledger_account_uuid'],
-            parcela_atual=i,
+            current_installment=i,
             parcelas_total=total_installments,
             tags=form_data['tags'],
             natureza=form_data['natureza'],
@@ -229,7 +229,7 @@ def create_temporary_record(object):
         amount=object.amount,
         general_ledger_account=object.general_ledger_account,
         uuid_general_ledger_account=object.uuid_general_ledger_account,
-        parcela_atual=object.parcela_atual,
+        current_installment=object.current_installment,
         parcelas_total=object.parcelas_total,
         tags=object.tags,
         natureza=object.natureza,
@@ -265,7 +265,7 @@ def process_transfer(request):
         observation=transfer_observation,
         amount=transfer_transaction_amount,
         general_ledger_account='Transferência Saída',
-        parcela_atual=1,
+        current_installment=1,
         parcelas_total=1,
         tags='Transferência',
         natureza='Débito',
@@ -284,7 +284,7 @@ def process_transfer(request):
         observation=transfer_observation,
         amount=transfer_transaction_amount,
         general_ledger_account='Transferência Entrada',
-        parcela_atual=1,
+        current_installment=1,
         parcelas_total=1,
         tags='Transferência',
         natureza='Crédito',
@@ -338,7 +338,7 @@ def process_settlement(request):
                     amount=partial_amount if is_partial_settlement else total_amount,
                     general_ledger_account=original_record.general_ledger_account,
                     uuid_general_ledger_account=original_record.uuid_general_ledger_account,
-                    parcela_atual=original_record.parcela_atual,
+                    current_installment=original_record.current_installment,
                     parcelas_total=original_record.parcelas_total,
                     tags=original_record.tags,
                     natureza=original_record.natureza,

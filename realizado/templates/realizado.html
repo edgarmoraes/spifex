@@ -216,7 +216,7 @@
             
                 <section class="modal-flex" id="parcelas-section-realizado">
                     <label for="parcelas-realizado">Parcela</label>
-                    <input class="modal-parcelas" id="parcelas-realizado" type="text" name="parcelas" parcela-atual="{{ realizado.parcela_atual }}" parcelas-total="{{ realizado.parcelas_total }}" min="1" value="1" readonly><br>
+                    <input class="modal-parcelas" id="parcelas-realizado" type="text" name="parcelas" current-installment="{{ realizado.current_installment }}" parcelas-total="{{ realizado.parcelas_total }}" min="1" value="1" readonly><br>
                 </section>
 
                 <section class="modal-flex mesclar-2">
@@ -256,7 +256,7 @@
                                 <td class="saldo-total-row">{{ realizado.saldo|format_number }}</td>
                             </tr>
                         {% else %}
-                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ realizado.id }}" data-banco-liquidacao="{{ realizado.banco_liquidacao }}" data-banco-id-liquidacao="{{ realizado.banco_id_liquidacao }}" data-general-ledger-account="{{ realizado.general_ledger_account }}" data-uuid-general-ledger-account="{{ realizado.uuid_general_ledger_account }}" parcela-atual="{{ realizado.parcela_atual }}" parcelas-total="{{ realizado.parcelas_total }}" data-natureza="{{ realizado.natureza }}" data-uuid-correlacao="{{ realizado.uuid_correlacao }}" data-uuid-correlacao-parcelas="{{ realizado.uuid_correlacao_parcelas }}" scope="row">
+                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ realizado.id }}" data-banco-liquidacao="{{ realizado.banco_liquidacao }}" data-banco-id-liquidacao="{{ realizado.banco_id_liquidacao }}" data-general-ledger-account="{{ realizado.general_ledger_account }}" data-uuid-general-ledger-account="{{ realizado.uuid_general_ledger_account }}" current-installment="{{ realizado.current_installment }}" parcelas-total="{{ realizado.parcelas_total }}" data-natureza="{{ realizado.natureza }}" data-uuid-correlacao="{{ realizado.uuid_correlacao }}" data-uuid-correlacao-parcelas="{{ realizado.uuid_correlacao_parcelas }}" scope="row">
                                 <td class="checkbox-row"><label class="checkbox-container"><input id="checkbox-personalizado-{{ realizado.id }}" class="checkbox-personalizado" type="checkbox" data-id="{{ realizado.id }}" data-uuid-correlacao="{{ realizado.uuid_correlacao }}" data-uuid-correlacao-parcelas="{{ realizado.uuid_correlacao_parcelas }}"><span class="checkmark"></span></label></td>
                                 <td class="due_date-row">{{ realizado.data_liquidacao|date:"d/m/Y" }}</td>
                                 <td class="description-row">{{ realizado.description }}</td>
@@ -265,7 +265,7 @@
                                     <small class="d-block">Tags: {{ realizado.tags }}</small>
                                 </td>
                                 <td class="banco-row">{{ realizado.banco_liquidacao }}</td>
-                                <td class="parcela-row">{{ realizado.parcela_atual }}/{{ realizado.parcelas_total }}</td>
+                                <td class="parcela-row">{{ realizado.current_installment }}/{{ realizado.parcelas_total }}</td>
                                 <input type="hidden" id="parcelas-total-originais-recebimentos" name="parcelas_total_originais">
                                 <input type="hidden" id="parcelas-total-originais-pagamentos" name="parcelas_total_originais">
                                 {% if realizado.natureza == 'Débito' %}

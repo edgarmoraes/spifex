@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // Função para formatar o amount de texto para número
-function formatAmount(strAmount) {
+function formatAmountBalance(strAmount) {
   // Remove pontos e substitui vírgula por ponto para conversão para número
   // Garante que o strAmount é uma string antes de fazer as substituições
   strAmount = strAmount.toString();
@@ -46,10 +46,10 @@ function atualizarSaldoBanco() {
       const debito = row.querySelector('.debito-row').textContent.trim();
 
       if (credito) {
-        totalAmountToSettle += formatAmount(credito);
+        totalAmountToSettle += formatAmountBalance(credito);
       }
       if (debito) {
-        totalAmountToSettle -= formatAmount(debito);
+        totalAmountToSettle -= formatAmountBalance(debito);
       }
     }
   });
@@ -59,7 +59,7 @@ function atualizarSaldoBanco() {
     if (checkbox.checked) {
       // Encontrar o elemento de saldo inicial do banco correspondente
       let saldoInicialEl = checkbox.closest('.row-bancos').querySelector('[name="saldo_inicial"]');
-      let saldoInicial = formatAmount(saldoInicialEl.textContent);
+      let saldoInicial = formatAmountBalance(saldoInicialEl.textContent);
       
       // Calcular o novo saldo
       let novoSaldo = saldoInicial + totalAmountToSettle;
@@ -397,7 +397,7 @@ document.getElementById('salvar-liquidacao').addEventListener('click', async fun
       amount: totalAmountField.value,
       general_ledger_account: row.getAttribute('data-general-ledger-account'),
       uuid_general_ledger_account: row.getAttribute('data-uuid-general-ledger-account'),
-      parcela_atual: row.getAttribute('parcela-atual'),
+      current_installment: row.getAttribute('current-installment'),
       parcelas_total: row.getAttribute('parcelas-total'),
       natureza: row.querySelector('.debito-row').textContent ? 'Débito' : 'Crédito',
       data_liquidacao: campoData ? campoData.value : '',
@@ -741,7 +741,7 @@ function abrirModalEdicao(row) {
 function abrirModalEdicaoGeral(row, tipo) {
   estaEditando = true;
   preencherDadosModal(row, tipo);
-  mostrarParcelas(row, tipo);
+  showInstallments(row, tipo);
   const modal = document.getElementById(`modal-${tipo}`);
   modal.showModal();
 }
@@ -761,7 +761,7 @@ function onModalClose(tipo) {
   configurarCamposAtivos(tipo, true);
   limparCamposModal(tipo);
   estaEditando = false;
-  redefinirCampoParcelas(tipo);
+  redefineInstallmentsField(tipo);
   document.getElementById(`amount-${tipo}`).value = "R$ "
 }
 
@@ -809,8 +809,8 @@ function configurarElemento(elemento, propriedades) {
 }
 
 function preencherDadosModal(row, tipo) {
-  const parcelasTotalOriginais = row.getAttribute('parcelas-total');
-  document.getElementById(`parcelas-total-originais-${tipo}`).value = parcelasTotalOriginais;
+  const originalTotalInstallments = row.getAttribute('parcelas-total');
+  document.getElementById(`parcelas-total-originais-${tipo}`).value = originalTotalInstallments;
 
   const due_date = row.querySelector('.due_date-row').textContent.trim();
   document.getElementById(`data-${tipo}`).value = formatarDataParaInput(due_date);
@@ -852,17 +852,17 @@ function selectGeneralLedgerAccountDropdown(tipo, uuidGeneralLedgerAccount) {
 }
 
 // Função para mostrar campo de recorrência
-function mostrarParcelas(row, tipo) {
+function showInstallments(row, tipo) {
   const select = document.getElementById(`recorrencia-${tipo}`);
   const section = document.getElementById(`parcelas-section-${tipo}`);
   const input = document.getElementById(`parcelas-${tipo}`);
 
   section.style.display = select.value === 'sim' ? 'block' : 'none';
   if (estaEditando) {
-      const parcelasTotal = row.getAttribute('parcelas-total') ? parseInt(row.getAttribute('parcelas-total')) : 1;
-      const parcelaAtual = row.getAttribute('parcela-atual') ? parseInt(row.getAttribute('parcela-atual')) : 1;
-      input.value = parcelaAtual;
-      input.disabled = parcelasTotal > 1;
+      const totalInstallments = row.getAttribute('parcelas-total') ? parseInt(row.getAttribute('parcelas-total')) : 1;
+      const currentInstallment = row.getAttribute('current-installment') ? parseInt(row.getAttribute('current-installment')) : 1;
+      input.value = currentInstallment;
+      input.disabled = totalInstallments > 1;
   } else {
       input.value = select.value === 'sim' ? '' : '1';
       input.disabled = false;
@@ -884,7 +884,7 @@ function adicionarTagsAoContainer(tagsString, tipo) {
   });
 }
 
-function redefinirCampoParcelas(tipo) {
+function redefineInstallmentsField(tipo) {
   var select = document.getElementById(`recorrencia-${tipo}`);
   var input = document.getElementById(`parcelas-${tipo}`);
   var section = document.getElementById(`parcelas-section-${tipo}`);
@@ -1071,7 +1071,7 @@ function calcularTotal() {
   document.querySelector('.total-liquidar-row label').textContent = totalFormatado;
 }
 
-function formatAmount(strAmount) {
+function formatAmountBalance(strAmount) {
   // Remove pontos e substitui vírgula por ponto para conversão para número
   return parseFloat(strAmount.replace(/\./g, '').replace(',', '.'));
 }

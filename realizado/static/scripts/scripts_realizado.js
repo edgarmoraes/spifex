@@ -13,7 +13,7 @@ document.getElementById('retornar-button').addEventListener('click', function() 
             description: row.querySelector('.description-row').textContent,
             totalAmount: debito || credito, // Usa débito se disponível, senão credito
             general_ledger_account: row.getAttribute('data-general-ledger-account'),
-            parcela_atual: row.getAttribute('parcela-atual'),
+            current_installment: row.getAttribute('current-installment'),
             parcelas_total: row.getAttribute('parcelas-total'),
             natureza: debito ? 'Débito' : 'Crédito',
             uuid_correlacao: row.getAttribute('data-uuid-correlacao'),
@@ -180,7 +180,7 @@ function abrirModalEdicao(row) {
   const totalAmount = row.querySelector('.debito-row').textContent.trim() || row.querySelector('.credito-row').textContent.trim();
   const generalLedgerAccount = row.getAttribute('data-general-ledger-account');
   const tags = row.querySelector('.observation-row').textContent.trim().split('Tags:')[1];
-  const parcelaAtual = row.getAttribute('parcela-atual');
+  const parcelaAtual = row.getAttribute('current-installment');
   const parcelasTotal = row.getAttribute('parcelas-total');
   const uuid = row.getAttribute('data-uuid-correlacao');
   const uuidParcelas = row.getAttribute('data-uuid-correlacao-parcelas');

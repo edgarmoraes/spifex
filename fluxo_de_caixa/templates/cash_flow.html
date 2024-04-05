@@ -262,7 +262,7 @@
             
                 <section class="modal-flex" id="recorrencia-section">
                     <label for="recorrencia-recebimentos" class="recorrencia-label">Recorrência</label>
-                    <select class="modal-recorrencia" id="recorrencia-recebimentos" name="recorrencia" required onchange="mostrarParcelas(null, 'recebimentos')">
+                    <select class="modal-recorrencia" id="recorrencia-recebimentos" name="recorrencia" required onchange="showInstallments(null, 'recebimentos')">
                         <option value="nao">Não</option>
                         <option value="sim">Sim</option>
                     </select><br>
@@ -270,7 +270,7 @@
             
                 <section class="modal-flex mesclar-2" id="parcelas-section-recebimentos" style="display:none;">
                     <label for="parcelas-recebimentos">Número de Parcelas</label>
-                    <input class="modal-parcelas" id="parcelas-recebimentos" type="number" name="parcelas" parcela-atual="{{ fluxo_de_caixa.parcela_atual }}" parcelas-total="{{ fluxo_de_caixa.parcelas_total }}" min="1" value="1"><br>
+                    <input class="modal-parcelas" id="parcelas-recebimentos" type="number" name="parcelas" current-installment="{{ fluxo_de_caixa.current_installment }}" parcelas-total="{{ fluxo_de_caixa.parcelas_total }}" min="1" value="1"><br>
                 </section>
 
                 <section class="modal-flex mesclar-2">
@@ -340,7 +340,7 @@
             
                 <section class="modal-flex">
                     <label for="recorrencia-pagamentos" class="recorrencia-label">Recorrência</label>
-                    <select class="modal-recorrencia" id="recorrencia-pagamentos" name="recorrencia" required onchange="mostrarParcelas(null, 'pagamentos')">
+                    <select class="modal-recorrencia" id="recorrencia-pagamentos" name="recorrencia" required onchange="showInstallments(null, 'pagamentos')">
                         <option value="nao">Não</option>
                         <option value="sim">Sim</option>
                     </select><br>
@@ -348,7 +348,7 @@
             
                 <section class="modal-flex mesclar-2" id="parcelas-section-pagamentos" style="display:none;">
                     <label for="parcelas-pagamentos">Número de Parcelas</label>
-                    <input class="modal-parcelas" id="parcelas-pagamentos" type="number" name="parcelas" parcela-atual="{{ fluxo_de_caixa.parcela_atual }}" parcelas-total="{{ fluxo_de_caixa.parcelas_total }}" min="1" value="1"><br>
+                    <input class="modal-parcelas" id="parcelas-pagamentos" type="number" name="parcelas" current-installment="{{ fluxo_de_caixa.current_installment }}" parcelas-total="{{ fluxo_de_caixa.parcelas_total }}" min="1" value="1"><br>
                 </section>
 
                 <section class="modal-flex mesclar-2">
@@ -437,7 +437,7 @@
                                 <td class="saldo-total-row">{{ cash_flow_item.saldo|format_number }}</td>
                             </tr>
                         {% else %}
-                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ cash_flow_item.id }}" data-general-ledger-account="{{ cash_flow_item.general_ledger_account }}" data-uuid-general-ledger-account="{{ cash_flow_item.uuid_general_ledger_account }}" data-natureza="{{ cash_flow_item.natureza }}" parcela-atual="{{ cash_flow_item.parcela_atual }}" parcelas-total="{{ cash_flow_item.parcelas_total }}" data-uuid-row="{{ cash_flow_item.uuid_correlacao }}" scope="row">
+                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ cash_flow_item.id }}" data-general-ledger-account="{{ cash_flow_item.general_ledger_account }}" data-uuid-general-ledger-account="{{ cash_flow_item.uuid_general_ledger_account }}" data-natureza="{{ cash_flow_item.natureza }}" current-installment="{{ cash_flow_item.current_installment }}" parcelas-total="{{ cash_flow_item.parcelas_total }}" data-uuid-row="{{ cash_flow_item.uuid_correlacao }}" scope="row">
                                 <td class="checkbox-row"><label class="checkbox-container"><input id="checkbox-personalizado-{{ cash_flow_item.id }}" class="checkbox-personalizado" type="checkbox" data-id="{{ cash_flow_item.id }}" data-uuid-row="{{ cash_flow_item.uuid_correlacao }}"><span class="checkmark"></span></label></td>
                                 <td class="due_date-row">{{ cash_flow_item.due_date|date:"d/m/Y" }}</td>
                                 <td class="description-row">{{ cash_flow_item.description }}</td>
@@ -445,7 +445,7 @@
                                     {{ cash_flow_item.observation }}
                                     <small class="d-block">Tags: {{ cash_flow_item.tags }}</small>
                                 </td>
-                                <td class="parcela-row">{{ cash_flow_item.parcela_atual }}/{{ cash_flow_item.parcelas_total }}</td>
+                                <td class="parcela-row">{{ cash_flow_item.current_installment }}/{{ cash_flow_item.parcelas_total }}</td>
                                 <input type="hidden" id="parcelas-total-originais-recebimentos" name="parcelas_total_originais">
                                 <input type="hidden" id="parcelas-total-originais-pagamentos" name="parcelas_total_originais">
                                 {% if cash_flow_item.natureza == 'Débito' %}
