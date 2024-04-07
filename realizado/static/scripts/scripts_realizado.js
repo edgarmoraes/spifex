@@ -346,7 +346,7 @@ function selecionarMesAtualEfiltrar() {
   if (checkboxEncontrado) {
     checkboxEncontrado.checked = true;
     updateButtonTextMeses();
-    filtrarTabela();
+    filterTable();
   } else {
     console.error('Nenhum checkbox correspondente ao mês atual ou aos anteriores foi encontrado.');
   }
@@ -380,10 +380,10 @@ function addListenerAndUpdate(selector, updateFunction, filterFunction = null, i
 }
 
 // Adicionando os listeners para cada grupo de checkboxes
-addListenerAndUpdate('#dropdown-content-contas .conta-checkbox', updateButtonTextContas, filtrarTabela);
-addListenerAndUpdate('#dropdown-content-meses .mes-checkbox', updateButtonTextMeses, filtrarTabela);
+addListenerAndUpdate('#dropdown-content-contas .conta-checkbox', updateButtonTextContas, filterTable);
+addListenerAndUpdate('#dropdown-content-meses .mes-checkbox', updateButtonTextMeses, filterTable);
 addListenerAndUpdate('#dropdown-content-bancos .banco-checkbox', updateButtonTextBancos, coletarBancosSelecionados);
-addListenerAndUpdate('#dropdown-content-transaction_type .transaction_type-checkbox', updateButtonTextTransactionType, filtrarTabela);
+addListenerAndUpdate('#dropdown-content-transaction_type .transaction_type-checkbox', updateButtonTextTransactionType, filterTable);
 
 // Adiciona o listener para click fora do dropdown
 document.addEventListener('click', function(event) {
@@ -450,11 +450,11 @@ function toggleAllCheckboxes(containerSelector, shouldCheck) {
   switch (containerSelector) {
     case '#dropdown-content-contas':
       updateButtonTextContas();
-      filtrarTabela();
+      filterTable();
       break;
     case '#dropdown-content-meses':
       updateButtonTextMeses();
-      filtrarTabela();
+      filterTable();
       break;
     case '#dropdown-content-bancos':
       updateButtonTextBancos();
@@ -462,7 +462,7 @@ function toggleAllCheckboxes(containerSelector, shouldCheck) {
       break;
     case '#dropdown-content-transaction_type':
       updateButtonTextTransactionType();
-      filtrarTabela();
+      filterTable();
       break;
   }
 }
@@ -504,7 +504,7 @@ function updateButtonTextTransactionType() {
 let bancosSelecionados = [];
 function coletarBancosSelecionados() {
   bancosSelecionados = Array.from(document.querySelectorAll('.banco-checkbox:checked')).map(el => el.value);
-  filtrarTabela(); // Filtra a tabela de lançamentos
+  filterTable(); // Filtra a tabela de lançamentos
   // Filtra a tabela de bancos
   document.querySelectorAll('.tabela-bancos .row-bancos').forEach(row => {
     const idBanco = row.getAttribute('data-banco-id');
@@ -514,51 +514,51 @@ function coletarBancosSelecionados() {
 }
 
 // Filtros
-function filtrarTabela() {
+function filterTable() {
   const uuidsGeneralLedgerAccountFilter = Array.from(document.querySelectorAll('#dropdown-content-contas .conta-checkbox:checked')).map(checkbox => checkbox.value);
-  const intervalosMesesSelecionados = Array.from(document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked')).map(checkbox => ({
-    inicio: new Date(checkbox.getAttribute('data-start-of-month')),
-    fim: new Date(checkbox.getAttribute('data-end-of-month'))
+  const monthsIntervalFilter = Array.from(document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked')).map(checkbox => ({
+    start: new Date(checkbox.getAttribute('data-start-of-month')),
+    end: new Date(checkbox.getAttribute('data-end-of-month'))
   }));
   const transactionTypeFilter = Array.from(document.querySelectorAll('#dropdown-content-transaction_type .transaction_type-checkbox:checked'), cb => cb.value);
 
   // Verificações de seleção total ou nenhuma seleção simplificadas
-  const selecionarTodosMeses = intervalosMesesSelecionados.length === 0;
+  const selectAllMonths = monthsIntervalFilter.length === 0;
   const selectAllTransactionType = transactionTypeFilter.length === 0;
   
   // Obtenção dos filtros de texto e datas
   const descriptionFilter = document.getElementById("caixa-pesquisa").value.toUpperCase();
-  const filtroTags = document.getElementById("caixa-pesquisa-tags").value.toUpperCase();
-  const dataInicioObj = document.getElementById("data-inicio").value ? new Date(document.getElementById("data-inicio").value) : null;
-  const dataFimObj = document.getElementById("data-fim").value ? new Date(document.getElementById("data-fim").value) : null;
-  let mesesAnosVisiveis = new Set();
+  const tagsFilter = document.getElementById("caixa-pesquisa-tags").value.toUpperCase();
+  const startDateObj = document.getElementById("data-inicio").value ? new Date(document.getElementById("data-inicio").value) : null;
+  const endDateObj = document.getElementById("data-fim").value ? new Date(document.getElementById("data-fim").value) : null;
+  let visibleMonthsYears = new Set();
 
   document.querySelectorAll('.row-lancamentos').forEach(function(row) {
     const uuidGeneralLedgerAccount = row.getAttribute('data-uuid-general-ledger-account');
     const description = row.querySelector(".description-row").textContent.toUpperCase();
     const observationElement = row.querySelector(".observation-row").cloneNode(true);
-    const tagsElemento = observationElement.querySelector(".d-block");
-    if (tagsElemento) observationElement.removeChild(tagsElemento);
+    const tagsObj = observationElement.querySelector(".d-block");
+    if (tagsObj) observationElement.removeChild(tagsObj);
     const observation = observationElement.textContent.toUpperCase();
-    const tags = tagsElemento ? tagsElemento.textContent.toUpperCase() : "";
+    const tags = tagsObj ? tagsObj.textContent.toUpperCase() : "";
     const dueDate = new Date(row.querySelector(".due_date-row").textContent.split('/').reverse().join('-'));
     const transactionType = row.getAttribute('data-transaction-type');
-    const idBancoLancamento = row.getAttribute('data-banco-id-liquidacao');
+    const bankIdEntry = row.getAttribute('data-banco-id-liquidacao');
 
     
     const generalLedgerAccountMatch = uuidsGeneralLedgerAccountFilter.length === 0 || uuidsGeneralLedgerAccountFilter.includes(uuidGeneralLedgerAccount);
     const descriptionObservationMatch = descriptionFilter === "" || description.includes(descriptionFilter) || observation.includes(descriptionFilter);
-    const tagMatch = filtroTags === "" || tags.includes(filtroTags);
-    const mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => dueDate >= intervalo.inicio && dueDate <= intervalo.fim);
-    const dataMatch = (!dataInicioObj || dueDate >= dataInicioObj) && (!dataFimObj || dueDate <= dataFimObj);
+    const tagMatch = tagsFilter === "" || tags.includes(tagsFilter);
+    const monthMatch = selectAllMonths || monthsIntervalFilter.some(intervalo => dueDate >= intervalo.start && dueDate <= intervalo.end);
+    const dataMatch = (!startDateObj || dueDate >= startDateObj) && (!endDateObj || dueDate <= endDateObj);
     const transactionTypeMatch = selectAllTransactionType || transactionTypeFilter.includes(transactionType);
-    const bancoMatch = bancosSelecionados.length === 0 || bancosSelecionados.includes(idBancoLancamento);
+    const bancoMatch = bancosSelecionados.length === 0 || bancosSelecionados.includes(bankIdEntry);
 
-    row.style.display = descriptionObservationMatch && tagMatch && mesMatch && transactionTypeMatch && dataMatch && generalLedgerAccountMatch && bancoMatch ? "" : "none";
+    row.style.display = descriptionObservationMatch && tagMatch && monthMatch && transactionTypeMatch && dataMatch && generalLedgerAccountMatch && bancoMatch ? "" : "none";
 
     if (row.style.display === "") {
       let mesAno = dueDate.toLocaleString('default', { month: '2-digit', year: 'numeric' });
-      mesesAnosVisiveis.add(mesAno);
+      visibleMonthsYears.add(mesAno);
     }
   });
 
@@ -566,16 +566,16 @@ function filtrarTabela() {
   document.querySelectorAll("#tabela-lancamentos .linha-total-mes").forEach(row => {
     let textoMesAno = row.querySelector("td:nth-child(2)").textContent;
     let mesAnoMatch = textoMesAno.match(/\d{2}\/\d{4}$/); // Captura MM/YYYY
-    row.style.display = mesAnoMatch && mesesAnosVisiveis.has(mesAnoMatch[0]) ? "" : "none";
+    row.style.display = mesAnoMatch && visibleMonthsYears.has(mesAnoMatch[0]) ? "" : "none";
   });
 
   atualizarSaldoTotalBancos();
 }
 
-document.getElementById('caixa-pesquisa').addEventListener('input', filtrarTabela);
-document.getElementById('caixa-pesquisa-tags').addEventListener('input', filtrarTabela);
-document.getElementById('data-inicio').addEventListener('change', filtrarTabela);
-document.getElementById('data-fim').addEventListener('change', filtrarTabela);
+document.getElementById('caixa-pesquisa').addEventListener('input', filterTable);
+document.getElementById('caixa-pesquisa-tags').addEventListener('input', filterTable);
+document.getElementById('data-inicio').addEventListener('change', filterTable);
+document.getElementById('data-fim').addEventListener('change', filterTable);
 
 // Inicializa listeners de mudança para os checkboxes dos bancos
 document.querySelectorAll('.banco-checkbox').forEach(checkbox => {
@@ -616,10 +616,10 @@ function atualizarSaldosDasLinhas() {
   // Itera sobre as linhas de lançamento de baixo para cima
   for (let i = linhas.length - 1; i >= 0; i--) {
     const row = linhas[i];
-    const idBancoLancamento = row.getAttribute('data-banco-id-liquidacao');
+    const bankIdEntry = row.getAttribute('data-banco-id-liquidacao');
 
     // Se um único banco está selecionado e esta linha não pertence a ele, pular para a próxima
-    if (bancosSelecionados.length === 1 && bancosSelecionados[0] !== idBancoLancamento) {
+    if (bancosSelecionados.length === 1 && bancosSelecionados[0] !== bankIdEntry) {
       continue;
     }
 
