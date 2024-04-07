@@ -184,7 +184,7 @@ def create_new_flows(form_data, iniciar_desde_o_atual=False):
             total_installments=total_installments,
             tags=form_data['tags'],
             transaction_type=form_data['transaction_type'],
-            data_criacao=datetime.now()
+            creation_date=datetime.now()
         )
 
 @csrf_exempt
@@ -192,8 +192,8 @@ def delete_entries(request):
     if request.method == 'POST':
         ids_to_delete = extract_ids_to_delete(request)
 
-        # Verifica se algum dos lançamentos selecionados tem uuid_correlacao não nulo
-        entries_with_dependencies = CashFlowEntry.objects.filter(id__in=ids_to_delete, uuid_correlacao__isnull=False)
+        # Verifica se algum dos lançamentos selecionados tem uuid_correlation não nulo
+        entries_with_dependencies = CashFlowEntry.objects.filter(id__in=ids_to_delete, uuid_correlation__isnull=False)
 
         if entries_with_dependencies.exists():
             # Retorna uma mensagem de erro se algum lançamento tem dependência
@@ -233,7 +233,7 @@ def create_temporary_record(object):
         total_installments=object.total_installments,
         tags=object.tags,
         transaction_type=object.transaction_type,
-        data_criacao=object.data_criacao
+        creation_date=object.creation_date
     )
 
 def process_transfer(request):
@@ -269,9 +269,9 @@ def process_transfer(request):
         total_installments=1,
         tags='Transferência',
         transaction_type='Débito',
-        original_data_criacao=datetime.now(),
+        original_creation_date=datetime.now(),
         data_liquidacao=settlement_date,
-        uuid_correlacao=id_correlation
+        uuid_correlation=id_correlation
     )
     withdrawal_entry.save()
 
@@ -288,9 +288,9 @@ def process_transfer(request):
         total_installments=1,
         tags='Transferência',
         transaction_type='Crédito',
-        original_data_criacao=datetime.now(),
+        original_creation_date=datetime.now(),
         data_liquidacao=settlement_date,
-        uuid_correlacao=id_correlation
+        uuid_correlation=id_correlation
     )
     deposit_entry.save()
 
@@ -306,16 +306,16 @@ def process_settlement(request):
             try:
                 original_record = CashFlowEntry.objects.get(id=item['id'])
                 total_amount = original_record.amount
-                partial_amount = Decimal(item.get('amount_parcial', 0))
+                partial_amount = Decimal(item.get('partial_amount', 0))
                 is_partial_settlement = partial_amount > 0 and partial_amount <= total_amount
                 completing_settlement = partial_amount == total_amount
 
-                uuid_correlation = original_record.uuid_correlacao
+                uuid_correlation = original_record.uuid_correlation
                 if is_partial_settlement:
                     if not uuid_correlation:
                         # Caso seja a primeira liquidação parcial
                         uuid_correlation = uuid.uuid4()
-                        original_record.uuid_correlacao = uuid_correlation
+                        original_record.uuid_correlation = uuid_correlation
                         original_record.save()
                     if partial_amount < total_amount:
                         new_amount = total_amount - partial_amount
@@ -324,7 +324,7 @@ def process_settlement(request):
                     # Se for a última liquidação parcial, o UUID já está definido
 
                 settlement_date_aware = timezone.make_aware(datetime.strptime(item['data_liquidacao'], '%Y-%m-%d'))
-                installment_number = SettledEntry.objects.filter(uuid_correlacao=uuid_correlation).count() + 1 if uuid_correlation else 1
+                installment_number = SettledEntry.objects.filter(uuid_correlation=uuid_correlation).count() + 1 if uuid_correlation else 1
 
                 updated_entry_description = original_record.description
                 if is_partial_settlement:
@@ -342,12 +342,12 @@ def process_settlement(request):
                     total_installments=original_record.total_installments,
                     tags=original_record.tags,
                     transaction_type=original_record.transaction_type,
-                    original_data_criacao=original_record.data_criacao,
+                    original_creation_date=original_record.creation_date,
                     data_liquidacao=settlement_date_aware,
                     banco_liquidacao=item.get('banco_liquidacao', ''),
                     banco_id_liquidacao=item.get('banco_id_liquidacao', ''),
-                    uuid_correlacao=uuid_correlation,
-                    uuid_correlacao_parcelas=uuid_correlation
+                    uuid_correlation=uuid_correlation,
+                    uuid_correlation_parcelas=uuid_correlation
                 )
 
                 # Remove o registro original se for uma liquidação total ou a última liquidação parcial

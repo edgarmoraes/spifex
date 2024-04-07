@@ -126,16 +126,16 @@ def processar_retorno(request):
         if not registro_original:
             continue
 
-        uuid_correlacao = registro_original.uuid_correlacao
-        uuid_correlacao_parcelas = registro_original.uuid_correlacao_parcelas
+        uuid_correlation = registro_original.uuid_correlation
+        uuid_correlation_parcelas = registro_original.uuid_correlation_parcelas
 
-        if not uuid_correlacao:
+        if not uuid_correlation:
             criar_fluxo_com_registro(registro_original)
-        elif uuid_correlacao and uuid_correlacao_parcelas is None:
-            # Aqui é onde implementamos a lógica específica: Deletar todos os lançamentos em SettledEntry que compartilham o mesmo uuid_correlacao
-            SettledEntry.objects.filter(uuid_correlacao=uuid_correlacao).delete()
+        elif uuid_correlation and uuid_correlation_parcelas is None:
+            # Aqui é onde implementamos a lógica específica: Deletar todos os lançamentos em SettledEntry que compartilham o mesmo uuid_correlation
+            SettledEntry.objects.filter(uuid_correlation=uuid_correlation).delete()
         else:
-            processar_lancamentos_com_uuids_selecionados(uuid_correlacao, uuid_correlacao_parcelas, ids_selecionados, registro_original)
+            processar_lancamentos_com_uuids_selecionados(uuid_correlation, uuid_correlation_parcelas, ids_selecionados, registro_original)
 
     return JsonResponse({'status': 'success'})
 
@@ -151,21 +151,21 @@ def criar_fluxo_com_registro(registro):
         total_installments=registro.total_installments,
         tags=registro.tags,
         transaction_type=registro.transaction_type,
-        data_criacao=registro.original_data_criacao,
+        creation_date=registro.original_creation_date,
     )
     registro.delete()
 
-def processar_lancamentos_com_uuids_selecionados(uuid_correlacao, uuid_correlacao_parcelas, ids_selecionados, registro_original):
-    mais_registros = SettledEntry.objects.filter(uuid_correlacao=uuid_correlacao, uuid_correlacao_parcelas=uuid_correlacao_parcelas).exclude(id__in=ids_selecionados).exists()
-    existe_no_fluxo = CashFlowEntry.objects.filter(uuid_correlacao=uuid_correlacao).exists()
+def processar_lancamentos_com_uuids_selecionados(uuid_correlation, uuid_correlation_parcelas, ids_selecionados, registro_original):
+    mais_registros = SettledEntry.objects.filter(uuid_correlation=uuid_correlation, uuid_correlation_parcelas=uuid_correlation_parcelas).exclude(id__in=ids_selecionados).exists()
+    existe_no_fluxo = CashFlowEntry.objects.filter(uuid_correlation=uuid_correlation).exists()
 
-    registros_selecionados = SettledEntry.objects.filter(id__in=ids_selecionados, uuid_correlacao=uuid_correlacao, uuid_correlacao_parcelas=uuid_correlacao_parcelas)
+    registros_selecionados = SettledEntry.objects.filter(id__in=ids_selecionados, uuid_correlation=uuid_correlation, uuid_correlation_parcelas=uuid_correlation_parcelas)
     selected_total_amount = registros_selecionados.aggregate(Sum('amount'))['amount__sum'] or 0
 
     if mais_registros and existe_no_fluxo:
-        unificar_lancamentos_no_fluxo(uuid_correlacao, selected_total_amount)
+        unificar_lancamentos_no_fluxo(uuid_correlation, selected_total_amount)
     elif not mais_registros and existe_no_fluxo:
-        unificar_lancamentos_no_fluxo(uuid_correlacao, selected_total_amount, excluir_uuid=True)
+        unificar_lancamentos_no_fluxo(uuid_correlation, selected_total_amount, excluir_uuid=True)
     elif not mais_registros and not existe_no_fluxo:
         criar_fluxo_com_registro_unificado(registros_selecionados.first(), selected_total_amount, manter_uuid=False)
     elif mais_registros and not existe_no_fluxo:
@@ -173,11 +173,11 @@ def processar_lancamentos_com_uuids_selecionados(uuid_correlacao, uuid_correlaca
 
     registros_selecionados.delete()
 
-def unificar_lancamentos_no_fluxo(uuid_correlacao, total_amount, excluir_uuid=False):
-    fluxo = CashFlowEntry.objects.get(uuid_correlacao=uuid_correlacao)
+def unificar_lancamentos_no_fluxo(uuid_correlation, total_amount, excluir_uuid=False):
+    fluxo = CashFlowEntry.objects.get(uuid_correlation=uuid_correlation)
     fluxo.amount += total_amount
     if excluir_uuid:
-        fluxo.uuid_correlacao = None
+        fluxo.uuid_correlation = None
     fluxo.save()
 
 def criar_fluxo_com_registro_unificado(registro, total_amount, manter_uuid=False):
@@ -192,8 +192,8 @@ def criar_fluxo_com_registro_unificado(registro, total_amount, manter_uuid=False
         total_installments=registro.total_installments,
         tags=registro.tags,
         transaction_type=registro.transaction_type,
-        data_criacao=registro.original_data_criacao,
-        uuid_correlacao=registro.uuid_correlacao if manter_uuid else None
+        creation_date=registro.original_creation_date,
+        uuid_correlation=registro.uuid_correlation if manter_uuid else None
     )
 
 @receiver(post_delete, sender=SettledEntry)
@@ -248,7 +248,7 @@ def atualizar_lancamentos_por_uuid(request, uuid):
             due_date = data.get('novaData', None)
             if due_date:
                 due_date = datetime.strptime(due_date, '%Y-%m-%d').date()
-                lancamentos = SettledEntry.objects.filter(uuid_correlacao=uuid)
+                lancamentos = SettledEntry.objects.filter(uuid_correlation=uuid)
                 for lancamento in lancamentos:
                     hora_original = lancamento.data_liquidacao.time() if lancamento.data_liquidacao else datetime.time(12, 0)
                     lancamento.data_liquidacao = datetime.combine(due_date, hora_original)

@@ -13,12 +13,12 @@ class SettledEntry(models.Model):
     total_installments = models.IntegerField()
     tags = models.CharField(max_length = 100)
     transaction_type = models.CharField(max_length=50)
-    original_data_criacao = models.DateTimeField(null=True, blank=True)
+    original_creation_date = models.DateTimeField(null=True, blank=True)
     data_liquidacao = models.DateTimeField()
     banco_liquidacao = models.CharField(max_length=255, null=True, blank=True)
     banco_id_liquidacao = models.IntegerField(null=True, blank=True)
-    uuid_correlacao = models.UUIDField(null=True, blank=True)
-    uuid_correlacao_parcelas = models.UUIDField(null=True, blank=True)
+    uuid_correlation = models.UUIDField(null=True, blank=True)
+    uuid_correlation_parcelas = models.UUIDField(null=True, blank=True)
     uuid_general_ledger_account = models.UUIDField(null=True, blank=True)
 
     _skip_update_saldo = False

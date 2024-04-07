@@ -16,8 +16,8 @@ document.getElementById('retornar-button').addEventListener('click', function() 
             current_installment: row.getAttribute('current-installment'),
             total_installments: row.getAttribute('total-installments'),
             transaction_type: debito ? 'Débito' : 'Crédito',
-            uuid_correlacao: row.getAttribute('data-uuid-correlacao'),
-            uuid_correlacao_parcelas: row.getAttribute('data-uuid-correlacao-parcelas')
+            uuid_correlation: row.getAttribute('data-uuid-correlacao'),
+            uuid_correlation_parcelas: row.getAttribute('data-uuid-correlacao-parcelas')
         });
     });
 

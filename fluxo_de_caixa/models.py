@@ -12,8 +12,8 @@ class CashFlowEntry(models.Model):
     total_installments = models.IntegerField()
     tags = models.CharField(max_length = 100)
     transaction_type = models.CharField(max_length=50)
-    data_criacao = models.DateTimeField(auto_now_add=True)
-    uuid_correlacao = models.UUIDField(null=True, blank=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    uuid_correlation = models.UUIDField(null=True, blank=True)
     uuid_general_ledger_account = models.UUIDField(null=True, blank=True)
 
 class Totais_mes_fluxo(models.Model):
@@ -38,7 +38,7 @@ class TabelaTemporaria(models.Model):
     total_installments = models.IntegerField()
     tags = models.CharField(max_length = 100)
     transaction_type = models.CharField(max_length=50)
-    data_criacao = models.DateTimeField(auto_now_add=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
     movido_em = models.DateTimeField(auto_now_add=True)
     
     @staticmethod
