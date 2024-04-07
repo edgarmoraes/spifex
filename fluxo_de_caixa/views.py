@@ -15,7 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 from chart_of_accounts.models import Chart_of_accounts
 from django.db.models.signals import post_save, post_delete
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import CashFlowEntry, TemporaryTable, MonthsListCashFlow, Bancos
+from .models import CashFlowEntry, TemporaryTable, MonthsListCashFlow, Banks
 
 def cash_flow(request):
     if request.method == "GET":
@@ -24,7 +24,7 @@ def cash_flow(request):
         return process_cash_flow(request)
 
 def display_cash_flow(request):
-    active_banks = Bancos.objects.filter(status=True)
+    active_banks = Banks.objects.filter(status=True)
     cash_flow_table_list = CashFlowEntry.objects.all().order_by('due_date', '-amount', 'description')
     months_list_cash_flow = MonthsListCashFlow.objects.all()
     chart_of_accounts_queryset_list = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
@@ -414,5 +414,5 @@ def filter_months(request):
     return render(request, 'cash_flow.html', context)
 
 def display_banks(request):
-    banks = Bancos.objects.all()
+    banks = Banks.objects.all()
     return render(request, 'cash_flow.html', {'Banks_list': banks})

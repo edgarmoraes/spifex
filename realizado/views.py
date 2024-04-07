@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from dateutil.relativedelta import relativedelta
 from django.views.decorators.csrf import csrf_exempt
 from chart_of_accounts.models import Chart_of_accounts
-from fluxo_de_caixa.models import CashFlowEntry, Bancos
+from fluxo_de_caixa.models import CashFlowEntry, Banks
 from .models import SettledEntry, MonthsListSettled
 from django.db.models.signals import post_save, post_delete
 
@@ -18,7 +18,7 @@ def realizado(request):
         return exibir_realizado(request)
 
 def exibir_realizado(request):
-    bancos_ativos = Bancos.objects.filter(status=True)
+    bancos_ativos = Banks.objects.filter(status=True)
     Tabela_realizado_list = SettledEntry.objects.all().order_by('data_liquidacao', '-amount', 'description')
     months_list_settled = MonthsListSettled.objects.all().order_by('-end_of_month')
     chart_of_accounts_queryset = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
@@ -63,7 +63,7 @@ def exibir_realizado(request):
 
 
 def exibir_bancos(request):
-    bancos = Bancos.objects.all()
+    bancos = Banks.objects.all()
     return render(request, 'realizado.html', {'bancos': bancos})
 
 
@@ -199,13 +199,13 @@ def criar_fluxo_com_registro_unificado(registro, total_amount, manter_uuid=False
 @receiver(post_delete, sender=SettledEntry)
 def atualizar_saldo_banco_apos_remocao(sender, instance, **kwargs):
     try:
-        banco = Bancos.objects.get(id=instance.banco_id_liquidacao)  # Modificado para usar ID
+        banco = Banks.objects.get(id=instance.banco_id_liquidacao)  # Modificado para usar ID
         if instance.transaction_type == 'Crédito':
             banco.current_balance -= instance.amount  # Subtrai para créditos
         else:  # Débito
             banco.current_balance += instance.amount  # Adiciona para débitos
         banco.save()
-    except Bancos.DoesNotExist:
+    except Banks.DoesNotExist:
         pass  # Tratar o caso em que o banco não é encontrado, se necessário
 
 @csrf_exempt

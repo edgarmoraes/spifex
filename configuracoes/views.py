@@ -3,7 +3,7 @@ import uuid
 from decimal import Decimal
 from django.shortcuts import render
 from django.http import JsonResponse
-from fluxo_de_caixa.models import Bancos, Departamentos
+from fluxo_de_caixa.models import Banks, Departamentos
 from realizado.models import SettledEntry
 from django.db.models import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
@@ -15,7 +15,7 @@ def configuracoes(request):
 
 def bancos_e_contas(request):
     if request.method =="GET":
-        lista_bancos = Bancos.objects.all().order_by('id')
+        lista_bancos = Banks.objects.all().order_by('id')
 
         context = {
             'bancos': lista_bancos,
@@ -48,10 +48,10 @@ def salvar_banco(request):
 
     try:
         if id_banco:  # Atualização
-            banco = Bancos.objects.get(pk=id_banco)
+            banco = Banks.objects.get(pk=id_banco)
             was_updated = banco.banco != descricao  # Verifica se a descrição do banco foi atualizada
         else:  # Criação
-            banco = Bancos()
+            banco = Banks()
             was_updated = False
 
         banco.banco = descricao
@@ -80,11 +80,11 @@ def verificar_e_excluir_banco(request, idBanco):
 
     try:
         # Tenta encontrar e excluir o banco
-        banco = Bancos.objects.get(pk=idBanco)
+        banco = Banks.objects.get(pk=idBanco)
         banco.delete()
         # Banco excluído com sucesso
         return JsonResponse({'success': True})
-    except Bancos.DoesNotExist:
+    except Banks.DoesNotExist:
         # Banco não encontrado
         return JsonResponse({'success': False, 'error': 'Banco não encontrado.'})
     

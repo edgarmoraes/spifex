@@ -1,6 +1,6 @@
 import uuid
 from django.db import models
-from fluxo_de_caixa.models import Bancos
+from fluxo_de_caixa.models import Banks
 
 class SettledEntry(models.Model):
     fluxo_id = models.IntegerField(null=True, blank=True)
@@ -29,7 +29,7 @@ class SettledEntry(models.Model):
         super().save(*args, **kwargs)
     
     def atualizar_saldo_banco(self):
-        banco = Bancos.objects.get(id=self.banco_id_liquidacao)  # Modificado para usar ID
+        banco = Banks.objects.get(id=self.banco_id_liquidacao)  # Modificado para usar ID
         if self.transaction_type == 'Crédito':
             banco.current_balance += self.amount
         else:  # Débito

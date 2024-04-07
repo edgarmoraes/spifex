@@ -47,7 +47,7 @@ class TemporaryTable(models.Model):
         limite_tempo = datetime.now() - timedelta(hours=1)
         TemporaryTable.objects.filter(moved_in__lt=limite_tempo).delete()
 
-class Bancos(models.Model):
+class Banks(models.Model):
     banco = models.CharField(max_length = 100)
     agencia = models.CharField(max_length = 100)
     conta = models.CharField(max_length = 100)
