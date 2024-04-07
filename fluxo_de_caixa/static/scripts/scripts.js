@@ -398,7 +398,7 @@ document.getElementById('salvar-liquidacao').addEventListener('click', async fun
       general_ledger_account: row.getAttribute('data-general-ledger-account'),
       uuid_general_ledger_account: row.getAttribute('data-uuid-general-ledger-account'),
       current_installment: row.getAttribute('current-installment'),
-      parcelas_total: row.getAttribute('parcelas-total'),
+      total_installments: row.getAttribute('parcelas-total'),
       natureza: row.querySelector('.debito-row').textContent ? 'Débito' : 'Crédito',
       data_liquidacao: campoData ? campoData.value : '',
       banco_liquidacao: nomeBancoSelecionado,

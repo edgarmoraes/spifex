@@ -10,7 +10,7 @@ class SettledEntry(models.Model):
     amount = models.DecimalField(max_digits=13, decimal_places=2)
     general_ledger_account = models.CharField(max_length = 100)
     current_installment = models.IntegerField()
-    parcelas_total = models.IntegerField()
+    total_installments = models.IntegerField()
     tags = models.CharField(max_length = 100)
     natureza = models.CharField(max_length=50)
     original_data_criacao = models.DateTimeField(null=True, blank=True)

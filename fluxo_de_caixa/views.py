@@ -70,9 +70,9 @@ def process_cash_flow(request):
     else:
         form_data = extract_form_data(request)
     if form_data['lancamento_id']:
-        if form_data['parcelas_total'] > 1:
-            if form_data['parcelas_total_originais'] > 1:
-                update_existing_flow(form_data)  # Manter parcelas_total se for uma série de parcelas
+        if form_data['total_installments'] > 1:
+            if form_data['total_installments_originais'] > 1:
+                update_existing_flow(form_data)  # Manter total_installments se for uma série de parcelas
             else:
                 # Criar novos fluxos se o número de parcelas foi alterado para mais de um
                 CashFlowEntry.objects.filter(id=form_data['lancamento_id']).delete()
@@ -117,7 +117,7 @@ def extract_form_data(request):
     entry_observation = request.POST.get('observation', '')
     installment = request.POST.get('parcelas', '1')
     total_installments = int(installment) if installment.isdigit() else 1
-    original_total_installments = int(request.POST.get('parcelas_total_originais', '1'))
+    original_total_installments = int(request.POST.get('total_installments_originais', '1'))
     entry_tags = request.POST.get('tags', '')
 
     # Retorna um dicionário com os dados processados
@@ -128,8 +128,8 @@ def extract_form_data(request):
         'amount': transaction_amount,
         'general_ledger_account_uuid': account_uuid,
         'general_ledger_account_nome': account_name,
-        'parcelas_total': total_installments,
-        'parcelas_total_originais': original_total_installments,
+        'total_installments': total_installments,
+        'total_installments_originais': original_total_installments,
         'tags': entry_tags,
         'lancamento_id': entry_id,
         'natureza': transaction_type,
@@ -145,9 +145,9 @@ def update_existing_flow(form_data):
     cash_flow_table.observation = form_data['observation']
     cash_flow_table.amount = form_data['amount']
     cash_flow_table.natureza = form_data['natureza']
-    # Não altera parcelas_total se já é parte de uma série de parcelas
-    if cash_flow_table.parcelas_total <= 1 or 'parcelas_total' not in form_data:
-        cash_flow_table.parcelas_total = form_data.get('parcelas_total', cash_flow_table.parcelas_total)
+    # Não altera total_installments se já é parte de uma série de parcelas
+    if cash_flow_table.total_installments <= 1 or 'total_installments' not in form_data:
+        cash_flow_table.total_installments = form_data.get('total_installments', cash_flow_table.total_installments)
     cash_flow_table.tags = form_data['tags']
 
     # Atualiza a conta contábil e seu UUID
@@ -162,7 +162,7 @@ def create_new_flows(form_data, iniciar_desde_o_atual=False):
         return JsonResponse({'error': 'Data de due_date é necessária.'}, status=400)
 
     initial_installment = form_data.get('current_installment', 1)
-    total_installments = form_data['parcelas_total']
+    total_installments = form_data['total_installments']
 
     # Verifica se 'due_date' já é um object datetime.datetime
     if isinstance(form_data['due_date'], datetime):
@@ -181,7 +181,7 @@ def create_new_flows(form_data, iniciar_desde_o_atual=False):
             general_ledger_account=form_data['general_ledger_account_nome'],
             uuid_general_ledger_account=form_data['general_ledger_account_uuid'],
             current_installment=i,
-            parcelas_total=total_installments,
+            total_installments=total_installments,
             tags=form_data['tags'],
             natureza=form_data['natureza'],
             data_criacao=datetime.now()
@@ -230,7 +230,7 @@ def create_temporary_record(object):
         general_ledger_account=object.general_ledger_account,
         uuid_general_ledger_account=object.uuid_general_ledger_account,
         current_installment=object.current_installment,
-        parcelas_total=object.parcelas_total,
+        total_installments=object.total_installments,
         tags=object.tags,
         natureza=object.natureza,
         data_criacao=object.data_criacao
@@ -266,7 +266,7 @@ def process_transfer(request):
         amount=transfer_transaction_amount,
         general_ledger_account='Transferência Saída',
         current_installment=1,
-        parcelas_total=1,
+        total_installments=1,
         tags='Transferência',
         natureza='Débito',
         original_data_criacao=datetime.now(),
@@ -285,7 +285,7 @@ def process_transfer(request):
         amount=transfer_transaction_amount,
         general_ledger_account='Transferência Entrada',
         current_installment=1,
-        parcelas_total=1,
+        total_installments=1,
         tags='Transferência',
         natureza='Crédito',
         original_data_criacao=datetime.now(),
@@ -339,7 +339,7 @@ def process_settlement(request):
                     general_ledger_account=original_record.general_ledger_account,
                     uuid_general_ledger_account=original_record.uuid_general_ledger_account,
                     current_installment=original_record.current_installment,
-                    parcelas_total=original_record.parcelas_total,
+                    total_installments=original_record.total_installments,
                     tags=original_record.tags,
                     natureza=original_record.natureza,
                     original_data_criacao=original_record.data_criacao,

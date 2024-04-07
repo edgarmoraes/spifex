@@ -14,7 +14,7 @@ document.getElementById('retornar-button').addEventListener('click', function() 
             totalAmount: debito || credito, // Usa débito se disponível, senão credito
             general_ledger_account: row.getAttribute('data-general-ledger-account'),
             current_installment: row.getAttribute('current-installment'),
-            parcelas_total: row.getAttribute('parcelas-total'),
+            total_installments: row.getAttribute('parcelas-total'),
             natureza: debito ? 'Débito' : 'Crédito',
             uuid_correlacao: row.getAttribute('data-uuid-correlacao'),
             uuid_correlacao_parcelas: row.getAttribute('data-uuid-correlacao-parcelas')
