@@ -201,9 +201,9 @@ def atualizar_saldo_banco_apos_remocao(sender, instance, **kwargs):
     try:
         banco = Bancos.objects.get(id=instance.banco_id_liquidacao)  # Modificado para usar ID
         if instance.transaction_type == 'Crédito':
-            banco.saldo_atual -= instance.amount  # Subtrai para créditos
+            banco.current_balance -= instance.amount  # Subtrai para créditos
         else:  # Débito
-            banco.saldo_atual += instance.amount  # Adiciona para débitos
+            banco.current_balance += instance.amount  # Adiciona para débitos
         banco.save()
     except Bancos.DoesNotExist:
         pass  # Tratar o caso em que o banco não é encontrado, se necessário

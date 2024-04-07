@@ -31,9 +31,9 @@ class SettledEntry(models.Model):
     def atualizar_saldo_banco(self):
         banco = Bancos.objects.get(id=self.banco_id_liquidacao)  # Modificado para usar ID
         if self.transaction_type == 'Crédito':
-            banco.saldo_atual += self.amount
+            banco.current_balance += self.amount
         else:  # Débito
-            banco.saldo_atual -= self.amount
+            banco.current_balance -= self.amount
         banco.save()
         pass
 

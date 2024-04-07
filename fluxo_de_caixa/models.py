@@ -52,7 +52,7 @@ class Bancos(models.Model):
     agencia = models.CharField(max_length = 100)
     conta = models.CharField(max_length = 100)
     saldo_inicial = models.DecimalField(max_digits=13, decimal_places=2)
-    saldo_atual = models.DecimalField(max_digits=13, decimal_places=2, default=0)
+    current_balance = models.DecimalField(max_digits=13, decimal_places=2, default=0)
     saldo_consolidado = models.DecimalField(max_digits=13, decimal_places=2, default=0) 
     status = models.BooleanField(default=True)
 
@@ -61,8 +61,8 @@ class Bancos(models.Model):
         if not self.pk:  # Checa se é uma nova instância
             self.saldo_consolidado = self.saldo_inicial
         else:
-            # Para instâncias existentes, atualiza saldo_consolidado com base no saldo_atual
-            self.saldo_consolidado = self.saldo_inicial + self.saldo_atual
+            # Para instâncias existentes, atualiza saldo_consolidado com base no current_balance
+            self.saldo_consolidado = self.saldo_inicial + self.current_balance
         super().save(*args, **kwargs)
 
 class Departamentos(models.Model):

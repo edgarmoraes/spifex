@@ -191,7 +191,7 @@
                                 <td class="banco-row" name="banco">{{ banks_item.banco }}</td>
                                 <td class="ag-row" name="agencia">{{ banks_item.agencia }}</td>
                                 <td class="conta-row" name="conta">{{ banks_item.conta }}</td>
-                                <td class="saldo-banco-row" name="saldo_inicial">{{ banks_item.saldo_inicial|add_decimal:banks_item.saldo_atual|format_number }}</td>
+                                <td class="saldo-banco-row" name="saldo_inicial">{{ banks_item.saldo_inicial|add_decimal:banks_item.current_balance|format_number }}</td>
                             </tr>
                             {% endfor %}
                             <tr class="totais-row" scope="row">
@@ -537,7 +537,7 @@
                                         <td class="banco-row banco-liquidacao" name="banco" data-nome-banco="{{ banco.banco }}" data-id-banco="{{ banco.id }}">{{ banco.banco }}</td>
                                         <td class="ag-row" name="agencia">{{ banco.agencia }}</td>
                                         <td class="conta-row" name="conta">{{ banco.conta }}</td>
-                                        <td class="saldo-banco-liquidacao-row" name="saldo_inicial">{{ banco.saldo_inicial|add:banco.saldo_atual|format_number }}</td>
+                                        <td class="saldo-banco-liquidacao-row" name="saldo_inicial">{{ banco.saldo_inicial|add:banco.current_balance|format_number }}</td>
                                     </tr>
                                     {% endfor %}
                                     <tr class="totais-row-liquidacao" scope="row">
