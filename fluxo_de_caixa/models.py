@@ -16,18 +16,18 @@ class CashFlowEntry(models.Model):
     uuid_correlation = models.UUIDField(null=True, blank=True)
     uuid_general_ledger_account = models.UUIDField(null=True, blank=True)
 
-class Totais_mes_fluxo(models.Model):
-    inicio_mes = models.DateField(null=True, blank=True)
-    fim_mes = models.DateField(null=True, blank=True)
-    data_formatada = models.CharField(max_length=255, unique=True)
-    total_credito = models.DecimalField(max_digits=13, decimal_places=2, default=0)
-    total_debito = models.DecimalField(max_digits=13, decimal_places=2, default=0)
-    saldo_mensal = models.DecimalField(max_digits=13, decimal_places=2, default=0)
+class MonthsListCashFlow(models.Model):
+    start_of_month = models.DateField(null=True, blank=True)
+    end_of_month = models.DateField(null=True, blank=True)
+    formatted_date = models.CharField(max_length=255, unique=True)
+    total_credit = models.DecimalField(max_digits=13, decimal_places=2, default=0)
+    total_debit = models.DecimalField(max_digits=13, decimal_places=2, default=0)
+    monthly_balance = models.DecimalField(max_digits=13, decimal_places=2, default=0)
 
     def __str__(self):
-        return self.data_formatada
+        return self.formatted_date
 
-class TabelaTemporaria(models.Model):
+class TemporaryTable(models.Model):
     due_date = models.DateField()
     description = models.CharField(max_length = 100)
     observation = models.CharField(max_length = 100)
@@ -45,7 +45,7 @@ class TabelaTemporaria(models.Model):
     def remover_antigos():
         # Define o limite de tempo em 1 hora
         limite_tempo = datetime.now() - timedelta(hours=1)
-        TabelaTemporaria.objects.filter(movido_em__lt=limite_tempo).delete()
+        TemporaryTable.objects.filter(movido_em__lt=limite_tempo).delete()
 
 class Bancos(models.Model):
     banco = models.CharField(max_length = 100)

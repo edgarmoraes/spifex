@@ -15,7 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 from chart_of_accounts.models import Chart_of_accounts
 from django.db.models.signals import post_save, post_delete
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import CashFlowEntry, TabelaTemporaria, Totais_mes_fluxo, Bancos
+from .models import CashFlowEntry, TemporaryTable, MonthsListCashFlow, Bancos
 
 def cash_flow(request):
     if request.method == "GET":
@@ -26,7 +26,7 @@ def cash_flow(request):
 def display_cash_flow(request):
     active_banks = Bancos.objects.filter(status=True)
     cash_flow_table_list = CashFlowEntry.objects.all().order_by('due_date', '-amount', 'description')
-    months_list = Totais_mes_fluxo.objects.all()
+    months_list_cash_flow = MonthsListCashFlow.objects.all()
     chart_of_accounts_queryset_list = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
     
     # Agrupando as contas por subgroup usando OrderedDict para manter a ordem
@@ -58,7 +58,7 @@ def display_cash_flow(request):
 
     context = {
         'Cash_flow_table_list': entries_with_totals,
-        'Months_list': months_list,
+        'Months_list_cash_flow': months_list_cash_flow,
         'Banks_list': active_banks,
         'Accounts_by_subgroup_list': accounts_by_subgroup,
     }
@@ -209,7 +209,7 @@ def extract_ids_to_delete(request):
     return data.get('ids', [])  # Retorna uma lista vazia se 'ids' não estiver presente
 
 def process_ids(ids_to_delete):
-    """ Processa cada ID para apagar o object correspondente e criar um registro na TabelaTemporaria """
+    """ Processa cada ID para apagar o object correspondente e criar um registro na TemporaryTable """
     for id_str in ids_to_delete:
         try:
             id = int(id_str)  # Convertendo o ID para inteiro
@@ -221,8 +221,8 @@ def process_ids(ids_to_delete):
             continue
 
 def create_temporary_record(object):
-    """ Cria um novo registro na TabelaTemporaria com base no object da CashFlowEntry """
-    TabelaTemporaria.objects.create(
+    """ Cria um novo registro na TemporaryTable com base no object da CashFlowEntry """
+    TemporaryTable.objects.create(
         due_date=object.due_date,
         description=object.description,
         observation=object.observation,
@@ -374,9 +374,9 @@ def delete_update_single_date(sender, instance, **kwargs):
     recalculate_totals()
 
 def recalculate_totals():
-    """ Sinal para atualizar Totais_mes_fluxo quando um FluxoDeCaixa for salvo """
-    # Apaga todos os registros existentes em Totais_mes_fluxo
-    Totais_mes_fluxo.objects.all().delete()
+    """ Sinal para atualizar MonthsListCashFlow quando um FluxoDeCaixa for salvo """
+    # Apaga todos os registros existentes em MonthsListCashFlow
+    MonthsListCashFlow.objects.all().delete()
 
     # Encontra todas as datas únicas de due_date em CashFlowEntry
     unique_dates = CashFlowEntry.objects.dates('due_date', 'month', order='ASC')
@@ -396,21 +396,21 @@ def recalculate_totals():
             transaction_type='Débito'
         ).aggregate(Sum('amount'))['amount__sum'] or 0
 
-        # Cria um novo registro em Totais_mes_fluxo para cada mês
-        Totais_mes_fluxo.objects.create(
-            data_formatada=start_of_month.strftime('%b/%Y'),
-            inicio_mes=start_of_month,
-            fim_mes=end_of_month,
-            total_credito=total_credit,
-            total_debito=total_debit,
-            saldo_mensal=total_credit - total_debit
+        # Cria um novo registro em MonthsListCashFlow para cada mês
+        MonthsListCashFlow.objects.create(
+            formatted_date=start_of_month.strftime('%b/%Y'),
+            start_of_month=start_of_month,
+            end_of_month=end_of_month,
+            total_credit=total_credit,
+            total_debit=total_debit,
+            monthly_balance=total_credit - total_debit
         )
 
 # FUNÇÕES ÚNICAS ############################################################################
 
 def filter_months(request):
-    months_list = Totais_mes_fluxo.objects.all().order_by('data_formatada')
-    context = {'totais_mes_fluxo': months_list}
+    months_list_cash_flow = MonthsListCashFlow.objects.all().order_by('formatted_date')
+    context = {'Months_list_cash_flow': months_list_cash_flow}
     return render(request, 'cash_flow.html', context)
 
 def display_banks(request):

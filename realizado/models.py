@@ -37,13 +37,13 @@ class SettledEntry(models.Model):
         banco.save()
         pass
 
-class Totais_mes_realizado(models.Model):
-    inicio_mes = models.DateField(null=True, blank=True)
-    fim_mes = models.DateField(null=True, blank=True)
-    data_formatada = models.CharField(max_length=255, unique=True)
-    total_credito = models.DecimalField(max_digits=13, decimal_places=2, default=0)
-    total_debito = models.DecimalField(max_digits=13, decimal_places=2, default=0)
-    saldo_mensal = models.DecimalField(max_digits=13, decimal_places=2, default=0)
+class MonthsListSettled(models.Model):
+    start_of_month = models.DateField(null=True, blank=True)
+    end_of_month = models.DateField(null=True, blank=True)
+    formatted_date = models.CharField(max_length=255, unique=True)
+    total_credit = models.DecimalField(max_digits=13, decimal_places=2, default=0)
+    total_debit = models.DecimalField(max_digits=13, decimal_places=2, default=0)
+    monthly_balance = models.DecimalField(max_digits=13, decimal_places=2, default=0)
 
     def __str__(self):
-        return self.data_formatada
+        return self.formatted_date

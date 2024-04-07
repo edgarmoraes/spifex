@@ -71,10 +71,10 @@
                                         <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
-                                        {% for total in totais_mes_realizado %}
+                                        {% for total in Months_List_Settled %}
                                         <label class="label-filters">
-                                            <input type="checkbox" name="meses" value="{{ total.data_formatada }}" class="mes-checkbox" data-inicio-mes="{{ total.inicio_mes|date:'Y-m-d' }}" data-fim-mes="{{ total.fim_mes|date:'Y-m-d' }}">
-                                            {{ total.data_formatada }}
+                                            <input type="checkbox" name="meses" value="{{ total.formatted_date }}" class="mes-checkbox" data-start-of-month="{{ total.start_of_month|date:'Y-m-d' }}" data-end-of-month="{{ total.end_of_month|date:'Y-m-d' }}">
+                                            {{ total.formatted_date }}
                                         </label>
                                         {% endfor %}
                                     </div>

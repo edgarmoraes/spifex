@@ -10,7 +10,7 @@ from dateutil.relativedelta import relativedelta
 from django.views.decorators.csrf import csrf_exempt
 from chart_of_accounts.models import Chart_of_accounts
 from fluxo_de_caixa.models import CashFlowEntry, Bancos
-from .models import SettledEntry, Totais_mes_realizado
+from .models import SettledEntry, MonthsListSettled
 from django.db.models.signals import post_save, post_delete
 
 def realizado(request):
@@ -20,7 +20,7 @@ def realizado(request):
 def exibir_realizado(request):
     bancos_ativos = Bancos.objects.filter(status=True)
     Tabela_realizado_list = SettledEntry.objects.all().order_by('data_liquidacao', '-amount', 'description')
-    totais_mes_realizado = Totais_mes_realizado.objects.all().order_by('-fim_mes')
+    months_list_settled = MonthsListSettled.objects.all().order_by('-end_of_month')
     chart_of_accounts_queryset = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
 
     accounts_by_subgroup = OrderedDict()
@@ -39,23 +39,23 @@ def exibir_realizado(request):
         lista_grupo = list(group)
         lancamentos_com_totais.extend(lista_grupo)
 
-        total_debito = sum(item.amount for item in lista_grupo if item.transaction_type == 'Débito')
-        total_credito = sum(item.amount for item in lista_grupo if item.transaction_type == 'Crédito')
-        saldo_total = total_credito - total_debito  # Cálculo do saldo total
+        total_debit = sum(item.amount for item in lista_grupo if item.transaction_type == 'Débito')
+        total_credit = sum(item.amount for item in lista_grupo if item.transaction_type == 'Crédito')
+        saldo_total = total_credit - total_debit  # Cálculo do saldo total
 
         # Inserir o total do mês, incluindo agora o saldo
         lancamentos_com_totais.append({
             'data_liquidacao': datetime.strptime(key + "-01", '%Y-%m-%d'),
             'description': 'Total do Mês',
-            'debito': total_debito,
-            'credito': total_credito,
+            'debito': total_debit,
+            'credito': total_credit,
             'saldo': saldo_total,  # Incluindo o saldo no dicionário
             'is_total': True,
         })
 
     context = {
         'Tabela_realizado_list': lancamentos_com_totais,
-        'totais_mes_realizado': totais_mes_realizado,  # Incluindo totais_mes_realizado no contexto
+        'Months_List_Settled': months_list_settled,  # Incluindo MonthsListSettled no contexto
         'bancos': bancos_ativos,
         'accounts_by_subgroup': accounts_by_subgroup,  # Passando o OrderedDict para o contexto
     }
@@ -76,40 +76,40 @@ def delete_update_data_unica_realizado(sender, instance, **kwargs):
     recalcular_totais_realizado()
 
 def recalcular_totais_realizado():
-    # Apaga todos os registros existentes em Totais_mes_realizado
-    Totais_mes_realizado.objects.all().delete()
+    # Apaga todos os registros existentes em MonthsListSettled
+    MonthsListSettled.objects.all().delete()
 
     # Encontra todas as datas únicas de due_date em SettledEntry
     datas_unicas = SettledEntry.objects.dates('data_liquidacao', 'month', order='ASC')
 
     for data_unica in datas_unicas:
-        inicio_mes = data_unica
-        fim_mes = inicio_mes + relativedelta(months=1, days=-1)
+        start_of_month = data_unica
+        end_of_month = start_of_month + relativedelta(months=1, days=-1)
 
         # Calcula os totais de crédito e débito para cada mês
-        total_credito = SettledEntry.objects.filter(
-            due_date__range=(inicio_mes, fim_mes),
+        total_credit = SettledEntry.objects.filter(
+            due_date__range=(start_of_month, end_of_month),
             transaction_type='Crédito'
         ).aggregate(Sum('amount'))['amount__sum'] or 0
 
-        total_debito = SettledEntry.objects.filter(
-            due_date__range=(inicio_mes, fim_mes),
+        total_debit = SettledEntry.objects.filter(
+            due_date__range=(start_of_month, end_of_month),
             transaction_type='Débito'
         ).aggregate(Sum('amount'))['amount__sum'] or 0
 
-        # Cria um novo registro em Totais_mes_realizado para cada mês
-        Totais_mes_realizado.objects.create(
-            data_formatada=inicio_mes.strftime('%b/%Y'),
-            inicio_mes=inicio_mes,
-            fim_mes=fim_mes,
-            total_credito=total_credito,
-            total_debito=total_debito,
-            saldo_mensal=total_credito - total_debito
+        # Cria um novo registro em MonthsListSettled para cada mês
+        MonthsListSettled.objects.create(
+            formatted_date=start_of_month.strftime('%b/%Y'),
+            start_of_month=start_of_month,
+            end_of_month=end_of_month,
+            total_credit=total_credit,
+            total_debit=total_debit,
+            monthly_balance=total_credit - total_debit
         )
 
 def meses_filtro_realizado(request):
-    totais_mes_realizado = Totais_mes_realizado.objects.all().order_by('data_formatada')
-    context = {'totais_mes_realizado': totais_mes_realizado}
+    months_list_settled = MonthsListSettled.objects.all().order_by('formatted_date')
+    context = {'Months_List_Settled': months_list_settled}
     return render(request, 'realizado.html', context)
 
 

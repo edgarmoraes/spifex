@@ -1300,8 +1300,8 @@ function updateButtonTextContasPagamentos() {
 function filtrarTabela() {
   const uuidsGeneralLedgerAccountFilter = Array.from(document.querySelectorAll('#dropdown-content-contas .conta-checkbox:checked')).map(checkbox => checkbox.value);
   const intervalosMesesSelecionados = Array.from(document.querySelectorAll('#dropdown-content-meses .mes-checkbox:checked')).map(checkbox => ({
-    inicio: new Date(checkbox.getAttribute('data-inicio-mes')),
-    fim: new Date(checkbox.getAttribute('data-fim-mes'))
+    inicio: new Date(checkbox.getAttribute('data-start-of-month')),
+    fim: new Date(checkbox.getAttribute('data-end-of-month'))
   }));
   const transactionTypeFilter = Array.from(document.querySelectorAll('#dropdown-content-transaction_type .transaction_type-checkbox:checked'), cb => cb.value);
 
