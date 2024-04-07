@@ -39,13 +39,13 @@ class TemporaryTable(models.Model):
     tags = models.CharField(max_length = 100)
     transaction_type = models.CharField(max_length=50)
     creation_date = models.DateTimeField(auto_now_add=True)
-    movido_em = models.DateTimeField(auto_now_add=True)
+    moved_in = models.DateTimeField(auto_now_add=True)
     
     @staticmethod
     def remover_antigos():
         # Define o limite de tempo em 1 hora
         limite_tempo = datetime.now() - timedelta(hours=1)
-        TemporaryTable.objects.filter(movido_em__lt=limite_tempo).delete()
+        TemporaryTable.objects.filter(moved_in__lt=limite_tempo).delete()
 
 class Bancos(models.Model):
     banco = models.CharField(max_length = 100)
