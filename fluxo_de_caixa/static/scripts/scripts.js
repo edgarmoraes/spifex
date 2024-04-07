@@ -398,7 +398,7 @@ document.getElementById('salvar-liquidacao').addEventListener('click', async fun
       general_ledger_account: row.getAttribute('data-general-ledger-account'),
       uuid_general_ledger_account: row.getAttribute('data-uuid-general-ledger-account'),
       current_installment: row.getAttribute('current-installment'),
-      total_installments: row.getAttribute('parcelas-total'),
+      total_installments: row.getAttribute('total-installments'),
       natureza: row.querySelector('.debito-row').textContent ? 'Débito' : 'Crédito',
       data_liquidacao: campoData ? campoData.value : '',
       banco_liquidacao: nomeBancoSelecionado,
@@ -809,8 +809,8 @@ function configurarElemento(elemento, propriedades) {
 }
 
 function preencherDadosModal(row, tipo) {
-  const originalTotalInstallments = row.getAttribute('parcelas-total');
-  document.getElementById(`parcelas-total-originais-${tipo}`).value = originalTotalInstallments;
+  const originalTotalInstallments = row.getAttribute('total-installments');
+  document.getElementById(`total-installments-originais-${tipo}`).value = originalTotalInstallments;
 
   const due_date = row.querySelector('.due_date-row').textContent.trim();
   document.getElementById(`data-${tipo}`).value = formatarDataParaInput(due_date);
@@ -859,7 +859,7 @@ function showInstallments(row, tipo) {
 
   section.style.display = select.value === 'sim' ? 'block' : 'none';
   if (estaEditando) {
-      const totalInstallments = row.getAttribute('parcelas-total') ? parseInt(row.getAttribute('parcelas-total')) : 1;
+      const totalInstallments = row.getAttribute('total-installments') ? parseInt(row.getAttribute('total-installments')) : 1;
       const currentInstallment = row.getAttribute('current-installment') ? parseInt(row.getAttribute('current-installment')) : 1;
       input.value = currentInstallment;
       input.disabled = totalInstallments > 1;
