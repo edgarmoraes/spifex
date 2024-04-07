@@ -43,8 +43,8 @@ def display_cash_flow(request):
         group_list = list(group)
         entries_with_totals.extend(group_list)
 
-        total_debit = sum(item.amount for item in group_list if item.natureza == 'Débito')
-        total_credit = sum(item.amount for item in group_list if item.natureza == 'Crédito')
+        total_debit = sum(item.amount for item in group_list if item.transaction_type == 'Débito')
+        total_credit = sum(item.amount for item in group_list if item.transaction_type == 'Crédito')
         total_balance = total_credit - total_debit
 
         entries_with_totals.append({
@@ -94,7 +94,7 @@ def extract_form_data(request):
         account_uuid = request.POST.get('general_ledger_account_uuid_pagamentos')
         account_name = request.POST.get('general_ledger_account_nome_pagamentos')
     
-    # Escolhe o campo de ID correto com base na natureza da transação
+    # Escolhe o campo de ID correto com base na transaction_type da transação
     receipt_entry_id = request.POST.get('lancamento_id_recebimentos')
     payment_entry_id = request.POST.get('lancamento_id_pagamentos')
     
@@ -132,7 +132,7 @@ def extract_form_data(request):
         'total_installments_originais': original_total_installments,
         'tags': entry_tags,
         'lancamento_id': entry_id,
-        'natureza': transaction_type,
+        'transaction_type': transaction_type,
     }
 
 def update_existing_flow(form_data):
@@ -144,7 +144,7 @@ def update_existing_flow(form_data):
     cash_flow_table.description = form_data['description']
     cash_flow_table.observation = form_data['observation']
     cash_flow_table.amount = form_data['amount']
-    cash_flow_table.natureza = form_data['natureza']
+    cash_flow_table.transaction_type = form_data['transaction_type']
     # Não altera total_installments se já é parte de uma série de parcelas
     if cash_flow_table.total_installments <= 1 or 'total_installments' not in form_data:
         cash_flow_table.total_installments = form_data.get('total_installments', cash_flow_table.total_installments)
@@ -183,7 +183,7 @@ def create_new_flows(form_data, iniciar_desde_o_atual=False):
             current_installment=i,
             total_installments=total_installments,
             tags=form_data['tags'],
-            natureza=form_data['natureza'],
+            transaction_type=form_data['transaction_type'],
             data_criacao=datetime.now()
         )
 
@@ -232,7 +232,7 @@ def create_temporary_record(object):
         current_installment=object.current_installment,
         total_installments=object.total_installments,
         tags=object.tags,
-        natureza=object.natureza,
+        transaction_type=object.transaction_type,
         data_criacao=object.data_criacao
     )
 
@@ -268,7 +268,7 @@ def process_transfer(request):
         current_installment=1,
         total_installments=1,
         tags='Transferência',
-        natureza='Débito',
+        transaction_type='Débito',
         original_data_criacao=datetime.now(),
         data_liquidacao=settlement_date,
         uuid_correlacao=id_correlation
@@ -287,7 +287,7 @@ def process_transfer(request):
         current_installment=1,
         total_installments=1,
         tags='Transferência',
-        natureza='Crédito',
+        transaction_type='Crédito',
         original_data_criacao=datetime.now(),
         data_liquidacao=settlement_date,
         uuid_correlacao=id_correlation
@@ -341,7 +341,7 @@ def process_settlement(request):
                     current_installment=original_record.current_installment,
                     total_installments=original_record.total_installments,
                     tags=original_record.tags,
-                    natureza=original_record.natureza,
+                    transaction_type=original_record.transaction_type,
                     original_data_criacao=original_record.data_criacao,
                     data_liquidacao=settlement_date_aware,
                     banco_liquidacao=item.get('banco_liquidacao', ''),
@@ -388,12 +388,12 @@ def recalculate_totals():
         # Calcula os totais de crédito e débito para cada mês
         total_credit = CashFlowEntry.objects.filter(
             due_date__range=(start_of_month, end_of_month),
-            natureza='Crédito'
+            transaction_type='Crédito'
         ).aggregate(Sum('amount'))['amount__sum'] or 0
 
         total_debit = CashFlowEntry.objects.filter(
             due_date__range=(start_of_month, end_of_month),
-            natureza='Débito'
+            transaction_type='Débito'
         ).aggregate(Sum('amount'))['amount__sum'] or 0
 
         # Cria um novo registro em Totais_mes_fluxo para cada mês

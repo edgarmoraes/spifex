@@ -12,7 +12,7 @@ class SettledEntry(models.Model):
     current_installment = models.IntegerField()
     total_installments = models.IntegerField()
     tags = models.CharField(max_length = 100)
-    natureza = models.CharField(max_length=50)
+    transaction_type = models.CharField(max_length=50)
     original_data_criacao = models.DateTimeField(null=True, blank=True)
     data_liquidacao = models.DateTimeField()
     banco_liquidacao = models.CharField(max_length=255, null=True, blank=True)
@@ -30,7 +30,7 @@ class SettledEntry(models.Model):
     
     def atualizar_saldo_banco(self):
         banco = Bancos.objects.get(id=self.banco_id_liquidacao)  # Modificado para usar ID
-        if self.natureza == 'Crédito':
+        if self.transaction_type == 'Crédito':
             banco.saldo_atual += self.amount
         else:  # Débito
             banco.saldo_atual -= self.amount

@@ -15,7 +15,7 @@ document.getElementById('retornar-button').addEventListener('click', function() 
             general_ledger_account: row.getAttribute('data-general-ledger-account'),
             current_installment: row.getAttribute('current-installment'),
             total_installments: row.getAttribute('total-installments'),
-            natureza: debito ? 'Débito' : 'Crédito',
+            transaction_type: debito ? 'Débito' : 'Crédito',
             uuid_correlacao: row.getAttribute('data-uuid-correlacao'),
             uuid_correlacao_parcelas: row.getAttribute('data-uuid-correlacao-parcelas')
         });
@@ -383,7 +383,7 @@ function addListenerAndUpdate(selector, updateFunction, filterFunction = null, i
 addListenerAndUpdate('#dropdown-content-contas .conta-checkbox', updateButtonTextContas, filtrarTabela);
 addListenerAndUpdate('#dropdown-content-meses .mes-checkbox', updateButtonTextMeses, filtrarTabela);
 addListenerAndUpdate('#dropdown-content-bancos .banco-checkbox', updateButtonTextBancos, coletarBancosSelecionados);
-addListenerAndUpdate('#dropdown-content-natureza .natureza-checkbox', updateButtonTextNatureza, filtrarTabela);
+addListenerAndUpdate('#dropdown-content-transaction_type .transaction_type-checkbox', updateButtonTextTransactionType, filtrarTabela);
 
 // Adiciona o listener para click fora do dropdown
 document.addEventListener('click', function(event) {
@@ -391,7 +391,7 @@ document.addEventListener('click', function(event) {
       {button: "#dropdown-button-contas", content: "dropdown-content-contas"},
       {button: "#dropdown-button-meses", content: "dropdown-content-meses"},
       {button: "#dropdown-button-bancos", content: "dropdown-content-bancos"},
-      {button: "#dropdown-button-natureza", content: "dropdown-content-natureza"},
+      {button: "#dropdown-button-transaction_type", content: "dropdown-content-transaction_type"},
       {button: "#dropdown-button-contas-recebimentos", content: "dropdown-content-contas-recebimentos"},
       {button: "#dropdown-button-contas-pagamentos", content: "dropdown-content-contas-pagamentos"}
   ];
@@ -460,8 +460,8 @@ function toggleAllCheckboxes(containerSelector, shouldCheck) {
       updateButtonTextBancos();
       coletarBancosSelecionados();
       break;
-    case '#dropdown-content-natureza':
-      updateButtonTextNatureza();
+    case '#dropdown-content-transaction_type':
+      updateButtonTextTransactionType();
       filtrarTabela();
       break;
   }
@@ -489,16 +489,16 @@ function updateButtonTextBancos() {
   updateButtonText('dropdown-button-bancos', '#dropdown-content-bancos .banco-checkbox', 'Selecione');
 }
 
-function updateButtonTextNatureza() {
-  const checkboxes = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox');
-  const selectedCheckboxes = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked');
+function updateButtonTextTransactionType() {
+  const checkboxes = document.querySelectorAll('#dropdown-content-transaction_type .transaction_type-checkbox');
+  const selectedCheckboxes = document.querySelectorAll('#dropdown-content-transaction_type .transaction_type-checkbox:checked');
   const selectedCount = selectedCheckboxes.length;
   const totalOptions = checkboxes.length;
   let buttonText = "Crédito, Débito";
   if (selectedCount > 0 && selectedCount < totalOptions) {
     buttonText = Array.from(selectedCheckboxes).map(cb => cb.nextSibling.textContent.trim()).join(", ");
   }
-  document.getElementById('dropdown-button-natureza').textContent = buttonText;
+  document.getElementById('dropdown-button-transaction_type').textContent = buttonText;
 }
 
 let bancosSelecionados = [];
@@ -520,11 +520,11 @@ function filtrarTabela() {
     inicio: new Date(checkbox.getAttribute('data-inicio-mes')),
     fim: new Date(checkbox.getAttribute('data-fim-mes'))
   }));
-  const naturezasSelecionadas = Array.from(document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked'), cb => cb.value);
+  const transactionTypeFilter = Array.from(document.querySelectorAll('#dropdown-content-transaction_type .transaction_type-checkbox:checked'), cb => cb.value);
 
   // Verificações de seleção total ou nenhuma seleção simplificadas
   const selecionarTodosMeses = intervalosMesesSelecionados.length === 0;
-  const selecionarTodaNatureza = naturezasSelecionadas.length === 0;
+  const selectAllTransactionType = transactionTypeFilter.length === 0;
   
   // Obtenção dos filtros de texto e datas
   const descriptionFilter = document.getElementById("caixa-pesquisa").value.toUpperCase();
@@ -542,7 +542,7 @@ function filtrarTabela() {
     const observation = observationElement.textContent.toUpperCase();
     const tags = tagsElemento ? tagsElemento.textContent.toUpperCase() : "";
     const dueDate = new Date(row.querySelector(".due_date-row").textContent.split('/').reverse().join('-'));
-    const naturezaLancamento = row.getAttribute('data-natureza');
+    const transactionType = row.getAttribute('data-transaction-type');
     const idBancoLancamento = row.getAttribute('data-banco-id-liquidacao');
 
     
@@ -551,10 +551,10 @@ function filtrarTabela() {
     const tagMatch = filtroTags === "" || tags.includes(filtroTags);
     const mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => dueDate >= intervalo.inicio && dueDate <= intervalo.fim);
     const dataMatch = (!dataInicioObj || dueDate >= dataInicioObj) && (!dataFimObj || dueDate <= dataFimObj);
-    const naturezaMatch = selecionarTodaNatureza || naturezasSelecionadas.includes(naturezaLancamento);
+    const transactionTypeMatch = selectAllTransactionType || transactionTypeFilter.includes(transactionType);
     const bancoMatch = bancosSelecionados.length === 0 || bancosSelecionados.includes(idBancoLancamento);
 
-    row.style.display = descriptionObservationMatch && tagMatch && mesMatch && naturezaMatch && dataMatch && generalLedgerAccountMatch && bancoMatch ? "" : "none";
+    row.style.display = descriptionObservationMatch && tagMatch && mesMatch && transactionTypeMatch && dataMatch && generalLedgerAccountMatch && bancoMatch ? "" : "none";
 
     if (row.style.display === "") {
       let mesAno = dueDate.toLocaleString('default', { month: '2-digit', year: 'numeric' });
@@ -623,15 +623,15 @@ function atualizarSaldosDasLinhas() {
       continue;
     }
 
-    // Obter a natureza da linha e ajustar o saldo
-    const natureza = row.getAttribute('data-natureza').trim();
+    // Obter a transaction_type da linha e ajustar o saldo
+    const transaction_type = row.getAttribute('data-transaction-type').trim();
     let amount = 0;
 
-    if (natureza === 'Crédito') {
+    if (transaction_type === 'Crédito') {
       const creditAmount = row.querySelector('.credito-row').textContent;
       amount = parseFloat(creditAmount.replace('R$', '').replace(/\./g, '').replace(',', '.').trim());
       saldoAtual -= amount; // Crédito subtrai do saldo
-    } else if (natureza === 'Débito') {
+    } else if (transaction_type === 'Débito') {
       const debitAmount = row.querySelector('.debito-row').textContent;
       amount = parseFloat(debitAmount.replace('R$', '').replace(/\./g, '').replace(',', '.').trim());
       saldoAtual += amount; // Débito soma ao saldo

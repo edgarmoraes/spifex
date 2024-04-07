@@ -11,7 +11,7 @@ class CashFlowEntry(models.Model):
     current_installment = models.IntegerField()
     total_installments = models.IntegerField()
     tags = models.CharField(max_length = 100)
-    natureza = models.CharField(max_length=50)
+    transaction_type = models.CharField(max_length=50)
     data_criacao = models.DateTimeField(auto_now_add=True)
     uuid_correlacao = models.UUIDField(null=True, blank=True)
     uuid_general_ledger_account = models.UUIDField(null=True, blank=True)
@@ -37,7 +37,7 @@ class TabelaTemporaria(models.Model):
     current_installment = models.IntegerField()
     total_installments = models.IntegerField()
     tags = models.CharField(max_length = 100)
-    natureza = models.CharField(max_length=50)
+    transaction_type = models.CharField(max_length=50)
     data_criacao = models.DateTimeField(auto_now_add=True)
     movido_em = models.DateTimeField(auto_now_add=True)
     

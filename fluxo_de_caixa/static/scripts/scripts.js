@@ -245,7 +245,7 @@ function extrairDadosLancamento(checkbox) {
       due_date: row.querySelector('.due_date-row').textContent,
       observation: extractObservation(row),
       amount: extractAmount(row),
-      natureza: extrairNatureza(row)
+      transaction_type: extractTransactionType(row)
   };
 }
 
@@ -260,11 +260,11 @@ function extractAmount(row) {
   return debitAmount || creditAmount;
 }
 
-function extrairNatureza(row) {
+function extractTransactionType(row) {
   return row.querySelector('.debito-row').textContent ? "Débito" : "Crédito";
 }
 
-function montarDivLancamento({id, description, due_date, observation, amount, natureza}) {
+function montarDivLancamento({id, description, due_date, observation, amount, transaction_type}) {
   const div = document.createElement('div');
   div.classList.add('lancamentos-selecionados');
   div.innerHTML = `
@@ -280,8 +280,8 @@ function montarDivLancamento({id, description, due_date, observation, amount, na
     <section class="modal-flex">
         <input class="modal-amount amount-liquidacao-total" id="amount-liquidacao-${id}" type="text" name="amount-liquidacao-${id}" oninput="formatAmount(this)" value="R$ ${amount}" readonly required style="background-color: #B5B5B5; color: #FFFFFF;">
     </section>
-    <section class="modal-flex natureza-liquidacao">
-        <input class="modal-natureza" id="natureza-liquidacao-${id}" type="text" name="natureza-liquidacao-${id}" value="${natureza}" readonly style="background-color: #B5B5B5; color: #FFFFFF;">
+    <section class="modal-flex transaction_type-liquidacao">
+        <input class="modal-transaction_type" id="transaction_type-liquidacao-${id}" type="text" name="transaction_type-liquidacao-${id}" value="${transaction_type}" readonly style="background-color: #B5B5B5; color: #FFFFFF;">
     </section>
     <section class="modal-botao-parcial">
       <div>
@@ -399,7 +399,7 @@ document.getElementById('salvar-liquidacao').addEventListener('click', async fun
       uuid_general_ledger_account: row.getAttribute('data-uuid-general-ledger-account'),
       current_installment: row.getAttribute('current-installment'),
       total_installments: row.getAttribute('total-installments'),
-      natureza: row.querySelector('.debito-row').textContent ? 'Débito' : 'Crédito',
+      transaction_type: row.querySelector('.debito-row').textContent ? 'Débito' : 'Crédito',
       data_liquidacao: campoData ? campoData.value : '',
       banco_liquidacao: nomeBancoSelecionado,
       banco_id_liquidacao: idBancoSelecionado,
@@ -733,8 +733,8 @@ function handleCellDoubleClick(cell) {
 
 // Funções de Manipulação de Modais
 function abrirModalEdicao(row) {
-  const natureza = row.getAttribute('data-natureza');
-  const tipo = natureza === 'Crédito' ? 'recebimentos' : 'pagamentos';
+  const transaction_type = row.getAttribute('data-transaction-type');
+  const tipo = transaction_type === 'Crédito' ? 'recebimentos' : 'pagamentos';
   abrirModalEdicaoGeral(row, tipo);
 }
 
@@ -1162,7 +1162,7 @@ function addListenerAndUpdate(selector, updateFunction, filterFunction = null, i
 addListenerAndUpdate('#dropdown-content-contas .conta-checkbox', updateButtonTextContas, filtrarTabela);
 addListenerAndUpdate('#dropdown-content-meses .mes-checkbox', updateButtonTextMeses, filtrarTabela);
 addListenerAndUpdate('#dropdown-content-bancos .banco-checkbox', updateButtonTextBancos, filtrarBancos);
-addListenerAndUpdate('#dropdown-content-natureza .natureza-checkbox', updateButtonTextNatureza, filtrarTabela);
+addListenerAndUpdate('#dropdown-content-transaction_type .transaction_type-checkbox', updateButtonTextTransactionType, filtrarTabela);
 addListenerAndUpdate('#dropdown-content-contas-recebimentos .conta-checkbox', updateButtonTextContasRecebimentos, null, true);
 addListenerAndUpdate('#dropdown-content-contas-pagamentos .conta-checkbox', updateButtonTextContasPagamentos, null, true);
 
@@ -1172,7 +1172,7 @@ document.addEventListener('click', function(event) {
       {button: "#dropdown-button-contas", content: "dropdown-content-contas"},
       {button: "#dropdown-button-meses", content: "dropdown-content-meses"},
       {button: "#dropdown-button-bancos", content: "dropdown-content-bancos"},
-      {button: "#dropdown-button-natureza", content: "dropdown-content-natureza"},
+      {button: "#dropdown-button-transaction_type", content: "dropdown-content-transaction_type"},
       {button: "#dropdown-button-contas-recebimentos", content: "dropdown-content-contas-recebimentos"},
       {button: "#dropdown-button-contas-pagamentos", content: "dropdown-content-contas-pagamentos"}
   ];
@@ -1241,8 +1241,8 @@ function toggleAllCheckboxes(containerSelector, shouldCheck) {
       updateButtonTextBancos();
       filtrarBancos();
       break;
-    case '#dropdown-content-natureza':
-      updateButtonTextNatureza();
+    case '#dropdown-content-transaction_type':
+      updateButtonTextTransactionType();
       filtrarTabela();
       break;
   }
@@ -1271,16 +1271,16 @@ function updateButtonTextBancos() {
   updateButtonText('dropdown-button-bancos', '#dropdown-content-bancos .banco-checkbox', 'Selecione');
 }
 
-function updateButtonTextNatureza() {
-  const checkboxes = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox');
-  const selectedCheckboxes = document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked');
+function updateButtonTextTransactionType() {
+  const checkboxes = document.querySelectorAll('#dropdown-content-transaction_type .transaction_type-checkbox');
+  const selectedCheckboxes = document.querySelectorAll('#dropdown-content-transaction_type .transaction_type-checkbox:checked');
   const selectedCount = selectedCheckboxes.length;
   const totalOptions = checkboxes.length;
   let buttonText = "Crédito, Débito";
   if (selectedCount > 0 && selectedCount < totalOptions) {
     buttonText = Array.from(selectedCheckboxes).map(cb => cb.nextSibling.textContent.trim()).join(", ");
   }
-  document.getElementById('dropdown-button-natureza').textContent = buttonText;
+  document.getElementById('dropdown-button-transaction_type').textContent = buttonText;
 }
 
 // Chamadas para contas de recebimentos e pagamentos
@@ -1303,11 +1303,11 @@ function filtrarTabela() {
     inicio: new Date(checkbox.getAttribute('data-inicio-mes')),
     fim: new Date(checkbox.getAttribute('data-fim-mes'))
   }));
-  const naturezasSelecionadas = Array.from(document.querySelectorAll('#dropdown-content-natureza .natureza-checkbox:checked'), cb => cb.value);
+  const transactionTypeFilter = Array.from(document.querySelectorAll('#dropdown-content-transaction_type .transaction_type-checkbox:checked'), cb => cb.value);
 
   // Verificações de seleção total ou nenhuma seleção simplificadas
   const selecionarTodosMeses = intervalosMesesSelecionados.length === 0;
-  const selecionarTodaNatureza = naturezasSelecionadas.length === 0;
+  const selectAllTransactionType = transactionTypeFilter.length === 0;
 
   // Obtenção dos filtros de texto e datas
   const descriptionFilter = document.getElementById("caixa-pesquisa").value.toUpperCase();
@@ -1325,7 +1325,7 @@ function filtrarTabela() {
     const observation = observationElement.textContent.toUpperCase();
     const tags = tagsElemento ? tagsElemento.textContent.toUpperCase() : "";
     const dueDate = new Date(row.querySelector(".due_date-row").textContent.split('/').reverse().join('-'));
-    const naturezaLancamento = row.getAttribute('data-natureza');
+    const transactionType = row.getAttribute('data-transaction-type');
 
     // Centraliza a lógica de correspondência
     const generalLedgerAccountMatch = uuidsGeneralLedgerAccountFilter.length === 0 || uuidsGeneralLedgerAccountFilter.includes(uuidGeneralLedgerAccount);
@@ -1333,9 +1333,9 @@ function filtrarTabela() {
     const tagMatch = filtroTags === "" || tags.includes(filtroTags);
     const mesMatch = selecionarTodosMeses || intervalosMesesSelecionados.some(intervalo => dueDate >= intervalo.inicio && dueDate <= intervalo.fim);
     const dataMatch = (!dataInicioObj || dueDate >= dataInicioObj) && (!dataFimObj || dueDate <= dataFimObj);
-    const naturezaMatch = selecionarTodaNatureza || naturezasSelecionadas.includes(naturezaLancamento);
+    const transactionTypeMatch = selectAllTransactionType || transactionTypeFilter.includes(transactionType);
 
-    row.style.display = descriptionObservationMatch && tagMatch && mesMatch && naturezaMatch && dataMatch && generalLedgerAccountMatch ? "" : "none";
+    row.style.display = descriptionObservationMatch && tagMatch && mesMatch && transactionTypeMatch && dataMatch && generalLedgerAccountMatch ? "" : "none";
 
     if (row.style.display === "") {
       let mesAno = dueDate.toLocaleString('default', { month: '2-digit', year: 'numeric' });

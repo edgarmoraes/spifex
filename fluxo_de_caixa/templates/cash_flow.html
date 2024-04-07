@@ -113,23 +113,23 @@
                             <label for="data-fim">Até</label>
                             <input class="data" type="date" id="data-fim" name = "data_fim">
                         </section>
-                        <!-- ############### Filtro Natureza ############### -->
+                        <!-- ############### Filtro transaction_type ############### -->
                         <section class="flex">
-                            <label for="dropdown-button-natureza">Natureza</label>
+                            <label for="dropdown-button-transaction_type">Natureza</label>
                             <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-natureza', event)" id="dropdown-button-natureza" class="dropdown-button">Crédito, Débito</button>
-                                <div id="dropdown-content-natureza" class="dropdown-content">
+                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-transaction_type', event)" id="dropdown-button-transaction_type" class="dropdown-button">Crédito, Débito</button>
+                                <div id="dropdown-content-transaction_type" class="dropdown-content">
                                     <div class="dropdown-header">
-                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-natureza', true)">Selecionar Todos</button>
-                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-natureza', false)">Desmarcar Todos</button>
+                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-transaction_type', true)">Selecionar Todos</button>
+                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-transaction_type', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
                                         <label class="label-filters">
-                                            <input type="checkbox" name="natureza" value="Crédito" class="natureza-checkbox">
+                                            <input type="checkbox" name="transaction_type" value="Crédito" class="transaction_type-checkbox">
                                             Crédito
                                         </label>
                                         <label class="label-filters">
-                                            <input type="checkbox" name="natureza" value="Débito" class="natureza-checkbox">
+                                            <input type="checkbox" name="transaction_type" value="Débito" class="transaction_type-checkbox">
                                             Débito
                                         </label>
                                     </div>
@@ -437,7 +437,7 @@
                                 <td class="saldo-total-row">{{ cash_flow_item.saldo|format_number }}</td>
                             </tr>
                         {% else %}
-                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ cash_flow_item.id }}" data-general-ledger-account="{{ cash_flow_item.general_ledger_account }}" data-uuid-general-ledger-account="{{ cash_flow_item.uuid_general_ledger_account }}" data-natureza="{{ cash_flow_item.natureza }}" current-installment="{{ cash_flow_item.current_installment }}" total-installments="{{ cash_flow_item.total_installments }}" data-uuid-row="{{ cash_flow_item.uuid_correlacao }}" scope="row">
+                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ cash_flow_item.id }}" data-general-ledger-account="{{ cash_flow_item.general_ledger_account }}" data-uuid-general-ledger-account="{{ cash_flow_item.uuid_general_ledger_account }}" data-transaction-type="{{ cash_flow_item.transaction_type }}" current-installment="{{ cash_flow_item.current_installment }}" total-installments="{{ cash_flow_item.total_installments }}" data-uuid-row="{{ cash_flow_item.uuid_correlacao }}" scope="row">
                                 <td class="checkbox-row"><label class="checkbox-container"><input id="checkbox-personalizado-{{ cash_flow_item.id }}" class="checkbox-personalizado" type="checkbox" data-id="{{ cash_flow_item.id }}" data-uuid-row="{{ cash_flow_item.uuid_correlacao }}"><span class="checkmark"></span></label></td>
                                 <td class="due_date-row">{{ cash_flow_item.due_date|date:"d/m/Y" }}</td>
                                 <td class="description-row">{{ cash_flow_item.description }}</td>
@@ -448,7 +448,7 @@
                                 <td class="parcela-row">{{ cash_flow_item.current_installment }}/{{ cash_flow_item.total_installments }}</td>
                                 <input type="hidden" id="total-installments-originais-recebimentos" name="total_installments_originais">
                                 <input type="hidden" id="total-installments-originais-pagamentos" name="total_installments_originais">
-                                {% if cash_flow_item.natureza == 'Débito' %}
+                                {% if cash_flow_item.transaction_type == 'Débito' %}
                                     <td class="debito-row">{{ cash_flow_item.amount|format_number }}</td>
                                     <td class="credito-row"></td>
                                 {% else %}

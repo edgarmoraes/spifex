@@ -39,8 +39,8 @@ def exibir_realizado(request):
         lista_grupo = list(group)
         lancamentos_com_totais.extend(lista_grupo)
 
-        total_debito = sum(item.amount for item in lista_grupo if item.natureza == 'Débito')
-        total_credito = sum(item.amount for item in lista_grupo if item.natureza == 'Crédito')
+        total_debito = sum(item.amount for item in lista_grupo if item.transaction_type == 'Débito')
+        total_credito = sum(item.amount for item in lista_grupo if item.transaction_type == 'Crédito')
         saldo_total = total_credito - total_debito  # Cálculo do saldo total
 
         # Inserir o total do mês, incluindo agora o saldo
@@ -89,12 +89,12 @@ def recalcular_totais_realizado():
         # Calcula os totais de crédito e débito para cada mês
         total_credito = SettledEntry.objects.filter(
             due_date__range=(inicio_mes, fim_mes),
-            natureza='Crédito'
+            transaction_type='Crédito'
         ).aggregate(Sum('amount'))['amount__sum'] or 0
 
         total_debito = SettledEntry.objects.filter(
             due_date__range=(inicio_mes, fim_mes),
-            natureza='Débito'
+            transaction_type='Débito'
         ).aggregate(Sum('amount'))['amount__sum'] or 0
 
         # Cria um novo registro em Totais_mes_realizado para cada mês
@@ -150,7 +150,7 @@ def criar_fluxo_com_registro(registro):
         current_installment=registro.current_installment,
         total_installments=registro.total_installments,
         tags=registro.tags,
-        natureza=registro.natureza,
+        transaction_type=registro.transaction_type,
         data_criacao=registro.original_data_criacao,
     )
     registro.delete()
@@ -191,7 +191,7 @@ def criar_fluxo_com_registro_unificado(registro, total_amount, manter_uuid=False
         current_installment=registro.current_installment,
         total_installments=registro.total_installments,
         tags=registro.tags,
-        natureza=registro.natureza,
+        transaction_type=registro.transaction_type,
         data_criacao=registro.original_data_criacao,
         uuid_correlacao=registro.uuid_correlacao if manter_uuid else None
     )
@@ -200,7 +200,7 @@ def criar_fluxo_com_registro_unificado(registro, total_amount, manter_uuid=False
 def atualizar_saldo_banco_apos_remocao(sender, instance, **kwargs):
     try:
         banco = Bancos.objects.get(id=instance.banco_id_liquidacao)  # Modificado para usar ID
-        if instance.natureza == 'Crédito':
+        if instance.transaction_type == 'Crédito':
             banco.saldo_atual -= instance.amount  # Subtrai para créditos
         else:  # Débito
             banco.saldo_atual += instance.amount  # Adiciona para débitos
