@@ -22,14 +22,14 @@
                 <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">Realizado</a></li>
                 <li class="nav-relatorios"><a href="#">Relatórios</a></li>
                 <li class="nav-line"><div class="line"></div></li>
-                <li class="nav-configuracoes"><a href="{% url 'configuracoes:configuracoes' %}">Configurações</a></li>
+                <li class="nav-configuracoes"><a href="{% url 'settings:settings' %}">Configurações</a></li>
                 <li class="nav-meu-perfil"><a href="meu-perfil.html">Meu Perfil</a></li>
             </ul>
         </nav>
     </header>
     <main class="main">
         <section class="container-buttons">
-            <a href="{% url 'configuracoes:configuracoes' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
+            <a href="{% url 'settings:settings' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
             <button class="botao-adicionar adicionar-bancos">
                 <svg class="svgIcon" width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M11 17C11 17.5523 11.4477 18 12 18C12.5523 18 13 17.5523 13 17V13H17C17.5523 13 18 12.5523 18 12C18 11.4477 17.5523 11 17 11H13V7C13 6.44771 12.5523 6 12 6C11.4477 6 11 6.44771 11 7V11H7C6.44772 11 6 11.4477 6 12C6 12.5523 6.44772 13 7 13H11V17Z" fill="#000000"/>
@@ -57,7 +57,7 @@
                             <td class="conta-row" name="conta">{{ banks_item.conta }}</td>
                             <td class="saldo-banco-row" name="saldo_inicial">{{ banks_item.saldo_inicial|format_number }}</td>
                             <td class="saldo_consolidado-banco-row" name="saldo_inicial">{{ banks_item.saldo_consolidado|format_number }}</td>
-                            <td class="status-row" name="status_banco">
+                            <td class="status-row" name="bank_status">
                                 {% if banks_item.status %}
                                 Ativo
                                 {% else %}
@@ -74,20 +74,20 @@
             <h1 class="modal-titulo">Bancos e Contas</h1>
         
             <form class="modal-form-bancos" action="/salvar_banco/" method="POST">{% csrf_token %}
-                <input type="hidden" name="id_banco" value="{{ banks_item.id }}">
+                <input type="hidden" name="bank_id" value="{{ banks_item.id }}">
                 <section class="modal-flex">
-                    <label for="descricao-bancos">Banco</label>
-                    <input class="modal-banco" id="descricao-bancos" type="text" name="descricao" required><br>
+                    <label for="bank-name">Banco</label>
+                    <input class="modal-banco" id="bank-name" type="text" name="bank_name" required><br>
                 </section>
         
                 <section class="modal-flex">
-                    <label for="agencia-banco">Agência</label>
-                    <input class="modal-agencia" id="agencia-banco" type="text" name="agencia" required><br>
+                    <label for="bank-branch">Agência</label>
+                    <input class="modal-agencia" id="bank-branch" type="text" name="bank_branch" required><br>
                 </section>
         
                 <section class="modal-flex">
-                    <label for="conta-banco">Conta</label>
-                    <input class="modal-conta" id="conta-banco" name="conta" required><br>
+                    <label for="bank-account">Conta</label>
+                    <input class="modal-conta" id="bank-account" name="bank_account" required><br>
                 </section>
         
                 <section class="modal-flex">

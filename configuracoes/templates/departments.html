@@ -22,14 +22,14 @@
                 <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">Realizado</a></li>
                 <li class="nav-relatorios"><a href="#">Relatórios</a></li>
                 <li class="nav-line"><div class="line"></div></li>
-                <li class="nav-configuracoes"><a href="{% url 'configuracoes:configuracoes' %}">Configurações</a></li>
+                <li class="nav-configuracoes"><a href="{% url 'settings:settings' %}">Configurações</a></li>
                 <li class="nav-meu-perfil"><a href="meu-perfil.html">Meu Perfil</a></li>
             </ul>
         </nav>
     </header>
     <main class="main">
         <section class="container-buttons">
-            <a href="{% url 'configuracoes:configuracoes' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
+            <a href="{% url 'settings:settings' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
             <button class="botao-adicionar adicionar-departamentos">
                 <svg class="svgIcon" width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M11 17C11 17.5523 11.4477 18 12 18C12.5523 18 13 17.5523 13 17V13H17C17.5523 13 18 12.5523 18 12C18 11.4477 17.5523 11 17 11H13V7C13 6.44771 12.5523 6 12 6C11.4477 6 11 6.44771 11 7V11H7C6.44772 11 6 11.4477 6 12C6 12.5523 6.44772 13 7 13H11V17Z" fill="#000000"/>
@@ -45,9 +45,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for departamento in departamentos %}
-                        <tr class="row-departamentos" scope="row" data-saldo-inicial="{{ departamento.saldo_inicial }}" data-id-departamentos="{{ departamento.id }}" data-uuid-departamentos="{{ departamento.uuid_departamento }}">
-                            <td class="departamentos-row">{{ departamento.departamento }}</td>
+                        {% for departments_item in Departments_list %}
+                        <tr class="row-departamentos" scope="row" data-saldo-inicial="{{ departments_item.saldo_inicial }}" data-id-departamentos="{{ departments_item.id }}" data-uuid-departamentos="{{ departments_item.uuid_departamento }}">
+                            <td class="departamentos-row">{{ departments_item.departamento }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -59,8 +59,8 @@
             <h1 class="modal-titulo">Departamentos</h1>
         
             <form class="modal-form-departamentos" action="/salvar_departamento/" method="POST">{% csrf_token %}
-                <input type="hidden" name="id_departamentos" value="{{ departamento.id }}">
-                <input type="hidden" name="uuid_departamentos" value="{{ departamento.uuid_departamento }}">
+                <input type="hidden" name="id_departamentos" value="{{ departments_item.id }}">
+                <input type="hidden" name="uuid_departamentos" value="{{ departments_item.uuid_departamento }}">
                 <section class="modal-flex">
                     <label for="departamento">Nome do departamento</label>
                     <input class="modal-departamentos" id="departamento" type="text" name="departamento" required><br>

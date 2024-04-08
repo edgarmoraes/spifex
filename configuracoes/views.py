@@ -8,70 +8,70 @@ from django.db.models import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-def configuracoes(request):
+def settings(request):
     if request.method =="GET":
-        return render(request, 'configuracoes.html')
+        return render(request, 'settings.html')
 
-def bancos_e_contas(request):
+def banks(request):
     if request.method =="GET":
-        lista_bancos = Banks.objects.all().order_by('id')
+        banks_list = Banks.objects.all().order_by('id')
 
         context = {
-            'Banks_list': lista_bancos,
+            'Banks_list': banks_list,
         }
         return render(request, 'bancos_e_contas.html', context)
     
 def departments(request):
     if request.method =="GET":
-        lista_departamentos = Departamentos.objects.all().order_by('id')
+        departments_list = Departamentos.objects.all().order_by('id')
 
         context = {
-            'departamentos': lista_departamentos,
+            'Departments_list': departments_list,
         }
         return render(request, 'departments.html', context)
     
 @csrf_exempt
-def salvar_banco(request):
+def save_bank(request):
     # Retorna erro se não for uma requisição POST
     if request.method != 'POST':
         return JsonResponse({"success": False, "error": "Método não permitido."}, status=405)
     
-    saldo_inicial_str = request.POST.get('saldo-inicial', 'R$ 0,00').replace('R$ ', '').replace('.', '').replace(',', '.')
-    saldo_inicial = Decimal(saldo_inicial_str) if saldo_inicial_str else Decimal('0.00')
+    opening_balance_str = request.POST.get('saldo-inicial', 'R$ 0,00').replace('R$ ', '').replace('.', '').replace(',', '.')
+    opening_balance = Decimal(opening_balance_str) if opening_balance_str else Decimal('0.00')
 
-    id_banco = request.POST.get('id_banco')
-    descricao = request.POST.get('descricao')
-    agencia = request.POST.get('agencia')
-    conta = request.POST.get('conta')
-    status_banco = request.POST.get('status-banco') == 'ativo'
+    bank_id = request.POST.get('bank_id')
+    bank_name = request.POST.get('bank_name')
+    bank_branch = request.POST.get('bank_branch')
+    bank_account = request.POST.get('bank_account')
+    bank_status = request.POST.get('bank_status') == 'ativo'
 
     try:
-        if id_banco:  # Atualização
-            banco = Banks.objects.get(pk=id_banco)
-            was_updated = banco.banco != descricao  # Verifica se a descrição do banco foi atualizada
+        if bank_id:  # Atualização
+            banks_table = Banks.objects.get(pk=bank_id)
+            was_updated = banks_table.banco != bank_name  # Verifica se a descrição do banco foi atualizada
         else:  # Criação
-            banco = Banks()
+            banks_table = Banks()
             was_updated = False
 
-        banco.banco = descricao
-        banco.agencia = agencia
-        banco.conta = conta
-        banco.saldo_inicial = saldo_inicial
-        banco.status = status_banco
-        banco.save()
+        banks_table.banco = bank_name
+        banks_table.agencia = bank_branch
+        banks_table.conta = bank_account
+        banks_table.saldo_inicial = opening_balance
+        banks_table.status = bank_status
+        banks_table.save()
 
         # Se a descrição do banco foi atualizada, atualiza também em SettledEntry
         if was_updated:
-            SettledEntry.objects.filter(banco_id_liquidacao=banco.id).update(banco_liquidacao=descricao)
+            SettledEntry.objects.filter(banco_id_liquidacao=banks_table.id).update(banco_liquidacao=bank_name)
 
         # Resposta JSON para atualização dinâmica
-        return JsonResponse({"success": True, "id": banco.id})
+        return JsonResponse({"success": True, "id": banks_table.id})
     except ObjectDoesNotExist:
         # Banco não encontrado para atualização
         return JsonResponse({"success": False, "error": "Banco não encontrado."}, status=404)
 
 @require_POST
-def verificar_e_excluir_banco(request, idBanco):
+def verify_and_delete_bank(request, idBanco):
     # Verifica se o banco está sendo utilizado na SettledEntry
     if SettledEntry.objects.filter(banco_id_liquidacao=idBanco).exists():
         # Banco está sendo utilizado, não pode ser excluído
@@ -79,8 +79,8 @@ def verificar_e_excluir_banco(request, idBanco):
 
     try:
         # Tenta encontrar e excluir o banco
-        banco = Banks.objects.get(pk=idBanco)
-        banco.delete()
+        bank_to_detele = Banks.objects.get(pk=idBanco)
+        bank_to_detele.delete()
         # Banco excluído com sucesso
         return JsonResponse({'success': True})
     except Banks.DoesNotExist:
@@ -88,41 +88,41 @@ def verificar_e_excluir_banco(request, idBanco):
         return JsonResponse({'success': False, 'error': 'Banco não encontrado.'})
     
 @require_POST
-def salvar_departamento(request):
-    id_departamento = request.POST.get('id_departamentos')
-    nome_departamento = request.POST.get('departamento')
+def save_department(request):
+    department_id = request.POST.get('id_departamentos')
+    department_name = request.POST.get('departamento')
 
-    if id_departamento:
+    if department_id:
         # Atualizar um departamento existente
         try:
-            departamento = Departamentos.objects.get(pk=id_departamento)
+            department_list = Departamentos.objects.get(pk=department_id)
             # Verifica se o nome é diferente para evitar conflito de nome único
-            if departamento.departamento != nome_departamento and Departamentos.objects.filter(departamento=nome_departamento).exists():
+            if department_list.departamento != department_name and Departamentos.objects.filter(departamento=department_name).exists():
                 return JsonResponse({'success': False, 'message': 'Por favor, escolha um nome diferente para o departamento.'})
-            departamento.departamento = nome_departamento
-            departamento.save()
+            department_list.departamento = department_name
+            department_list.save()
             return JsonResponse({'success': True, 'message': 'Departamento atualizado com sucesso.'})
         except Departamentos.DoesNotExist:
             return JsonResponse({'success': False, 'message': 'Departamento não encontrado.'})
     else:
         # Criar um novo departamento
-        if Departamentos.objects.filter(departamento=nome_departamento).exists():
+        if Departamentos.objects.filter(departamento=department_name).exists():
             return JsonResponse({'success': False, 'message': 'Por favor, escolha um nome diferente para o departamento.'})
         
-        novo_departamento = Departamentos(
-            departamento=nome_departamento,
+        new_department = Departamentos(
+            departamento=department_name,
             uuid_departamento=uuid.uuid4()
         )
-        novo_departamento.save()
+        new_department.save()
 
         return JsonResponse({'success': True, 'message': 'Departamento adicionado com sucesso.'})
 
 @require_POST
-def verificar_e_excluir_departamento(request, idDepartamento):
+def verify_and_delete_department(request, idDepartamento):
     try:
         # Tenta encontrar e excluir o departamento
-        departamento = Departamentos.objects.get(pk=idDepartamento)
-        departamento.delete()
+        department_list = Departamentos.objects.get(pk=idDepartamento)
+        department_list.delete()
         # Departamento excluído com sucesso
         return JsonResponse({'success': True})
     except Departamentos.DoesNotExist:

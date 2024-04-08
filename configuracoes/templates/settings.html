@@ -19,7 +19,7 @@
                 <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">Realizado</a></li>
                 <li class="nav-relatorios"><a href="#">Relatórios</a></li>
                 <li class="nav-line"><div class="line"></div></li>
-                <li class="nav-configuracoes"><a href="{% url 'configuracoes:configuracoes' %}">Configurações</a></li>
+                <li class="nav-configuracoes"><a href="{% url 'settings:settings' %}">Configurações</a></li>
                 <li class="nav-meu-perfil"><a href="meu-perfil.html">Meu Perfil</a></li>
             </ul>
         </nav>
@@ -27,7 +27,7 @@
     <main class="main">
         <div class="settings-list">
             <section class="accordion-section">
-                <a class="accordion-title" href="{% url 'configuracoes:bancos_e_contas' %}">Bancos e Contas</a>
+                <a class="accordion-title" href="{% url 'settings:banks' %}">Bancos e Contas</a>
             </section>
             <section class="accordion-section">
                 <a class="accordion-title" href="#">Usuários e Permissões</a>
@@ -40,7 +40,7 @@
                 <div class="accordion-content">
                     <ul>
                         <li><a href="{% url 'chart_of_accounts:chart_of_accounts' %}">Plano de Contas</a></li>
-                        <li><a href="{% url 'configuracoes:departments' %}">Departamentos</a></li>
+                        <li><a href="{% url 'settings:departments' %}">Departamentos</a></li>
                         <li><a href="#">Projetos</a></li>
                         <li><a href="#">Equipamentos e Maquinários</a></li>
                     </ul>

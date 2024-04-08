@@ -7,7 +7,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('fluxo_de_caixa/', include(('fluxo_de_caixa.urls', 'cash_flow'), namespace='cash_flow')),
     path('realizado/', include(('realizado.urls', 'realizado'), namespace='realizado')),
-    path('configuracoes/', include(('configuracoes.urls', 'configuracoes'), namespace='configuracoes')),
+    path('configuracoes/', include(('configuracoes.urls', 'settings'), namespace='settings')),
     path('accounts/', include('registration.urls')),
     path('home/', views.HomePage, name='home'),
     path('logout/', views.LogoutPage, name='logout'),

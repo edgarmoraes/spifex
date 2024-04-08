@@ -21,7 +21,7 @@
                 <li class="nav-realizado"><a href="{% url 'realizado:realizado' %}">Realizado</a></li>
                 <li class="nav-relatorios"><a href="#">Relatórios</a></li>
                 <li class="nav-line"><div class="line"></div></li>
-                <li class="nav-configuracoes"><a href="{% url 'configuracoes:configuracoes' %}">Configurações</a></li>
+                <li class="nav-configuracoes"><a href="{% url 'settings:settings' %}">Configurações</a></li>
                 <li class="nav-meu-perfil"><a href="meu-perfil.html">Meu Perfil</a></li>
             </ul>
         </nav>
@@ -29,7 +29,7 @@
     <main class="main">
         <div class="content-container">
             <section class="container-button-back">
-                <a href="{% url 'configuracoes:configuracoes' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
+                <a href="{% url 'settings:settings' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
             </section>
             <div id="report-container" class="report-container">
                 {% for group, items in chart_of_accounts|groupby:"group" %}

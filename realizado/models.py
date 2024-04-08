@@ -20,20 +20,20 @@ class SettledEntry(models.Model):
     uuid_correlation_parcelas = models.UUIDField(null=True, blank=True)
     uuid_general_ledger_account = models.UUIDField(null=True, blank=True)
 
-    _skip_update_saldo = False
+    _skip_update_balance = False
 
     def save(self, *args, **kwargs):
-        if not self._skip_update_saldo:
+        if not self._skip_update_balance:
             self.atualizar_saldo_banco()
         super().save(*args, **kwargs)
     
     def atualizar_saldo_banco(self):
-        banco = Banks.objects.get(id=self.banco_id_liquidacao)  # Modificado para usar ID
+        banks_table = Banks.objects.get(id=self.banco_id_liquidacao)  # Modificado para usar ID
         if self.transaction_type == 'Crédito':
-            banco.current_balance += self.amount
+            banks_table.current_balance += self.amount
         else:  # Débito
-            banco.current_balance -= self.amount
-        banco.save()
+            banks_table.current_balance -= self.amount
+        banks_table.save()
         pass
 
 class MonthsListSettled(models.Model):

@@ -408,7 +408,7 @@ def recalculate_totals():
 
 # FUNÇÕES ÚNICAS ############################################################################
 
-def filter_months(request):
+def filter_months_cash_flow(request):
     months_list_cash_flow = MonthsListCashFlow.objects.all().order_by('formatted_date')
     context = {'Months_list_cash_flow': months_list_cash_flow}
     return render(request, 'cash_flow.html', context)

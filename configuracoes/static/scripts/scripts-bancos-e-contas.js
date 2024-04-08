@@ -85,12 +85,12 @@ document.addEventListener('DOMContentLoaded', function () {
           const idBanco = linha.getAttribute('data-id-banco');
           const statusBanco = linha.querySelector('.status-row').textContent.trim(); // Use trim() para remover espaços em branco
 
-          document.getElementById('descricao-bancos').value = banco;
-          document.getElementById('agencia-banco').value = agencia;
-          document.getElementById('conta-banco').value = conta;
+          document.getElementById('bank-name').value = banco;
+          document.getElementById('bank-branch').value = agencia;
+          document.getElementById('bank-account').value = conta;
           document.getElementById('saldo-inicial').value = "R$ " + saldoInicial;
-          document.querySelector('[name="id_banco"]').value = idBanco;
-          const selectStatusBanco = document.querySelector('#status-banco');
+          document.querySelector('[name="bank_id"]').value = idBanco;
+          const selectStatusBanco = document.querySelector('#bank_status');
           selectStatusBanco.value = statusBanco.toLowerCase() === 'ativo' ? 'ativo' : 'inativo';
       });
   });
@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Configuração para apagar um banco
   document.querySelectorAll('.modal-apagar-bancos').forEach(button => {
       button.addEventListener('click', function() {
-          const idBanco = document.querySelector('input[name="id_banco"]').value;
+          const idBanco = document.querySelector('input[name="bank_id"]').value;
 
           fetch(`/configuracoes/verificar_e_excluir_banco/${idBanco}/`, {
               method: 'POST',
