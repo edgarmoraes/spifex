@@ -58,7 +58,7 @@
                             <td class="saldo-banco-row" name="initial_balance">{{ banks_item.initial_balance|format_number }}</td>
                             <td class="saldo_consolidado-banco-row" name="initial_balance">{{ banks_item.consolidated_balance|format_number }}</td>
                             <td class="status-row" name="bank_status">
-                                {% if banks_item.status %}
+                                {% if banks_item.bank_status %}
                                 Ativo
                                 {% else %}
                                 Inativo

@@ -18,7 +18,7 @@ def realizado(request):
         return display_settled(request)
 
 def display_settled(request):
-    active_banks = Banks.objects.filter(status=True)
+    active_banks = Banks.objects.filter(bank_status=True)
     settled_table_list = SettledEntry.objects.all().order_by('settlement_date', '-amount', 'description')
     months_list_settled = MonthsListSettled.objects.all().order_by('-end_of_month')
     chart_of_accounts_queryset = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')

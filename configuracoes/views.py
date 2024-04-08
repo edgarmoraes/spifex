@@ -57,7 +57,7 @@ def save_bank(request):
         banks_table.bank_branch = bank_branch
         banks_table.bank_account = bank_account
         banks_table.initial_balance = opening_balance
-        banks_table.status = bank_status
+        banks_table.bank_status = bank_status
         banks_table.save()
 
         # Se a descrição do banco foi atualizada, atualiza também em SettledEntry

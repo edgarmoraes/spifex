@@ -53,7 +53,7 @@ class Banks(models.Model):
     initial_balance = models.DecimalField(max_digits=13, decimal_places=2)
     current_balance = models.DecimalField(max_digits=13, decimal_places=2, default=0)
     consolidated_balance = models.DecimalField(max_digits=13, decimal_places=2, default=0) 
-    status = models.BooleanField(default=True)
+    bank_status = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         # No momento da criação do objeto, isso garantirá que consolidated_balance = initial_balance

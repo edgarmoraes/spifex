@@ -24,7 +24,7 @@ def cash_flow(request):
         return process_cash_flow(request)
 
 def display_cash_flow(request):
-    active_banks = Banks.objects.filter(status=True)
+    active_banks = Banks.objects.filter(bank_status=True)
     cash_flow_table_list = CashFlowEntry.objects.all().order_by('due_date', '-amount', 'description')
     months_list_cash_flow = MonthsListCashFlow.objects.all()
     chart_of_accounts_queryset_list = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
