@@ -1,6 +1,5 @@
 from django.db import models
 from datetime import datetime, timedelta
-from decimal import Decimal
 
 class CashFlowEntry(models.Model):
     due_date = models.DateField()

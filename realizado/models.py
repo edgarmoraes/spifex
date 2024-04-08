@@ -1,4 +1,3 @@
-import uuid
 from django.db import models
 from fluxo_de_caixa.models import Banks
 
