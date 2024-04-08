@@ -79,14 +79,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
           // Preencha os campos do modal com os dados da linha clicada
           const banco = linha.querySelector('.banco-row').textContent;
-          const agencia = linha.querySelector('.ag-row').textContent;
+          const bank_branch = linha.querySelector('.ag-row').textContent;
           const conta = linha.querySelector('.conta-row').textContent;
           const saldoInicial = linha.querySelector('.saldo-banco-row').textContent;
           const idBanco = linha.getAttribute('data-id-banco');
           const statusBanco = linha.querySelector('.status-row').textContent.trim(); // Use trim() para remover espaços em branco
 
           document.getElementById('bank-name').value = banco;
-          document.getElementById('bank-branch').value = agencia;
+          document.getElementById('bank-branch').value = bank_branch;
           document.getElementById('bank-account').value = conta;
           document.getElementById('saldo-inicial').value = "R$ " + saldoInicial;
           document.querySelector('[name="bank_id"]').value = idBanco;

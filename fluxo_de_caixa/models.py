@@ -41,15 +41,15 @@ class TemporaryTable(models.Model):
     moved_in = models.DateTimeField(auto_now_add=True)
     
     @staticmethod
-    def remover_antigos():
+    def remove_old():
         # Define o limite de tempo em 1 hora
-        limite_tempo = datetime.now() - timedelta(hours=1)
-        TemporaryTable.objects.filter(moved_in__lt=limite_tempo).delete()
+        time_limit = datetime.now() - timedelta(hours=1)
+        TemporaryTable.objects.filter(moved_in__lt=time_limit).delete()
 
 class Banks(models.Model):
     banco = models.CharField(max_length = 100)
-    agencia = models.CharField(max_length = 100)
-    conta = models.CharField(max_length = 100)
+    bank_branch = models.CharField(max_length = 100)
+    bank_account = models.CharField(max_length = 100)
     saldo_inicial = models.DecimalField(max_digits=13, decimal_places=2)
     current_balance = models.DecimalField(max_digits=13, decimal_places=2, default=0)
     saldo_consolidado = models.DecimalField(max_digits=13, decimal_places=2, default=0) 

@@ -162,8 +162,8 @@
                             {% for banks_item in Banks_list %}
                             <tr class="row-bancos" data-banco-id="{{ banks_item.id }}" scope="row">
                                 <td class="banco-row" name="banco">{{ banks_item.banco }}</td>
-                                <td class="ag-row" name="agencia">{{ banks_item.agencia }}</td>
-                                <td class="conta-row" name="conta">{{ banks_item.conta }}</td>
+                                <td class="ag-row" name="bank_branch">{{ banks_item.bank_branch }}</td>
+                                <td class="conta-row" name="bank_account">{{ banks_item.bank_account }}</td>
                                 <td class="saldo-banco-row" name="saldo_inicial">{{ banks_item.saldo_inicial|add_decimal:banks_item.current_balance|format_number }}</td>
                             </tr>
                             {% endfor %}

@@ -54,8 +54,8 @@ def save_bank(request):
             was_updated = False
 
         banks_table.banco = bank_name
-        banks_table.agencia = bank_branch
-        banks_table.conta = bank_account
+        banks_table.bank_branch = bank_branch
+        banks_table.bank_account = bank_account
         banks_table.saldo_inicial = opening_balance
         banks_table.status = bank_status
         banks_table.save()

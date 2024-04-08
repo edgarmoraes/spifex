@@ -189,8 +189,8 @@
                             {% for banks_item in Banks_list %}
                             <tr class="row-bancos" scope="row" name="banco-id" data-banco-id="{{ banks_item.id }}">
                                 <td class="banco-row" name="banco">{{ banks_item.banco }}</td>
-                                <td class="ag-row" name="agencia">{{ banks_item.agencia }}</td>
-                                <td class="conta-row" name="conta">{{ banks_item.conta }}</td>
+                                <td class="ag-row" name="bank_branch">{{ banks_item.bank_branch }}</td>
+                                <td class="conta-row" name="bank_account">{{ banks_item.bank_account }}</td>
                                 <td class="saldo-banco-row" name="saldo_inicial">{{ banks_item.saldo_inicial|add_decimal:banks_item.current_balance|format_number }}</td>
                             </tr>
                             {% endfor %}
@@ -535,8 +535,8 @@
                                     <tr class="row-bancos" scope="row">
                                         <td class="checkbox-row"><label class="checkbox-container"><input id="checkbox-personalizado-liquidacao-{{ banks_item.id }}" class="checkbox-personalizado-liquidacao" type="checkbox"><span class="checkmark-liquidacao"></span></label></td>
                                         <td class="banco-row banco-liquidacao" name="banco" data-nome-banco="{{ banks_item.banco }}" data-id-banco="{{ banks_item.id }}">{{ banks_item.banco }}</td>
-                                        <td class="ag-row" name="agencia">{{ banks_item.agencia }}</td>
-                                        <td class="conta-row" name="conta">{{ banks_item.conta }}</td>
+                                        <td class="ag-row" name="bank_branch">{{ banks_item.bank_branch }}</td>
+                                        <td class="conta-row" name="bank_account">{{ banks_item.bank_account }}</td>
                                         <td class="saldo-banco-liquidacao-row" name="saldo_inicial">{{ banks_item.saldo_inicial|add:banks_item.current_balance|format_number }}</td>
                                     </tr>
                                     {% endfor %}
