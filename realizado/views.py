@@ -19,7 +19,7 @@ def realizado(request):
 
 def exibir_realizado(request):
     bancos_ativos = Banks.objects.filter(status=True)
-    Tabela_realizado_list = SettledEntry.objects.all().order_by('data_liquidacao', '-amount', 'description')
+    settled_table_list = SettledEntry.objects.all().order_by('data_liquidacao', '-amount', 'description')
     months_list_settled = MonthsListSettled.objects.all().order_by('-end_of_month')
     chart_of_accounts_queryset = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
 
@@ -30,12 +30,12 @@ def exibir_realizado(request):
         accounts_by_subgroup[account.subgroup].append(account)
 
     # Convertendo QuerySet para lista para manipulação
-    Tabela_realizado_list = list(Tabela_realizado_list)
+    settled_table_list = list(settled_table_list)
 
     # Preparando a lista para incluir totais de cada mês
     lancamentos_com_totais = []
 
-    for key, group in groupby(Tabela_realizado_list, key=lambda x: x.data_liquidacao.strftime('%Y-%m')):
+    for key, group in groupby(settled_table_list, key=lambda x: x.data_liquidacao.strftime('%Y-%m')):
         lista_grupo = list(group)
         lancamentos_com_totais.extend(lista_grupo)
 
@@ -54,9 +54,9 @@ def exibir_realizado(request):
         })
 
     context = {
-        'Tabela_realizado_list': lancamentos_com_totais,
-        'Months_List_Settled': months_list_settled,  # Incluindo MonthsListSettled no contexto
-        'bancos': bancos_ativos,
+        'Settled_table_list': lancamentos_com_totais,
+        'Months_list_settled': months_list_settled,  # Incluindo MonthsListSettled no contexto
+        'Banks_list': bancos_ativos,
         'accounts_by_subgroup': accounts_by_subgroup,  # Passando o OrderedDict para o contexto
     }
     return render(request, 'realizado.html', context)
@@ -64,7 +64,7 @@ def exibir_realizado(request):
 
 def exibir_bancos(request):
     bancos = Banks.objects.all()
-    return render(request, 'realizado.html', {'bancos': bancos})
+    return render(request, 'realizado.html', {'Banks_list': bancos})
 
 
 @receiver(post_save, sender=SettledEntry)
@@ -109,7 +109,7 @@ def recalcular_totais_realizado():
 
 def meses_filtro_realizado(request):
     months_list_settled = MonthsListSettled.objects.all().order_by('formatted_date')
-    context = {'Months_List_Settled': months_list_settled}
+    context = {'Months_list_settled': months_list_settled}
     return render(request, 'realizado.html', context)
 
 

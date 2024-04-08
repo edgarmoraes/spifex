@@ -427,35 +427,35 @@
                     </tr>
                 </thead>
                 <tbody id="tabela-lancamentos">
-                    {% for cash_flow_item in Cash_flow_table_list %}
-                        {% if cash_flow_item.is_total %}
+                    {% for cash_flow_table_item in Cash_flow_table_list %}
+                        {% if cash_flow_table_item.is_total %}
                             <tr class="linha-total-mes">
                                 <td></td>
-                                <td colspan="4">Total do Mês {{ cash_flow_item.due_date|date:"m/Y" }}</td>
-                                <td class="debito-total-row">{{ cash_flow_item.debito|format_number }}</td>
-                                <td class="credito-total-row">{{ cash_flow_item.credito|format_number }}</td>
-                                <td class="saldo-total-row">{{ cash_flow_item.saldo|format_number }}</td>
+                                <td colspan="4">Total do Mês {{ cash_flow_table_item.due_date|date:"m/Y" }}</td>
+                                <td class="debito-total-row">{{ cash_flow_table_item.debito|format_number }}</td>
+                                <td class="credito-total-row">{{ cash_flow_table_item.credito|format_number }}</td>
+                                <td class="saldo-total-row">{{ cash_flow_table_item.saldo|format_number }}</td>
                             </tr>
                         {% else %}
-                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ cash_flow_item.id }}" data-general-ledger-account="{{ cash_flow_item.general_ledger_account }}" data-uuid-general-ledger-account="{{ cash_flow_item.uuid_general_ledger_account }}" data-transaction-type="{{ cash_flow_item.transaction_type }}" current-installment="{{ cash_flow_item.current_installment }}" total-installments="{{ cash_flow_item.total_installments }}" data-uuid-row="{{ cash_flow_item.uuid_correlation }}" scope="row">
-                                <td class="checkbox-row"><label class="checkbox-container"><input id="checkbox-personalizado-{{ cash_flow_item.id }}" class="checkbox-personalizado" type="checkbox" data-id="{{ cash_flow_item.id }}" data-uuid-row="{{ cash_flow_item.uuid_correlation }}"><span class="checkmark"></span></label></td>
-                                <td class="due_date-row">{{ cash_flow_item.due_date|date:"d/m/Y" }}</td>
-                                <td class="description-row">{{ cash_flow_item.description }}</td>
+                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ cash_flow_table_item.id }}" data-general-ledger-account="{{ cash_flow_table_item.general_ledger_account }}" data-uuid-general-ledger-account="{{ cash_flow_table_item.uuid_general_ledger_account }}" data-transaction-type="{{ cash_flow_table_item.transaction_type }}" current-installment="{{ cash_flow_table_item.current_installment }}" total-installments="{{ cash_flow_table_item.total_installments }}" data-uuid-row="{{ cash_flow_table_item.uuid_correlation }}" scope="row">
+                                <td class="checkbox-row"><label class="checkbox-container"><input id="checkbox-personalizado-{{ cash_flow_table_item.id }}" class="checkbox-personalizado" type="checkbox" data-id="{{ cash_flow_table_item.id }}" data-uuid-row="{{ cash_flow_table_item.uuid_correlation }}"><span class="checkmark"></span></label></td>
+                                <td class="due_date-row">{{ cash_flow_table_item.due_date|date:"d/m/Y" }}</td>
+                                <td class="description-row">{{ cash_flow_table_item.description }}</td>
                                 <td class="observation-row">
-                                    {{ cash_flow_item.observation }}
-                                    <small class="d-block">Tags: {{ cash_flow_item.tags }}</small>
+                                    {{ cash_flow_table_item.observation }}
+                                    <small class="d-block">Tags: {{ cash_flow_table_item.tags }}</small>
                                 </td>
-                                <td class="parcela-row">{{ cash_flow_item.current_installment }}/{{ cash_flow_item.total_installments }}</td>
+                                <td class="parcela-row">{{ cash_flow_table_item.current_installment }}/{{ cash_flow_table_item.total_installments }}</td>
                                 <input type="hidden" id="total-installments-originais-recebimentos" name="total_installments_originais">
                                 <input type="hidden" id="total-installments-originais-pagamentos" name="total_installments_originais">
-                                {% if cash_flow_item.transaction_type == 'Débito' %}
-                                    <td class="debito-row">{{ cash_flow_item.amount|format_number }}</td>
+                                {% if cash_flow_table_item.transaction_type == 'Débito' %}
+                                    <td class="debito-row">{{ cash_flow_table_item.amount|format_number }}</td>
                                     <td class="credito-row"></td>
                                 {% else %}
                                     <td class="debito-row"></td>
-                                    <td class="credito-row">{{ cash_flow_item.amount|format_number }}</td>
+                                    <td class="credito-row">{{ cash_flow_table_item.amount|format_number }}</td>
                                 {% endif %}
-                                <td class="saldo-row">{{ cash_flow_item.saldo|format_number }}</td>
+                                <td class="saldo-row">{{ cash_flow_table_item.saldo|format_number }}</td>
                             </tr>
                         {% endif %}
                     {% endfor %}
@@ -531,13 +531,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for banco in Banks_list %}
+                                    {% for banks_item in Banks_list %}
                                     <tr class="row-bancos" scope="row">
-                                        <td class="checkbox-row"><label class="checkbox-container"><input id="checkbox-personalizado-liquidacao-{{ banco.id }}" class="checkbox-personalizado-liquidacao" type="checkbox"><span class="checkmark-liquidacao"></span></label></td>
-                                        <td class="banco-row banco-liquidacao" name="banco" data-nome-banco="{{ banco.banco }}" data-id-banco="{{ banco.id }}">{{ banco.banco }}</td>
-                                        <td class="ag-row" name="agencia">{{ banco.agencia }}</td>
-                                        <td class="conta-row" name="conta">{{ banco.conta }}</td>
-                                        <td class="saldo-banco-liquidacao-row" name="saldo_inicial">{{ banco.saldo_inicial|add:banco.current_balance|format_number }}</td>
+                                        <td class="checkbox-row"><label class="checkbox-container"><input id="checkbox-personalizado-liquidacao-{{ banks_item.id }}" class="checkbox-personalizado-liquidacao" type="checkbox"><span class="checkmark-liquidacao"></span></label></td>
+                                        <td class="banco-row banco-liquidacao" name="banco" data-nome-banco="{{ banks_item.banco }}" data-id-banco="{{ banks_item.id }}">{{ banks_item.banco }}</td>
+                                        <td class="ag-row" name="agencia">{{ banks_item.agencia }}</td>
+                                        <td class="conta-row" name="conta">{{ banks_item.conta }}</td>
+                                        <td class="saldo-banco-liquidacao-row" name="saldo_inicial">{{ banks_item.saldo_inicial|add:banks_item.current_balance|format_number }}</td>
                                     </tr>
                                     {% endfor %}
                                     <tr class="totais-row-liquidacao" scope="row">

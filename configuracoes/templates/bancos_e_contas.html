@@ -50,15 +50,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for banco in bancos %}
-                        <tr class="row-bancos" scope="row" data-saldo-inicial="{{ banco.saldo_inicial }}" data-id-banco="{{ banco.id }}">
-                            <td class="banco-row" name="banco">{{ banco.banco }}</td>
-                            <td class="ag-row" name="agencia">{{ banco.agencia }}</td>
-                            <td class="conta-row" name="conta">{{ banco.conta }}</td>
-                            <td class="saldo-banco-row" name="saldo_inicial">{{ banco.saldo_inicial|format_number }}</td>
-                            <td class="saldo_consolidado-banco-row" name="saldo_inicial">{{ banco.saldo_consolidado|format_number }}</td>
+                        {% for banks_item in Banks_list %}
+                        <tr class="row-bancos" scope="row" data-saldo-inicial="{{ banks_item.saldo_inicial }}" data-id-banco="{{ banks_item.id }}">
+                            <td class="banco-row" name="banco">{{ banks_item.banco }}</td>
+                            <td class="ag-row" name="agencia">{{ banks_item.agencia }}</td>
+                            <td class="conta-row" name="conta">{{ banks_item.conta }}</td>
+                            <td class="saldo-banco-row" name="saldo_inicial">{{ banks_item.saldo_inicial|format_number }}</td>
+                            <td class="saldo_consolidado-banco-row" name="saldo_inicial">{{ banks_item.saldo_consolidado|format_number }}</td>
                             <td class="status-row" name="status_banco">
-                                {% if banco.status %}
+                                {% if banks_item.status %}
                                 Ativo
                                 {% else %}
                                 Inativo
@@ -74,7 +74,7 @@
             <h1 class="modal-titulo">Bancos e Contas</h1>
         
             <form class="modal-form-bancos" action="/salvar_banco/" method="POST">{% csrf_token %}
-                <input type="hidden" name="id_banco" value="{{ banco.id }}">
+                <input type="hidden" name="id_banco" value="{{ banks_item.id }}">
                 <section class="modal-flex">
                     <label for="descricao-bancos">Banco</label>
                     <input class="modal-banco" id="descricao-bancos" type="text" name="descricao" required><br>

@@ -18,7 +18,7 @@ def bancos_e_contas(request):
         lista_bancos = Banks.objects.all().order_by('id')
 
         context = {
-            'bancos': lista_bancos,
+            'Banks_list': lista_bancos,
         }
         return render(request, 'bancos_e_contas.html', context)
     

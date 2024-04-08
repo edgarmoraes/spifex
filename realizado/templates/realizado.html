@@ -71,10 +71,10 @@
                                         <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
-                                        {% for total in Months_List_Settled %}
+                                        {% for months in Months_list_settled %}
                                         <label class="label-filters">
-                                            <input type="checkbox" name="meses" value="{{ total.formatted_date }}" class="mes-checkbox" data-start-of-month="{{ total.start_of_month|date:'Y-m-d' }}" data-end-of-month="{{ total.end_of_month|date:'Y-m-d' }}">
-                                            {{ total.formatted_date }}
+                                            <input type="checkbox" name="meses" value="{{ months.formatted_date }}" class="mes-checkbox" data-start-of-month="{{ months.start_of_month|date:'Y-m-d' }}" data-end-of-month="{{ months.end_of_month|date:'Y-m-d' }}">
+                                            {{ months.formatted_date }}
                                         </label>
                                         {% endfor %}
                                     </div>
@@ -92,10 +92,10 @@
                                         <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-bancos', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
-                                        {% for banco in bancos %}
+                                        {% for banks_item in Banks_list %}
                                         <label class="label-filters">
-                                            <input type="checkbox" name="bancos" value="{{ banco.id }}" class="banco-checkbox">
-                                            {{ banco.banco }}
+                                            <input type="checkbox" name="bancos" value="{{ banks_item.id }}" class="banco-checkbox">
+                                            {{ banks_item.banco }}
                                         </label>
                                         {% endfor %}
                                     </div>
@@ -159,12 +159,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for banco in bancos %}
-                            <tr class="row-bancos" data-banco-id="{{ banco.id }}" scope="row">
-                                <td class="banco-row" name="banco">{{ banco.banco }}</td>
-                                <td class="ag-row" name="agencia">{{ banco.agencia }}</td>
-                                <td class="conta-row" name="conta">{{ banco.conta }}</td>
-                                <td class="saldo-banco-row" name="saldo_inicial">{{ banco.saldo_inicial|add_decimal:banco.current_balance|format_number }}</td>
+                            {% for banks_item in Banks_list %}
+                            <tr class="row-bancos" data-banco-id="{{ banks_item.id }}" scope="row">
+                                <td class="banco-row" name="banco">{{ banks_item.banco }}</td>
+                                <td class="ag-row" name="agencia">{{ banks_item.agencia }}</td>
+                                <td class="conta-row" name="conta">{{ banks_item.conta }}</td>
+                                <td class="saldo-banco-row" name="saldo_inicial">{{ banks_item.saldo_inicial|add_decimal:banks_item.current_balance|format_number }}</td>
                             </tr>
                             {% endfor %}
                             <tr class="totais-row" scope="row">
@@ -185,9 +185,9 @@
             <h1 class="modal-titulo">Realizado</h1>
             
             <form class="modal-form-realizado" action="/realizado/" method="POST">{% csrf_token %}
-                <input type="hidden" name="lancamento_id_realizado" value="{{ realizado.id }}">
-                <input type="hidden" name="uuid_realizado" value="{{ realizado.uuid_correlation }}">
-                <input type="hidden" name="uuid_parcelas_realizado" value="{{ realizado.uuid_correlation_parcelas }}">
+                <input type="hidden" name="lancamento_id_realizado" value="{{ settled_table_item.id }}">
+                <input type="hidden" name="uuid_realizado" value="{{ settled_table_item.uuid_correlation }}">
+                <input type="hidden" name="uuid_parcelas_realizado" value="{{ settled_table_item.uuid_correlation_parcelas }}">
                 <section class="modal-flex">
                     <label for="data-realizado">Data</label>
                     <input class="modal-data" id="data-realizado" type="date" name="due_date" required><br>
@@ -216,7 +216,7 @@
             
                 <section class="modal-flex" id="parcelas-section-realizado">
                     <label for="parcelas-realizado">Parcela</label>
-                    <input class="modal-parcelas" id="parcelas-realizado" type="text" name="parcelas" current-installment="{{ realizado.current_installment }}" total-installments="{{ realizado.total_installments }}" min="1" value="1" readonly><br>
+                    <input class="modal-parcelas" id="parcelas-realizado" type="text" name="parcelas" current-installment="{{ settled_table_item.current_installment }}" total-installments="{{ settled_table_item.total_installments }}" min="1" value="1" readonly><br>
                 </section>
 
                 <section class="modal-flex mesclar-2">
@@ -246,36 +246,36 @@
                     </tr>
                 </thead>
                 <tbody id="tabela-lancamentos">
-                    {% for realizado in Tabela_realizado_list %}
-                        {% if realizado.is_total %}
+                    {% for settled_table_item in Settled_table_list %}
+                        {% if settled_table_item.is_total %}
                             <tr class="linha-total-mes">
                                 <td></td>
-                                <td colspan="5">Total do Mês {{ realizado.data_liquidacao|date:"m/Y" }}</td>
-                                <td class="debito-total-row">{{ realizado.debito|format_number }}</td>
-                                <td class="credito-total-row">{{ realizado.credito|format_number }}</td>
-                                <td class="saldo-total-row">{{ realizado.saldo|format_number }}</td>
+                                <td colspan="5">Total do Mês {{ settled_table_item.data_liquidacao|date:"m/Y" }}</td>
+                                <td class="debito-total-row">{{ settled_table_item.debito|format_number }}</td>
+                                <td class="credito-total-row">{{ settled_table_item.credito|format_number }}</td>
+                                <td class="saldo-total-row">{{ settled_table_item.saldo|format_number }}</td>
                             </tr>
                         {% else %}
-                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ realizado.id }}" data-banco-liquidacao="{{ realizado.banco_liquidacao }}" data-banco-id-liquidacao="{{ realizado.banco_id_liquidacao }}" data-general-ledger-account="{{ realizado.general_ledger_account }}" data-uuid-general-ledger-account="{{ realizado.uuid_general_ledger_account }}" current-installment="{{ realizado.current_installment }}" total-installments="{{ realizado.total_installments }}" data-transaction-type="{{ realizado.transaction_type }}" data-uuid-correlacao="{{ realizado.uuid_correlation }}" data-uuid-correlacao-parcelas="{{ realizado.uuid_correlation_parcelas }}" scope="row">
-                                <td class="checkbox-row"><label class="checkbox-container"><input id="checkbox-personalizado-{{ realizado.id }}" class="checkbox-personalizado" type="checkbox" data-id="{{ realizado.id }}" data-uuid-correlacao="{{ realizado.uuid_correlation }}" data-uuid-correlacao-parcelas="{{ realizado.uuid_correlation_parcelas }}"><span class="checkmark"></span></label></td>
-                                <td class="due_date-row">{{ realizado.data_liquidacao|date:"d/m/Y" }}</td>
-                                <td class="description-row">{{ realizado.description }}</td>
+                            <tr class="row-lancamentos" id="row-lancamentos" data-id-row="{{ settled_table_item.id }}" data-banco-liquidacao="{{ settled_table_item.banco_liquidacao }}" data-banco-id-liquidacao="{{ settled_table_item.banco_id_liquidacao }}" data-general-ledger-account="{{ settled_table_item.general_ledger_account }}" data-uuid-general-ledger-account="{{ settled_table_item.uuid_general_ledger_account }}" current-installment="{{ settled_table_item.current_installment }}" total-installments="{{ settled_table_item.total_installments }}" data-transaction-type="{{ settled_table_item.transaction_type }}" data-uuid-correlacao="{{ settled_table_item.uuid_correlation }}" data-uuid-correlacao-parcelas="{{ settled_table_item.uuid_correlation_parcelas }}" scope="row">
+                                <td class="checkbox-row"><label class="checkbox-container"><input id="checkbox-personalizado-{{ settled_table_item.id }}" class="checkbox-personalizado" type="checkbox" data-id="{{ settled_table_item.id }}" data-uuid-correlacao="{{ settled_table_item.uuid_correlation }}" data-uuid-correlacao-parcelas="{{ settled_table_item.uuid_correlation_parcelas }}"><span class="checkmark"></span></label></td>
+                                <td class="due_date-row">{{ settled_table_item.data_liquidacao|date:"d/m/Y" }}</td>
+                                <td class="description-row">{{ settled_table_item.description }}</td>
                                 <td class="observation-row">
-                                    {{ realizado.observation }}
-                                    <small class="d-block">Tags: {{ realizado.tags }}</small>
+                                    {{ settled_table_item.observation }}
+                                    <small class="d-block">Tags: {{ settled_table_item.tags }}</small>
                                 </td>
-                                <td class="banco-row">{{ realizado.banco_liquidacao }}</td>
-                                <td class="parcela-row">{{ realizado.current_installment }}/{{ realizado.total_installments }}</td>
+                                <td class="banco-row">{{ settled_table_item.banco_liquidacao }}</td>
+                                <td class="parcela-row">{{ settled_table_item.current_installment }}/{{ settled_table_item.total_installments }}</td>
                                 <input type="hidden" id="total-installments-originais-recebimentos" name="total_installments_originais">
                                 <input type="hidden" id="total-installments-originais-pagamentos" name="total_installments_originais">
-                                {% if realizado.transaction_type == 'Débito' %}
-                                    <td class="debito-row">{{ realizado.amount|format_number }}</td>
+                                {% if settled_table_item.transaction_type == 'Débito' %}
+                                    <td class="debito-row">{{ settled_table_item.amount|format_number }}</td>
                                     <td class="credito-row"></td>
                                 {% else %}
                                     <td class="debito-row"></td>
-                                    <td class="credito-row">{{ realizado.amount|format_number }}</td>
+                                    <td class="credito-row">{{ settled_table_item.amount|format_number }}</td>
                                 {% endif %}
-                                <td class="saldo-row" id = "saldo-row">{{ realizado.saldo|format_number }}</td>
+                                <td class="saldo-row" id = "saldo-row">{{ settled_table_item.saldo|format_number }}</td>
                             </tr>
                         {% endif %}
                     {% endfor %}
