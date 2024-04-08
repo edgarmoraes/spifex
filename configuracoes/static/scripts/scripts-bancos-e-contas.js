@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
           document.getElementById('bank-account').value = conta;
           document.getElementById('saldo-inicial').value = "R$ " + saldoInicial;
           document.querySelector('[name="bank_id"]').value = idBanco;
-          const selectStatusBanco = document.querySelector('#bank_status');
+          const selectStatusBanco = document.getElementById('bank-status');
           selectStatusBanco.value = statusBanco.toLowerCase() === 'ativo' ? 'ativo' : 'inativo';
       });
   });
