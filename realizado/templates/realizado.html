@@ -47,7 +47,7 @@
                                         <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-contas', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
-                                        {% for subgroup, accounts in accounts_by_subgroup.items %}
+                                        {% for subgroup, accounts in Accounts_by_subgroup_list.items %}
                                             <div class="subgroup-label" data-nature="{{ accounts.0.nature }}">{{ subgroup }}</div>
                                             {% for account in accounts %}
                                                 <label class="label-filters">

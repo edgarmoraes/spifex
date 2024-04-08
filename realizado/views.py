@@ -57,7 +57,7 @@ def exibir_realizado(request):
         'Settled_table_list': lancamentos_com_totais,
         'Months_list_settled': months_list_settled,  # Incluindo MonthsListSettled no contexto
         'Banks_list': bancos_ativos,
-        'accounts_by_subgroup': accounts_by_subgroup,  # Passando o OrderedDict para o contexto
+        'Accounts_by_subgroup_list': accounts_by_subgroup,  # Passando o OrderedDict para o contexto
     }
     return render(request, 'realizado.html', context)
 
