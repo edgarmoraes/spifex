@@ -1054,11 +1054,11 @@ function calcularTotal() {
           const debito = row.querySelector('.debito-row').textContent.trim();
 
           if (credito) {
-              total += formatAmount(credito);
+              total += formatAmountBalance(credito);
           }
 
           if (debito) {
-              total -= formatAmount(debito);
+              total -= formatAmountBalance(debito);
           }
       }
   });
