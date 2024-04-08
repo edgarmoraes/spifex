@@ -2,7 +2,7 @@ import uuid
 from decimal import Decimal
 from django.shortcuts import render
 from django.http import JsonResponse
-from fluxo_de_caixa.models import Banks, Departamentos
+from fluxo_de_caixa.models import Banks, Departments
 from realizado.models import SettledEntry
 from django.db.models import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
@@ -23,7 +23,7 @@ def banks(request):
     
 def departments(request):
     if request.method =="GET":
-        departments_list = Departamentos.objects.all().order_by('id')
+        departments_list = Departments.objects.all().order_by('id')
 
         context = {
             'Departments_list': departments_list,
@@ -56,13 +56,13 @@ def save_bank(request):
         banks_table.banco = bank_name
         banks_table.bank_branch = bank_branch
         banks_table.bank_account = bank_account
-        banks_table.saldo_inicial = opening_balance
+        banks_table.initial_balance = opening_balance
         banks_table.status = bank_status
         banks_table.save()
 
         # Se a descrição do banco foi atualizada, atualiza também em SettledEntry
         if was_updated:
-            SettledEntry.objects.filter(banco_id_liquidacao=banks_table.id).update(banco_liquidacao=bank_name)
+            SettledEntry.objects.filter(settlement_bank_id=banks_table.id).update(settlement_bank=bank_name)
 
         # Resposta JSON para atualização dinâmica
         return JsonResponse({"success": True, "id": banks_table.id})
@@ -73,7 +73,7 @@ def save_bank(request):
 @require_POST
 def verify_and_delete_bank(request, idBanco):
     # Verifica se o banco está sendo utilizado na SettledEntry
-    if SettledEntry.objects.filter(banco_id_liquidacao=idBanco).exists():
+    if SettledEntry.objects.filter(settlement_bank_id=idBanco).exists():
         # Banco está sendo utilizado, não pode ser excluído
         return JsonResponse({'success': False, 'error': 'Este banco está sendo utilizado e não pode ser excluído.'})
 
@@ -90,28 +90,28 @@ def verify_and_delete_bank(request, idBanco):
 @require_POST
 def save_department(request):
     department_id = request.POST.get('id_departamentos')
-    department_name = request.POST.get('departamento')
+    department_name = request.POST.get('department')
 
     if department_id:
-        # Atualizar um departamento existente
+        # Atualizar um department existente
         try:
-            department_list = Departamentos.objects.get(pk=department_id)
+            department_list = Departments.objects.get(pk=department_id)
             # Verifica se o nome é diferente para evitar conflito de nome único
-            if department_list.departamento != department_name and Departamentos.objects.filter(departamento=department_name).exists():
-                return JsonResponse({'success': False, 'message': 'Por favor, escolha um nome diferente para o departamento.'})
-            department_list.departamento = department_name
+            if department_list.department != department_name and Departments.objects.filter(department=department_name).exists():
+                return JsonResponse({'success': False, 'message': 'Por favor, escolha um nome diferente para o department.'})
+            department_list.department = department_name
             department_list.save()
             return JsonResponse({'success': True, 'message': 'Departamento atualizado com sucesso.'})
-        except Departamentos.DoesNotExist:
+        except Departments.DoesNotExist:
             return JsonResponse({'success': False, 'message': 'Departamento não encontrado.'})
     else:
-        # Criar um novo departamento
-        if Departamentos.objects.filter(departamento=department_name).exists():
-            return JsonResponse({'success': False, 'message': 'Por favor, escolha um nome diferente para o departamento.'})
+        # Criar um novo department
+        if Departments.objects.filter(department=department_name).exists():
+            return JsonResponse({'success': False, 'message': 'Por favor, escolha um nome diferente para o department.'})
         
-        new_department = Departamentos(
-            departamento=department_name,
-            uuid_departamento=uuid.uuid4()
+        new_department = Departments(
+            department=department_name,
+            uuid_department=uuid.uuid4()
         )
         new_department.save()
 
@@ -120,11 +120,11 @@ def save_department(request):
 @require_POST
 def verify_and_delete_department(request, idDepartamento):
     try:
-        # Tenta encontrar e excluir o departamento
-        department_list = Departamentos.objects.get(pk=idDepartamento)
+        # Tenta encontrar e excluir o department
+        department_list = Departments.objects.get(pk=idDepartamento)
         department_list.delete()
         # Departamento excluído com sucesso
         return JsonResponse({'success': True})
-    except Departamentos.DoesNotExist:
+    except Departments.DoesNotExist:
         # Departamento não encontrado
         return JsonResponse({'success': False, 'error': 'Departamento não encontrado.'})

@@ -13,11 +13,11 @@ class SettledEntry(models.Model):
     tags = models.CharField(max_length = 100)
     transaction_type = models.CharField(max_length=50)
     original_creation_date = models.DateTimeField(null=True, blank=True)
-    data_liquidacao = models.DateTimeField()
-    banco_liquidacao = models.CharField(max_length=255, null=True, blank=True)
-    banco_id_liquidacao = models.IntegerField(null=True, blank=True)
+    settlement_date = models.DateTimeField()
+    settlement_bank = models.CharField(max_length=255, null=True, blank=True)
+    settlement_bank_id = models.IntegerField(null=True, blank=True)
     uuid_correlation = models.UUIDField(null=True, blank=True)
-    uuid_correlation_parcelas = models.UUIDField(null=True, blank=True)
+    uuid_correlation_installments = models.UUIDField(null=True, blank=True)
     uuid_general_ledger_account = models.UUIDField(null=True, blank=True)
 
     _skip_update_balance = False
@@ -28,7 +28,7 @@ class SettledEntry(models.Model):
         super().save(*args, **kwargs)
     
     def atualizar_saldo_banco(self):
-        banks_table = Banks.objects.get(id=self.banco_id_liquidacao)  # Modificado para usar ID
+        banks_table = Banks.objects.get(id=self.settlement_bank_id)  # Modificado para usar ID
         if self.transaction_type == 'Crédito':
             banks_table.current_balance += self.amount
         else:  # Débito

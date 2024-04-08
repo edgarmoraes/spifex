@@ -58,7 +58,7 @@ function atualizarSaldoBanco() {
   document.querySelectorAll('.checkbox-personalizado-liquidacao').forEach(checkbox => {
     if (checkbox.checked) {
       // Encontrar o elemento de saldo inicial do banco correspondente
-      let saldoInicialEl = checkbox.closest('.row-bancos').querySelector('[name="saldo_inicial"]');
+      let saldoInicialEl = checkbox.closest('.row-bancos').querySelector('[name="initial_balance"]');
       let saldoInicial = formatAmountBalance(saldoInicialEl.textContent);
       
       // Calcular o novo saldo
@@ -400,9 +400,9 @@ document.getElementById('salvar-liquidacao').addEventListener('click', async fun
       current_installment: row.getAttribute('current-installment'),
       total_installments: row.getAttribute('total-installments'),
       transaction_type: row.querySelector('.debito-row').textContent ? 'Débito' : 'Crédito',
-      data_liquidacao: campoData ? campoData.value : '',
-      banco_liquidacao: nomeBancoSelecionado,
-      banco_id_liquidacao: idBancoSelecionado,
+      settlement_date: campoData ? campoData.value : '',
+      settlement_bank: nomeBancoSelecionado,
+      settlement_bank_id: idBancoSelecionado,
       partial_amount: partialAmount > 0 ? partialAmount : undefined,
     };
 

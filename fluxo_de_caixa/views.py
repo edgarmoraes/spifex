@@ -260,8 +260,8 @@ def process_transfer(request):
     withdrawal_entry = SettledEntry(
         due_date=settlement_date,
         description=f'Transferência para {deposit_bank_name}',
-        banco_id_liquidacao=withdrawal_bank_id,
-        banco_liquidacao=withdrawal_bank_name,
+        settlement_bank_id=withdrawal_bank_id,
+        settlement_bank=withdrawal_bank_name,
         observation=transfer_observation,
         amount=transfer_transaction_amount,
         general_ledger_account='Transferência Saída',
@@ -270,7 +270,7 @@ def process_transfer(request):
         tags='Transferência',
         transaction_type='Débito',
         original_creation_date=datetime.now(),
-        data_liquidacao=settlement_date,
+        settlement_date=settlement_date,
         uuid_correlation=id_correlation
     )
     withdrawal_entry.save()
@@ -279,8 +279,8 @@ def process_transfer(request):
     deposit_entry = SettledEntry(
         due_date=settlement_date,
         description=f'Transferência de {withdrawal_bank_name}',
-        banco_id_liquidacao=deposit_bank_id,
-        banco_liquidacao=deposit_bank_name,
+        settlement_bank_id=deposit_bank_id,
+        settlement_bank=deposit_bank_name,
         observation=transfer_observation,
         amount=transfer_transaction_amount,
         general_ledger_account='Transferência Entrada',
@@ -289,7 +289,7 @@ def process_transfer(request):
         tags='Transferência',
         transaction_type='Crédito',
         original_creation_date=datetime.now(),
-        data_liquidacao=settlement_date,
+        settlement_date=settlement_date,
         uuid_correlation=id_correlation
     )
     deposit_entry.save()
@@ -323,7 +323,7 @@ def process_settlement(request):
                         original_record.save()
                     # Se for a última liquidação parcial, o UUID já está definido
 
-                settlement_date_aware = timezone.make_aware(datetime.strptime(item['data_liquidacao'], '%Y-%m-%d'))
+                settlement_date_aware = timezone.make_aware(datetime.strptime(item['settlement_date'], '%Y-%m-%d'))
                 installment_number = SettledEntry.objects.filter(uuid_correlation=uuid_correlation).count() + 1 if uuid_correlation else 1
 
                 updated_entry_description = original_record.description
@@ -343,11 +343,11 @@ def process_settlement(request):
                     tags=original_record.tags,
                     transaction_type=original_record.transaction_type,
                     original_creation_date=original_record.creation_date,
-                    data_liquidacao=settlement_date_aware,
-                    banco_liquidacao=item.get('banco_liquidacao', ''),
-                    banco_id_liquidacao=item.get('banco_id_liquidacao', ''),
+                    settlement_date=settlement_date_aware,
+                    settlement_bank=item.get('settlement_bank', ''),
+                    settlement_bank_id=item.get('settlement_bank_id', ''),
                     uuid_correlation=uuid_correlation,
-                    uuid_correlation_parcelas=uuid_correlation
+                    uuid_correlation_installments=uuid_correlation
                 )
 
                 # Remove o registro original se for uma liquidação total ou a última liquidação parcial

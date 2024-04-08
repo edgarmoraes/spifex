@@ -46,8 +46,8 @@
                     </thead>
                     <tbody>
                         {% for departments_item in Departments_list %}
-                        <tr class="row-departamentos" scope="row" data-saldo-inicial="{{ departments_item.saldo_inicial }}" data-id-departamentos="{{ departments_item.id }}" data-uuid-departamentos="{{ departments_item.uuid_departamento }}">
-                            <td class="departamentos-row">{{ departments_item.departamento }}</td>
+                        <tr class="row-departamentos" scope="row" data-saldo-inicial="{{ departments_item.saldo_inicial }}" data-id-departamentos="{{ departments_item.id }}" data-uuid-departamentos="{{ departments_item.uuid_department }}">
+                            <td class="departamentos-row">{{ departments_item.department }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -60,10 +60,10 @@
         
             <form class="modal-form-departamentos" action="/salvar_departamento/" method="POST">{% csrf_token %}
                 <input type="hidden" name="id_departamentos" value="{{ departments_item.id }}">
-                <input type="hidden" name="uuid_departamentos" value="{{ departments_item.uuid_departamento }}">
+                <input type="hidden" name="uuid_departments" value="{{ departments_item.uuid_department }}">
                 <section class="modal-flex">
-                    <label for="departamento">Nome do departamento</label>
-                    <input class="modal-departamentos" id="departamento" type="text" name="departamento" required><br>
+                    <label for="department">Nome do departamento</label>
+                    <input class="modal-departamentos" id="department" type="text" name="department" required><br>
                 </section>
                 <section class="modal-botoes">
                     <input class="modal-salvar-departamentos" type="submit" value="Salvar">

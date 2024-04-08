@@ -51,12 +51,12 @@
                     </thead>
                     <tbody>
                         {% for banks_item in Banks_list %}
-                        <tr class="row-bancos" scope="row" data-saldo-inicial="{{ banks_item.saldo_inicial }}" data-id-banco="{{ banks_item.id }}">
+                        <tr class="row-bancos" scope="row" data-saldo-inicial="{{ banks_item.initial_balance }}" data-id-banco="{{ banks_item.id }}">
                             <td class="banco-row" name="banco">{{ banks_item.banco }}</td>
                             <td class="ag-row" name="bank_branch">{{ banks_item.bank_branch }}</td>
                             <td class="conta-row" name="bank_account">{{ banks_item.bank_account }}</td>
-                            <td class="saldo-banco-row" name="saldo_inicial">{{ banks_item.saldo_inicial|format_number }}</td>
-                            <td class="saldo_consolidado-banco-row" name="saldo_inicial">{{ banks_item.saldo_consolidado|format_number }}</td>
+                            <td class="saldo-banco-row" name="initial_balance">{{ banks_item.initial_balance|format_number }}</td>
+                            <td class="saldo_consolidado-banco-row" name="initial_balance">{{ banks_item.consolidated_balance|format_number }}</td>
                             <td class="status-row" name="bank_status">
                                 {% if banks_item.status %}
                                 Ativo

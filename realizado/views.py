@@ -19,7 +19,7 @@ def realizado(request):
 
 def display_settled(request):
     active_banks = Banks.objects.filter(status=True)
-    settled_table_list = SettledEntry.objects.all().order_by('data_liquidacao', '-amount', 'description')
+    settled_table_list = SettledEntry.objects.all().order_by('settlement_date', '-amount', 'description')
     months_list_settled = MonthsListSettled.objects.all().order_by('-end_of_month')
     chart_of_accounts_queryset = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
 
@@ -35,7 +35,7 @@ def display_settled(request):
     # Preparando a lista para incluir totais de cada mês
     entries_with_totals = []
 
-    for key, group in groupby(settled_table_list, key=lambda x: x.data_liquidacao.strftime('%Y-%m')):
+    for key, group in groupby(settled_table_list, key=lambda x: x.settlement_date.strftime('%Y-%m')):
         group_list = list(group)
         entries_with_totals.extend(group_list)
 
@@ -45,7 +45,7 @@ def display_settled(request):
 
         # Inserir o total do mês, incluindo agora o saldo
         entries_with_totals.append({
-            'data_liquidacao': datetime.strptime(key + "-01", '%Y-%m-%d'),
+            'settlement_date': datetime.strptime(key + "-01", '%Y-%m-%d'),
             'description': 'Total do Mês',
             'debito': total_debit,
             'credito': total_credit,
@@ -80,7 +80,7 @@ def recalculate_totals():
     MonthsListSettled.objects.all().delete()
 
     # Encontra todas as datas únicas de due_date em SettledEntry
-    unique_dates = SettledEntry.objects.dates('data_liquidacao', 'month', order='ASC')
+    unique_dates = SettledEntry.objects.dates('settlement_date', 'month', order='ASC')
 
     for unique_date in unique_dates:
         start_of_month = unique_date
@@ -127,7 +127,7 @@ def process_return(request):
             continue
 
         uuid_correlation = original_record.uuid_correlation
-        uuid_correlation_installments = original_record.uuid_correlation_parcelas
+        uuid_correlation_installments = original_record.uuid_correlation_installments
 
         if not uuid_correlation:
             create_cash_flow_entry(original_record)
@@ -156,10 +156,10 @@ def create_cash_flow_entry(record):
     record.delete()
 
 def process_selected_uuids(uuid_correlation, uuid_correlation_installments, selected_ids, original_record):
-    more_records = SettledEntry.objects.filter(uuid_correlation=uuid_correlation, uuid_correlation_parcelas=uuid_correlation_installments).exclude(id__in=selected_ids).exists()
+    more_records = SettledEntry.objects.filter(uuid_correlation=uuid_correlation, uuid_correlation_installments=uuid_correlation_installments).exclude(id__in=selected_ids).exists()
     exists_in_cash_flow = CashFlowEntry.objects.filter(uuid_correlation=uuid_correlation).exists()
 
-    selected_records = SettledEntry.objects.filter(id__in=selected_ids, uuid_correlation=uuid_correlation, uuid_correlation_parcelas=uuid_correlation_installments)
+    selected_records = SettledEntry.objects.filter(id__in=selected_ids, uuid_correlation=uuid_correlation, uuid_correlation_installments=uuid_correlation_installments)
     selected_total_amount = selected_records.aggregate(Sum('amount'))['amount__sum'] or 0
 
     if more_records and exists_in_cash_flow:
@@ -199,7 +199,7 @@ def create_unified_entries_in_cash_flow(record, total_amount, keep_uuid=False):
 @receiver(post_delete, sender=SettledEntry)
 def update_bank_balance(sender, instance, **kwargs):
     try:
-        bank_table_item = Banks.objects.get(id=instance.banco_id_liquidacao)  # Modificado para usar ID
+        bank_table_item = Banks.objects.get(id=instance.settlement_bank_id)  # Modificado para usar ID
         if instance.transaction_type == 'Crédito':
             bank_table_item.current_balance -= instance.amount  # Subtrai para créditos
         else:  # Débito
@@ -220,9 +220,9 @@ def update_entry(request, id):
             if due_date:
                 # Converte a data recebida para datetime, adicionando uma hora padrão se necessário
                 due_date = datetime.strptime(due_date, '%Y-%m-%d').date()
-                # Mantém a hora original da data_liquidacao ou define uma hora padrão (ex: meio-dia)
-                original_date_time = settled_entry.data_liquidacao.time() if settled_entry.data_liquidacao else datetime.time(12, 0)
-                settled_entry.data_liquidacao = datetime.combine(due_date, original_date_time)
+                # Mantém a hora original da settlement_date ou define uma hora padrão (ex: meio-dia)
+                original_date_time = settled_entry.settlement_date.time() if settled_entry.settlement_date else datetime.time(12, 0)
+                settled_entry.settlement_date = datetime.combine(due_date, original_date_time)
             
             settled_entry.description = data.get('description', settled_entry.description)
             settled_entry.observation = data.get('observation', settled_entry.observation)
@@ -250,8 +250,8 @@ def update_entries_by_uuid(request, uuid):
                 due_date = datetime.strptime(due_date, '%Y-%m-%d').date()
                 settled_entries = SettledEntry.objects.filter(uuid_correlation=uuid)
                 for settled_entry in settled_entries:
-                    original_date_time = settled_entry.data_liquidacao.time() if settled_entry.data_liquidacao else datetime.time(12, 0)
-                    settled_entry.data_liquidacao = datetime.combine(due_date, original_date_time)
+                    original_date_time = settled_entry.settlement_date.time() if settled_entry.settlement_date else datetime.time(12, 0)
+                    settled_entry.settlement_date = datetime.combine(due_date, original_date_time)
                     settled_entry._skip_update_balance = True
                     settled_entry.save()
             
