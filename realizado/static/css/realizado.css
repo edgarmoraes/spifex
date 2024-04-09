@@ -1,7 +1,7 @@
 /* Específicos Realizado */
 
 /* Compartilhado */
-.nav-realizado a {
+.nav__item--settled a {
   color: var(--main-color);
 }
 

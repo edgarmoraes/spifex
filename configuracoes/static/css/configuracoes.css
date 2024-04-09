@@ -1,5 +1,5 @@
 /* Compartilhado */
-.nav-configuracoes a {
+.nav__item--settings a {
   color: var(--main-color);
 }
 

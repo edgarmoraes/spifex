@@ -17,12 +17,12 @@
         <nav class="nav-bar">
             <a class="logo" href="{% url 'cash_flow:cash_flow' %}">Spifex</a>
             <ul class="nav-list">
-                <li class="nav-fluxo-de-caixa"><a href="{% url 'cash_flow:cash_flow' %}">Fluxo de Caixa</a></li>
-                <li class="nav-realizado"><a href="{% url 'settled_entry:settled_entry' %}">Realizado</a></li>
-                <li class="nav-relatorios"><a href="#">Relatórios</a></li>
-                <li class="nav-line"><div class="line"></div></li>
-                <li class="nav-configuracoes"><a href="{% url 'settings:settings' %}">Configurações</a></li>
-                <li class="nav-meu-perfil"><a href="meu-perfil.html">Meu Perfil</a></li>
+                <li class="nav__item nav__item--cash-flow"><a href="{% url 'cash_flow:cash_flow' %}">Fluxo de Caixa</a></li>
+                <li class="nav__item nav__item--settled"><a href="{% url 'settled_entry:settled_entry' %}">Realizado</a></li>
+                <li class="nav__item nav__item--reports"><a href="#">Relatórios</a></li>
+                <li class="nav__item nav__item--line"><div class="line"></div></li>
+                <li class="nav__item nav__item--settings"><a href="{% url 'settings:settings' %}">Configurações</a></li>
+                <li class="nav__item nav__item--my-profile"><a href="meu-perfil.html">Meu Perfil</a></li>
             </ul>
         </nav>
     </header>

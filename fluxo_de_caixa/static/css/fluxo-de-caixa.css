@@ -1,7 +1,7 @@
 /* Específicos Fluxo de Caixa */
 
 /* Compartilhado */
-.nav-fluxo-de-caixa a {
+.nav__item--cash-flow a {
   color: var(--main-color);
 }
 
@@ -203,7 +203,7 @@
   font-size: 20px;
 }
 
-dialog > form {
+dialog > div > form {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
 }
@@ -218,7 +218,7 @@ dialog > form {
   grid-template-columns: repeat(2, 1fr);
 }
 
-dialog > form > section {
+dialog > div > form > section {
   display: flex;
   flex-direction: column;
   margin: 0 5px;
@@ -256,6 +256,49 @@ section.modal-flex {
 .lancamentos-selecionados.ativo,
 .label-lancamentos-selecionados.ativo {
   grid-template-columns: 0.4fr 0.6fr 0.8fr 0.40fr 0.3fr 0.1fr 0.4fr;
+}
+
+#recorrencia-section {
+  width: 30% !important;
+}
+
+#parcelas-section-recebimentos {
+  width: 62.5% !important;
+}
+
+.test {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.modal-tabs {
+  overflow: hidden;
+  background-color: #f1f1f1;
+}
+
+.tab-link {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: background-color 0.3s;
+}
+
+.tab-link:hover {
+  background-color: #ddd;
+}
+
+.tab-link.active {
+  background-color: #ccc;
+}
+
+.tab-content {
+  display: none;
+  padding: 6px 12px;
+  border-top: none;
 }
 
 /* Botão para lançamento parcial */
@@ -480,7 +523,7 @@ input#tagInput {
   }
 
   .modal-transferencias > form,
-  dialog > form {
+  dialog > div > form {
     grid-template-columns: 1fr; /* Coloca todos os itens em uma única coluna */
   }
 

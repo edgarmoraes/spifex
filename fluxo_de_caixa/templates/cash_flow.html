@@ -20,12 +20,12 @@
         <nav class="nav-bar">
             <a class="logo" href="{% url 'cash_flow:cash_flow' %}">Spifex</a>
             <ul class="nav-list">
-                <li class="nav-fluxo-de-caixa"><a href="{% url 'cash_flow:cash_flow' %}">Fluxo de Caixa</a></li>
-                <li class="nav-realizado"><a href="{% url 'settled_entry:settled_entry' %}">Realizado</a></li>
-                <li class="nav-relatorios"><a href="#">Relatórios</a></li>
-                <li class="nav-line"><div class="line"></div></li>
-                <li class="nav-configuracoes"><a href="{% url 'settings:settings' %}">Configurações</a></li>
-                <li class="nav-meu-perfil"><a href="meu-perfil.html">Meu Perfil</a></li>
+                <li class="nav__item nav__item--cash-flow"><a href="{% url 'cash_flow:cash_flow' %}">Fluxo de Caixa</a></li>
+                <li class="nav__item nav__item--settled"><a href="{% url 'settled_entry:settled_entry' %}">Realizado</a></li>
+                <li class="nav__item nav__item--reports"><a href="#">Relatórios</a></li>
+                <li class="nav__item nav__item--line"><div class="line"></div></li>
+                <li class="nav__item nav__item--settings"><a href="{% url 'settings:settings' %}">Configurações</a></li>
+                <li class="nav__item nav__item--my-profile"><a href="meu-perfil.html">Meu Perfil</a></li>
             </ul>
         </nav>
     </header>
@@ -209,81 +209,109 @@
         <!-- ############### Janelas/Modais de Lançamentos ############### -->
 
         <!-- Modal Recebimentos -->
-        <dialog class="modal-recebimentos" id="modal-recebimentos">
+'        <dialog class="modal-recebimentos" id="modal-recebimentos">
 
             <h1 class="modal-titulo">Recebimentos</h1>
             
-            <form class="modal-form-recebimentos" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
-                <input type="hidden" name="lancamento_id_recebimentos" value="{{ fluxo_de_caixa.id }}">
-                <input type="hidden" name="uuid_recebimentos" value="{{ fluxo_de_caixa.uuid_correlation }}">
-                <section class="modal-flex">
-                    <label for="data-recebimentos">Data</label>
-                    <input class="modal-data" id="data-recebimentos" type="date" name="due_date" required><br>
-                </section>
-            
-                <section class="modal-flex">
-                    <label for="description-recebimentos">Descrição</label>
-                    <input class="modal-description" id="description-recebimentos" maxlength="100" type="text" name="description" required><br>
-                </section>
-            
-                <section class="modal-flex">
-                    <label for="observation-recebimentos">Observação</label>
-                    <input class="modal-obs" id="observation-recebimentos" maxlength="100" type="text" name="observation"></input><br>
-                </section>
+            <div class="modal-tabs">
+                <button class="tab-link" onclick="changeTab(event, 'Form1')">Formulário 1</button>
+                <button class="tab-link" onclick="changeTab(event, 'Form2')">Formulário 2</button>
+            </div>
+
+            <div id="Form1" class="tab-content">
+                <form class="modal-form-recebimentos" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
+                    <input type="hidden" name="lancamento_id_recebimentos" value="{{ fluxo_de_caixa.id }}">
+                    <input type="hidden" name="uuid_recebimentos" value="{{ fluxo_de_caixa.uuid_correlation }}">
+                    <section class="modal-flex">
+                        <label for="data-recebimentos">Data</label>
+                        <input class="modal-data" id="data-recebimentos" type="date" name="due_date" required><br>
+                    </section>
                 
-                <section class="modal-flex">
-                    <label for="amount-recebimentos">Valor</label>
-                    <input class="modal-amount" id="amount-recebimentos" type="text" name="amount" oninput="formatAmount(this)" value="R$ " required><br>
-                </section>
-            
-                <section class="modal-flex">
-                    <label for="dropdown-button-contas-recebimentos">Conta Contábil</label>
-                    <div class="dropdown-multiselect">
-                        <button type="button" onclick="toggleDropdownModals('dropdown-content-contas-recebimentos', event)" id="dropdown-button-contas-recebimentos" class="dropdown-button">Selecione</button>
-                        <div id="dropdown-content-contas-recebimentos" class="dropdown-content">
-                            <div class="dropdown-options">
-                                {% for subgroup, accounts in Accounts_by_subgroup_list.items %}
-                                    {% if accounts.0.nature == 'Crédito' %}
-                                        <div class="subgroup-label">{{ subgroup }}</div>
-                                        {% for account in accounts %}
-                                            <label class="label-filters">
-                                                <input type="checkbox" name="contas_recebimentos" data-uuid-account="{{ account.uuid }}" data-account="{{ account.account }}" class="conta-checkbox">
-                                                {{ account.account }}
-                                            </label>
-                                        {% endfor %}
-                                    {% endif %}
-                                {% endfor %}
-                                <input type="hidden" id="general_ledger_account_uuid_recebimentos" name="general_ledger_account_uuid_recebimentos" value="">
-                                <input type="hidden" id="general_ledger_account_nome_recebimentos" name="general_ledger_account_nome_recebimentos" value="">
+                    <section class="modal-flex">
+                        <label for="description-recebimentos">Descrição</label>
+                        <input class="modal-description" id="description-recebimentos" maxlength="100" type="text" name="description" required><br>
+                    </section>
+                
+                    <section class="modal-flex">
+                        <label for="observation-recebimentos">Observação</label>
+                        <input class="modal-obs" id="observation-recebimentos" maxlength="100" type="text" name="observation"></input><br>
+                    </section>
+                
+                    <section class="modal-flex">
+                        <label for="amount-recebimentos">Valor</label>
+                        <input class="modal-amount" id="amount-recebimentos" type="text" name="amount" oninput="formatAmount(this)" value="R$ " required><br>
+                    </section>
+                
+                    <section class="modal-flex">
+                        <label for="dropdown-button-contas-recebimentos">Conta Contábil</label>
+                        <div class="dropdown-multiselect">
+                            <button type="button" onclick="toggleDropdownModals('dropdown-content-contas-recebimentos', event)" id="dropdown-button-contas-recebimentos" class="dropdown-button">Selecione</button>
+                            <div id="dropdown-content-contas-recebimentos" class="dropdown-content">
+                                <div class="dropdown-options">
+                                    {% for subgroup, accounts in Accounts_by_subgroup_list.items %}
+                                        {% if accounts.0.nature == 'Crédito' %}
+                                            <div class="subgroup-label">{{ subgroup }}</div>
+                                            {% for account in accounts %}
+                                                <label class="label-filters">
+                                                    <input type="checkbox" name="contas_recebimentos" data-uuid-account="{{ account.uuid }}" data-account="{{ account.account }}" class="conta-checkbox">
+                                                    {{ account.account }}
+                                                </label>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    <input type="hidden" id="general_ledger_account_uuid_recebimentos" name="general_ledger_account_uuid_recebimentos" value="">
+                                    <input type="hidden" id="general_ledger_account_nome_recebimentos" name="general_ledger_account_nome_recebimentos" value="">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </section>
-            
-                <section class="modal-flex" id="recorrencia-section">
-                    <label for="recorrencia-recebimentos" class="recorrencia-label">Recorrência</label>
-                    <select class="modal-recorrencia" id="recorrencia-recebimentos" name="recorrencia" required onchange="showInstallments(null, 'recebimentos')">
-                        <option value="nao">Não</option>
-                        <option value="sim">Sim</option>
-                    </select><br>
-                </section>
-            
-                <section class="modal-flex mesclar-2" id="parcelas-section-recebimentos" style="display:none;">
-                    <label for="parcelas-recebimentos">Número de Parcelas</label>
-                    <input class="modal-parcelas" id="parcelas-recebimentos" type="number" name="parcelas" current-installment="{{ fluxo_de_caixa.current_installment }}" total-installments="{{ fluxo_de_caixa.total_installments }}" min="1" value="1"><br>
-                </section>
+                    </section>
+                
+                    <section class="test">
+                        <section class="modal-flex" id="recorrencia-section">
+                            <label for="recorrencia-recebimentos" class="recorrencia-label">Recorrência</label>
+                            <select class="modal-recorrencia" id="recorrencia-recebimentos" name="recorrencia" required onchange="showInstallments(null, 'recebimentos')">
+                                <option value="nao">Não</option>
+                                <option value="sim">Sim</option>
+                            </select><br>
+                        </section>
+                        <section class="modal-flex" id="parcelas-section-recebimentos" style="display:none;">
+                            <label for="parcelas-recebimentos">Número de Parcelas</label>
+                            <input class="modal-parcelas" id="parcelas-recebimentos" type="number" name="parcelas" current-installment="{{ fluxo_de_caixa.current_installment }}" total-installments="{{ fluxo_de_caixa.total_installments }}" min="1" value="1"><br>
+                        </section>
+                    </section>
+                
+                    <section class="modal-flex mesclar-2">
+                        <div id="tag-container-recebimentos" class="tag-container">
+                        </div>
+                        <input type="text" id="tagInput-recebimentos" class="tagInput" placeholder="Adicione uma tag">
+                        <input type="hidden" id="tagsHiddenInput-recebimentos" name="tags">
+                    </section>
+                    <section class="modal-botoes">
+                        <input type="submit" class="modal-salvar" name="salvar_recebimento" value="Salvar">
+                        <button type="button" class="modal-fechar-recebimentos">Cancelar</button>
+                    </section>
+                </form>
+            </div>
 
-                <section class="modal-flex mesclar-2">
-                    <div id="tag-container-recebimentos" class="tag-container">
-                    </div>
-                    <input type="text" id="tagInput-recebimentos" class="tagInput" placeholder="Adicione uma tag">
-                    <input type="hidden" id="tagsHiddenInput-recebimentos" name="tags">
-                </section>
-                <section class="modal-botoes">
-                    <input type="submit" class="modal-salvar" name="salvar_recebimento" value="Salvar">
-                    <button type="button" class="modal-fechar-recebimentos">Cancelar</button>
-                </section>
-            </form>
+            <div id="Form2" class="tab-content" style="display:none;">
+                <form class="modal-form-recebimentos" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
+                    <section class="modal-flex mesclar-2" id="parcelas-section-recebimentos" style="display:none;">
+                        <label for="parcelas-recebimentos">Número de Parcelas</label>
+                        <input class="modal-parcelas" id="parcelas-recebimentos" type="number" name="parcelas" current-installment="{{ fluxo_de_caixa.current_installment }}" total-installments="{{ fluxo_de_caixa.total_installments }}" min="1" value="1"><br>
+                    </section>
+                    <section class="modal-flex mesclar-2">
+                        <div id="tag-container-recebimentos" class="tag-container">
+                        </div>
+                        <input type="text" id="tagInput-recebimentos" class="tagInput" placeholder="Adicione uma tag">
+                        <input type="hidden" id="tagsHiddenInput-recebimentos" name="tags">
+                    </section>
+                    <section class="modal-botoes">
+                        <input type="submit" class="modal-salvar" name="salvar_recebimento" value="Salvar">
+                        <button type="button" class="modal-fechar-recebimentos">Cancelar</button>
+                    </section>
+                </form>
+            </div>
+
         </dialog>
 
         <!-- Modal Pagamentos -->
