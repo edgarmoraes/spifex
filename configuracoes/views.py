@@ -71,15 +71,15 @@ def save_bank(request):
         return JsonResponse({"success": False, "error": "Banco não encontrado."}, status=404)
 
 @require_POST
-def verify_and_delete_bank(request, idBanco):
+def verify_and_delete_bank(request, bank_id):
     # Verifica se o banco está sendo utilizado na SettledEntry
-    if SettledEntry.objects.filter(settlement_bank_id=idBanco).exists():
+    if SettledEntry.objects.filter(settlement_bank_id=bank_id).exists():
         # Banco está sendo utilizado, não pode ser excluído
         return JsonResponse({'success': False, 'error': 'Este banco está sendo utilizado e não pode ser excluído.'})
 
     try:
         # Tenta encontrar e excluir o banco
-        bank_to_detele = Banks.objects.get(pk=idBanco)
+        bank_to_detele = Banks.objects.get(pk=bank_id)
         bank_to_detele.delete()
         # Banco excluído com sucesso
         return JsonResponse({'success': True})
@@ -118,10 +118,10 @@ def save_department(request):
         return JsonResponse({'success': True, 'message': 'Departamento adicionado com sucesso.'})
 
 @require_POST
-def verify_and_delete_department(request, idDepartamento):
+def verify_and_delete_department(request, department_id):
     try:
         # Tenta encontrar e excluir o department
-        department_list = Departments.objects.get(pk=idDepartamento)
+        department_list = Departments.objects.get(pk=department_id)
         department_list.delete()
         # Departamento excluído com sucesso
         return JsonResponse({'success': True})
