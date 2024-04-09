@@ -13,7 +13,7 @@ from fluxo_de_caixa.models import CashFlowEntry, Banks
 from .models import SettledEntry, MonthsListSettled
 from django.db.models.signals import post_save, post_delete
 
-def realizado(request):
+def settled_entry(request):
     if request.method == "GET":
         return display_settled(request)
 
@@ -59,12 +59,12 @@ def display_settled(request):
         'Banks_list': active_banks,
         'Accounts_by_subgroup_list': accounts_by_subgroup,  # Passando o OrderedDict para o contexto
     }
-    return render(request, 'realizado.html', context)
+    return render(request, 'settled_entry.html', context)
 
 
 def display_banks(request):
     banks = Banks.objects.all()
-    return render(request, 'realizado.html', {'Banks_list': banks})
+    return render(request, 'settled_entry.html', {'Banks_list': banks})
 
 
 @receiver(post_save, sender=SettledEntry)
@@ -110,7 +110,7 @@ def recalculate_totals():
 def filter_months_settled(request):
     months_list_settled = MonthsListSettled.objects.all().order_by('formatted_date')
     context = {'Months_list_settled': months_list_settled}
-    return render(request, 'realizado.html', context)
+    return render(request, 'settled_entry.html', context)
 
 
 @csrf_exempt

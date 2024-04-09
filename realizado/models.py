@@ -24,10 +24,10 @@ class SettledEntry(models.Model):
 
     def save(self, *args, **kwargs):
         if not self._skip_update_balance:
-            self.atualizar_saldo_banco()
+            self.update_bank_balance()
         super().save(*args, **kwargs)
     
-    def atualizar_saldo_banco(self):
+    def update_bank_balance(self):
         banks_table = Banks.objects.get(id=self.settlement_bank_id)  # Modificado para usar ID
         if self.transaction_type == 'Crédito':
             banks_table.current_balance += self.amount
