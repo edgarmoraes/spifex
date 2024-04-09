@@ -2,7 +2,7 @@ from django.db import models
 from fluxo_de_caixa.models import Banks
 
 class SettledEntry(models.Model):
-    fluxo_id = models.IntegerField(null=True, blank=True)
+    cash_flow_id = models.IntegerField(null=True, blank=True)
     due_date = models.DateField()
     description = models.CharField(max_length = 100)
     observation = models.CharField(max_length = 100)

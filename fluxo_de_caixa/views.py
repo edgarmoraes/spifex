@@ -331,7 +331,7 @@ def process_settlement(request):
                     updated_entry_description += f" | Parcela ({installment_number})"
 
                 SettledEntry.objects.create(
-                    fluxo_id=original_record.id,
+                    cash_flow_id=original_record.id,
                     due_date=original_record.due_date,
                     description=updated_entry_description,
                     observation=item['observation'],
