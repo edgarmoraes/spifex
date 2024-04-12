@@ -266,7 +266,7 @@
                         </div>
                     </section>
                 
-                    <section class="test">
+                    <div class="installments-container">
                         <section class="modal-flex" id="recorrencia-section">
                             <label for="recorrencia-recebimentos" class="recorrencia-label">Recorrência</label>
                             <select class="modal-recorrencia" id="recorrencia-recebimentos" name="recorrencia" required onchange="showInstallments(null, 'recebimentos')">
@@ -278,7 +278,7 @@
                             <label for="parcelas-recebimentos">Número de Parcelas</label>
                             <input class="modal-parcelas" id="parcelas-recebimentos" type="number" name="parcelas" current-installment="{{ fluxo_de_caixa.current_installment }}" total-installments="{{ fluxo_de_caixa.total_installments }}" min="1" value="1"><br>
                         </section>
-                    </section>
+                    </div>
                 
                     <section class="modal-flex mesclar-2">
                         <div id="tag-container-recebimentos" class="tag-container">
