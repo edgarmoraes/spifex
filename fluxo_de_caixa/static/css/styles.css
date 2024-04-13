@@ -28,12 +28,10 @@
 }
 
 * {
+  font-family: var(--primary-font);
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-}
-
-html {
   scroll-behavior: smooth;
 }
 
@@ -43,84 +41,438 @@ a {
   transition: var(--transition-duration1);
 }
 
-a:hover {
-  opacity: 0.7;
-}
-
 .main {
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
-  top: 8vh;
-  height: calc(100vh - 8vh);
+  top: 60px;
+  height: calc(100vh - 60px);
+  min-height: calc(-60px + 100vh);
+  padding: 0px 0px 0px 60px;
 }
 
-/* Barra de Navegação Fixa */
-
-.openbtn {
-  font-size: 20px;
-  cursor: pointer;
-  color: var(--main-color);
-  background-color: #3d3d40bf;
-  color: #b4b4b4;
-  padding: 10px 15px;
-  border: none;
-  display: none;
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 1000;
+/* SUPERIOR NAVIGATION BAR #################################################################################################################### */
+.tabs__buttons-list button {
+  transition: var(--transition-duration1);
 }
 
-.logo {
-  font-size: 24px;
-  letter-spacing: 4px;
+.tabs__buttons-list button:hover {
+  opacity: 0.7;
 }
 
-.header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 5000;
-}
-
-nav {
-  display: flex;
+.navigation-bar {
+  height: 60px;
   position: fixed;
   top: 0px;
   right: 0px;
   width: 100%;
-  justify-content: space-around;
-  align-items: center;
-  height: 8vh;
-  font-family: var(--primary-font);
-  background-color: var(--white);
-  border-bottom: solid 1px #ececec;
-  backdrop-filter: blur(5px);
-  box-shadow: var(--box-shadow1);
-  z-index: 1000;
-}
-
-.nav-list {
+  padding: 8px 24px;
   display: flex;
-  list-style: none;
+  justify-content: space-between;
+  background: rgb(255, 255, 255);
+  color: rgb(33, 33, 33);
+  gap: 24px;
+  border-bottom: 0.5px solid #00000026;
+  z-index: 5000;
 }
 
-.nav-list li {
-  margin-left: 48px;
-  font-weight: bold;
-  font-size: 17px;
+.navigation-bar__logo {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
-.line {
-  border: 0.5px solid var(--black);
-  margin-top: 1.8px;
+.navigation-bar__logo--spifex-logo {
+  text-decoration: none;
+  color: #202020;
+  font-size: 21px;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  cursor: pointer;
+  appearance: none;
+  border: none;
+  outline: none;
+  user-select: none;
+  text-decoration: none;
+  padding: 0px;
+  margin: 0px;
+  display: inline-flex;
+}
+
+.navigation-bar__tabs {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  user-select: none;
+}
+
+.navigation-bar__tabs--tabs{
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.tabs__buttons-list {
+  display: flex;
+  flex-flow: row;
+  gap: 30px;
+}
+
+.tabs__buttons-list--profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tab-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.profile-container__account-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  appearance: none;
+  border: none;
+  outline: none;
+  user-select: none;
+  text-decoration: none;
+  padding: 0px 10px;
+  margin: 0px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  border-radius: 55px;
+  height: 30px;
+  width: 90px;
+  background-color: white;
+  transition: background-color 0.4s ease-in-out;
+}
+
+.profile-container__account-button--typography {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.profile-container__account-button--details {
+  align-items: center;
+  display: flex;
+  flex-flow: row;
+  gap: 4px;
+}
+
+.profile-container__content--svg {
+  color: inherit;
+  width: 16px;
   height: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  flex-grow: 0;
 }
+
+.side-navigation {
+  display: flex;
+  position: fixed;
+  left: 0px;
+  bottom: 0px;
+  height: calc(100% - 60px);
+  background: rgb(255, 255, 255);
+  z-index: 1;
+  overflow: hidden;
+  transition: width 0.5s ease-in-out;
+  overflow-x: visible;
+}
+
+.profile-container__account-button:hover,
+.side-navigation__buttons-list--list:hover {
+  background-color: #ececec;
+}
+
+.list__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: transparent;
+  cursor: pointer;
+  appearance: none;
+  border: none;
+  outline: none;
+  user-select: none;
+  text-decoration: none;
+  margin: 0px;
+  padding: 6px;
+  min-height: 32px;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 8px;
+  position: relative;
+}
+
+.list__button svg {
+  user-select: none;
+  min-width: 24px;
+  min-height: 24px;
+}
+
+.list__button--button-label {
+  transition: opacity 0.5s ease-in-out;
+  opacity: 0;
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  margin-left: 12px;
+}
+
+.list__line {
+  margin: 15px 0px;
+}
+
+.list__line--line {
+  margin: 0px;
+  background-color: transparent;
+  border-top: 0.5px solid rgba(0, 0, 0, 0.15);
+  width: 100%;
+  height: 0.5px;
+}
+
+/* Profile Dropdown */
+.tabs__buttons-list--profile-container {
+  position: relative;
+}
+
+.profile-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #f9f9f9;
+  width: 250px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  border-radius: 15px;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.profile-dropdown-menu a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  border-radius: 15px;
+  transition: background-color 0.2s ease-in-out;
+  gap: 8px;
+}
+
+.profile-dropdown-menu a:hover {
+  background-color: #f1f1f1;
+  border-radius: 15px;
+}
+
+/* LATERAL NAVIGATION BAR ##################################################################################################################### */
+.side-navigation__buttons-list {
+  display: flex;
+  flex-direction: column;
+  padding: 50px 12px 12px 12px;
+  border-right: 0.5px solid #00000026;
+  overflow: hidden auto;
+  transition: width 0.5s ease-in-out;
+  user-select: none;
+}
+
+.side-navigation__buttons-list--list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  list-style: none;
+  margin: 5px 0px 5px 0px;
+  min-width: 32px;
+  background-color: white;
+  border-radius: 10px;
+  transition: background-color 0.4s ease-in-out;
+}
+
+.side-navigation__buttons-list--expand-button {
+  display: flex;
+  align-items: flex-end;
+  flex: 1 1 0%;
+  position: sticky;
+  bottom: 0px;
+  right: 0px;
+}
+
+.expand-button__container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.expand-button__container--expand-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  appearance: none;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  outline: none;
+  user-select: none;
+  text-decoration: none;
+  margin: 0px;
+  background-color: rgb(255, 255, 255);
+  color: rgb(33, 33, 33);
+  height: 32px;
+  width: 32px;
+  padding: 0px;
+  border-radius: 18px;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+.expand-button__svg {
+  color: inherit;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+
+.side-navigation__buttons-list--operations  {
+  display: none; /* Ocultar os botões inicialmente */
+  transform: translateX(-110%); /* Posicioná-los fora da tela à direita */
+}
+
+/* SECOND TAB ################################################################################################################################# */
+.second-tab {
+  display: flex;
+  margin-top: 60px;
+  width: 0;
+  opacity: 0;
+  visibility: hidden;
+  position: fixed;
+  top: 0;
+  transition: width 0.5s ease;
+  height: 100%;
+  background-color: #fff;
+  border-right: 0.5px solid #00000026;
+  overflow-x: hidden;
+  z-index: 5000;
+}
+
+/* MAIN CONTENT ############################################################################################################################### */
+.main-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content__header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 15px 50px;
+}
+
+.page-title-container {
+  font-size: 40px;
+  user-select: none;
+}
+
+.page-title-search-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+  width: 50%;
+}
+
+.search-content-container {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  font-size: 12px;
+  font-weight: 700;
+  user-select: none;
+}
+
+.search-content-container div {
+  margin: 5px 0px 15px 0px;
+}
+
+/* Caixa de Pesquisa */
+.search-container,
+.search-tags-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.search-bar-box {
+  margin: 0;
+  padding: 0.7rem 2.5rem 0.7rem 1rem;
+  width: 100%;
+  background-color: #f1f1f1;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  font-size: 12px;
+  border-radius: 15px;
+  transition: all ease-in-out 0.3s;
+  outline: none;
+}
+
+.search-bar-box:hover,
+.search-bar-box:focus {
+  box-shadow: 0 0 1em #00000013;
+}
+
+/* Caixa de Pesquisa de Tags */
+.search-tags-bar-box {
+  margin: 0;
+  padding: 0.7rem 1rem;
+  width: 100%;
+  background-color: #f1f1f1;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  font-size: 12px;
+  border-radius: 15px;
+  transition: all ease-in-out 0.3s;
+  outline: none;
+}
+
+.search-tags-bar-box:hover,
+.search-tags-bar-box:focus {
+  box-shadow: 0 0 1em #00000013;
+}
+
+
+
+
+
+
+
+
+
+
+/* FILTERS BOXES AND CONTAINER ################################################################################################################ */
 
 /* Componentes da Caixa de Filtros */
-
 .filter-boxes {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -147,7 +499,6 @@ nav {
 }
 
 /* Filtro de meses e bancos */
-
 .button-selecionar-todos,
 .button-desmarcar-todos {
   background-color: var(--white);
@@ -351,74 +702,6 @@ nav {
   filter: brightness(.8);
 }
 
-/* Caixa de Pesquisa */
-.pesquisa {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  margin: 10px;
-  font-family: var(--primary-font);
-  font-weight: 700;
-  font-size: 15px;
-}
-
-.caixa-pesquisa {
-  margin: 0;
-  padding: 0.7rem 2.5rem 0.7rem 1rem;
-  width: 100%;
-  background-color: var(--color2);
-  font-family: var(--primary-font);
-  color: var(--black);
-  font-size: 15px;
-  border: var(--border1);
-  border-radius: 30px;
-  transition: var(--transition-effect1) var(--transition-duration1);
-}
-
-.caixa-pesquisa:hover,
-.caixa-pesquisa:focus {
-  box-shadow: var(--box-shadow1);
-  background-color: var(--color1);
-}
-
-.caixa-pesquisa::-webkit-input-placeholder {
-  font-weight: 400;
-  color: var(--color4);
-}
-
-/* Caixa de Pesquisa de Tags */
-.pesquisa-tags {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  margin: 10px;
-  font-family: var(--primary-font);
-  font-weight: 700;
-  font-size: 15px;
-}
-
-.caixa-pesquisa-tags {
-  margin: 0;
-  padding: 0.7rem 1rem;
-  width: 100%;
-  background-color: var(--color2);
-  font-family: var(--primary-font);
-  color: var(--black);
-  font-size: 15px;
-  border: var(--border1);
-  border-radius: 30px;
-  transition: var(--transition-effect1) var(--transition-duration1);
-}
-
-.caixa-pesquisa-tags:hover, .caixa-pesquisa-tags:focus {
-  box-shadow: var(--box-shadow1);
-  background-color: var(--color1);
-}
-
-.caixa-pesquisa-tags::-webkit-input-placeholder {
-  font-weight: 400;
-  color: var(--color4);
-}
 
 /* Tabela Bancos */
 .tabela-bancos,
@@ -521,120 +804,114 @@ td.saldo-total-banco-liquidacao-row {
   font-size: 14px;
 }
 
-/* Tabela com Lançamentos */
-.conteudo-tabela-lancamentos {
+.main-content {
   display: flex;
-  justify-content: center;
-  font-family: var(--primary-font);
-  background-color: var(--white);
-  font-weight: 300;
-  color: var(--black);
+  flex-direction: column;
 }
 
-.tabela-lancamentos {
-  margin: 10px;
-  margin-bottom: 30px;
-  min-width: 900px;
+.main-content__header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 15px 50px;
+}
+
+/* Tabela de Lançamentos e Bancos */
+.banks-table-wrapper {
+  max-height: 210.8px;
+  overflow-y: auto;
+  display: block;
+  width: 50%;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  border-radius: 15px;
+}
+
+.cash-flow-table-wrapper {
+  width: 95%;
+  margin: 0px auto;
+  margin-top: 10px;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  border-radius: 15px;
+}
+
+.cash-flow-table,
+.banks-table {
+  margin: 0px auto;
   border-collapse: collapse;
   border-spacing: 0;
-  table-layout: fixed;
-  width: 95%;
+  width: 100%;
 }
 
-.linha-cabecalho-lancamentos {
-  border: var(--border1);
+.banks-table {
+  max-height: 211px;
+  overflow: scroll;
 }
 
-.tabela-lancamentos th {
-  padding: 0;
-  font-size: 14px;
+.banks-table thead tr th {
+  position: sticky;
+  top: 0;
+  background-color: #f1f1f1;
   font-weight: 700;
-  background-color: var(--color2);
-  height: 35px;
-  color: var(--black);
 }
 
-.tabela-lancamentos td {
+.cash-flow-table thead tr th,
+.total-banks-balance-row td {
+  font-weight: 700 !important;
+}
+
+.banks-table .total-banks-balance-row {
+  position: sticky;
+  bottom: 0;
+  background-color: #f1f1f1;
+}
+
+.cash-flow-table tr th,
+.banks-table tr th {
+  background-color: #f1f1f1;
+  font-size: 14px;
+  font-weight: 500;
+  height: 30px;
+  color: #202020;
+}
+
+.cash-flow-table tr td,
+.banks-table tr td {
   font-size: 13px;
   font-weight: 400;
 }
 
-.tabela-lancamentos th small,
-.tabela-lancamentos td small {
+.cash-flow-table tr td small {
   display: block;
-  color: var(--black);
   font-weight: 400;
   padding-top: 2px;
 }
 
-.tabela-lancamentos tbody tr:hover,
-.tabela-lancamentos tbody tr:focus {
-  background: #efeaff;
+.cash-flow-table tbody tr {
+  height: 37.5px;
+  border-top: 1px solid #ececec;
+  transition: 0.3s all ease;
 }
 
-.tabela-lancamentos tbody tr {
-  transition: .3s all ease;
-}
-
-.row-lancamentos {
-  height: 40px;
-  border-bottom: 1px solid var(--color2);
-}
-
-.linha-total-mes {
+.banks-table tbody tr {
   height: 30px;
-  background-color: var(--color2);
-  border-bottom: 1px solid var(--color2);
+  border-top: 1px solid #ececec;
+  transition: 0.3s all ease;
 }
 
-.linha-total-mes td {
-  font-weight: 700;
+.cash-flow-table tbody tr:hover,
+.cash-flow-table tbody tr:focus {
+  background: #ff92671e;
 }
 
-.checkbox-col {
-  width: 40px;
+.cash-flow-table tbody .month-totals-row:hover {
+  background-color: transparent;
 }
 
-.due_date-col {
-  width: 100px;
-}
-
-.description-col {
-  width: 300px;
-}
-
-.obs-col {
-  width: 450px;
-}
-
-.parcela-col {
-  width: 60px;
-}
-
-.debito-col,
-.credito-col,
-.saldo-col {
-  width: 120px;
-}
-
-.checkbox-row {
-  text-align: center;
-}
-
-.due_date-row,
-.parcela-row,
-.debito-row,
-.credito-row,
-.saldo-row {
-  text-align: center;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.debito-total-row,
-.credito-total-row,
-.saldo-total-row {
+.cash-flow-table tr th,
+.cash-flow-table tr td,
+.banks-table tr th,
+.banks-table tr td {
   text-align: center;
   overflow: hidden;
   white-space: nowrap;
@@ -642,36 +919,130 @@ td.saldo-total-banco-liquidacao-row {
 }
 
 .description-row,
-.observation-row {
+.observation-row,
+.bank-row {
+  text-align: start !important;
   padding: 5px 20px;
 }
 
+.banks-table tr th:first-child {
+  border-top-left-radius: 15px;
+}
+
+.banks-table tr th:last-child {
+  border-top-right-radius: 15px;
+}
+
+.banks-table .total-banks-balance-row td:first-child {
+  border-bottom-left-radius: 15px;
+}
+
+.banks-table .total-banks-balance-row td:last-child {
+  border-bottom-right-radius: 15px;
+}
+
+.banks-table tr td:nth-child(1) {
+  min-width: 150px;
+  max-width: 150px;
+}
+
+.banks-table tr td:nth-child(2) {
+  min-width: 75px;
+  max-width: 75px;
+}
+
+.banks-table tr td:nth-child(3) {
+  min-width: 75px;
+  max-width: 75px;
+}
+
+.banks-table tr td:nth-child(4) {
+  min-width: 150px;
+  max-width: 150px;
+}
+
+.cash-flow-table tr th:first-child {
+  border-top-left-radius: 15px;
+}
+
+.cash-flow-table tr th:last-child {
+  border-top-right-radius: 15px;
+}
+
+.cash-flow-table tr:last-child td:first-child {
+  border-bottom-left-radius: 15px;
+}
+
+.cash-flow-table tr:last-child td:last-child {
+  border-bottom-right-radius: 15px;
+}
+
+.cash-flow-table tr td:nth-child(1) {
+  min-width: 75px;
+  max-width: 75px;
+}
+
+.cash-flow-table tr td:nth-child(2) {
+  min-width: 100px;
+  max-width: 100px;
+}
+
+.cash-flow-table tr td:nth-child(3),
+.cash-flow-table tr td:nth-child(4) {
+  min-width: 350px;
+  max-width: 350px;
+}
+
+.cash-flow-table tr td:nth-child(5) {
+  min-width: 70px;
+  max-width: 70px;
+}
+
+.cash-flow-table tr td:nth-child(6),
+.cash-flow-table tr td:nth-child(7),
+.cash-flow-table tr td:nth-child(8) {
+  min-width: 140px;
+  max-width: 140px;
+}
+
+.cash-flow-table .month-totals-row td:nth-child(2),
+.cash-flow-table .month-totals-row td:nth-child(3),
+.cash-flow-table .month-totals-row td:nth-child(4),
+.cash-flow-table .month-totals-row td:nth-child(5) {
+  font-weight: 600;
+  min-width: 140px;
+  max-width: 140px;
+}
+
+.linha-total-mes {
+  height: 30px;
+  background-color: #ececec;
+  border-bottom: 1px solid #ececec;
+}
+
+.linha-total-mes td {
+  font-weight: 700;
+}
+
+
 .mes-checkbox {
-  background-color: var(--main-color);
+  background-color: #F46A35;
 }
 
 /* Checkbox */
 .checkbox-container {
-  display: inline-block;
-  position: relative;
-  padding-left: 35px;
-  margin-left: 15px;
-  margin-bottom: 20px;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
-  font-size: 16px;
+  width: 25px;
+  height: 25px;
+  position: relative;
+  margin: auto;
   user-select: none;
 }
 
-.checkbox-personalizado {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  height: 0;
-  width: 0;
-}
-
-.checkbox-personalizado-liquidacao {
+.custom-checkbox {
   position: absolute;
   opacity: 0;
   cursor: pointer;
@@ -681,14 +1052,15 @@ td.saldo-total-banco-liquidacao-row {
 
 .checkmark {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   height: 25px;
   width: 25px;
-  background-color: var(--color2);
+  background-color: #eee;
   border-radius: 4px;
-  transition: background-color var(--transition-duration1);
-  box-shadow: 0 2px 5px #00000033;
+  transition: background-color 0.3s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .checkmark:after {
@@ -699,50 +1071,17 @@ td.saldo-total-banco-liquidacao-row {
   top: 5px;
   width: 5px;
   height: 10px;
-  border: solid var(--white);
+  border: solid #202020;
   border-width: 0 3px 3px 0;
   transform: rotate(45deg);
 }
 
-.checkmark-liquidacao {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 20px;
-  width: 20px;
-  background-color: var(--color2);
-  border-radius: 4px;
-  transition: background-color var(--transition-duration1);
-  box-shadow: 0 2px 5px #00000033;
+.custom-checkbox:checked ~ .checkmark {
+  background-color: #F46A35;
+  box-shadow: 0 3px 7px rgba(33, 150, 243, 0.3);
 }
 
-.checkmark-liquidacao:after {
-  content: "";
-  position: absolute;
-  display: none;
-  left: 7.2px;
-  top: 2.5px;
-  width: 4px;
-  height: 8px;
-  border: solid var(--white);
-  border-width: 0 3px 3px 0;
-  transform: rotate(45deg);
-}
-
-.checkbox-personalizado-liquidacao:checked ~ .checkmark-liquidacao {
-  background-color: var(--main-color);
-  box-shadow: 0 3px 7px #2196f34d;
-}
-
-.checkbox-personalizado-liquidacao:checked ~ .checkmark-liquidacao:after {
-  display: block;
-}
-.checkbox-personalizado:checked ~ .checkmark {
-  background-color: var(--main-color);
-  box-shadow: 0 3px 7px #2196f34d;
-}
-
-.checkbox-personalizado:checked ~ .checkmark:after {
+.custom-checkbox:checked ~ .checkmark:after {
   display: block;
 }
 
@@ -756,11 +1095,7 @@ td.saldo-total-banco-liquidacao-row {
   }
 }
 
-.checkbox-personalizado-liquidacao:checked ~ .checkmark-liquidacao:after {
-  animation: checkAnim 0.2s forwards;
-}
-
-.checkbox-personalizado:checked ~ .checkmark:after {
+.custom-checkbox:checked ~ .checkmark:after {
   animation: checkAnim 0.2s forwards;
 }
 
@@ -775,9 +1110,8 @@ td.saldo-total-banco-liquidacao-row {
   transform: translateX(-50%) translateY(100%);
   background-color: var(--color2);
   padding: 10px;
-  width: 100%;
-  border: var(--border1);
-  box-shadow: var(--box-shadow1);
+  width: 20%;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
   transition: transform 0.5s ease, opacity 0.5s ease;
   border-radius: 20px 20px 0px 0px;
 }
@@ -989,13 +1323,13 @@ td.saldo-total-banco-liquidacao-row {
       justify-content: center;
   }
 
-  .tabela-lancamentos,
+  .cash-flow-table,
   .tabela-bancos {
       min-width: 0;
       overflow-x: auto;
   }
 
-  .conteudo-tabela-lancamentos {
+  .cash-flow-table-wrapper {
       display: block;
   }
 
@@ -1127,7 +1461,7 @@ td.saldo-total-banco-liquidacao-row {
   }
   
   /* Tabela Lançamentos */
-  .tabela-lancamentos {
+  .cash-flow-table {
     min-width: 0;
     width: 100%;
     table-layout: auto;
@@ -1135,15 +1469,15 @@ td.saldo-total-banco-liquidacao-row {
   }
   
   /* Reduz o tamanho da fonte para as células da tabela */
-  .tabela-lancamentos th,
-  .tabela-lancamentos td {
+  .cash-flow-table th,
+  .cash-flow-table td {
     font-size: 10px;
       padding: 5px;
   }
 
   /* Oculta as colunas Observação e Parcela */
-  .obs-col,
-  .parcela-col,
+  .observation-col,
+  .installment-col,
   .observation-row,
   .parcela-row {
       display: none;
@@ -1166,9 +1500,9 @@ td.saldo-total-banco-liquidacao-row {
       width: 200px;
   }
 
-  .debito-col,
-  .credito-col,
-  .saldo-col {
+  .debit-col,
+  .credit-col,
+  .balance-col {
       width: 100px;
   }
 
@@ -1185,7 +1519,7 @@ td.saldo-total-banco-liquidacao-row {
     letter-spacing: -.9px;
   }
 
-  .row-lancamentos {
+  .cash-flow-table__body--row {
       height: auto;
   }
 

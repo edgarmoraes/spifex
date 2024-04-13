@@ -85,18 +85,18 @@ def process_cash_flow(request):
 
 def extract_form_data(request):
     """Extrai e retorna os dados do formulário."""
-    transaction_type = 'Crédito' if 'salvar_recebimento' in request.POST else 'Débito'
+    transaction_type = 'Crédito' if 'salvar_credit' in request.POST else 'Débito'
 
     if transaction_type == 'Crédito':
-        account_uuid = request.POST.get('general_ledger_account_uuid_recebimentos')
-        account_name = request.POST.get('general_ledger_account_nome_recebimentos')
+        account_uuid = request.POST.get('general_ledger_account_uuid_credits')
+        account_name = request.POST.get('general_ledger_account_nome_credits')
     else:
-        account_uuid = request.POST.get('general_ledger_account_uuid_pagamentos')
-        account_name = request.POST.get('general_ledger_account_nome_pagamentos')
+        account_uuid = request.POST.get('general_ledger_account_uuid_debits')
+        account_name = request.POST.get('general_ledger_account_nome_debits')
     
     # Escolhe o campo de ID correto com base na transaction_type da transação
-    receipt_entry_id = request.POST.get('lancamento_id_recebimentos')
-    payment_entry_id = request.POST.get('lancamento_id_pagamentos')
+    receipt_entry_id = request.POST.get('lancamento_id_credits')
+    payment_entry_id = request.POST.get('lancamento_id_debits')
     
     entry_id = None  # Inicialmente definido como None
     

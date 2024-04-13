@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Spifex</title>
+</head>
+<body>
+    <nav class="navigation-bar">
+        <div class="navigation-bar__logo">
+            <a href="#" class="navigation-bar__logo--spifex-logo">Spifex</a>
+        </div>
+        <div class="navigation-bar__tabs">
+            <div class="navigation-bar__tabs--tabs">
+                <div class="tabs__buttons-list">
+                    <button class="tab-button tabs__buttons-list--cash-flow-page"><a href="#">Fluxo de Caixa</a></button>
+                    <button class="tab-button tabs__buttons-list--settled-page"><a href="#">Realizado</a></button>
+                    <button class="tab-button tabs__buttons-list--reports-page"><a href="#">Relatórios</a></button>
+                    <div class="tabs__buttons-list--profile-container">
+                        <button class="profile-container__account-button">
+                            <span class="profile-container__account-button--typography">
+                                <div class="profile-container__account-button--details">
+                                    <span class="details__text">Perfil</span>
+                                        <div class="profile-container__content--svg">
+                                            <svg fill="none" viewBox="0 0 24 24" role="none" style="flex: 1 1 0%;"><path fill="currentColor" fill-rule="evenodd" d="m12 17.338 9.665-8.59-1.33-1.495L12 14.662l-8.335-7.41-1.33 1.495L12 17.338Z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                </div>
+                            </span>
+                        </button>
+                        <div class="profile-dropdown-menu" style="display: none;">
+                            <span class="profile-dropdown-menu__item">
+                                <a class="profile-dropdown-menu__item--link" href="#">
+                                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" color="#202020" height="20" width="20" xmlns="http://www.w3.org/2000/svg" style="color: #202020;"><path fill="none" d="M0 0h24v24H0z"></path><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"></path>
+                                    </svg><span class="link__description">Configurações da Empresa</span>
+                                </a>
+                            </span>
+                            <a href="#">
+                                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" color="#202020" height="20" width="20" xmlns="http://www.w3.org/2000/svg" style="color: #202020;"><path fill="none" d="M0 0h24v24H0z"></path><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"></path></svg>
+                                <span>Configurações Pessoais</span>
+                            </a>
+                            <a href="#">
+                                <svg xmlns="http://www.w3.org/2000/svg" color="#202020" width="20" height="20" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16" style="color: #202020;">
+                                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/>
+                              </svg>
+                              <span>Preferências de Notificação</span>
+                            </a>
+                            <a href="#">
+                                <svg xmlns="http://www.w3.org/2000/svg" color="#b90000" width="20" height="20" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16" style="color: #b90000;">
+                                <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/>
+                                <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
+                                </svg>
+                              <span style="color: #b90000;">Sair</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <main class="main">
+        <nav class="side-navigation" style="width: 60px;">
+            <div class="side-navigation__buttons-list" style="width: 60px;">
+                <li class="side-navigation__buttons-list--list">
+                    <button class="credit-button list__button">
+                        <svg data-value-pt="Recebimentos" xmlns="http://www.w3.org/2000/svg" color="#202020" width="24" height="24" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5"/>
+                            <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z"/>
+                          </svg>
+                    </button>
+                </li>
+                <li class="side-navigation__buttons-list--list">
+                    <button class="debit-button list__button">
+                        <svg data-value-pt="Pagamentos" xmlns="http://www.w3.org/2000/svg" color="#202020" width="24" height="24" fill="currentColor" class="bi bi-box-arrow-down-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8.636 12.5a.5.5 0 0 1-.5.5H1.5A1.5 1.5 0 0 1 0 11.5v-10A1.5 1.5 0 0 1 1.5 0h10A1.5 1.5 0 0 1 13 1.5v6.636a.5.5 0 0 1-1 0V1.5a.5.5 0 0 0-.5-.5h-10a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h6.636a.5.5 0 0 1 .5.5"/>
+                            <path fill-rule="evenodd" d="M16 15.5a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1 0-1h3.793L6.146 6.854a.5.5 0 1 1 .708-.708L15 14.293V10.5a.5.5 0 0 1 1 0z"/>
+                          </svg>
+                    </button>
+                </li>
+                <li class="side-navigation__buttons-list--list">
+                    <button class="transference-button list__button">
+                        <svg data-value-pt="Transferências" xmlns="http://www.w3.org/2000/svg" color="#202020" width="24" height="24" fill="currentColor" class="bi bi-shuffle" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3v1c-1.798 0-3.173 1.01-4.126 2.082A9.6 9.6 0 0 0 7.556 8a9.6 9.6 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12v1c-2.202 0-3.827-1.24-4.874-2.418A10.6 10.6 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.6 9.6 0 0 0 6.444 8a9.6 9.6 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5"/>
+                            <path d="M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m0 9v-3.932a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192"/>
+                          </svg>
+                    </button>
+                </li>
+                <div class="list__line">
+                    <hr class="list__line--line" orientation="horizontal" width="0.5" role="separator" aria-orientation="horizontal">
+                </div>
+                <li class="side-navigation__buttons-list--list">
+                    <button class="list__button list__button--filter-button">
+                        <svg data-value-pt="Filtros" xmlns="http://www.w3.org/2000/svg" color="#202020" width="24" height="24" fill="currentColor" class="bi bi-funnel-fill" viewBox="0 0 16 16">
+                            <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z"/>
+                          </svg>
+                    </button>
+                </li>
+                <li class="side-navigation__buttons-list--operations side-navigation__buttons-list--list">
+                    <button class="list__button list__button--settle-button">
+                        <svg data-value-pt="Liquidar" xmlns="http://www.w3.org/2000/svg" color="#202020" width="24" height="24" fill="currentColor" class="bi bi-file-earmark-lock2" viewBox="0 0 16 16">
+                            <path d="M10 7v1.076c.54.166 1 .597 1 1.224v2.4c0 .816-.781 1.3-1.5 1.3h-3c-.719 0-1.5-.484-1.5-1.3V9.3c0-.627.46-1.058 1-1.224V7a2 2 0 1 1 4 0M7 7v1h2V7a1 1 0 0 0-2 0"/>
+                            <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+                          </svg>
+                </li>
+                <li class="side-navigation__buttons-list--operations side-navigation__buttons-list--list">
+                    </button>
+                    <button class="list__button list__button--delete-button">
+                        <svg data-value-pt="Deletar" xmlns="http://www.w3.org/2000/svg" color="#202020" width="24" height="24" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                          </svg>
+                    </button>
+                </li>
+                <li class="side-navigation__buttons-list--operations side-navigation__buttons-list--list">
+                    </button>
+                    <button class="list__button list__button--cancel-button">
+                        <svg data-value-pt="Cancelar" xmlns="http://www.w3.org/2000/svg" color="#202020" width="24" height="24" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                          </svg>
+                    </button>
+                </li>
+                <div class="side-navigation__buttons-list--expand-button">
+                    <div class="expand-button__container">
+                        <button class="expand-button__container--expand-button">
+                            <div class="expand-button__svg">
+                                <svg fill="none" viewBox="0 0 24 24" role="none" style="flex: 1 1 0%;"><path fill="currentColor" fill-rule="evenodd" d="m17.338 12-8.59 9.664-1.495-1.328L14.662 12l-7.41-8.336 1.495-1.328L17.337 12Z" clip-rule="evenodd"></path></svg>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="second-tab filter-tab">
+            <div class="box-grid-filters">
+                <!-- ############### Filtro Contas Contábeis ############### -->
+                <section class="flex">
+                    <label for="dropdown-button-contas">Contas Contábeis</label>
+                    <div class="dropdown-multiselect">
+                        <button type="button" onclick="toggleDropdownFilters('dropdown-content-contas', event)" id="dropdown-button-contas" class="dropdown-button">Selecione</button>
+                        <div id="dropdown-content-contas" class="dropdown-content">
+                            <div class="dropdown-header">
+                                <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-contas', true)">Selecionar Todos</button>
+                                <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-contas', false)">Desmarcar Todos</button>
+                            </div>
+                            <div class="dropdown-options">
+                                {% for subgroup, accounts in Accounts_by_subgroup_list.items %}
+                                    <div class="subgroup-label" data-nature="{{ accounts.0.nature }}">{{ subgroup }}</div>
+                                    {% for account in accounts %}
+                                        <label class="label-filters">
+                                            <input type="checkbox" name="contas" value="{{ account.uuid }}" class="conta-checkbox">
+                                            {{ account.account }}
+                                        </label>
+                                    {% endfor %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- ############### Filtro Meses ############### -->
+                <section class="flex">
+                    <label for="dropdown-button-meses">Meses</label>
+                    <div class="dropdown-multiselect">
+                        <button type="button" onclick="toggleDropdownFilters('dropdown-content-meses', event)" id="dropdown-button-meses" class="dropdown-button">Selecione</button>
+                        <div id="dropdown-content-meses" class="dropdown-content">
+                            <div class="dropdown-header">
+                                <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', true)">Selecionar Todos</button>
+                                <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', false)">Desmarcar Todos</button>
+                            </div>
+                            <div class="dropdown-options">
+                                {% for months in Months_list_cash_flow %}
+                                <label class="label-filters">
+                                    <input type="checkbox" name="meses" value="{{ months.formatted_date }}" class="mes-checkbox" data-start-of-month="{{ months.start_of_month|date:'Y-m-d' }}" data-end-of-month="{{ months.end_of_month|date:'Y-m-d' }}">
+                                    {{ months.formatted_date }}
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- ############### Filtro Bancos ############### -->
+                <section class="flex">
+                    <label for="dropdown-button-bancos">Bancos</label>
+                    <div class="dropdown-multiselect">
+                        <button type="button" onclick="toggleDropdownFilters('dropdown-content-bancos', event)" id="dropdown-button-bancos" class="dropdown-button">Selecione</button>
+                        <div id="dropdown-content-bancos" class="dropdown-content">
+                            <div class="dropdown-header">
+                                <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-bancos', true)">Selecionar Todos</button>
+                                <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-bancos', false)">Desmarcar Todos</button>
+                            </div>
+                            <div class="dropdown-options">
+                                {% for banks_item in Banks_list %}
+                                <label>
+                                    <input id="banco-checkbox-{{ banks_item.id }}" type="checkbox" class="banco-checkbox" value="{{ banks_item.id }}" data-banco-id="{{ banks_item.id }}">
+                                    {{ banks_item.banco }}
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- ############### Filtro Data Início ############### -->
+                <section class="flex">
+                    <label for="data-inicio">De</label>
+                    <input class="data" type="date" id="data-inicio" name = "data_inicio">
+                </section>
+                <!-- ############### Filtro Data Fim ############### -->
+                <section class="flex">
+                    <label for="data-fim">Até</label>
+                    <input class="data" type="date" id="data-fim" name = "data_fim">
+                </section>
+                <!-- ############### Filtro transaction_type ############### -->
+                <section class="flex">
+                    <label for="dropdown-button-transaction_type">Natureza</label>
+                    <div class="dropdown-multiselect">
+                        <button type="button" onclick="toggleDropdownFilters('dropdown-content-transaction_type', event)" id="dropdown-button-transaction_type" class="dropdown-button">Crédito, Débito</button>
+                        <div id="dropdown-content-transaction_type" class="dropdown-content">
+                            <div class="dropdown-header">
+                                <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-transaction_type', true)">Selecionar Todos</button>
+                                <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-transaction_type', false)">Desmarcar Todos</button>
+                            </div>
+                            <div class="dropdown-options">
+                                <label class="label-filters">
+                                    <input type="checkbox" name="transaction_type" value="Crédito" class="transaction_type-checkbox">
+                                    Crédito
+                                </label>
+                                <label class="label-filters">
+                                    <input type="checkbox" name="transaction_type" value="Débito" class="transaction_type-checkbox">
+                                    Débito
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+        <main class="main-content">
+            <div class="main-content__header">
+                <div class="page-title-search-container">
+                    <div class="page-title-container">
+                        <span class="page-title-container__title">Fluxo de Caixa</span>
+                    </div>
+                    <div class="search-content-container">
+                        <label for="search-bar-box">Palavras-Chave</label>
+                        <div class="search-container">
+                            <input type="text" class="search-bar-box" id="search-bar-box" name ="caixa_pesquisa" placeholder="Pesquisar">
+                        </div>
+                        <label for="search-tags-bar-box">Tags</label>
+                        <div class="search-tags-container">
+                            <input type="text" class="search-tags-bar-box" id="search-tags-bar-box"  name ="caixa_pesquisa_tags" placeholder="Tags">
+                        </div>
+                    </div>
+                </div>
+                <div class="banks-table-wrapper">
+                    <table class="banks-table" id="banks-table">
+                        <thead class="banks-table__head">
+                            <tr class="banks-table__head--row">
+                                <th class="banks-col" scope="col">Banco</th>
+                                <th class="bank-branch-col" scope="col">Agência</th>
+                                <th class="bank-account-col" scope="col">Conta</th>
+                                <th class="bank-balance-col" scope="col">Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody class="banks-table__body">
+                            <tr class="banks-table__body--row" scope="row" name="banco-id">
+                                <td class="bank-row" name="banco">Nubank</td>
+                                <td class="bank-branch-row" name="bank_branch">Nubank</td>
+                                <td class="bank-account-row" name="bank_account">Nubank</td>
+                                <td class="bank-balance-row" name="initial_balance">R$ 000.000.000,00</td>
+                            </tr>
+                            <tr class="total-banks-balance-row banks-table__body--row" scope="row">
+                                <td class=""></td>
+                                <td class=""></td>
+                                <td class="total-row">Total</td>
+                                <td class="saldo-total-banco-row" name="saldo-total-banco-row">R$ 000.000.000,00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- ############### Tabela com Lançamentos ############### -->
+            <div class="cash-flow-table-wrapper">
+                <table class="cash-flow-table" id="cash-flow-table">
+                    <thead class="cash-flow-table__head">
+                        <tr class="cash-flow-table__head--row">
+                            <th class="checkbox-col" scope="col"></th>
+                            <th class="due-date-col" scope="col">Vencimento</th>
+                            <th class="description-col" scope="col">Descrição</th>
+                            <th class="observation-col" scope="col">Observação</th>
+                            <th class="installment-col" scope="col">Parcela</th>
+                            <th class="debit-col" scope="col">Débito</th>
+                            <th class="credit-col" scope="col">Crédito</th>
+                            <th class="balance-col" scope="col">Saldo</th>
+                        </tr>
+                    </thead>
+                    <tbody class="cash-flow-table__body" id="cash-flow-table__body">
+                        <tr class="cash-flow-table__body--row" id="cash-flow-table__body--row">
+                            <td class="checkbox-row"><label class="checkbox-container">
+                                <input class="custom-checkbox" type="checkbox">
+                                <span class="checkmark"></span>
+                            </label></td>
+                            <td class="due-date-row">24/10/2024</td>
+                            <td class="description-row">Teste de descrição</td>
+                            <td class="observation-row">
+                                Teste de observação com tag ieduhe eiuhdiueh eiuhdiuh wdhw friehufiuhre reiuhgfiru riughiuhg trgtrohjgiuht roiuhguiohr ritughiruth itruhgiuhrt rtiughitruhg iturhguhtr irtuhgiuhtr<small class="tag-row">Teste, teste, teste, teste, oi</small>
+                            </td>
+                            <td class="parcela-row">1/10</td>
+                            <td class="debito-row">R$ 000.000.000,00</td>
+                            <td class="credito-row">R$ 000.000.000,00</td>
+                            <td class="saldo-row">R$ 000.000.000,00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+                <!-- ############### Janelas/Modais de Lançamentos ############### -->
+
+        <!-- Modal Recebimentos -->
+        <dialog class="credit-modal" id="credit-modal">
+
+            <div class="modal-header">
+                <h1 class="modal-title">Recebimentos</h1>
+                <div class="modal-tabs">
+                    <button class="tab-link" onclick="changeTab(event, 'Form1')">Detalhes</button>
+                    <button class="tab-link" onclick="changeTab(event, 'Form2')">Diversos</button>
+                </div>
+            </div>
+
+            <div id="Form1" class="tab-content">
+                <form class="modal-form-credit" action="/fluxo_de_caixa/" method="POST">
+                    <section class="modal-flex">
+                        <label for="data-credit">Data</label>
+                        <input class="modal-data" id="data-credit" type="date" name="due_date" required><br>
+                    </section>
+                
+                    <section class="modal-flex">
+                        <label for="description-credit">Descrição</label>
+                        <input class="modal-description" id="description-credit" maxlength="100" type="text" name="description" required><br>
+                    </section>
+                
+                    <section class="modal-flex">
+                        <label for="observation-credit">Observação</label>
+                        <input class="modal-obs" id="observation-credit" maxlength="100" type="text" name="observation"></input><br>
+                    </section>
+                
+                    <section class="modal-flex">
+                        <label for="amount-credit">Valor</label>
+                        <input class="modal-amount" id="amount-credit" type="text" name="amount" oninput="formatAmount(this)" value="R$ " required><br>
+                    </section>
+                
+                    <section class="modal-flex">
+                        <label for="dropdown-button-contas-credit">Conta Contábil</label>
+                        <div class="dropdown-multiselect">
+                            <button type="button" onclick="toggleDropdownModals('dropdown-content-contas-credit', event)" id="dropdown-button-contas-credit" class="dropdown-button">Selecione</button>
+                            <div id="dropdown-content-contas-credit" class="dropdown-content">
+                                <div class="dropdown-options">
+
+                                            <div class="subgroup-label"></div>
+
+                                                <label class="label-filters">
+                                                    <input type="checkbox" name="contas_recebimentos" data-uuid-account="{{ account.uuid }}" data-account="{{ account.account }}" class="conta-checkbox">
+
+                                                </label>
+
+
+
+                                    <input type="hidden" id="general_ledger_account_uuid_recebimentos" name="general_ledger_account_uuid_recebimentos" value="">
+                                    <input type="hidden" id="general_ledger_account_nome_recebimentos" name="general_ledger_account_nome_recebimentos" value="">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                
+                    <section class="test">
+                        <section class="modal-flex" id="recorrencia-section">
+                            <label for="recorrencia-credit" class="recorrencia-label">Recorrência</label>
+                            <select class="modal-recorrencia" id="recorrencia-credit" name="recorrencia" required onchange="showInstallments(null, 'recebimentos')">
+                                <option value="nao">Não</option>
+                                <option value="sim">Sim</option>
+                            </select><br>
+                        </section>
+                        <section class="modal-flex" id="parcelas-section-credit" style="display:none;">
+                            <label for="parcelas-credit">Número de Parcelas</label>
+                            <input class="modal-parcelas" id="parcelas-credit" type="number" name="parcelas" current-installment="{{ fluxo_de_caixa.current_installment }}" total-installments="{{ fluxo_de_caixa.total_installments }}" min="1" value="1"><br>
+                        </section>
+                    </section>
+                
+                    <section class="modal-flex mesclar-2">
+                        <div id="tag-container-credit" class="tag-container">
+                        </div>
+                        <input type="text" id="tagInput-credit" class="tagInput" placeholder="Adicione uma tag">
+                        <input type="hidden" id="tagsHiddenInput-credit" name="tags">
+                    </section>
+                    <section class="modal-botoes">
+                        <input type="submit" class="modal-salvar" name="salvar_recebimento" value="Salvar">
+                        <button type="button" class="modal-fechar-credit">Cancelar</button>
+                    </section>
+                </form>
+            </div>
+
+            <div id="Form2" class="tab-content" style="display:none;">
+                <form class="modal-form-credit" action="/fluxo_de_caixa/" method="POST">
+                    <section class="modal-flex mesclar-2" id="parcelas-section-credit" style="display:none;">
+                        <label for="parcelas-credit">Número de Parcelas</label>
+                        <input class="modal-parcelas" id="parcelas-credit" type="number" name="parcelas" current-installment="{{ fluxo_de_caixa.current_installment }}" total-installments="{{ fluxo_de_caixa.total_installments }}" min="1" value="1"><br>
+                    </section>
+                    <section class="modal-flex mesclar-2">
+                        <div id="tag-container-credit" class="tag-container">
+                        </div>
+                        <input type="text" id="tagInput-credit" class="tagInput" placeholder="Adicione uma tag">
+                        <input type="hidden" id="tagsHiddenInput-credit" name="tags">
+                    </section>
+                    <section class="modal-botoes">
+                        <input type="submit" class="modal-salvar" name="salvar_recebimento" value="Salvar">
+                        <button type="button" class="modal-fechar-credit">Cancelar</button>
+                    </section>
+                </form>
+            </div>
+
+        </dialog>
+
+        <!-- Modal Pagamentos -->
+        <dialog class="modal-debit" id="modal-debit">
+
+            <div class="modal-header">
+                <h1 class="modal-title">Recebimentos</h1>
+                <div class="modal-tabs">
+                    <button class="tab-link" onclick="changeTab(event, 'Form1')">Detalhes</button>
+                    <button class="tab-link" onclick="changeTab(event, 'Form2')">Diversos</button>
+                </div>
+            </div>
+            
+            <div id="Form1" class="tab-content">
+                <form class="modal-form-debit" action="/fluxo_de_caixa/" method="POST">
+                    <input type="hidden" name="lancamento_id_pagamentos" value="{{ fluxo_de_caixa.id }}">
+                    <input type="hidden" name="uuid_pagamentos" value="{{ fluxo_de_caixa.uuid_correlation }}">
+                    <section class="modal-flex">
+                        <label for="data-debit">Data</label>
+                        <input class="modal-data" type="date" id="data-debit" name="due_date" required><br>
+                    </section>
+                
+                    <section class="modal-flex">
+                        <label for="description-debit">Descrição</label>
+                        <input class="modal-description" id="description-debit" maxlength="100" type="text" name="description" required><br>
+                    </section>
+                
+                    <section class="modal-flex">
+                        <label for="observation-debit">Observação</label>
+                        <input class="modal-obs" id="observation-debit" maxlength="100" type="text" name="observation"></input><br>
+                    </section>
+                
+                    <section class="modal-flex">
+                        <label for="amount-debit">Valor</label>
+                        <input class="modal-amount" id="amount-debit" type="text" name="amount" oninput="formatAmount(this)" value="R$ " required><br>
+                    </section>
+                
+                    <section class="modal-flex">
+                        <label for="dropdown-button-contas-debit">Conta Contábil</label>
+                        <div class="dropdown-multiselect">
+                            <button type="button" onclick="toggleDropdownModals('dropdown-content-contas-debit', event)" id="dropdown-button-contas-debit" class="dropdown-button">Selecione</button>
+                            <div id="dropdown-content-contas-debit" class="dropdown-content">
+                                <div class="dropdown-options">
+                                    {% for subgroup, accounts in Accounts_by_subgroup_list.items %}
+                                        {% if accounts.0.nature == 'Débito' %}
+                                            <div class="subgroup-label">{{ subgroup }}</div>
+                                            {% for account in accounts %}
+                                                <label class="label-filters">
+                                                    <input type="checkbox" name="contas_pagamentos" data-uuid-account="{{ account.uuid }}" data-account="{{ account.account }}" class="conta-checkbox">
+                                                    {{ account.account }}
+                                                </label>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    <input type="hidden" id="general_ledger_account_uuid_pagamentos" name="general_ledger_account_uuid_pagamentos" value="">
+                                    <input type="hidden" id="general_ledger_account_nome_pagamentos" name="general_ledger_account_nome_pagamentos" value="">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                
+                    <section class="modal-flex">
+                        <label for="recorrencia-debit" class="recorrencia-label">Recorrência</label>
+                        <select class="modal-recorrencia" id="recorrencia-debit" name="recorrencia" required onchange="showInstallments(null, 'pagamentos')">
+                            <option value="nao">Não</option>
+                            <option value="sim">Sim</option>
+                        </select><br>
+                    </section>
+                
+                    <section class="modal-flex mesclar-2" id="parcelas-section-debit" style="display:none;">
+                        <label for="parcelas-debit">Número de Parcelas</label>
+                        <input class="modal-parcelas" id="parcelas-debit" type="number" name="parcelas" current-installment="{{ fluxo_de_caixa.current_installment }}" total-installments="{{ fluxo_de_caixa.total_installments }}" min="1" value="1"><br>
+                    </section>
+                    <section class="modal-flex mesclar-2">
+                        <div id="tag-container-debit" class="tag-container">
+                        </div>
+                        <input type="text" id="tagInput-debit" class="tagInput" placeholder="Adicione uma tag">
+                        <input type="hidden" id="tagsHiddenInput-debit" name="tags">
+                    </section>
+                    <section class="modal-botoes">
+                        <input type="submit" class="modal-salvar" name="salvar_pagamentos" value="Salvar">
+                        <button type="button" class="modal-fechar-debit">Cancelar</button>
+                    </section>
+                </form>
+            </div>
+            <div id="Form2" class="tab-content" style="display:none;">
+                <form class="modal-form-credit" action="/fluxo_de_caixa/" method="POST">
+                    <section class="modal-flex mesclar-2" id="parcelas-section-credit" style="display:none;">
+                        <label for="parcelas-credit">Número de Parcelas</label>
+                        <input class="modal-parcelas" id="parcelas-credit" type="number" name="parcelas" current-installment="{{ fluxo_de_caixa.current_installment }}" total-installments="{{ fluxo_de_caixa.total_installments }}" min="1" value="1"><br>
+                    </section>
+                    <section class="modal-flex mesclar-2">
+                        <div id="tag-container-credit" class="tag-container">
+                        </div>
+                        <input type="text" id="tagInput-credit" class="tagInput" placeholder="Adicione uma tag">
+                        <input type="hidden" id="tagsHiddenInput-credit" name="tags">
+                    </section>
+                    <section class="modal-botoes">
+                        <input type="submit" class="modal-salvar" name="salvar_recebimento" value="Salvar">
+                        <button type="button" class="modal-fechar-credit">Cancelar</button>
+                    </section>
+                </form>
+            </div>
+        </dialog>
+
+        <!-- Modal Transferências -->    
+        <dialog class="modal-transferences">
+
+            <h1 class="modal-titulo">Transferências</h1>
+            
+            <form class="modal-form-transferences" action="/fluxo_de_caixa/" method="post">
+                <input type="hidden" name="transferencias" value="transferencia">
+                <section class="modal-flex">
+                    <label for="data-transferences">Data</label>
+                    <input class="modal-data" id="data-transferences" type="date" name="data" required><br>
+                </section>
+                
+                <section class="modal-flex">
+                    <label for="amount-transferences">Valor</label>
+                    <input class="modal-amount" id="amount-transferences" type="text" name="amount" oninput="formatAmount(this)" value="R$ " required><br>
+                </section>
+                
+                <section class="modal-flex">
+                    <label for="banco-saida">Do banco</label>
+                    <select class="modal-banco-saida" id="banco-saida" name="banco_saida" required>
+                        <option value="" disabled selected hidden>Selecione</option>
+                        {% for banks_item in Banks_list %}
+                        <option value="{{ banks_item.id }}|{{ banks_item.banco }}">{{ banks_item.banco }}</option>
+                        {% endfor %}
+                    </select><br>
+                </section>
+                <section class="modal-flex">
+                    <label for="banco-entrada">Para o banco</label>
+                    <select class="modal-banco-entrada" id="banco-entrada" name="banco_entrada" required>
+                        <option value="" disabled selected hidden>Selecione</option>
+                        {% for banks_item in Banks_list %}
+                        <option value="{{ banks_item.id }}|{{ banks_item.banco }}">{{ banks_item.banco }}</option>
+                        {% endfor %}
+                    </select><br>
+                </section>
+            
+                <section class="modal-flex mesclar-2">
+                    <label for="observation-transferencia">Observação</label>
+                    <input class="modal-description" id="observation-transferencia" type="text" name="observation"><br>
+                </section>
+                <section class="modal-botoes mesclar-2">
+                    <input class="modal-salvar" name="salvar_transferencias" type="submit" value="Salvar">
+                    <button type="button" class="modal-fechar-transferences">Cancelar</button>
+                </section>
+            </form>
+        </dialog>
+    </main>
+</body>
+    <script src="script.js"></script>
+</html>
