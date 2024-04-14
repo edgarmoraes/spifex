@@ -346,8 +346,8 @@
                 </table>
             </div>
             <!-- ############### Campo de saldo a liquidar ############### -->
-            <div class="botoes-acoes">
-                <div class="total-liquidar-row mesclar-3">
+            <div class="selected-entries-value-container">
+                <div class="settlement-consolidated-value">
                     Total a liquidar:&nbsp;<label></label>
                 </div>
             </div>
@@ -592,11 +592,10 @@
                 <input type="hidden" name="liquidacoes" value="liquidacoes">
                 <input type="hidden" name="uuid" data-uuid-row="{{ fluxo_de_caixa.uuid_correlation }}">
                 <section class="mesclar-3">
-                    <div class="" id="banks-table-wrapper">
-                        <div class="conteudo-tabela-bancos-liquidacao">
-                            <table class="tabela-bancos-liquidacao">
-                                <thead class="cabecalho-bancos-liquidacao">
-                                    <tr class="linha-cabecalho-bancos">
+                    <div class="banks-table-settlement-wrapper" id="banks-table-settlement-wrapper">
+                            <table class="banks-table-settlement" id="banks-table-settlement">
+                                <thead class="banks-table__head">
+                                    <tr class="banks-table__head--row">
                                         <th class="checkbox-col" scope="col"></th>
                                         <th class="bancos-bancos-liquidacao-col" scope="col">Contas</th>
                                         <th class="ag-bancos-liquidacao-col" scope="col">Agência</th>
@@ -623,12 +622,12 @@
                                     </tr>
                                 </tbody>
                             </table>
-                        </div>
+
                     </div>
                 </section>
 
                 <!-- Contêiner para os lançamentos selecionados -->
-                <div class="label-lancamentos-selecionados mesclar-3">
+                <div class="selected-entries-list-labels mesclar-3">
                     <label>Data de Liquidação</label>
                     <label>Descrição</label>
                     <label>Observação</label>
@@ -637,7 +636,7 @@
                     <label></label>
                     <label class="label-parcial" style="display:none;">Parcial</label>
                 </div>
-                <div class="lista-lancamentos-selecionados mesclar-3" id="lancamentos-selecionados">
+                <div class="selected-entries-list mesclar-3" id="selected-entries-list">
                     <!-- Itens dinâmicos serão adicionados aqui -->
                 </div>
         

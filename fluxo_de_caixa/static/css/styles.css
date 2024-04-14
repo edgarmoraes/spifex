@@ -152,7 +152,7 @@ a {
   height: 30px;
   width: 90px;
   background-color: white;
-  transition: background-color 0.4s ease-in-out;
+  transition: background-color 0.2s ease-in-out;
 }
 
 .profile-container__account-button--typography {
@@ -225,7 +225,7 @@ a {
 .list__button--button-label {
   transition: opacity 0.5s ease-in-out;
   opacity: 0;
-  font-size: 15px;
+  font-size: 14px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -302,7 +302,7 @@ a {
   min-width: 32px;
   background-color: white;
   border-radius: 10px;
-  transition: background-color 0.4s ease-in-out;
+  transition: background-color 0.2s ease-in-out;
 }
 
 .side-navigation__buttons-list--expand-button {
@@ -373,6 +373,12 @@ a {
   border-right: 0.5px solid #00000026;
   overflow-x: hidden;
   z-index: 5000;
+}
+
+.box-grid {
+  margin: 25px auto auto auto;
+  display: block;
+  width: 200px;
 }
 
 /* MAIN CONTENT ############################################################################################################################### */
@@ -461,17 +467,7 @@ a {
   box-shadow: 0 0 1em #00000013;
 }
 
-
-
-
-
-
-
-
-
-
 /* FILTERS BOXES AND CONTAINER ################################################################################################################ */
-
 /* Componentes da Caixa de Filtros */
 .filter-boxes {
   display: grid;
@@ -632,194 +628,10 @@ a {
   color: var(--black);
 }
 
-/* Botões Mobile */
-.toggle-filters-btn,
-.toggle-banks-btn {
-  display: none;
-  margin: 10px auto;
-  padding: 0.8em 1.7em;
-  width: 300px;
-  color: var(--main-color);
-  background-color: transparent;
-  border-radius: 30px;
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-  transition: .5s;
-  font-weight: 700;
-  font-size: 20px;
-  border: 1px solid;
-  font-family: var(--primary-font);
-  text-transform: uppercase;
-  z-index: 1;
-  box-shadow: var(--box-shadow2);
-}
-
-.toggle-filters-btn::before,
-.toggle-filters-btn::after,
-.toggle-banks-btn::before,
-.toggle-banks-btn::after {
-  content: '';
-  display: block;
-  width: 50px;
-  height: 50px;
-  transform: translate(-50%, -50%);
-  position: absolute;
-  border-radius: 50%;
-  z-index: -1;
-  background-color: var(--main-color);
-  transition: .5s ease;
-}
-
-.toggle-filters-btn::before,
-.toggle-banks-btn::before {
-  top: -1em;
-  left: -1em;
-}
-
-.toggle-filters-btn::after,
-.toggle-banks-btn::after {
-  left: calc(100% + 1em);
-  top: calc(100% + 1em);
-}
-
-.toggle-filters-btn:hover::before,
-.toggle-filters-btn:hover::after,
-.toggle-banks-btn:hover::before,
-.toggle-banks-btn:hover::after {
-  height: 410px;
-  width: 410px;
-}
-
-.toggle-filters-btn:hover,
-.toggle-banks-btn:hover {
-  color: var(--color9);
-  border-color: var(--main-color);
-}
-
-.toggle-filters-btn:active,
-.toggle-banks-btn:active {
-  filter: brightness(.8);
-}
-
-
-/* Tabela Bancos */
-.tabela-bancos,
-.tabela-bancos-liquidacao {
-  border-collapse: collapse;
-  width: 100%;
-  font-family: var(--primary-font);
-  border-left: var(--border1);
-  border-right: var(--border1);
-  border-bottom: var(--border1);
-  color: var(--black);
-  border-spacing: 0;
-}
-
-.tabela-bancos th,
-.tabela-bancos-liquidacao th {
-  padding: 0;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--black);
-}
-
-.tabela-bancos td,
-.tabela-bancos-liquidacao td {
-  font-size: 12px;
-  font-weight: 400;
-}
-
-.tabela-bancos tbody tr:hover,
-.tabela-bancos tbody tr:focus,
-.tabela-bancos-liquidacao tbody tr:hover,
-.tabela-bancos-liquidacao tbody tr:focus {
-  background: #efeaff;
-}
-
-.tabela-bancos tbody tr,
-.tabela-bancos-liquidacao tbody tr {
-  transition: .3s all ease;
-}
-
-.cabecalho-bancos,
-.cabecalho-bancos-liquidacao {
-  position: sticky;
-  top: 0;
-  height: 35px;
-  background-color: var(--color2);
-  z-index: 1;
-  backdrop-filter: (5px);
-  color: var(--black);
-}
-
-.row-bancos {
-  height: 35px;
-  text-align: center;
-}
-
-.totais-row,
-.totais-row-liquidacao {
-  position: sticky;
-  bottom: 0px;
-  height: 36px;
-  background-color: var(--color2);
-  z-index: 1;
-}
-
-.bancos-bancos-col {
-  width: 200px;
-}
-
-.ag-bancos-col {
-  width: 100px;
-}
-
-.bancos-bancos-liquidacao-col {
-  width: 100px;
-}
-
-.ag-bancos-liquidacao-col {
-  width: 100px;
-}
-
-.conta-bancos-liquidacao-col {
-  width: 100px;
-}
-
-.saldo-bancos-liquidacao-col {
-  width: 100px;
-}
-
-.banco-row {
-  text-align: left;
-  padding: 0 20px;
-}
-
-td.total-row,
-td.saldo-total-banco-row,
-td.saldo-total-banco-liquidacao-row {
-  text-align: center; 
-  font-weight: 700;
-  font-size: 14px;
-}
-
-.main-content {
-  display: flex;
-  flex-direction: column;
-}
-
-.main-content__header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 15px 50px;
-}
-
+/* CASH TABLE AND BANKS TABLE ################################################################################################################# */
 /* Tabela de Lançamentos e Bancos */
 .banks-table-wrapper {
-  max-height: 210.8px;
+  max-height: 212px;
   overflow-y: auto;
   display: block;
   width: 50%;
@@ -844,7 +656,12 @@ td.saldo-total-banco-liquidacao-row {
 }
 
 .banks-table {
-  max-height: 211px;
+  max-height: 212px;
+  overflow: scroll;
+}
+
+.banks-table__body {
+  max-height: 100px;
   overflow: scroll;
 }
 
@@ -1029,7 +846,11 @@ td.saldo-total-banco-liquidacao-row {
   background-color: #F46A35;
 }
 
-/* Checkbox */
+/* CHECKBOX ################################################################################################################################### */
+.checkbox-row {
+  z-index: 0;
+}
+
 .checkbox-container {
   display: flex;
   justify-content: center;
@@ -1099,8 +920,8 @@ td.saldo-total-banco-liquidacao-row {
   animation: checkAnim 0.2s forwards;
 }
 
-/* Botões de Liquidação */
-.botoes-acoes {
+/* SETTLEMENT CONTAINER ####################################################################################################################### */
+.selected-entries-value-container {
   opacity: 0;
   grid-template-columns: repeat(3, 1fr);
   position: fixed;
@@ -1116,200 +937,94 @@ td.saldo-total-banco-liquidacao-row {
   border-radius: 20px 20px 0px 0px;
 }
 
-.botoes-acoes.mostrar {
+.selected-entries-value-container.mostrar {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
   border-radius: 20px 20px 0px 0px;
 }
 
-.btn-areas {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  padding: 5px;
-}
-
-.btn-coluna {
-  font-family: var(--primary-font);
-  color: var(--black);
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.total-liquidar-row {
-  font-family: var(--primary-font);
-  color: var(--black);
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.btn-coluna {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-acoes {
-  margin: 0 2rem;
-}
-
-.total-liquidar-row {
+.settlement-consolidated-value {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  font-family: var(--primary-font);
+  color: var(--black);
+  font-size: 14px;
+  font-weight: 500;
 }
 
-/* Botão de Liquidar */
-.liquidar-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  background-color: var(--color3);
-  cursor: pointer;
-  border: 2px solid var(--color3);
-  transition-duration: 0.3s;
+/* MOBILE BUTTONS ############################################################################################################################# */
+.toggle-filters-btn,
+.toggle-banks-btn {
+  display: none;
+  margin: 10px auto;
+  padding: 0.8em 1.7em;
+  width: 300px;
+  color: var(--main-color);
+  background-color: transparent;
+  border-radius: 30px;
   position: relative;
   overflow: hidden;
-  transform: scale(0.7);
-}
-
-.liquidar-button:hover {
-  background-color: var(--main-color);
-  border: 2px solid var(--main-color);
-}
-
-.liquidar-button:active {
-  transform: scale(0.8);
-}
-
-.nuvem {
-  transform: scale(1.0);
-  transition: 200ms linear;
-  fill: var(--white);
-}
-
-.liquidar-button:hover > .nuvem {
-  transform: scale(1.2);
-}
-
-.liquidar-button:hover > .nuvem path {
-  fill: var(--white);
   cursor: pointer;
-}
-
-/* Botão de Apagar */
-.apagar-button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  background-color: #ff5f5f;
-  cursor: pointer;
-  border: 2px solid #ff5f5f;
-  transition-duration: 0.3s;
-  position: relative;
-  overflow: hidden;
-  transform: scale(0.7);
-}
-
-.fundo-lixeira {
-  width: 15px;
-  z-index: 2;
-}
-
-.topo-lixeira {
-  width: 17px;
-  transform-origin: right;
-  transition-duration: 0.3s;
-  z-index: 2;
-}
-
-.apagar-button:hover .topo-lixeira {
-  transform: rotate(45deg);
-}
-
-.apagar-button:hover {
-  background-color: var(--main-color);
-  border: 2px solid var(--main-color);
-}
-
-.apagar-button:active {
-  transform: scale(0.8);
-}
-
-.lixeira {
-  position: absolute;
-  width: 14px;
-  height: auto;
+  transition: .5s;
+  font-weight: 700;
+  font-size: 20px;
+  border: 1px solid;
+  font-family: var(--primary-font);
+  text-transform: uppercase;
   z-index: 1;
-  opacity: 0;
-  transition: all 0.3s;
+  box-shadow: var(--box-shadow2);
 }
 
-.apagar-button:hover .lixeira {
-  animation: throw 0.4s linear;
-}
-
-@keyframes throw {
-  from {
-    transform: translate(-400%, -700%);
-    opacity: 0;
-  }
-  to {
-    transform: translate(0%, 0%);
-    opacity: 1;
-  }
-}
-
-/* Botão de Cancelar */
-.cancelar-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 55px;
-  height: 55px;
+.toggle-filters-btn::before,
+.toggle-filters-btn::after,
+.toggle-banks-btn::before,
+.toggle-banks-btn::after {
+  content: '';
+  display: block;
+  width: 50px;
+  height: 50px;
+  transform: translate(-50%, -50%);
+  position: absolute;
   border-radius: 50%;
-  background-color: var(--white);
-  cursor: pointer;
-  border: 2px solid var(--color1);
-  transition-duration: 0.6s;
-  position: relative;
-  overflow: hidden;
-  transform: scale(0.7);
-}
-
-.cancelar-button:hover {
+  z-index: -1;
   background-color: var(--main-color);
-  border: 2px solid var(--main-color);
+  transition: .5s ease;
 }
 
-.cancelar-button:active {
-  transform: scale(0.8);
+.toggle-filters-btn::before,
+.toggle-banks-btn::before {
+  top: -1em;
+  left: -1em;
 }
 
-.x-svg {
-  transform: scale(.4);
-  transition: 200ms linear;
-  fill: var(--color4);
+.toggle-filters-btn::after,
+.toggle-banks-btn::after {
+  left: calc(100% + 1em);
+  top: calc(100% + 1em);
 }
 
-.cancelar-button:hover > .x-svg {
-  transform: scale(.45);
+.toggle-filters-btn:hover::before,
+.toggle-filters-btn:hover::after,
+.toggle-banks-btn:hover::before,
+.toggle-banks-btn:hover::after {
+  height: 410px;
+  width: 410px;
 }
 
-.cancelar-button:hover > .x-svg path {
-  fill: var(--white);
-  cursor: pointer;
+.toggle-filters-btn:hover,
+.toggle-banks-btn:hover {
+  color: var(--color9);
+  border-color: var(--main-color);
 }
 
-/* Media Queries para telas de dispositivos móveis */
+.toggle-filters-btn:active,
+.toggle-banks-btn:active {
+  filter: brightness(.8);
+}
+
+/* MEDIA QUERIES ############################################################################################################################## */
 @media screen and (max-width: 768px) {
   .filter-boxes {
       grid-template-columns: 1fr;
@@ -1339,7 +1054,7 @@ td.saldo-total-banco-liquidacao-row {
       width: 90%;
   }
 
-  .botoes-acoes {
+  .selected-entries-value-container {
       width: 90%;
       bottom: 10px;
       left: 5%;

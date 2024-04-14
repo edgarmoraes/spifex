@@ -8,7 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/realizado.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/settled.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
     <link rel="icon" href="{% static 'favicon.png' %}" type="image/x-icon">
     <title>Spifex | Realizado</title>
@@ -205,13 +205,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- ############### Filtro Caixa de Pesquisa ############### -->
-                            <div class="pesquisa mesclar-2">
-                                <input type="text" class="caixa-pesquisa" id="caixa-pesquisa" name ="caixa_pesquisa" placeholder="Pesquisar">
-                            </div>
-                            <div class="pesquisa-tags">
-                                <input type="text" class="caixa-pesquisa-tags" id="caixa-pesquisa-tags"  name ="caixa_pesquisa_tags" placeholder="Tags">
-                            </div>
                         </section>
                     </div>
                 </form>
@@ -267,10 +260,10 @@
                 </div>
             </div>
             <!-- ############### Tabela com Lançamentos ############### -->
-            <div class="cash-flow-table-wrapper">
-                <table class="cash-flow-table" id="cash-flow-table">
-                    <thead class="cash-flow-table__head">
-                        <tr class="cash-flow-table__head--row">
+            <div class="settled-table-wrapper">
+                <table class="settled-table" id="settled-table">
+                    <thead class="settled-table__head">
+                        <tr class="settled-table__head--row">
                             <th class="checkbox-col" scope="col"></th>
                             <th class="due_date-col" scope="col">Vencimento</th>
                             <th class="description-col" scope="col">Descrição</th>
@@ -282,18 +275,18 @@
                             <th class="balance-col" scope="col">Saldo</th>
                         </tr>
                     </thead>
-                    <tbody class="cash-flow-table__body" id="cash-flow-table__body">
+                    <tbody class="settled-table__body" id="settled-table__body">
                         {% for settled_table_item in Settled_table_list %}
                             {% if settled_table_item.is_total %}
-                                <tr class="linha-total-mes">
+                                <tr class="month-totals-row">
                                     <td></td>
                                     <td colspan="5">Total do Mês {{ settled_table_item.settlement_date|date:"m/Y" }}</td>
-                                    <td class="debito-total-row">{{ settled_table_item.debito|format_number }}</td>
-                                    <td class="credito-total-row">{{ settled_table_item.credito|format_number }}</td>
-                                    <td class="saldo-total-row">{{ settled_table_item.saldo|format_number }}</td>
+                                    <td class="total-debit-row">{{ settled_table_item.debito|format_number }}</td>
+                                    <td class="total-credit-row">{{ settled_table_item.credito|format_number }}</td>
+                                    <td class="total-balance-row">{{ settled_table_item.saldo|format_number }}</td>
                                 </tr>
                             {% else %}
-                                <tr class="cash-flow-table__body--row" id="cash-flow-table__body--row" data-id-row="{{ settled_table_item.id }}" data-banco-liquidacao="{{ settled_table_item.settlement_bank }}" data-banco-id-liquidacao="{{ settled_table_item.settlement_bank_id }}" data-general-ledger-account="{{ settled_table_item.general_ledger_account }}" data-uuid-general-ledger-account="{{ settled_table_item.uuid_general_ledger_account }}" current-installment="{{ settled_table_item.current_installment }}" total-installments="{{ settled_table_item.total_installments }}" data-transaction-type="{{ settled_table_item.transaction_type }}" data-uuid-correlacao="{{ settled_table_item.uuid_correlation }}" data-uuid-correlacao-parcelas="{{ settled_table_item.uuid_correlation_installments }}" scope="row">
+                                <tr class="settled-table__body--row" id="settled-table__body--row" data-id-row="{{ settled_table_item.id }}" data-banco-liquidacao="{{ settled_table_item.settlement_bank }}" data-banco-id-liquidacao="{{ settled_table_item.settlement_bank_id }}" data-general-ledger-account="{{ settled_table_item.general_ledger_account }}" data-uuid-general-ledger-account="{{ settled_table_item.uuid_general_ledger_account }}" current-installment="{{ settled_table_item.current_installment }}" total-installments="{{ settled_table_item.total_installments }}" data-transaction-type="{{ settled_table_item.transaction_type }}" data-uuid-correlacao="{{ settled_table_item.uuid_correlation }}" data-uuid-correlacao-parcelas="{{ settled_table_item.uuid_correlation_installments }}" scope="row">
                                     <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox-{{ settled_table_item.id }}" class="custom-checkbox" type="checkbox" data-id="{{ settled_table_item.id }}" data-uuid-correlacao="{{ settled_table_item.uuid_correlation }}" data-uuid-correlacao-parcelas="{{ settled_table_item.uuid_correlation_installments }}"><span class="checkmark"></span></label></td>
                                     <td class="due_date-row">{{ settled_table_item.settlement_date|date:"d/m/Y" }}</td>
                                     <td class="description-row">{{ settled_table_item.description }}</td>
