@@ -1,5 +1,5 @@
 from django.db import models
-from fluxo_de_caixa.models import Banks
+from cash_flow.models import Banks
 
 class SettledEntry(models.Model):
     cash_flow_id = models.IntegerField(null=True, blank=True)

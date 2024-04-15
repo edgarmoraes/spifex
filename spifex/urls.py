@@ -5,7 +5,7 @@ from chart_of_accounts.views import chart_of_accounts
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('fluxo_de_caixa/', include(('fluxo_de_caixa.urls', 'cash_flow'), namespace='cash_flow')),
+    path('fluxo_de_caixa/', include(('cash_flow.urls', 'cash_flow'), namespace='cash_flow')),
     path('realizado/', include(('realizado.urls', 'settled_entry'), namespace='settled_entry')),
     path('configuracoes/', include(('configuracoes.urls', 'settings'), namespace='settings')),
     path('accounts/', include('registration.urls')),

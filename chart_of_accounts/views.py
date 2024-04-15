@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from .models import Chart_of_accounts, Groups_list, Subgroups_list, Accounts_list
 from realizado.models import SettledEntry
-from fluxo_de_caixa.models import CashFlowEntry
+from cash_flow.models import CashFlowEntry
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver

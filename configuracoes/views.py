@@ -2,7 +2,7 @@ import uuid
 from decimal import Decimal
 from django.shortcuts import render
 from django.http import JsonResponse
-from fluxo_de_caixa.models import Banks, Departments
+from cash_flow.models import Banks, Departments
 from realizado.models import SettledEntry
 from django.db.models import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
