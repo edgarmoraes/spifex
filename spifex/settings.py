@@ -42,11 +42,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'fluxo_de_caixa',
+    'cash_flow',
     'realizado',
     'configuracoes',
     'registration',
     'chart_of_accounts',
+    'reports',
 ]
 
 MIDDLEWARE = [
@@ -127,7 +128,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'fluxo_de_caixa', 'static'),
+    os.path.join(BASE_DIR, 'cash_flow', 'static'),
     os.path.join(BASE_DIR, 'realizado', 'static'),
     os.path.join(BASE_DIR, 'configuracoes', 'static'),
     os.path.join(BASE_DIR, 'chart_of_accounts', 'static'),

@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from dateutil.relativedelta import relativedelta
 from django.views.decorators.csrf import csrf_exempt
 from chart_of_accounts.models import Chart_of_accounts
-from fluxo_de_caixa.models import CashFlowEntry, Banks
+from cash_flow.models import CashFlowEntry, Banks
 from .models import SettledEntry, MonthsListSettled
 from django.db.models.signals import post_save, post_delete
 

@@ -12,20 +12,58 @@
         <title>Spifex | Plano de Contas</title>
     </head>
 <body>
-    <header class="header">
-        <!-- ############### Barra de Navegação Fixa ############### -->
-        <nav class="nav-bar">
-            <a class="logo" href="{% url 'cash_flow:cash_flow' %}">Spifex</a>
-            <ul class="nav-list">
-                <li class="nav-fluxo-de-caixa"><a href="{% url 'cash_flow:cash_flow' %}">Fluxo de Caixa</a></li>
-                <li class="nav-realizado"><a href="{% url 'settled_entry:settled_entry' %}">Realizado</a></li>
-                <li class="nav-relatorios"><a href="#">Relatórios</a></li>
-                <li class="nav-line"><div class="line"></div></li>
-                <li class="nav-configuracoes"><a href="{% url 'settings:settings' %}">Configurações</a></li>
-                <li class="nav-meu-perfil"><a href="meu-perfil.html">Meu Perfil</a></li>
-            </ul>
-        </nav>
-    </header>
+    <nav class="navigation-bar">
+        <div class="navigation-bar__logo">
+            <a href="{% url 'cash_flow:cash_flow' %}" class="navigation-bar__logo--spifex-logo">Spifex</a>
+        </div>
+        <div class="navigation-bar__tabs">
+            <div class="navigation-bar__tabs--tabs">
+                <div class="tabs__buttons-list">
+                    <button class="tab-button tabs__buttons-list--cash-flow-page"><a href="{% url 'cash_flow:cash_flow' %}">Fluxo de Caixa</a></button>
+                    <button class="tab-button tabs__buttons-list--settled-page"><a href="{% url 'settled_entry:settled_entry' %}">Realizado</a></button>
+                    <button class="tab-button tabs__buttons-list--reports-page"><a href="{% url 'reports:cash_flow_report' %}">Relatórios</a></button>
+                    <div class="tabs__buttons-list--profile-container">
+                        <button class="profile-container__account-button">
+                            <span class="profile-container__account-button--typography">
+                                <div class="profile-container__account-button--details">
+                                    <span class="details__text">Perfil</span>
+                                        <div class="profile-container__content--svg">
+                                            <svg fill="none" viewBox="0 0 24 24" role="none" style="flex: 1 1 0%;"><path fill="currentColor" fill-rule="evenodd" d="m12 17.338 9.665-8.59-1.33-1.495L12 14.662l-8.335-7.41-1.33 1.495L12 17.338Z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                </div>
+                            </span>
+                        </button>
+                        <div class="profile-dropdown-menu" style="display: none;">
+                            <span class="profile-dropdown-menu__item">
+                                <a class="profile-dropdown-menu__item--link" href="{% url 'settings:settings' %}">
+                                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" color="#202020" height="20" width="20" xmlns="http://www.w3.org/2000/svg" style="color: #202020;"><path fill="none" d="M0 0h24v24H0z"></path><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"></path>
+                                    </svg><span class="link__description">Configurações da Empresa</span>
+                                </a>
+                            </span>
+                            <a href="#">
+                                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" color="#202020" height="20" width="20" xmlns="http://www.w3.org/2000/svg" style="color: #202020;"><path fill="none" d="M0 0h24v24H0z"></path><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"></path></svg>
+                                <span>Configurações Pessoais</span>
+                            </a>
+                            <a href="#">
+                                <svg xmlns="http://www.w3.org/2000/svg" color="#202020" width="20" height="20" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16" style="color: #202020;">
+                                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/>
+                              </svg>
+                              <span>Preferências de Notificação</span>
+                            </a>
+                            <a href="#">
+                                <svg xmlns="http://www.w3.org/2000/svg" color="#b90000" width="20" height="20" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16" style="color: #b90000;">
+                                <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/>
+                                <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
+                                </svg>
+                              <span style="color: #b90000;">Sair</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
     <main class="main">
         <div class="content-container">
             <section class="container-button-back">
