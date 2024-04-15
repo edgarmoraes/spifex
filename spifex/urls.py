@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
 from registration import views
-from chart_of_accounts.views import chart_of_accounts
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -12,4 +11,5 @@ urlpatterns = [
     path('home/', views.HomePage, name='home'),
     path('logout/', views.LogoutPage, name='logout'),
     path('configuracoes/plano_de_contas/', include(('chart_of_accounts.urls', 'chart_of_accounts'), namespace='chart_of_accounts')),
+    path('relatorio_fluxo_de_caixa/', include(('reports.urls', 'cash_flow_report'), namespace='cash_flow_report')),
 ]

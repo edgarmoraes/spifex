@@ -1,15 +1,16 @@
 {% load static %}
-{% load custom_filters %}
-
+{% load currency_filters %}
+{% load number_filters %}
+{% load add_decimal %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/chart_of_accounts.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/cashflow-chart.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
     <link rel="icon" href="{% static 'favicon.png' %}" type="image/x-icon">
-    <title>Spifex | Plano de Contas</title>
+    <title>Spifex | Relatório de Fluxo de Caixa</title>
 </head>
 <body>
     <nav class="navigation-bar">
@@ -64,49 +65,34 @@
             </div>
         </div>
     </nav>
-    <main class="main">
-        <div class="content-container">
-            <section class="container-button-back">
-                <a href="{% url 'chart_of_accounts:chart_of_accounts' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
-            </section>
-            {% block content %}
-            <div class="edit-account-container">
-                <h2>Editar Conta</h2>
-                <form class="edit-account-form" method="post" action="{% url 'chart_of_accounts:edit_account' account_id %}">
-                    {% csrf_token %}
-                    <label for="group">Grupo:</label>
-                    <select class="edit-field" name="group" id="group" required>
-                        <option value="" disabled selected>Selecione um grupo</option>
-                    </select>
-        
-                    <label for="subgroup">Subgrupo:</label>
-                    <select class="edit-field" name="subgroup" id="subgroup" required disabled>
-                        <option value="" disabled selected>Selecione um subgrupo</option>
-                    </select>
-        
-                    <label for="account">Conta:</label>
-                    <input class="edit-field" type="text" id="account" name="account" required>
-        
-                    <section class="btn-section">
-                        <button type="submit" class="btn btn-success">Salvar Alterações</button>
-                        <a href="{% url 'chart_of_accounts:delete_account' account_id %}" class="btn btn-delete" onclick="return confirm('Tem certeza de que deseja excluir esta conta?')">Excluir Conta</a>
-                    </section>
-                </form>
-            </div>
-            {% endblock %}
-            {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                <li class="{{ message.tags }}">{{ message }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
+        <div class="filter-graph-buttons-container">
+            <!-- Exemplo de seleção de ano -->
+                <select id="yearFilter">
+            <!-- Adicione as opções aqui -->
+                </select>
+                
+                <!-- Exemplo de seleção de visão -->
+                <select id="viewFilter">
+            <!-- Adicione as opções aqui -->
+                </select>
+                
+                <!-- Exemplo de seleção de tipo -->
+                <select id="typeFilter">
+            <!-- Adicione as opções aqui -->
+                </select>
+                
+                <button id="generateReport">Gerar relatório</button>
         </div>
-    </main>
-    <script type="text/javascript">
-        var getSubgroupsUrl = "{% url 'chart_of_accounts:get_subgroups' %}";
-        var getGroupsUrl = "{% url 'chart_of_accounts:get_groups' %}";
-    </script>
-    <script src="{% static 'scripts/edit_account_form.js' %}"></script>
+    <div class="cash-flow-report-container">
+        <div class="cash-flow-report" style="width:1000px; height:500px;">
+            <canvas id="cashFlowChart"></canvas>
+        </div>
+    </div>
+    <!-- Aqui o JSON com os dados que o script vai usar -->
+    {{ data|json_script:"cashFlowData" }}
+    <!-- Carregando o Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Carregando o arquivo JavaScript específico do gráfico de fluxo de caixa -->
+    <script src="{% static 'scripts/cashflow_chart.js' %}"></script>
 </body>
 </html>

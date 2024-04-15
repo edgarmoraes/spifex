@@ -23,7 +23,7 @@
                 <div class="tabs__buttons-list">
                     <button class="tab-button tabs__buttons-list--cash-flow-page"><a href="{% url 'cash_flow:cash_flow' %}">Fluxo de Caixa</a></button>
                     <button class="tab-button tabs__buttons-list--settled-page"><a href="{% url 'settled_entry:settled_entry' %}">Realizado</a></button>
-                    <button class="tab-button tabs__buttons-list--reports-page"><a href="#">Relatórios</a></button>
+                    <button class="tab-button tabs__buttons-list--reports-page"><a href="{% url 'reports:cash_flow_report' %}">Relatórios</a></button>
                     <div class="tabs__buttons-list--profile-container">
                         <button class="profile-container__account-button">
                             <span class="profile-container__account-button--typography">
