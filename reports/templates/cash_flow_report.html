@@ -1,13 +1,16 @@
 {% load static %}
-
+{% load currency_filters %}
+{% load number_filters %}
+{% load add_decimal %}
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/settings.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/reports.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
     <link rel="icon" href="{% static 'favicon.png' %}" type="image/x-icon">
-    <title>Spifex | Configurações</title>
+    <title>Spifex | Relatório de Fluxo de Caixa</title>
 </head>
 <body>
     <nav class="navigation-bar">
@@ -63,43 +66,53 @@
         </div>
     </nav>
     <main class="main">
-        <div class="settings-list">
-            <section class="accordion-section">
-                <a class="accordion-title" href="{% url 'settings:banks' %}">Bancos e Contas</a>
-            </section>
-            <section class="accordion-section">
-                <a class="accordion-title" href="#">Usuários e Permissões</a>
-            </section>
-            <section class="accordion-section">
-                <a class="accordion-title" href="#">Configurações Gerais</a>
-            </section>
-            <section class="accordion-section">
-                <h2 class="accordion-title">Centro de Custos</h2>
-                <div class="accordion-content">
-                    <ul>
-                        <li><a href="{% url 'chart_of_accounts:chart_of_accounts' %}">Plano de Contas</a></li>
-                        <li><a href="{% url 'settings:departments' %}">Departamentos</a></li>
-                        <li><a href="#">Projetos</a></li>
-                        <li><a href="#">Equipamentos e Maquinários</a></li>
-                    </ul>
+        <nav class="side-navigation" style="width: 250px;">
+            <div class="side-navigation__buttons-list" style="width: 250px;">
+                <li class="side-navigation__buttons-list--list">
+                    <a class="reports-button" href="{% url 'reports:cash_flow_report' %}">
+                        <button class="cash-flow-report cash-flow-report-button list__button">
+                            <svg xmlns="http://www.w3.org/2000/svg" color="#202020" width="24" height="24" fill="currentColor" class="bi bi-file-earmark-bar-graph" viewBox="0 0 16 16">
+                                <path d="M10 13.5a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-6a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5zm-2.5.5a.5.5 0 0 1-.5-.5v-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5zm-3 0a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5z"/>
+                                <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+                              </svg>
+                              <span class="list__button--reports-button-label">Fluxo de Caixa Geral</span>
+                        </button>
+                    </a>
+                </li>
+                <div class="list__line">
+                    <hr class="list__line--line" orientation="horizontal" width="0.5" role="separator" aria-orientation="horizontal">
                 </div>
-            </section>
-            <section class="accordion-section accordion-section-stakeholders">
-                <h2 class="accordion-title">Stakeholders</h2>
-                <div class="accordion-content">
-                    <ul>
-                        <li><a href="#">Fornecedores</a></li>
-                        <li><a href="#">Clientes</a></li>
-                        <li><a href="#">Colaboradores</a></li>
-                        <li><a href="#">Orgãos Governamentais</a></li>
-                    </ul>
-                </div>
-            </section>
+            </div>
+        </nav>
+        <div class="filter-graph-buttons-container">
+            <!-- Exemplo de seleção de ano -->
+                <select id="yearFilter">
+            <!-- Adicione as opções aqui -->
+                </select>
+                
+                <!-- Exemplo de seleção de visão -->
+                <select id="viewFilter">
+            <!-- Adicione as opções aqui -->
+                </select>
+                
+                <!-- Exemplo de seleção de tipo -->
+                <select id="typeFilter">
+            <!-- Adicione as opções aqui -->
+                </select>
+                
+                <button id="generateReport">Gerar relatório</button>
         </div>
-        <footer class="footer">
-            <p>&copy; Spifex</p>
-        </footer>
-    </main>
-    <script src="{% static 'scripts/scripts-configuracoes.js' %}"></script>
+        <div class="cash-flow-report-container">
+            <div class="cash-flow-report" style="width:1000px; height:500px;">
+                <canvas id="cashFlowChart"></canvas>
+            </div>
+        </div>
+    </main> 
+    <!-- Aqui o JSON com os dados que o script vai usar -->
+    {{ data|json_script:"cashFlowData" }}
+    <!-- Carregando o Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Carregando o arquivo JavaScript específico do gráfico de fluxo de caixa -->
+    <script src="{% static 'scripts/scripts_reports.js' %}"></script>
 </body>
 </html>

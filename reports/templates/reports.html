@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/cashflow-chart.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/reports.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
     <link rel="icon" href="{% static 'favicon.png' %}" type="image/x-icon">
     <title>Spifex | Relatório de Fluxo de Caixa</title>
@@ -22,7 +22,7 @@
                 <div class="tabs__buttons-list">
                     <a href="{% url 'cash_flow:cash_flow' %}"><button class="tab-button tabs__buttons-list--cash-flow-page">Fluxo de Caixa</button></a>
                     <a href="{% url 'settled_entry:settled_entry' %}"><button class="tab-button tabs__buttons-list--settled-page">Realizado</button></a>
-                    <a href="{% url 'reports:cash_flow_report' %}"><button class="tab-button tabs__buttons-list--reports-page">Relatórios</button></a>
+                    <a href="{% url 'reports:reports' %}"><button class="tab-button tabs__buttons-list--reports-page">Relatórios</button></a>
                     <div class="tabs__buttons-list--profile-container">
                         <button class="profile-container__account-button">
                             <span class="profile-container__account-button--typography">
@@ -65,34 +65,31 @@
             </div>
         </div>
     </nav>
-        <div class="filter-graph-buttons-container">
-            <!-- Exemplo de seleção de ano -->
-                <select id="yearFilter">
-            <!-- Adicione as opções aqui -->
-                </select>
-                
-                <!-- Exemplo de seleção de visão -->
-                <select id="viewFilter">
-            <!-- Adicione as opções aqui -->
-                </select>
-                
-                <!-- Exemplo de seleção de tipo -->
-                <select id="typeFilter">
-            <!-- Adicione as opções aqui -->
-                </select>
-                
-                <button id="generateReport">Gerar relatório</button>
+    <main class="main">
+        <nav class="side-navigation" style="width: 250px;">
+            <div class="side-navigation__buttons-list" style="width: 250px;">
+                <li class="side-navigation__buttons-list--list">
+                    <a class="reports-button" href="{% url 'reports:cash_flow_report' %}">
+                        <button class="cash-flow-report cash-flow-report-button list__button">
+                            <svg xmlns="http://www.w3.org/2000/svg" color="#202020" width="24" height="24" fill="currentColor" class="bi bi-file-earmark-bar-graph" viewBox="0 0 16 16">
+                                <path d="M10 13.5a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-6a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5zm-2.5.5a.5.5 0 0 1-.5-.5v-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5zm-3 0a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5z"/>
+                                <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+                              </svg>
+                              <span class="list__button--reports-button-label">Fluxo de Caixa Geral</span>
+                        </button>
+                    </a>
+                </li>
+                <div class="list__line">
+                    <hr class="list__line--line" orientation="horizontal" width="0.5" role="separator" aria-orientation="horizontal">
+                </div>
+            </div>
+        </nav>
+        <div class="select-reports-container">
+            <div class="select-reports-message">
+                Escolha um Relatório
+            </div>
         </div>
-    <div class="cash-flow-report-container">
-        <div class="cash-flow-report" style="width:1000px; height:500px;">
-            <canvas id="cashFlowChart"></canvas>
-        </div>
-    </div>
-    <!-- Aqui o JSON com os dados que o script vai usar -->
-    {{ data|json_script:"cashFlowData" }}
-    <!-- Carregando o Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Carregando o arquivo JavaScript específico do gráfico de fluxo de caixa -->
-    <script src="{% static 'scripts/cashflow_chart.js' %}"></script>
+    </main> 
+    <script src="{% static 'scripts/scripts_reports.js' %}"></script>
 </body>
 </html>

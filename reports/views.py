@@ -4,6 +4,9 @@ from django.db.models.functions import TruncMonth
 from cash_flow.models import CashFlowEntry
 from django.http import JsonResponse
 
+def reports(request):
+    return render(request, 'reports.html')
+
 def get_monthly_cashflow():
     # Agrupa as entradas por mês e calcula o saldo consolidado
     monthly_data = CashFlowEntry.objects.annotate(
@@ -22,4 +25,4 @@ def get_monthly_cashflow():
 
 def cash_flow_report(request):
     data = list(get_monthly_cashflow())
-    return render(request, 'cashflow_chart.html', {'data': data})
+    return render(request, 'cash_flow_report.html', {'data': data})
