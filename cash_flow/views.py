@@ -68,7 +68,7 @@ def process_cash_flow(request):
     if 'transferencias' in request.POST and request.POST['transferencias'] == 'transferencia':
         return process_transfer(request)
     else:
-        form_data = extract_form_data(request)
+        form_data = get_form_data(request)
     if form_data['lancamento_id']:
         if form_data['total_installments'] > 1:
             if form_data['total_installments_originais'] > 1:
@@ -83,7 +83,7 @@ def process_cash_flow(request):
         create_new_flows(form_data)
     return redirect(request.path)
 
-def extract_form_data(request):
+def get_form_data(request):
     """Extrai e retorna os dados do formulário."""
     transaction_type = 'Crédito' if 'salvar_credit' in request.POST else 'Débito'
 
