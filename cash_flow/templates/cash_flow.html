@@ -364,8 +364,8 @@
 
             <div id="Form1" class="tab-content">
                 <form class="modal-form-credits" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
-                    <input type="hidden" name="lancamento_id_credits" value="{{ fluxo_de_caixa.id }}">
-                    <input type="hidden" name="uuid_credits" value="{{ fluxo_de_caixa.uuid_correlation }}">
+                    <input type="hidden" name="entry_id_credits" value="{{ cash_flow.id }}">
+                    <input type="hidden" name="uuid_credits" value="{{ cash_flow.uuid_correlation }}">
                     <section class="modal-flex">
                         <label for="data-credits">Data</label>
                         <input class="modal-data" id="data-credits" type="date" name="due_date" required><br>
@@ -420,7 +420,7 @@
                         </section>
                         <section class="modal-flex" id="parcelas-section-credits" style="display:none;">
                             <label for="parcelas-credits">Número de Parcelas</label>
-                            <input class="modal-parcelas" id="parcelas-credits" type="number" name="parcelas" current-installment="{{ fluxo_de_caixa.current_installment }}" total-installments="{{ fluxo_de_caixa.total_installments }}" min="1" value="1"><br>
+                            <input class="modal-parcelas" id="parcelas-credits" type="number" name="parcelas" current-installment="{{ cash_flow.current_installment }}" total-installments="{{ cash_flow.total_installments }}" min="1" value="1"><br>
                         </section>
                     </div>
                 
@@ -441,7 +441,7 @@
                 <form class="modal-form-credits" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
                     <section class="modal-flex mesclar-2" id="parcelas-section-credits" style="display:none;">
                         <label for="parcelas-credits">Número de Parcelas</label>
-                        <input class="modal-parcelas" id="parcelas-credits" type="number" name="parcelas" current-installment="{{ fluxo_de_caixa.current_installment }}" total-installments="{{ fluxo_de_caixa.total_installments }}" min="1" value="1"><br>
+                        <input class="modal-parcelas" id="parcelas-credits" type="number" name="parcelas" current-installment="{{ cash_flow.current_installment }}" total-installments="{{ cash_flow.total_installments }}" min="1" value="1"><br>
                     </section>
                     <section class="modal-flex mesclar-2">
                         <div id="tag-container-credits" class="tag-container">
@@ -464,8 +464,8 @@
             <h1 class="modal-titulo">Pagamentos</h1>
             
             <form class="modal-form-debits" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
-                <input type="hidden" name="lancamento_id_debits" value="{{ fluxo_de_caixa.id }}">
-                <input type="hidden" name="uuid_debits" value="{{ fluxo_de_caixa.uuid_correlation }}">
+                <input type="hidden" name="entry_id_debits" value="{{ cash_flow.id }}">
+                <input type="hidden" name="uuid_debits" value="{{ cash_flow.uuid_correlation }}">
                 <section class="modal-flex">
                     <label for="data-debits">Data</label>
                     <input class="modal-data" type="date" id="data-debits" name="due_date" required><br>
@@ -520,7 +520,7 @@
             
                 <section class="modal-flex mesclar-2" id="parcelas-section-debits" style="display:none;">
                     <label for="parcelas-debits">Número de Parcelas</label>
-                    <input class="modal-parcelas" id="parcelas-debits" type="number" name="parcelas" current-installment="{{ fluxo_de_caixa.current_installment }}" total-installments="{{ fluxo_de_caixa.total_installments }}" min="1" value="1"><br>
+                    <input class="modal-parcelas" id="parcelas-debits" type="number" name="parcelas" current-installment="{{ cash_flow.current_installment }}" total-installments="{{ cash_flow.total_installments }}" min="1" value="1"><br>
                 </section>
 
                 <section class="modal-flex mesclar-2">
@@ -589,7 +589,7 @@
             
             <form class="modal-form-liquidacoes" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
                 <input type="hidden" name="liquidacoes" value="liquidacoes">
-                <input type="hidden" name="uuid" data-uuid-row="{{ fluxo_de_caixa.uuid_correlation }}">
+                <input type="hidden" name="uuid" data-uuid-row="{{ cash_flow.uuid_correlation }}">
                 <section class="mesclar-3">
                     <div class="banks-table-settlement-wrapper" id="banks-table-settlement-wrapper">
                             <table class="banks-table-settlement" id="banks-table-settlement">

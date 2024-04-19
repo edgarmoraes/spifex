@@ -9,6 +9,7 @@ from collections import OrderedDict
 from django.contrib import messages
 from django.dispatch import receiver
 from django.http import JsonResponse
+from typing import Dict, List, Tuple
 from realizado.models import SettledEntry
 from dateutil.relativedelta import relativedelta
 from django.views.decorators.csrf import csrf_exempt
@@ -21,30 +22,42 @@ def cash_flow(request):
     if request.method == "GET":
         return display_cash_flow(request)
     elif request.method == "POST":
-        return process_cash_flow(request)
+        return process_cash_flow_form(request)
 
 def display_cash_flow(request):
     active_banks = Banks.objects.filter(bank_status=True)
-    cash_flow_table_list = CashFlowEntry.objects.all().order_by('due_date', '-amount', 'description')
+    cash_flow_entries = CashFlowEntry.objects.all().order_by('due_date', '-amount', 'description')
     months_list_cash_flow = MonthsListCashFlow.objects.all()
-    chart_of_accounts_queryset_list = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
-    
-    # Agrupando as contas por subgroup usando OrderedDict para manter a ordem
+    accounts_queryset = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
+
+    accounts_by_subgroup = group_accounts_by_subgroup(accounts_queryset)
+    entries_with_totals = calculate_monthly_totals(cash_flow_entries)
+
+    context = {
+        'Cash_flow_table_list': entries_with_totals,
+        'Months_list_cash_flow': months_list_cash_flow,
+        'Banks_list': active_banks,
+        'Accounts_by_subgroup_list': accounts_by_subgroup,
+    }
+    return render(request, 'cash_flow.html', context)
+
+def group_accounts_by_subgroup(accounts_queryset) -> OrderedDict:
+    """ Groups accounts by their subgroup and returns an OrderedDict. """
     accounts_by_subgroup = OrderedDict()
-    for account in chart_of_accounts_queryset_list:
-        if account.subgroup not in accounts_by_subgroup:
-            accounts_by_subgroup[account.subgroup] = []
-        accounts_by_subgroup[account.subgroup].append(account)
+    for account in accounts_queryset:
+        subgroup = account.subgroup
+        accounts_by_subgroup.setdefault(subgroup, []).append(account)
+    return accounts_by_subgroup
 
-    cash_flow_table_list = list(cash_flow_table_list)
-
+def calculate_monthly_totals(cash_flow_entries) -> List[Dict]:
+    """ Calculates monthly totals for cash flow entries and returns a list of dictionaries. """
     entries_with_totals = []
-    for key, group in groupby(cash_flow_table_list, key=lambda x: x.due_date.strftime('%Y-%m')):
+    for key, group in groupby(cash_flow_entries, key=lambda x: x.due_date.strftime('%Y-%m')):
         group_list = list(group)
         entries_with_totals.extend(group_list)
 
-        total_debit = sum(item.amount for item in group_list if item.transaction_type == 'Débito')
-        total_credit = sum(item.amount for item in group_list if item.transaction_type == 'Crédito')
+        total_debit = sum(entry.amount for entry in group_list if entry.transaction_type == 'Débito')
+        total_credit = sum(entry.amount for entry in group_list if entry.transaction_type == 'Crédito')
         total_balance = total_credit - total_debit
 
         entries_with_totals.append({
@@ -56,88 +69,96 @@ def display_cash_flow(request):
             'is_total': True,
         })
 
-    context = {
-        'Cash_flow_table_list': entries_with_totals,
-        'Months_list_cash_flow': months_list_cash_flow,
-        'Banks_list': active_banks,
-        'Accounts_by_subgroup_list': accounts_by_subgroup,
-    }
-    return render(request, 'cash_flow.html', context)
+    return entries_with_totals
 
-def process_cash_flow(request):
+def process_cash_flow_form(request):
     if 'transferencias' in request.POST and request.POST['transferencias'] == 'transferencia':
         return process_transfer(request)
     else:
         form_data = get_form_data(request)
-    if form_data['lancamento_id']:
+    if form_data['entry_id']:
         if form_data['total_installments'] > 1:
             if form_data['total_installments_originais'] > 1:
-                update_existing_flow(form_data)  # Manter total_installments se for uma série de parcelas
+                update_existing_cash_flow_entries(form_data)  # Manter total_installments se for uma série de parcelas
             else:
                 # Criar novos fluxos se o número de parcelas foi alterado para mais de um
-                CashFlowEntry.objects.filter(id=form_data['lancamento_id']).delete()
-                create_new_flows(form_data)
+                CashFlowEntry.objects.filter(id=form_data['entry_id']).delete()
+                create_cash_flow_entries(form_data)
         else:
-            update_existing_flow(form_data)
+            update_existing_cash_flow_entries(form_data)
     else:
-        create_new_flows(form_data)
+        create_cash_flow_entries(form_data)
     return redirect(request.path)
 
 def get_form_data(request):
-    """Extrai e retorna os dados do formulário."""
-    transaction_type = 'Crédito' if 'salvar_credit' in request.POST else 'Débito'
+    """Extracts and returns form data from the request."""
+    transaction_type = get_transaction_type(request)
+    account_data = get_account_data(request, transaction_type)
+    entry_id = get_entry_id(request, transaction_type)
+    due_date = get_due_date(request)
+    transaction_amount = get_transaction_amount(request)
+    other_data = get_other_data(request)
 
-    if transaction_type == 'Crédito':
-        account_uuid = request.POST.get('general_ledger_account_uuid_credits')
-        account_name = request.POST.get('general_ledger_account_nome_credits')
-    else:
-        account_uuid = request.POST.get('general_ledger_account_uuid_debits')
-        account_name = request.POST.get('general_ledger_account_nome_debits')
-    
-    # Escolhe o campo de ID correto com base na transaction_type da transação
-    receipt_entry_id = request.POST.get('lancamento_id_credits')
-    payment_entry_id = request.POST.get('lancamento_id_debits')
-    
-    entry_id = None  # Inicialmente definido como None
-    
+    return {
+        'due_date': due_date,
+        'description': other_data['entry_description'],
+        'observation': other_data['entry_observation'],
+        'amount': transaction_amount,
+        'general_ledger_account_uuid': account_data['account_uuid'],
+        'general_ledger_account_nome': account_data['account_name'],
+        'total_installments': other_data['total_installments'],
+        'total_installments_originais': other_data['original_total_installments'],
+        'tags': other_data['entry_tags'],
+        'entry_id': entry_id,
+        'transaction_type': transaction_type,
+    }
+
+def get_transaction_type(request):
+    return 'Crédito' if 'salvar_credit' in request.POST else 'Débito'
+
+def get_account_data(request, transaction_type):
+    account_uuid_field = 'general_ledger_account_uuid_credits' if transaction_type == 'Crédito' else 'general_ledger_account_uuid_debits'
+    account_name_field = 'general_ledger_account_nome_credits' if transaction_type == 'Crédito' else 'general_ledger_account_nome_debits'
+    account_uuid = request.POST.get(account_uuid_field)
+    account_name = request.POST.get(account_name_field)
+    return {'account_uuid': account_uuid, 'account_name': account_name}
+
+def get_entry_id(request, transaction_type):
+    receipt_entry_id = request.POST.get('entry_id_credits')
+    payment_entry_id = request.POST.get('entry_id_debits')
+
     if transaction_type == 'Crédito' and receipt_entry_id:
-        entry_id = int(receipt_entry_id)
+        return int(receipt_entry_id)
     elif transaction_type == 'Débito' and payment_entry_id:
-        entry_id = int(payment_entry_id)
-    
-    # Verifica e processa o campo 'due_date'
+        return int(payment_entry_id)
+    return None
+
+def get_due_date(request):
     due_date_str = request.POST.get('due_date')
-    due_date = datetime.strptime(due_date_str, '%Y-%m-%d') if due_date_str else None
+    return datetime.strptime(due_date_str, '%Y-%m-%d') if due_date_str else None
 
+def get_transaction_amount(request):
     transaction_amount_str = request.POST.get('amount', 'R$ 0,00').replace('R$ ', '').replace('.', '').replace(',', '.')
-    transaction_amount = float(transaction_amount_str) if transaction_amount_str else 0.00
+    return float(transaction_amount_str) if transaction_amount_str else 0.00
 
-    # Processa outros campos com segurança
+def get_other_data(request):
     entry_description = request.POST.get('description', '')
     entry_observation = request.POST.get('observation', '')
     installment = request.POST.get('parcelas', '1')
     total_installments = int(installment) if installment.isdigit() else 1
     original_total_installments = int(request.POST.get('total_installments_originais', '1'))
     entry_tags = request.POST.get('tags', '')
-
-    # Retorna um dicionário com os dados processados
     return {
-        'due_date': due_date,
-        'description': entry_description,
-        'observation': entry_observation,
-        'amount': transaction_amount,
-        'general_ledger_account_uuid': account_uuid,
-        'general_ledger_account_nome': account_name,
+        'entry_description': entry_description,
+        'entry_observation': entry_observation,
         'total_installments': total_installments,
-        'total_installments_originais': original_total_installments,
-        'tags': entry_tags,
-        'lancamento_id': entry_id,
-        'transaction_type': transaction_type,
+        'original_total_installments': original_total_installments,
+        'entry_tags': entry_tags,
     }
 
-def update_existing_flow(form_data):
+def update_existing_cash_flow_entries(form_data):
     # Busca o fluxo de caixa pelo ID
-    cash_flow_table = get_object_or_404(CashFlowEntry, id=form_data['lancamento_id'])
+    cash_flow_table = get_object_or_404(CashFlowEntry, id=form_data['entry_id'])
     
     # Atualiza campos comuns diretamente
     cash_flow_table.due_date = form_data['due_date']
@@ -157,7 +178,7 @@ def update_existing_flow(form_data):
     # Salva as alterações no banco de dados
     cash_flow_table.save()
 
-def create_new_flows(form_data, iniciar_desde_o_atual=False):
+def create_cash_flow_entries(form_data):
     if 'due_date' not in form_data or form_data['due_date'] is None:
         return JsonResponse({'error': 'Data de due_date é necessária.'}, status=400)
 
