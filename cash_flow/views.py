@@ -319,69 +319,76 @@ def process_transfer(request):
 
 @csrf_exempt
 def process_settlement(request):
-    if request.method == 'POST':
-        form_data = json.loads(request.body)
-        response = {'status': 'success', 'messages': []}
-
-        for item in form_data:
-            try:
-                original_record = CashFlowEntry.objects.get(id=item['id'])
-                total_amount = original_record.amount
-                partial_amount = Decimal(item.get('partial_amount', 0))
-                is_partial_settlement = partial_amount > 0 and partial_amount <= total_amount
-                completing_settlement = partial_amount == total_amount
-
-                uuid_correlation = original_record.uuid_correlation
-                if is_partial_settlement:
-                    if not uuid_correlation:
-                        # Caso seja a primeira liquidação parcial
-                        uuid_correlation = uuid.uuid4()
-                        original_record.uuid_correlation = uuid_correlation
-                        original_record.save()
-                    if partial_amount < total_amount:
-                        new_amount = total_amount - partial_amount
-                        original_record.amount = new_amount
-                        original_record.save()
-                    # Se for a última liquidação parcial, o UUID já está definido
-
-                settlement_date_aware = timezone.make_aware(datetime.strptime(item['settlement_date'], '%Y-%m-%d'))
-                installment_number = SettledEntry.objects.filter(uuid_correlation=uuid_correlation).count() + 1 if uuid_correlation else 1
-
-                updated_entry_description = original_record.description
-                if is_partial_settlement:
-                    updated_entry_description += f" | Parcela ({installment_number})"
-
-                SettledEntry.objects.create(
-                    cash_flow_id=original_record.id,
-                    due_date=original_record.due_date,
-                    description=updated_entry_description,
-                    observation=item['observation'],
-                    amount=partial_amount if is_partial_settlement else total_amount,
-                    general_ledger_account=original_record.general_ledger_account,
-                    uuid_general_ledger_account=original_record.uuid_general_ledger_account,
-                    current_installment=original_record.current_installment,
-                    total_installments=original_record.total_installments,
-                    tags=original_record.tags,
-                    transaction_type=original_record.transaction_type,
-                    original_creation_date=original_record.creation_date,
-                    settlement_date=settlement_date_aware,
-                    settlement_bank=item.get('settlement_bank', ''),
-                    settlement_bank_id=item.get('settlement_bank_id', ''),
-                    uuid_correlation=uuid_correlation,
-                    uuid_correlation_installments=uuid_correlation
-                )
-
-                # Remove o registro original se for uma liquidação total ou a última liquidação parcial
-                if completing_settlement or not is_partial_settlement:
-                    original_record.delete()
-
-            except CashFlowEntry.DoesNotExist:
-                response['messages'].append(f'Registro {item["id"]} não encontrado.')
-                continue
-
-        return JsonResponse(response)
-    else:
+    if request.method != 'POST':
         return JsonResponse({'status': 'method not allowed'}, status=405)
+    
+    form_data = json.loads(request.body)
+    response = process_form_data(form_data)
+    return JsonResponse(response)
+
+def process_form_data(form_data):
+    response = {'status': 'success', 'messages': []}
+    for item in form_data:
+        process_single_item(item, response)
+    return response
+
+def process_single_item(item, response):
+    try:
+        original_record = get_cash_flow_entry(item['id'])
+        partial_amount, is_partial_settlement, completing_settlement = calculate_settlement_info(item, original_record)
+        uuid_correlation = update_uuid_correlation(original_record, partial_amount, is_partial_settlement)
+        create_settled_entry(item, original_record, partial_amount, is_partial_settlement, uuid_correlation)
+        update_original_record_if_needed(original_record, partial_amount, is_partial_settlement, completing_settlement)
+    except CashFlowEntry.DoesNotExist:
+        response['messages'].append(f'Registro {item["id"]} não encontrado.')
+
+def get_cash_flow_entry(entry_id):
+    return CashFlowEntry.objects.get(id=entry_id)
+
+def calculate_settlement_info(item, original_record):
+    total_amount = original_record.amount
+    partial_amount = Decimal(item.get('partial_amount', 0))
+    is_partial_settlement = partial_amount > 0 and partial_amount <= total_amount
+    completing_settlement = partial_amount == total_amount
+    return partial_amount, is_partial_settlement, completing_settlement
+
+def update_uuid_correlation(original_record, partial_amount, is_partial_settlement):
+    if is_partial_settlement and not original_record.uuid_correlation:
+        original_record.uuid_correlation = uuid.uuid4()
+        original_record.save()
+    return original_record.uuid_correlation
+
+def create_settled_entry(item, original_record, partial_amount, is_partial_settlement, uuid_correlation):
+    settlement_date_aware = timezone.make_aware(datetime.strptime(item['settlement_date'], '%Y-%m-%d'))
+    installment_number = SettledEntry.objects.filter(uuid_correlation=uuid_correlation).count() + 1 if uuid_correlation else 1
+    updated_entry_description = f"{original_record.description} | Parcela ({installment_number})" if is_partial_settlement else original_record.description
+
+    SettledEntry.objects.create(
+        cash_flow_id=original_record.id,
+        due_date=original_record.due_date,
+        description=updated_entry_description,
+        observation=item['observation'],
+        amount=partial_amount if is_partial_settlement else original_record.amount,
+        general_ledger_account=original_record.general_ledger_account,
+        uuid_general_ledger_account=original_record.uuid_general_ledger_account,
+        current_installment=original_record.current_installment,
+        total_installments=original_record.total_installments,
+        tags=original_record.tags,
+        transaction_type=original_record.transaction_type,
+        original_creation_date=original_record.creation_date,
+        settlement_date=settlement_date_aware,
+        settlement_bank=item.get('settlement_bank', ''),
+        settlement_bank_id=item.get('settlement_bank_id', ''),
+        uuid_correlation=uuid_correlation,
+        uuid_correlation_installments=uuid_correlation
+    )
+
+def update_original_record_if_needed(original_record, partial_amount, is_partial_settlement, completing_settlement):
+    if completing_settlement or not is_partial_settlement:
+        original_record.delete()
+    elif partial_amount < original_record.amount:
+        original_record.amount -= partial_amount
+        original_record.save()
 
 
 # SIGNAL HANDLERS ############################################################################
