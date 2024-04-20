@@ -117,15 +117,15 @@ def get_transaction_type(request):
     return 'Crédito' if 'salvar_credit' in request.POST else 'Débito'
 
 def get_account_data(request, transaction_type):
-    account_uuid_field = 'general_ledger_account_uuid_credits' if transaction_type == 'Crédito' else 'general_ledger_account_uuid_debits'
-    account_name_field = 'general_ledger_account_nome_credits' if transaction_type == 'Crédito' else 'general_ledger_account_nome_debits'
+    account_uuid_field = 'general_ledger_account_uuid_credit' if transaction_type == 'Crédito' else 'general_ledger_account_uuid_debit'
+    account_name_field = 'general_ledger_account_nome_credit' if transaction_type == 'Crédito' else 'general_ledger_account_nome_debit'
     account_uuid = request.POST.get(account_uuid_field)
     account_name = request.POST.get(account_name_field)
     return {'account_uuid': account_uuid, 'account_name': account_name}
 
 def get_entry_id(request, transaction_type):
-    receipt_entry_id = request.POST.get('entry_id_credits')
-    payment_entry_id = request.POST.get('entry_id_debits')
+    receipt_entry_id = request.POST.get('entry_id_credit')
+    payment_entry_id = request.POST.get('entry_id_debit')
 
     if transaction_type == 'Crédito' and receipt_entry_id:
         return int(receipt_entry_id)
