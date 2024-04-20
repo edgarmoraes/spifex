@@ -322,38 +322,38 @@
                 <input type="hidden" name="lancamento_id_realizado" value="{{ settled_table_item.id }}">
                 <input type="hidden" name="uuid_realizado" value="{{ settled_table_item.uuid_correlation }}">
                 <input type="hidden" name="uuid_parcelas_realizado" value="{{ settled_table_item.uuid_correlation_installments }}">
-                <section class="modal-flex">
+                <section class="modal-section">
                     <label for="data-realizado">Data</label>
                     <input class="modal-date" id="data-realizado" type="date" name="due_date" required><br>
                 </section>
             
-                <section class="modal-flex">
+                <section class="modal-section">
                     <label for="description-realizado">Descrição</label>
                     <input class="modal-description" id="description-realizado" maxlength="100" type="text" name="description" required><br>
                 </section>
             
-                <section class="modal-flex">
+                <section class="modal-section">
                     <label for="observation-realizado">Observação</label>
                     <input class="modal-obs" id="observation-realizado" maxlength="100" type="text" name="observation"></input><br>
                 </section>
                 
-                <section class="modal-flex">
+                <section class="modal-section">
                     <label for="amount-realizado">Valor</label>
                     <input class="modal-amount" id="amount-realizado" type="text" name="amount" required readonly><br>
                 </section>
             
-                <section class="modal-flex">
+                <section class="modal-section">
                     <label for="general-ledger-account-realizado">Conta Contábil</label>
                     <input class="modal-general-ledger-account" id="general-ledger-account-realizado" type="text" name="general_ledger_account" required readonly>
                     </input><br>
                 </section>
             
-                <section class="modal-flex" id="parcelas-section-realizado">
+                <section class="modal-section" id="parcelas-section-realizado">
                     <label for="parcelas-realizado">Parcela</label>
                     <input class="modal-parcelas" id="parcelas-realizado" type="text" name="parcelas" current-installment="{{ settled_table_item.current_installment }}" total-installments="{{ settled_table_item.total_installments }}" min="1" value="1" readonly><br>
                 </section>
 
-                <section class="modal-flex mesclar-2">
+                <section class="modal-section mesclar-2">
                     <div id="tag-container-realizado" class="tag-container"></div>
                 </section>
                 <section class="modal-botoes">
