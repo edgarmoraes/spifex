@@ -319,8 +319,18 @@
                                     <td class="total-balance-row">{{ cash_flow_table_item.saldo|format_number }}</td>
                                 </tr>
                             {% else %}
-                                <tr class="cash-flow-table__body--row" id="cash-flow-table__body--row" data-id-row="{{ cash_flow_table_item.id }}" data-general-ledger-account="{{ cash_flow_table_item.general_ledger_account }}" data-uuid-general-ledger-account="{{ cash_flow_table_item.uuid_general_ledger_account }}" data-transaction-type="{{ cash_flow_table_item.transaction_type }}" current-installment="{{ cash_flow_table_item.current_installment }}" total-installments="{{ cash_flow_table_item.total_installments }}" data-uuid-row="{{ cash_flow_table_item.uuid_correlation }}" scope="row">
-                                    <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox-{{ cash_flow_table_item.id }}" class="custom-checkbox" type="checkbox" data-id="{{ cash_flow_table_item.id }}" data-uuid-row="{{ cash_flow_table_item.uuid_correlation }}"><span class="checkmark"></span></label></td>
+                                <tr class="cash-flow-table__body--row" id="cash-flow-table__body--row"
+                                data-id-row="{{ cash_flow_table_item.id }}"
+                                data-general-ledger-account="{{ cash_flow_table_item.general_ledger_account }}"
+                                data-uuid-general-ledger-account="{{ cash_flow_table_item.uuid_general_ledger_account }}"
+                                data-transaction-type="{{ cash_flow_table_item.transaction_type }}"
+                                current-installment="{{ cash_flow_table_item.current_installment }}"
+                                total-installments="{{ cash_flow_table_item.total_installments }}"
+                                data-uuid-row="{{ cash_flow_table_item.uuid_correlation }}"
+                                scope="row">
+                                    <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox-{{ cash_flow_table_item.id }}" class="custom-checkbox" type="checkbox"
+                                        data-id="{{ cash_flow_table_item.id }}"
+                                        data-uuid-row="{{ cash_flow_table_item.uuid_correlation }}"><span class="checkmark"></span></label></td>
                                     <td class="due_date-row">{{ cash_flow_table_item.due_date|date:"d/m/Y" }}</td>
                                     <td class="description-row">{{ cash_flow_table_item.description }}</td>
                                     <td class="observation-row">
@@ -367,27 +377,27 @@
                 <form class="modal-form credit-modal-form" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
                     <input type="hidden" name="entry_id_credit" value="{{ cash_flow.id }}">
                     <input type="hidden" name="uuid_credit" value="{{ cash_flow.uuid_correlation }}">
-                    <section class="modal-section credit-modal-form__section--date">
+                    <section class="modal-section credit-modal-form__section--date section--date">
                         <label for="date-credit">Data</label>
                         <input class="modal-date" id="date-credit" type="date" name="due_date" required>
                     </section>
                 
-                    <section class="modal-section credit-modal-form__section--description">
+                    <section class="modal-section credit-modal-form__section--description section--description">
                         <label for="description-credit">Descrição</label>
                         <input class="modal-description" id="description-credit" maxlength="100" type="text" name="description" required>
                     </section>
                 
-                    <section class="modal-section credit-modal-form__section--observation">
+                    <section class="modal-section credit-modal-form__section--observation section--observation">
                         <label for="observation-credit">Observação</label>
                         <input class="modal-obs" id="observation-credit" maxlength="100" type="text" name="observation"></input>
                     </section>
                 
-                    <section class="modal-section credit-modal-form__section--amount">
+                    <section class="modal-section credit-modal-form__section--amount section--amount">
                         <label for="amount-credit">Valor</label>
                         <input class="modal-amount" id="amount-credit" type="text" name="amount" oninput="formatAmount(this)" value="R$ " required>
                     </section>
                 
-                    <section class="modal-section credit-modal-form__section--general-ledger-dropdown">
+                    <section class="modal-section credit-modal-form__section--general-ledger-dropdown section--general-ledger-dropdown">
                         <label for="dropdown-button-contas-credit">Conta Contábil</label>
                         <div class="dropdown-multiselect">
                             <button type="button" onclick="toggleDropdownModals('dropdown-content-contas-credit', event)" id="dropdown-button-contas-credit" class="modal-dropdown-button">Selecione</button>
@@ -410,45 +420,49 @@
                             </div>
                         </div>
                     </section>
-                
-                    <div class="installments-container">
-                        <section class="modal-section credit-modal-form__section--installment" id="recorrencia-section">
+
+                    <section class="modal-section credit-modal-form__section--document-type section--document-type">
+                        <label for="document-type-credit">Tipo de Documento</label>
+                        <input id="document-type-credit" class="document-type-credit" type="text">
+                    </section>
+
+                    <section class="modal-section credit-modal-form__section--tag section--tag">
+                        <label for="tags-credit">Tags</label>
+                        <input id="tagInput-credit" class="tagInput" type="text" placeholder="Adicione uma tag">
+                    </section>
+
+                    <section class="modal-section credit-modal-form__section--tag-container section--tag-container">
+                        <div id="tag-container-credit" class="tag-container"></div>
+                        <input type="hidden" id="tagsHiddenInput-credit" name="tags">
+                    </section>
+
+                    <section class="modal-section credit-modal-form__section--notes section--notes mesclar-2">
+                        <label for="notes-credit">Anotações</label>
+                        <input id="notes-credit" class="notes-credit" type="text">
+                    </section>
+
+                    <div class="credit-modal-form__installments-container installments-container mesclar-2">
+                        <section class="modal-section credit-modal-form__section--installment section--installment" id="section--installment">
                             <label for="recorrencia-credit" class="recorrencia-label">Recorrência</label>
                             <select class="modal-recorrencia" id="recorrencia-credit" name="recorrencia" required onchange="showInstallments(null, 'credit')">
                                 <option value="nao">Não</option>
                                 <option value="sim">Sim</option>
                             </select>
                         </section>
-                        <section class="modal-section credit-modal-form__section--installment-number" id="parcelas-section-credit" style="display:none;">
+                        <section class="modal-section credit-modal-form__section--installment-number section--installment-number" id="parcelas-section-credit" style="display:none;">
                             <label for="parcelas-credit">Número de Parcelas</label>
                             <input class="modal-parcelas" id="parcelas-credit" type="number" name="parcelas" current-installment="{{ cash_flow.current_installment }}" total-installments="{{ cash_flow.total_installments }}" min="1" value="1">
                         </section>
+                        <section class="modal-section credit-modal-form__section--periods section--periods" id="credit-modal-form__section--periods" style="display:none;">
+                            <label for="periods-credit">Períodos</label>
+                            <input id="periods-credit" class="periods-credit" type="text">
+                        </section>
+                        <section class="modal-section credit-modal-form__section--weekend section--weekend" id="credit-modal-form__section--weekend" style="display:none;">
+                            <label for="weekend-credit">Final de Semana</label>
+                            <input id="weekend-credit" class="weekend-credit" type="text">
+                        </section>
                     </div>
-                
-                    <section class="modal-section credit-modal-form__section--tag">
-                        <label for="tags-credit">Tags</label>
-                        <input id="tagInput-credit" class="tagInput" type="text" placeholder="Adicione uma tag">
-                    </section>
 
-                    <section class="modal-section credit-modal-form__section--document-type">
-                        <label for="document-type-credit">Tipo de Documento</label>
-                        <input id="document-type-credit" class="document-type-credit" type="text">
-                    </section>
-
-                    <section class="modal-section credit-modal-form__section--document-type">
-                        <label for="document-type-credit">Períodos</label>
-                        <input id="document-type-credit" class="document-type-credit" type="text">
-                    </section>
-
-                    <section>
-                        <div id="tag-container-credit" class="tag-container"></div>
-                        <input type="hidden" id="tagsHiddenInput-credit" name="tags">
-                    </section>
-
-                    <section class="modal-section credit-modal-form__section--notes mesclar-2">
-                        <label for="notes-credit">Anotações</label>
-                        <input id="notes-credit" class="notes-credit" type="text">
-                    </section>
 
                     <section class="modal-botoes">
                         <input type="submit" class="modal-salvar" name="salvar_credit" value="Salvar">
