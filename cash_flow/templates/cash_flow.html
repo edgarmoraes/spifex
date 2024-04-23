@@ -422,8 +422,20 @@
                     </section>
 
                     <section class="modal-section credit-modal-form__section--document-type section--document-type">
-                        <label for="document-type-credit">Tipo de Documento</label>
-                        <input id="document-type-credit" class="document-type-credit" type="text">
+                        <label for="dropdown-button-document-type-credit">Tipo de Documento</label>
+                        <div class="dropdown-multiselect">
+                            <button type="button" onclick="toggleDropdownModals('dropdown-content-document-type-credit', event)" id="dropdown-button-document-type-credit" class="modal-dropdown-button">Selecione</button>
+                            <div id="dropdown-content-document-type-credit" class="dropdown-content">
+                                <div class="dropdown-options">
+                                    {% for document_type in Document_types %}
+                                        <label class="label-filters">
+                                            <input type="checkbox" name="document_type_credit" data-uuid-document-type="{{ document_type.uuid_document_type }}" data-document-type="{{ document_type.document_type }}" class="document-type-checkbox">
+                                            {{ document_type.document_type }}
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
                     </section>
 
                     <section class="modal-section credit-modal-form__section--tag section--tag">
@@ -455,11 +467,20 @@
                         </section>
                         <section class="modal-section credit-modal-form__section--periods section--periods" id="credit-modal-form__section--periods" style="display:none;">
                             <label for="periods-credit">Períodos</label>
-                            <input id="periods-credit" class="periods-credit" type="text">
+                            <select class="periods-credit" id="periods-credit">
+                                <option value="sim">Mensal</option>
+                                <option value="nao">Semanal</option>
+                                <option value="sim">Bimestral</option>
+                                <option value="sim">Semestral</option>
+                                <option value="sim">Anual</option>
+                            </select>
                         </section>
                         <section class="modal-section credit-modal-form__section--weekend section--weekend" id="credit-modal-form__section--weekend" style="display:none;">
-                            <label for="weekend-credit">Final de Semana</label>
-                            <input id="weekend-credit" class="weekend-credit" type="text">
+                            <label>Final de Semana</label>
+                            <div class="weekend-container">
+                                <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox" class="custom-checkbox" type="checkbox"><span class="checkmark"></span></label></td>
+                                <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox" class="custom-checkbox" type="checkbox"><span class="checkmark"></span></label></td>
+                            </div>
                         </section>
                     </div>
 

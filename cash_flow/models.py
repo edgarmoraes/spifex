@@ -67,3 +67,8 @@ class Banks(models.Model):
 class Departments(models.Model):
     department = models.CharField(max_length = 256)
     uuid_department = models.UUIDField(null=True, blank=True)
+
+class DocumentType(models.Model):
+    document_type = models.CharField(max_length = 256)
+    uuid_document_type = models.UUIDField(null=True, blank=True)
+

@@ -16,7 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 from chart_of_accounts.models import Chart_of_accounts
 from django.db.models.signals import post_save, post_delete
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import CashFlowEntry, TemporaryTable, MonthsListCashFlow, Banks
+from .models import CashFlowEntry, TemporaryTable, MonthsListCashFlow, Banks, DocumentType
 
 def cash_flow(request):
     if request.method == "GET":
@@ -29,6 +29,7 @@ def display_cash_flow(request):
     cash_flow_entries = CashFlowEntry.objects.all().order_by('due_date', '-amount', 'description')
     months_list_cash_flow = MonthsListCashFlow.objects.all()
     accounts_queryset = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
+    document_type_cash_flow = DocumentType.objects.all()
 
     accounts_by_subgroup = group_accounts_by_subgroup(accounts_queryset)
     entries_with_totals = calculate_monthly_totals(cash_flow_entries)
@@ -38,6 +39,7 @@ def display_cash_flow(request):
         'Months_list_cash_flow': months_list_cash_flow,
         'Banks_list': active_banks,
         'Accounts_by_subgroup_list': accounts_by_subgroup,
+        'Document_types': document_type_cash_flow,
     }
     return render(request, 'cash_flow.html', context)
 
