@@ -415,7 +415,7 @@
                                         {% endif %}
                                     {% endfor %}
                                     <input type="hidden" id="general_ledger_account_uuid_credit" name="general_ledger_account_uuid_credit" value="">
-                                    <input type="hidden" id="general_ledger_account_nome_credit" name="general_ledger_account_nome_credit" value="">
+                                    <input type="hidden" id="general_ledger_account_name_credit" name="general_ledger_account_name_credit" value="">
                                 </div>
                             </div>
                         </div>
@@ -429,28 +429,25 @@
                                 <div class="dropdown-options">
                                     {% for document_type in Document_types %}
                                         <label class="label-filters">
-                                            <input type="checkbox" name="document_type_credit" data-uuid-document-type="{{ document_type.uuid_document_type }}" data-document-type="{{ document_type.document_type }}" class="document-type-checkbox">
+                                            <input type="checkbox" name="document_type_option_credit" data-uuid-document-type="{{ document_type.uuid_document_type }}" data-document-type="{{ document_type.document_type }}" class="document-type-checkbox">
                                             {{ document_type.document_type }}
                                         </label>
-                                    {% endfor %}
+                                        {% endfor %}
+                                    <input type="hidden" id="document_type_credit" name="document_type_credit" value="">
+                                    <input type="hidden" id="uuid_document_type_credit" name="uuid_document_type_credit" value="">
                                 </div>
                             </div>
                         </div>
+                    </section>
+                    
+                    <section class="modal-section credit-modal-form__section--notes section--notes mesclar-2">
+                        <label for="notes-credit">Anotações</label>
+                        <input id="notes-credit" class="notes-credit" type="text">
                     </section>
 
                     <section class="modal-section credit-modal-form__section--tag section--tag">
                         <label for="tags-credit">Tags</label>
                         <input id="tagInput-credit" class="tagInput" type="text" placeholder="Adicione uma tag">
-                    </section>
-
-                    <section class="modal-section credit-modal-form__section--tag-container section--tag-container">
-                        <div id="tag-container-credit" class="tag-container"></div>
-                        <input type="hidden" id="tagsHiddenInput-credit" name="tags">
-                    </section>
-
-                    <section class="modal-section credit-modal-form__section--notes section--notes mesclar-2">
-                        <label for="notes-credit">Anotações</label>
-                        <input id="notes-credit" class="notes-credit" type="text">
                     </section>
 
                     <div class="credit-modal-form__installments-container installments-container mesclar-2">
@@ -467,7 +464,7 @@
                         </section>
                         <section class="modal-section credit-modal-form__section--periods section--periods" id="credit-modal-form__section--periods" style="display:none;">
                             <label for="periods-credit">Períodos</label>
-                            <select class="periods-credit" id="periods-credit">
+                            <select class="periods-credit" id="periods-credit" name="periods_credit">
                                 <option value="sim">Mensal</option>
                                 <option value="nao">Semanal</option>
                                 <option value="sim">Bimestral</option>
@@ -478,11 +475,16 @@
                         <section class="modal-section credit-modal-form__section--weekend section--weekend" id="credit-modal-form__section--weekend" style="display:none;">
                             <label>Final de Semana</label>
                             <div class="weekend-container">
-                                <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox" class="custom-checkbox" type="checkbox"><span class="checkmark"></span></label></td>
-                                <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox" class="custom-checkbox" type="checkbox"><span class="checkmark"></span></label></td>
+                                <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox" class="custom-checkbox checkbox-weekend" type="checkbox"><span class="checkmark"></span></label></td>
+                                <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox" class="custom-checkbox checkbox-weekend" type="checkbox"><span class="checkmark"></span></label></td>
                             </div>
                         </section>
                     </div>
+                    
+                    <section class="modal-section credit-modal-form__section--tag-container section--tag-container">
+                        <div id="tag-container-credit" class="tag-container"></div>
+                        <input type="hidden" id="tagsHiddenInput-credit" name="tags">
+                    </section>
 
 
                     <section class="modal-botoes">
@@ -559,7 +561,7 @@
                                     {% endif %}
                                 {% endfor %}
                                 <input type="hidden" id="general_ledger_account_uuid_debit" name="general_ledger_account_uuid_debit" value="">
-                                <input type="hidden" id="general_ledger_account_nome_debit" name="general_ledger_account_nome_debit" value="">
+                                <input type="hidden" id="general_ledger_account_name_debit" name="general_ledger_account_name_debit" value="">
                             </div>
                         </div>
                     </div>

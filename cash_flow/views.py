@@ -95,11 +95,13 @@ def process_cash_flow_form(request):
 def get_form_data(request):
     """Extracts and returns form data from the request."""
     transaction_type = get_transaction_type(request)
-    account_data = get_account_data(request, transaction_type)
-    entry_id = get_entry_id(request, transaction_type)
     due_date = get_due_date(request)
     transaction_amount = get_transaction_amount(request)
+    account_data = get_account_data(request, transaction_type)
     other_data = get_other_data(request)
+    entry_id = get_entry_id(request, transaction_type)
+    document_type_data = get_document_type_data(request, transaction_type)
+    periods_data = get_periods_data(request)
 
     return {
         'due_date': due_date,
@@ -107,12 +109,15 @@ def get_form_data(request):
         'observation': other_data['entry_observation'],
         'amount': transaction_amount,
         'general_ledger_account_uuid': account_data['account_uuid'],
-        'general_ledger_account_nome': account_data['account_name'],
+        'general_ledger_account_name': account_data['account_name'],
         'total_installments': other_data['total_installments'],
         'total_installments_originais': other_data['original_total_installments'],
         'tags': other_data['entry_tags'],
         'entry_id': entry_id,
         'transaction_type': transaction_type,
+        'document_type': document_type_data['document_type'],
+        'uuid_document_type': document_type_data['uuid_document_type'],
+        'periods': periods_data,
     }
 
 def get_transaction_type(request):
@@ -120,7 +125,7 @@ def get_transaction_type(request):
 
 def get_account_data(request, transaction_type):
     account_uuid_field = 'general_ledger_account_uuid_credit' if transaction_type == 'Crédito' else 'general_ledger_account_uuid_debit'
-    account_name_field = 'general_ledger_account_nome_credit' if transaction_type == 'Crédito' else 'general_ledger_account_nome_debit'
+    account_name_field = 'general_ledger_account_name_credit' if transaction_type == 'Crédito' else 'general_ledger_account_name_debit'
     account_uuid = request.POST.get(account_uuid_field)
     account_name = request.POST.get(account_name_field)
     return {'account_uuid': account_uuid, 'account_name': account_name}
@@ -158,24 +163,44 @@ def get_other_data(request):
         'entry_tags': entry_tags,
     }
 
+def get_document_type_data(request, transaction_type):
+    document_type_field = 'document_type_credit' if transaction_type == 'Crédito' else 'document_type_debit'
+    uuid_document_type_field = 'uuid_document_type_credit' if transaction_type == 'Crédito' else 'uuid_document_type_debit'
+    document_type = request.POST.get(document_type_field)
+    uuid_document_type = request.POST.get(uuid_document_type_field)
+    return {'document_type': document_type, 'uuid_document_type': uuid_document_type}
+
+def get_periods_data(request):
+    periods = request.POST.get('periods_credit')  # Substitua com o nome correto do campo
+    return periods
+
 def update_existing_cash_flow_entries(form_data):
     # Busca o fluxo de caixa pelo ID
     cash_flow_table = get_object_or_404(CashFlowEntry, id=form_data['entry_id'])
     
     # Atualiza campos comuns diretamente
+    cash_flow_table.transaction_type = form_data['transaction_type']
     cash_flow_table.due_date = form_data['due_date']
     cash_flow_table.description = form_data['description']
     cash_flow_table.observation = form_data['observation']
     cash_flow_table.amount = form_data['amount']
-    cash_flow_table.transaction_type = form_data['transaction_type']
+    
+    # Atualiza a conta contábil e seu UUID
+    cash_flow_table.general_ledger_account = form_data['general_ledger_account_name']
+    cash_flow_table.uuid_general_ledger_account = form_data['general_ledger_account_uuid']
+
+    # Atualiza o tipo de documento e seu UUID
+    cash_flow_table.document_type = form_data['document_type']
+    cash_flow_table.uuid_document_type = form_data['uuid_document_type']
+
+    # Atualiza os períodos
+    cash_flow_table.periods = form_data['periods']
+
     # Não altera total_installments se já é parte de uma série de parcelas
     if cash_flow_table.total_installments <= 1 or 'total_installments' not in form_data:
         cash_flow_table.total_installments = form_data.get('total_installments', cash_flow_table.total_installments)
+    
     cash_flow_table.tags = form_data['tags']
-
-    # Atualiza a conta contábil e seu UUID
-    cash_flow_table.general_ledger_account = form_data['general_ledger_account_nome']
-    cash_flow_table.uuid_general_ledger_account = form_data['general_ledger_account_uuid']
 
     # Salva as alterações no banco de dados
     cash_flow_table.save()
@@ -201,8 +226,10 @@ def create_cash_flow_entries(form_data):
             description=form_data['description'],
             observation=form_data['observation'],
             amount=form_data['amount'],
-            general_ledger_account=form_data['general_ledger_account_nome'],
+            general_ledger_account=form_data['general_ledger_account_name'],
             uuid_general_ledger_account=form_data['general_ledger_account_uuid'],
+            document_type=form_data['document_type'],
+            uuid_document_type=form_data['uuid_document_type'],
             current_installment=i,
             total_installments=total_installments,
             tags=form_data['tags'],
