@@ -101,7 +101,7 @@ def get_form_data(request):
     other_data = get_other_data(request)
     entry_id = get_entry_id(request, transaction_type)
     document_type_data = get_document_type_data(request, transaction_type)
-    periods_data = get_periods_data(request)
+    periods_data = get_periods_data(request, transaction_type)
 
     return {
         'due_date': due_date,
@@ -170,9 +170,15 @@ def get_document_type_data(request, transaction_type):
     uuid_document_type = request.POST.get(uuid_document_type_field)
     return {'document_type': document_type, 'uuid_document_type': uuid_document_type}
 
-def get_periods_data(request):
-    periods = request.POST.get('periods_credit')  # Substitua com o nome correto do campo
-    return periods
+def get_periods_data(request, transaction_type):
+    recorrencia = request.POST.get('recorrencia')
+    periods_field = 'periods_credit' if transaction_type == 'Crédito' else 'periods_debit'
+    if recorrencia == 'nao':
+        return 'monthly'
+    else:
+        # Caso contrário, usa o valor enviado pelo formulário
+        periods = request.POST.get(periods_field)
+        return periods if periods else 'monthly'
 
 def update_existing_cash_flow_entries(form_data):
     # Busca o fluxo de caixa pelo ID
@@ -207,20 +213,29 @@ def update_existing_cash_flow_entries(form_data):
 
 def create_cash_flow_entries(form_data):
     if 'due_date' not in form_data or form_data['due_date'] is None:
-        return JsonResponse({'error': 'Data de due_date é necessária.'}, status=400)
+        return JsonResponse({'error': 'Data de vencimento é necessária.'}, status=400)
 
     initial_installment = form_data.get('current_installment', 1)
     total_installments = form_data['total_installments']
 
-    # Verifica se 'due_date' já é um object datetime.datetime
+    # Converte 'due_date' para datetime.date se necessário
     if isinstance(form_data['due_date'], datetime):
         base_due_date = form_data['due_date'].date()
     else:
-        # Converte de string para datetime.datetime se 'due_date' for uma string
         base_due_date = datetime.strptime(form_data['due_date'], '%Y-%m-%d').date()
 
     for i in range(initial_installment, total_installments + 1):
-        installment_due_date = base_due_date + relativedelta(months=i - initial_installment)
+        if form_data['periods'] == 'weekly':
+            installment_due_date = base_due_date + relativedelta(weeks=i - initial_installment)
+        elif form_data['periods'] == 'bimonthly':
+            installment_due_date = base_due_date + relativedelta(months=2 * (i - initial_installment))
+        elif form_data['periods'] == 'semiannual':
+            installment_due_date = base_due_date + relativedelta(months=6 * (i - initial_installment))
+        elif form_data['periods'] == 'yearly':
+            installment_due_date = base_due_date + relativedelta(years=i - initial_installment)
+        else:  # Default to monthly
+            installment_due_date = base_due_date + relativedelta(months=i - initial_installment)
+
         CashFlowEntry.objects.create(
             due_date=installment_due_date,
             description=form_data['description'],
@@ -233,6 +248,7 @@ def create_cash_flow_entries(form_data):
             current_installment=i,
             total_installments=total_installments,
             tags=form_data['tags'],
+            periods=form_data['periods'],
             transaction_type=form_data['transaction_type'],
             creation_date=datetime.now()
         )

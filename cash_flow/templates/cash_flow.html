@@ -374,7 +374,7 @@
             </div>
 
             <div id="Form1" class="tab-content">
-                <form class="modal-form credit-modal-form" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
+                <form class="modal-form credit-modal-form" action="/fluxo_de_caixa/" method="POST" onsubmit="return validateCheckboxes()">{% csrf_token %}
                     <input type="hidden" name="entry_id_credit" value="{{ cash_flow.id }}">
                     <input type="hidden" name="uuid_credit" value="{{ cash_flow.uuid_correlation }}">
                     <section class="modal-section credit-modal-form__section--date section--date">
@@ -465,11 +465,11 @@
                         <section class="modal-section credit-modal-form__section--periods section--periods" id="credit-modal-form__section--periods" style="display:none;">
                             <label for="periods-credit">Períodos</label>
                             <select class="periods-credit" id="periods-credit" name="periods_credit">
-                                <option value="sim">Mensal</option>
-                                <option value="nao">Semanal</option>
-                                <option value="sim">Bimestral</option>
-                                <option value="sim">Semestral</option>
-                                <option value="sim">Anual</option>
+                                <option value="monthly">Mensal</option>
+                                <option value="weekly">Semanal</option>
+                                <option value="bimonthly">Bimestral</option>
+                                <option value="semiannual">Semestral</option>
+                                <option value="yearly">Anual</option>
                             </select>
                         </section>
                         <section class="modal-section credit-modal-form__section--weekend section--weekend" id="credit-modal-form__section--weekend" style="display:none;">
