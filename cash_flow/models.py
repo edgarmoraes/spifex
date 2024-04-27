@@ -14,6 +14,7 @@ class CashFlowEntry(models.Model):
     document_type = models.CharField(max_length=50)
     notes = models.CharField(max_length=256)
     periods = models.CharField(max_length=50)
+    weekend_action = models.CharField(max_length=50)
     creation_date = models.DateTimeField(auto_now_add=True)
     uuid_correlation = models.UUIDField(null=True, blank=True)
     uuid_general_ledger_account = models.UUIDField(null=True, blank=True)

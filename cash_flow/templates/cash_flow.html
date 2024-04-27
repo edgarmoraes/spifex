@@ -331,6 +331,7 @@
                                 data-document-type="{{ cash_flow_table_item.document_type }}"
                                 data-uuid-document-type="{{ cash_flow_table_item.uuid_document_type }}"
                                 data-periods="{{ cash_flow_table_item.periods }}"
+                                data-weekend-action="{{ cash_flow_table_item.weekend_action }}"
                                 scope="row">
                                     <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox-{{ cash_flow_table_item.id }}" class="custom-checkbox" type="checkbox"
                                         data-id="{{ cash_flow_table_item.id }}"
@@ -479,11 +480,18 @@
                             </select>
                         </section>
                         <section class="modal-section credit-modal-form__section--weekend section--weekend" id="credit-modal-form__section--weekend" style="display:none;">
-                            <label>Final de Semana</label>
+                            <label>Finais de Semana</label>
                             <div class="weekend-container">
-                                <td class="checkbox-row"><label class="checkbox-container-weekend"><input id="custom-checkbox-antedate" class="custom-checkbox-weekend checkbox-weekend" type="checkbox"><span class="checkmark-weekend"></span></label></td>
-                                <td class="checkbox-row"><label class="checkbox-container-weekend"><input id="custom-checkbox-skip" class="custom-checkbox-weekend checkbox-weekend" type="checkbox"><span class="checkmark-weekend"></span></label></td>
+                                <div class="weekend-checkbox-container">
+                                    <label class="weekend-label" for="custom-checkbox-antedate-credit">Antecipar</label>
+                                    <label class="checkbox-container-weekend"><input id="custom-checkbox-antedate-credit" class="custom-checkbox-weekend checkbox-weekend" type="checkbox" value="antedate"><span class="checkmark-weekend"></span></label>
+                                </div>
+                                <div class="weekend-checkbox-container">
+                                    <label class="weekend-label" for="custom-checkbox-postpone-credit">Postergar</label>
+                                    <label class="checkbox-container-weekend"><input id="custom-checkbox-postpone-credit" class="custom-checkbox-weekend checkbox-weekend" type="checkbox" value="postpone"><span class="checkmark-weekend"></span></label>
+                                </div>
                             </div>
+                            <input type="hidden" id="weekend_action_credit" name="weekend_action_credit" value="">
                         </section>
                     </div>
                     

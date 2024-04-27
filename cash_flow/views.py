@@ -102,6 +102,7 @@ def get_form_data(request):
     entry_id = get_entry_id(request, transaction_type)
     document_type_data = get_document_type_data(request, transaction_type)
     periods_data = get_periods_data(request, transaction_type)
+    weekend_action = get_weekend_action_data(request, transaction_type)
 
     return {
         'due_date': due_date,
@@ -119,6 +120,7 @@ def get_form_data(request):
         'document_type': document_type_data['document_type'],
         'uuid_document_type': document_type_data['uuid_document_type'],
         'periods': periods_data,
+        'weekend_action': weekend_action,
     }
 
 def get_transaction_type(request):
@@ -172,6 +174,11 @@ def get_document_type_data(request, transaction_type):
     document_type = request.POST.get(document_type_field)
     uuid_document_type = request.POST.get(uuid_document_type_field)
     return {'document_type': document_type, 'uuid_document_type': uuid_document_type}
+
+def get_weekend_action_data(request, transaction_type):
+    weekend_action_field = 'weekend_action_credit' if transaction_type == 'Crédito' else 'weekend_action_debit'
+    weekend_action = request.POST.get(weekend_action_field)
+    return weekend_action
 
 def get_periods_data(request, transaction_type):
     recorrencia = request.POST.get('recorrencia')
@@ -255,6 +262,7 @@ def create_cash_flow_entries(form_data):
             tags=form_data['tags'],
             periods=form_data['periods'],
             transaction_type=form_data['transaction_type'],
+            weekend_action=form_data['weekend_action'],
             creation_date=datetime.now()
         )
 
