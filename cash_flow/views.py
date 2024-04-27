@@ -113,6 +113,7 @@ def get_form_data(request):
         'total_installments': other_data['total_installments'],
         'total_installments_originais': other_data['original_total_installments'],
         'tags': other_data['entry_tags'],
+        'notes': other_data['entry_notes'],
         'entry_id': entry_id,
         'transaction_type': transaction_type,
         'document_type': document_type_data['document_type'],
@@ -151,6 +152,7 @@ def get_transaction_amount(request):
 def get_other_data(request):
     entry_description = request.POST.get('description', '')
     entry_observation = request.POST.get('observation', '')
+    entry_notes = request.POST.get('notes', '')
     installment = request.POST.get('parcelas', '1')
     total_installments = int(installment) if installment.isdigit() else 1
     original_total_installments = int(request.POST.get('total_installments_originais', '1'))
@@ -160,6 +162,7 @@ def get_other_data(request):
         'entry_observation': entry_observation,
         'total_installments': total_installments,
         'original_total_installments': original_total_installments,
+        'entry_notes': entry_notes,
         'entry_tags': entry_tags,
     }
 
@@ -190,6 +193,7 @@ def update_existing_cash_flow_entries(form_data):
     cash_flow_table.description = form_data['description']
     cash_flow_table.observation = form_data['observation']
     cash_flow_table.amount = form_data['amount']
+    cash_flow_table.notes = form_data['notes']
     
     # Atualiza a conta contábil e seu UUID
     cash_flow_table.general_ledger_account = form_data['general_ledger_account_name']
@@ -247,6 +251,7 @@ def create_cash_flow_entries(form_data):
             uuid_document_type=form_data['uuid_document_type'],
             current_installment=i,
             total_installments=total_installments,
+            notes=form_data['notes'],
             tags=form_data['tags'],
             periods=form_data['periods'],
             transaction_type=form_data['transaction_type'],

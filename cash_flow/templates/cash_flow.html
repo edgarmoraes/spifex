@@ -324,6 +324,7 @@
                                 data-general-ledger-account="{{ cash_flow_table_item.general_ledger_account }}"
                                 data-uuid-general-ledger-account="{{ cash_flow_table_item.uuid_general_ledger_account }}"
                                 data-transaction-type="{{ cash_flow_table_item.transaction_type }}"
+                                data-notes="{{ cash_flow_table_item.notes }}"
                                 data-current-installment="{{ cash_flow_table_item.current_installment }}"
                                 data-total-installments="{{ cash_flow_table_item.total_installments }}"
                                 data-uuid-row="{{ cash_flow_table_item.uuid_correlation }}"
@@ -392,7 +393,7 @@
                 
                     <section class="modal-section credit-modal-form__section--observation section--observation">
                         <label for="observation-credit">Observação</label>
-                        <input class="modal-obs" id="observation-credit" maxlength="100" type="text" name="observation"></input>
+                        <input class="modal-observation" id="observation-credit" maxlength="100" type="text" name="observation"></input>
                     </section>
                 
                     <section class="modal-section credit-modal-form__section--amount section--amount">
@@ -445,7 +446,7 @@
                     
                     <section class="modal-section credit-modal-form__section--notes section--notes mesclar-2">
                         <label for="notes-credit">Anotações</label>
-                        <input id="notes-credit" class="notes-credit" type="text">
+                        <input id="notes-credit" class="notes-credit" name="notes" type="text">
                     </section>
 
                     <section class="modal-section credit-modal-form__section--tag section--tag">
@@ -528,7 +529,7 @@
             
                 <section class="modal-section">
                     <label for="observation-debit">Observação</label>
-                    <input class="modal-obs" id="observation-debit" maxlength="100" type="text" name="observation"></input><br>
+                    <input class="modal-observation" id="observation-debit" maxlength="100" type="text" name="observation"></input><br>
                 </section>
                 
                 <section class="modal-section">
