@@ -406,6 +406,7 @@
                         <div class="dropdown-multiselect">
                             <button type="button" onclick="toggleDropdownModals('dropdown-content-contas-credit', event)" id="dropdown-button-contas-credit" class="modal-dropdown-button">Selecione</button>
                             <div id="dropdown-content-contas-credit" class="dropdown-content">
+                                <input id="modal-dropdown-button-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-contas-credit')" placeholder="Filtrar...">
                                 <div class="dropdown-options">
                                     {% for subgroup, accounts in Accounts_by_subgroup_list.items %}
                                         {% if accounts.0.nature == 'Crédito' %}
@@ -430,6 +431,7 @@
                         <div class="dropdown-multiselect">
                             <button type="button" onclick="toggleDropdownModals('dropdown-content-document-type-credit', event)" id="dropdown-button-document-type-credit" class="modal-dropdown-button">Selecione</button>
                             <div id="dropdown-content-document-type-credit" class="dropdown-content">
+                                <input id="modal-dropdown-button-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-document-type-credit')" placeholder="Filtrar...">
                                 <div class="dropdown-options">
                                     {% for document_type in Document_types %}
                                         <label class="label-filters">
@@ -479,8 +481,8 @@
                         <section class="modal-section credit-modal-form__section--weekend section--weekend" id="credit-modal-form__section--weekend" style="display:none;">
                             <label>Final de Semana</label>
                             <div class="weekend-container">
-                                <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox-antedate" class="custom-checkbox checkbox-weekend" type="checkbox"><span class="checkmark"></span></label></td>
-                                <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox-skip" class="custom-checkbox checkbox-weekend" type="checkbox"><span class="checkmark"></span></label></td>
+                                <td class="checkbox-row"><label class="checkbox-container-weekend"><input id="custom-checkbox-antedate" class="custom-checkbox-weekend checkbox-weekend" type="checkbox"><span class="checkmark-weekend"></span></label></td>
+                                <td class="checkbox-row"><label class="checkbox-container-weekend"><input id="custom-checkbox-skip" class="custom-checkbox-weekend checkbox-weekend" type="checkbox"><span class="checkmark-weekend"></span></label></td>
                             </div>
                         </section>
                     </div>
