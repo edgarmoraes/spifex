@@ -324,9 +324,12 @@
                                 data-general-ledger-account="{{ cash_flow_table_item.general_ledger_account }}"
                                 data-uuid-general-ledger-account="{{ cash_flow_table_item.uuid_general_ledger_account }}"
                                 data-transaction-type="{{ cash_flow_table_item.transaction_type }}"
-                                current-installment="{{ cash_flow_table_item.current_installment }}"
-                                total-installments="{{ cash_flow_table_item.total_installments }}"
+                                data-current-installment="{{ cash_flow_table_item.current_installment }}"
+                                data-total-installments="{{ cash_flow_table_item.total_installments }}"
                                 data-uuid-row="{{ cash_flow_table_item.uuid_correlation }}"
+                                data-document-type="{{ cash_flow_table_item.document_type }}"
+                                data-uuid-document-type="{{ cash_flow_table_item.uuid_document_type }}"
+                                data-periods="{{ cash_flow_table_item.periods }}"
                                 scope="row">
                                     <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox-{{ cash_flow_table_item.id }}" class="custom-checkbox" type="checkbox"
                                         data-id="{{ cash_flow_table_item.id }}"
@@ -414,8 +417,8 @@
                                             {% endfor %}
                                         {% endif %}
                                     {% endfor %}
-                                    <input type="hidden" id="general_ledger_account_uuid_credit" name="general_ledger_account_uuid_credit" value="">
                                     <input type="hidden" id="general_ledger_account_name_credit" name="general_ledger_account_name_credit" value="">
+                                    <input type="hidden" id="general_ledger_account_uuid_credit" name="general_ledger_account_uuid_credit" value="">
                                 </div>
                             </div>
                         </div>
@@ -446,7 +449,7 @@
                     </section>
 
                     <section class="modal-section credit-modal-form__section--tag section--tag">
-                        <label for="tags-credit">Tags</label>
+                        <label for="tagInput-credit">Tags</label>
                         <input id="tagInput-credit" class="tagInput" type="text" placeholder="Adicione uma tag">
                     </section>
 
@@ -460,7 +463,7 @@
                         </section>
                         <section class="modal-section credit-modal-form__section--installment-number section--installment-number" id="parcelas-section-credit" style="display:none;">
                             <label for="parcelas-credit">Número de Parcelas</label>
-                            <input class="modal-parcelas" id="parcelas-credit" type="number" name="parcelas" current-installment="{{ cash_flow.current_installment }}" total-installments="{{ cash_flow.total_installments }}" min="1" value="1">
+                            <input class="modal-parcelas" id="parcelas-credit" type="number" name="parcelas" data-current-installment="{{ cash_flow.current_installment }}" data-total-installments="{{ cash_flow.total_installments }}" min="1" value="1">
                         </section>
                         <section class="modal-section credit-modal-form__section--periods section--periods" id="credit-modal-form__section--periods" style="display:none;">
                             <label for="periods-credit">Períodos</label>
@@ -475,8 +478,8 @@
                         <section class="modal-section credit-modal-form__section--weekend section--weekend" id="credit-modal-form__section--weekend" style="display:none;">
                             <label>Final de Semana</label>
                             <div class="weekend-container">
-                                <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox" class="custom-checkbox checkbox-weekend" type="checkbox"><span class="checkmark"></span></label></td>
-                                <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox" class="custom-checkbox checkbox-weekend" type="checkbox"><span class="checkmark"></span></label></td>
+                                <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox-antedate" class="custom-checkbox checkbox-weekend" type="checkbox"><span class="checkmark"></span></label></td>
+                                <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox-skip" class="custom-checkbox checkbox-weekend" type="checkbox"><span class="checkmark"></span></label></td>
                             </div>
                         </section>
                     </div>
@@ -496,16 +499,6 @@
 
             <div id="Form2" class="tab-content" style="display:none;">
                 <form class="modal-form modal-form-credit" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
-                    <section class="modal-section mesclar-2" id="parcelas-section-credit" style="display:none;">
-                        <label for="parcelas-credit">Número de Parcelas</label>
-                        <input class="modal-parcelas" id="parcelas-credit" type="number" name="parcelas" current-installment="{{ cash_flow.current_installment }}" total-installments="{{ cash_flow.total_installments }}" min="1" value="1"><br>
-                    </section>
-                    <section class="modal-section mesclar-2">
-                        <div id="tag-container-credit" class="tag-container">
-                        </div>
-                        <input type="text" id="tagInput-credit" class="tagInput" placeholder="Adicione uma tag">
-                        <input type="hidden" id="tagsHiddenInput-credit" name="tags">
-                    </section>
                     <section class="modal-botoes">
                         <input type="submit" class="modal-salvar" name="salvar_credit" value="Salvar">
                         <button type="button" class="modal-fechar-credit">Cancelar</button>
@@ -577,7 +570,7 @@
             
                 <section class="modal-section mesclar-2" id="parcelas-section-debit" style="display:none;">
                     <label for="parcelas-debit">Número de Parcelas</label>
-                    <input class="modal-parcelas" id="parcelas-debit" type="number" name="parcelas" current-installment="{{ cash_flow.current_installment }}" total-installments="{{ cash_flow.total_installments }}" min="1" value="1"><br>
+                    <input class="modal-parcelas" id="parcelas-debit" type="number" name="parcelas" data-current-installment="{{ cash_flow.current_installment }}" data-total-installments="{{ cash_flow.total_installments }}" min="1" value="1"><br>
                 </section>
 
                 <section class="modal-section mesclar-2">
