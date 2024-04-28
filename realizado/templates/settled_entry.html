@@ -114,8 +114,8 @@
                                 <button type="button" onclick="toggleDropdownFilters('dropdown-content-contas', event)" id="dropdown-button-contas" class="dropdown-button">Selecione</button>
                                 <div id="dropdown-content-contas" class="dropdown-content">
                                     <div class="dropdown-header">
-                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-contas', true)">Selecionar Todos</button>
-                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-contas', false)">Desmarcar Todos</button>
+                                        <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-contas', true)">Selecionar Todos</button>
+                                        <button class="button-deselect-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-contas', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
                                         {% for subgroup, accounts in Accounts_by_subgroup_list.items %}
@@ -138,8 +138,8 @@
                                 <button type="button" onclick="toggleDropdownFilters('dropdown-content-meses', event)" id="dropdown-button-meses" class="dropdown-button">Selecione</button>
                                 <div id="dropdown-content-meses" class="dropdown-content">
                                     <div class="dropdown-header">
-                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', true)">Selecionar Todos</button>
-                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', false)">Desmarcar Todos</button>
+                                        <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', true)">Selecionar Todos</button>
+                                        <button class="button-deselect-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
                                         {% for months in Months_list_settled %}
@@ -159,8 +159,8 @@
                                 <button type="button" onclick="toggleDropdownFilters('dropdown-content-bancos', event)" id="dropdown-button-bancos" class="dropdown-button">Selecione</button>
                                 <div id="dropdown-content-bancos" class="dropdown-content">
                                     <div class="dropdown-header">
-                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-bancos', true)">Selecionar Todos</button>
-                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-bancos', false)">Desmarcar Todos</button>
+                                        <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-bancos', true)">Selecionar Todos</button>
+                                        <button class="button-deselect-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-bancos', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
                                         {% for banks_item in Banks_list %}
@@ -190,8 +190,8 @@
                                 <button type="button" onclick="toggleDropdownFilters('dropdown-content-transaction_type', event)" id="dropdown-button-transaction_type" class="dropdown-button">Crédito, Débito</button>
                                 <div id="dropdown-content-transaction_type" class="dropdown-content">
                                     <div class="dropdown-header">
-                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-transaction_type', true)">Selecionar Todos</button>
-                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-transaction_type', false)">Desmarcar Todos</button>
+                                        <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-transaction_type', true)">Selecionar Todos</button>
+                                        <button class="button-deselect-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-transaction_type', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
                                         <label class="label-filters">

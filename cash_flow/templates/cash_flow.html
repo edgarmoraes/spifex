@@ -148,8 +148,8 @@
                                 <button type="button" onclick="toggleDropdownFilters('dropdown-content-contas', event)" id="dropdown-button-contas" class="dropdown-button">Selecione</button>
                                 <div id="dropdown-content-contas" class="dropdown-content">
                                     <div class="dropdown-header">
-                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-contas', true)">Selecionar Todos</button>
-                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-contas', false)">Desmarcar Todos</button>
+                                        <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-contas', true)">Selecionar Todos</button>
+                                        <button class="button-deselect-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-contas', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
                                         {% for subgroup, accounts in Accounts_by_subgroup_list.items %}
@@ -166,26 +166,7 @@
                             </div>
                         </section>
                         <!-- ############### Filtro Meses ############### -->
-                        <section class="flex">
-                            <label for="dropdown-button-meses">Meses</label>
-                            <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-meses', event)" id="dropdown-button-meses" class="dropdown-button">Selecione</button>
-                                <div id="dropdown-content-meses" class="dropdown-content">
-                                    <div class="dropdown-header">
-                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', true)">Selecionar Todos</button>
-                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', false)">Desmarcar Todos</button>
-                                    </div>
-                                    <div class="dropdown-options">
-                                        {% for months in Months_list_cash_flow %}
-                                        <label class="label-filters">
-                                            <input type="checkbox" name="meses" value="{{ months.formatted_date }}" class="mes-checkbox" data-start-of-month="{{ months.start_of_month|date:'Y-m-d' }}" data-end-of-month="{{ months.end_of_month|date:'Y-m-d' }}">
-                                            {{ months.formatted_date }}
-                                        </label>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
+
                         <!-- ############### Filtro Bancos ############### -->
                         <section class="flex">
                             <label for="dropdown-button-bancos">Bancos</label>
@@ -193,8 +174,8 @@
                                 <button type="button" onclick="toggleDropdownFilters('dropdown-content-bancos', event)" id="dropdown-button-bancos" class="dropdown-button">Selecione</button>
                                 <div id="dropdown-content-bancos" class="dropdown-content">
                                     <div class="dropdown-header">
-                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-bancos', true)">Selecionar Todos</button>
-                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-bancos', false)">Desmarcar Todos</button>
+                                        <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-bancos', true)">Selecionar Todos</button>
+                                        <button class="button-deselect-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-bancos', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
                                         {% for banks_item in Banks_list %}
@@ -224,8 +205,8 @@
                                 <button type="button" onclick="toggleDropdownFilters('dropdown-content-transaction_type', event)" id="dropdown-button-transaction_type" class="dropdown-button">Crédito, Débito</button>
                                 <div id="dropdown-content-transaction_type" class="dropdown-content">
                                     <div class="dropdown-header">
-                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-transaction_type', true)">Selecionar Todos</button>
-                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-transaction_type', false)">Desmarcar Todos</button>
+                                        <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-transaction_type', true)">Selecionar Todos</button>
+                                        <button class="button-deselect-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-transaction_type', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
                                         <label class="label-filters">
@@ -252,13 +233,43 @@
                     </div>
                     <!-- ############### Filtros de Pesquisa ############### -->
                     <div class="search-content-container">
-                        <label for="search-bar-box">Palavras-Chave</label>
-                        <div class="search-container">
-                            <input type="text" class="search-bar-box" id="search-bar-box" name="search_bar_box" placeholder="Pesquisar">
+                        <div class="search-content-container__block">
+                            <label for="search-bar-box">Palavras-Chave</label>
+                            <div class="block__search search-key-words-container">
+                                <input type="text" class="block__search--input search-bar-box" id="search-bar-box" name="search_bar_box" placeholder="Pesquisar">
+                            </div>
                         </div>
-                        <label for="search-tags-bar-box">Tags</label>
-                        <div class="search-tags-container">
-                            <input type="text" class="search-tags-bar-box" id="search-tags-bar-box"  name="search_tags_bar_box" placeholder="Tags">
+                        <div class="search-content-container__block">
+                            <label for="search-tags-bar-box">Tags</label>
+                            <div class="block__search search-tags-container">
+                                <input type="text" class="block__search--input search-tags-bar-box" id="search-tags-bar-box"  name="search_tags_bar_box" placeholder="Tags">
+                            </div>
+                        </div>
+                        <div class="search-content-container__block">
+                            <label for="dropdown-button-meses">Meses</label>
+                            <div class="dropdown-multiselect">
+                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-meses', event)" id="dropdown-button-meses" class="dropdown-button">Selecione</button>
+                                <div id="dropdown-content-meses" class="dropdown-content">
+                                    <div class="dropdown-header">
+                                        <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', true)">Selecionar Todos</button>
+                                        <button class="button-deselect-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', false)">Desmarcar Todos</button>
+                                    </div>
+                                    <div class="dropdown-options">
+                                        {% for months in Months_list_cash_flow %}
+                                        <label class="label-filters">
+                                            <input type="checkbox" name="meses" value="{{ months.formatted_date }}" class="mes-checkbox" data-start-of-month="{{ months.start_of_month|date:'Y-m-d' }}" data-end-of-month="{{ months.end_of_month|date:'Y-m-d' }}">
+                                            {{ months.formatted_date }}
+                                        </label>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="search-content-container__block">
+                            <label for="search-tags-bar-box">Contas Contábeis</label>
+                            <div class="search-tags-container">
+                                <input type="text" class="search-tags-bar-box" id="search-tags-bar-box"  name="search_tags_bar_box" placeholder="Tags">
+                            </div>
                         </div>
                     </div>
                 </div>
