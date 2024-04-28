@@ -246,18 +246,18 @@
                             </div>
                         </div>
                         <div class="search-content-container__block">
-                            <label for="dropdown-button-meses">Meses</label>
+                            <label for="dropdown-button-months">Meses</label>
                             <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-meses', event)" id="dropdown-button-meses" class="dropdown-button">Selecione</button>
-                                <div id="dropdown-content-meses" class="dropdown-content">
+                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-months', event)" id="dropdown-button-months" class="dropdown-button">Selecione</button>
+                                <div id="dropdown-content-months" class="dropdown-content">
                                     <div class="dropdown-header">
-                                        <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', true)">Selecionar Todos</button>
-                                        <button class="button-deselect-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', false)">Desmarcar Todos</button>
+                                        <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-months', true)">Selecionar Todos</button>
+                                        <button class="button-deselect-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-months', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
                                         {% for months in Months_list_cash_flow %}
                                         <label class="label-filters">
-                                            <input type="checkbox" name="meses" value="{{ months.formatted_date }}" class="mes-checkbox" data-start-of-month="{{ months.start_of_month|date:'Y-m-d' }}" data-end-of-month="{{ months.end_of_month|date:'Y-m-d' }}">
+                                            <input type="checkbox" name="meses" value="{{ months.formatted_date }}" class="checkbox-month" data-start-of-month="{{ months.start_of_month|date:'Y-m-d' }}" data-end-of-month="{{ months.end_of_month|date:'Y-m-d' }}">
                                             {{ months.formatted_date }}
                                         </label>
                                         {% endfor %}
