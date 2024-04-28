@@ -141,32 +141,6 @@
             <div class="box-grid">
                 <form id="formulario-filtros" method="get">
                     <div class="box-grid-filters">
-                        <!-- ############### Filtro Contas Contábeis ############### -->
-                        <section class="flex">
-                            <label for="dropdown-button-accounts">Contas Contábeis</label>
-                            <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-accounts', event)" id="dropdown-button-accounts" class="dropdown-button">Selecione</button>
-                                <div id="dropdown-content-accounts" class="dropdown-content">
-                                    <div class="dropdown-header">
-                                        <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-accounts', true)">Selecionar Todos</button>
-                                        <button class="button-deselect-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-accounts', false)">Desmarcar Todos</button>
-                                    </div>
-                                    <div class="dropdown-options">
-                                        {% for subgroup, accounts in Accounts_by_subgroup_list.items %}
-                                            <div class="subgroup-label" data-nature="{{ accounts.0.nature }}">{{ subgroup }}</div>
-                                            {% for account in accounts %}
-                                                <label class="label-filters">
-                                                    <input type="checkbox" name="contas" value="{{ account.uuid }}" class="checkbox-account">
-                                                    {{ account.account }}
-                                                </label>
-                                            {% endfor %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-                        <!-- ############### Filtro Meses ############### -->
-
                         <!-- ############### Filtro Bancos ############### -->
                         <section class="flex">
                             <label for="dropdown-button-banks">Bancos</label>
@@ -231,7 +205,7 @@
                     <div class="page-title-container">
                         <span class="page-title-container__title">Fluxo de Caixa</span>
                     </div>
-                    <!-- ############### Filtros de Pesquisa ############### -->
+                    <!-- ############### Filtros de Palavras-Chave ############### -->
                     <div class="search-content-container">
                         <div class="search-content-container__block">
                             <label for="search-bar-box">Palavras-Chave</label>
@@ -239,12 +213,14 @@
                                 <input type="text" class="block__search--input search-bar-box" id="search-bar-box" name="search_bar_box" placeholder="Pesquisar">
                             </div>
                         </div>
+                        <!-- ############### Filtros de Tags ############### -->
                         <div class="search-content-container__block">
                             <label for="search-tags-bar-box">Tags</label>
                             <div class="block__search search-tags-container">
                                 <input type="text" class="block__search--input search-tags-bar-box" id="search-tags-bar-box"  name="search_tags_bar_box" placeholder="Tags">
                             </div>
                         </div>
+                        <!-- ############### Filtro Meses ############### -->
                         <div class="search-content-container__block">
                             <label for="dropdown-button-months">Meses</label>
                             <div class="dropdown-multiselect">
@@ -265,10 +241,28 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- ############### Filtro Contas Contábeis ############### -->
                         <div class="search-content-container__block">
-                            <label for="search-tags-bar-box">Contas Contábeis</label>
-                            <div class="search-tags-container">
-                                <input type="text" class="search-tags-bar-box" id="search-tags-bar-box"  name="search_tags_bar_box" placeholder="Tags">
+                            <label for="dropdown-button-accounts">Contas Contábeis</label>
+                            <div class="dropdown-multiselect">
+                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-accounts', event)" id="dropdown-button-accounts" class="dropdown-button">Selecione</button>
+                                <div id="dropdown-content-accounts" class="dropdown-content">
+                                    <div class="dropdown-header">
+                                        <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-accounts', true)">Selecionar Todos</button>
+                                        <button class="button-deselect-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-accounts', false)">Desmarcar Todos</button>
+                                    </div>
+                                    <div class="dropdown-options">
+                                        {% for subgroup, accounts in Accounts_by_subgroup_list.items %}
+                                            <div class="subgroup-label" data-nature="{{ accounts.0.nature }}">{{ subgroup }}</div>
+                                            {% for account in accounts %}
+                                                <label class="label-filters">
+                                                    <input type="checkbox" name="contas" value="{{ account.uuid }}" class="checkbox-account">
+                                                    {{ account.account }}
+                                                </label>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
