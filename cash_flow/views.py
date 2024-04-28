@@ -1,7 +1,7 @@
 import uuid
 import json
 from decimal import Decimal
-from datetime import datetime
+from datetime import datetime, timedelta
 from itertools import groupby
 from django.db.models import Sum
 from django.utils import timezone
@@ -247,6 +247,9 @@ def create_cash_flow_entries(form_data):
         else:  # Default to monthly
             installment_due_date = base_due_date + relativedelta(months=i - initial_installment)
 
+        # Ajusta a data com base na ação de final de semana
+        installment_due_date = adjust_date_for_weekend(installment_due_date, form_data['weekend_action'])
+
         CashFlowEntry.objects.create(
             due_date=installment_due_date,
             description=form_data['description'],
@@ -265,6 +268,15 @@ def create_cash_flow_entries(form_data):
             weekend_action=form_data['weekend_action'],
             creation_date=datetime.now()
         )
+
+def adjust_date_for_weekend(due_date, weekend_action):
+    if weekend_action == 'postpone':
+        while due_date.weekday() in [5, 6]:  # 5 = Saturday, 6 = Sunday
+            due_date += timedelta(days=1)
+    elif weekend_action == 'antedate':
+        while due_date.weekday() in [5, 6]:  # 5 = Saturday, 6 = Sunday
+            due_date -= timedelta(days=1)
+    return due_date
 
 @csrf_exempt
 def delete_entries(request):

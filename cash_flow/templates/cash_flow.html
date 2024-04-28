@@ -407,7 +407,7 @@
                         <div class="dropdown-multiselect">
                             <button type="button" onclick="toggleDropdownModals('dropdown-content-contas-credit', event)" id="dropdown-button-contas-credit" class="modal-dropdown-button">Selecione</button>
                             <div id="dropdown-content-contas-credit" class="dropdown-content">
-                                <input id="modal-dropdown-button-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-contas-credit')" placeholder="Filtrar...">
+                                <input id="modal-dropdown-button-account-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-contas-credit')" placeholder="Filtrar...">
                                 <div class="dropdown-options">
                                     {% for subgroup, accounts in Accounts_by_subgroup_list.items %}
                                         {% if accounts.0.nature == 'Crédito' %}
@@ -432,7 +432,7 @@
                         <div class="dropdown-multiselect">
                             <button type="button" onclick="toggleDropdownModals('dropdown-content-document-type-credit', event)" id="dropdown-button-document-type-credit" class="modal-dropdown-button">Selecione</button>
                             <div id="dropdown-content-document-type-credit" class="dropdown-content">
-                                <input id="modal-dropdown-button-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-document-type-credit')" placeholder="Filtrar...">
+                                <input id="modal-dropdown-button-document-type-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-document-type-credit')" placeholder="Filtrar...">
                                 <div class="dropdown-options">
                                     {% for document_type in Document_types %}
                                         <label class="label-filters">
@@ -484,11 +484,11 @@
                             <div class="weekend-container">
                                 <div class="weekend-checkbox-container">
                                     <label class="weekend-label" for="custom-checkbox-antedate-credit">Antecipar</label>
-                                    <label class="checkbox-container-weekend"><input id="custom-checkbox-antedate-credit" class="custom-checkbox-weekend checkbox-weekend" type="checkbox" value="antedate"><span class="checkmark-weekend"></span></label>
+                                    <label class="checkbox-container-weekend"><input id="custom-checkbox-antedate-credit" class="custom-checkbox-weekend checkbox-weekend" type="checkbox"><span class="checkmark-weekend"></span></label>
                                 </div>
                                 <div class="weekend-checkbox-container">
                                     <label class="weekend-label" for="custom-checkbox-postpone-credit">Postergar</label>
-                                    <label class="checkbox-container-weekend"><input id="custom-checkbox-postpone-credit" class="custom-checkbox-weekend checkbox-weekend" type="checkbox" value="postpone"><span class="checkmark-weekend"></span></label>
+                                    <label class="checkbox-container-weekend"><input id="custom-checkbox-postpone-credit" class="custom-checkbox-weekend checkbox-weekend" type="checkbox"><span class="checkmark-weekend"></span></label>
                                 </div>
                             </div>
                             <input type="hidden" id="weekend_action_credit" name="weekend_action_credit" value="">
