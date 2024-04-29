@@ -86,7 +86,7 @@
                     </button>
                 </li>
                 <li class="side-navigation__buttons-list--list">
-                    <button class="transferencias transference-button list__button">
+                    <button class="transferences transference-button list__button">
                         <svg data-value-pt="Transferências" xmlns="http://www.w3.org/2000/svg" color="#202020" width="24" height="24" fill="currentColor" class="bi bi-shuffle" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3v1c-1.798 0-3.173 1.01-4.126 2.082A9.6 9.6 0 0 0 7.556 8a9.6 9.6 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12v1c-2.202 0-3.827-1.24-4.874-2.418A10.6 10.6 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.6 9.6 0 0 0 6.444 8a9.6 9.6 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5"/>
                             <path d="M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m0 9v-3.932a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192"/>
@@ -139,7 +139,7 @@
         </nav>
         <div class="second-tab filter-tab">
             <div class="box-grid">
-                <form id="formulario-filtros" method="get">
+                <form id="form-filters" method="get">
                     <div class="box-grid-filters">
                         <!-- ############### Filtro Bancos ############### -->
                         <section class="flex">
@@ -154,7 +154,7 @@
                                     <div class="dropdown-options">
                                         {% for banks_item in Banks_list %}
                                         <label>
-                                            <input id="checkbox-bank-{{ banks_item.id }}" type="checkbox" class="checkbox-bank" value="{{ banks_item.id }}" data-banco-id="{{ banks_item.id }}">
+                                            <input id="checkbox-bank-{{ banks_item.id }}" type="checkbox" class="checkbox-bank" value="{{ banks_item.id }}" data-bank-id="{{ banks_item.id }}">
                                             {{ banks_item.banco }}
                                         </label>
                                         {% endfor %}
@@ -164,13 +164,13 @@
                         </section>
                         <!-- ############### Filtro Data Início ############### -->
                         <section class="flex">
-                            <label for="data-inicio">De</label>
-                            <input class="data" type="date" id="data-inicio" name = "data_inicio">
+                            <label for="start-date">De</label>
+                            <input id="start-date" class="start-date" name="start_date" type="date">
                         </section>
                         <!-- ############### Filtro Data Fim ############### -->
                         <section class="flex">
-                            <label for="data-fim">Até</label>
-                            <input class="data" type="date" id="data-fim" name = "data_fim">
+                            <label for="end-date">Até</label>
+                            <input id="end-date" class="end-date" name="end_date" type="date">
                         </section>
                         <!-- ############### Filtro transaction_type ############### -->
                         <section class="flex">
@@ -184,11 +184,11 @@
                                     </div>
                                     <div class="dropdown-options">
                                         <label class="label-filters">
-                                            <input type="checkbox" name="transaction_type" value="Crédito" class="transaction_type-checkbox">
+                                            <input class="transaction_type-checkbox" name="transaction_type" type="checkbox" value="Crédito">
                                             Crédito
                                         </label>
                                         <label class="label-filters">
-                                            <input type="checkbox" name="transaction_type" value="Débito" class="transaction_type-checkbox">
+                                            <input class="transaction_type-checkbox" name="transaction_type" type="checkbox" value="Débito">
                                             Débito
                                         </label>
                                     </div>
@@ -220,7 +220,7 @@
                                 <input type="text" class="block__search--input search-tags-bar-box" id="search-tags-bar-box"  name="search_tags_bar_box" placeholder="Tags">
                             </div>
                         </div>
-                        <!-- ############### Filtro Meses ############### -->
+                        <!-- ############### Filtro months ############### -->
                         <div class="search-content-container__block">
                             <label for="dropdown-button-months">Meses</label>
                             <div class="dropdown-multiselect">
@@ -233,7 +233,7 @@
                                     <div class="dropdown-options">
                                         {% for months in Months_list_cash_flow %}
                                         <label class="label-filters">
-                                            <input type="checkbox" name="meses" value="{{ months.formatted_date }}" class="checkbox-month" data-start-of-month="{{ months.start_of_month|date:'Y-m-d' }}" data-end-of-month="{{ months.end_of_month|date:'Y-m-d' }}">
+                                            <input type="checkbox" class="checkbox-month" value="{{ months.formatted_date }}" data-start-of-month="{{ months.start_of_month|date:'Y-m-d' }}" data-end-of-month="{{ months.end_of_month|date:'Y-m-d' }}">
                                             {{ months.formatted_date }}
                                         </label>
                                         {% endfor %}
@@ -256,7 +256,7 @@
                                             <div class="subgroup-label" data-nature="{{ accounts.0.nature }}">{{ subgroup }}</div>
                                             {% for account in accounts %}
                                                 <label class="label-filters">
-                                                    <input type="checkbox" name="contas" value="{{ account.uuid }}" class="checkbox-account">
+                                                    <input type="checkbox" class="checkbox-account" value="{{ account.uuid }}">
                                                     {{ account.account }}
                                                 </label>
                                             {% endfor %}
@@ -281,7 +281,7 @@
                         </thead>
                         <tbody class="banks-table__body">
                             {% for banks_item in Banks_list %}
-                            <tr class="banks-table__body--row" scope="row" name="banco-id" data-banco-id="{{ banks_item.id }}">
+                            <tr class="banks-table__body--row" scope="row" name="banco-id" data-bank-id="{{ banks_item.id }}">
                                 <td class="bank-row" name="banco">{{ banks_item.banco }}</td>
                                 <td class="bank-branch-row" name="bank_branch">{{ banks_item.bank_branch }}</td>
                                 <td class="bank-account-row" name="bank_account">{{ banks_item.bank_account }}</td>
@@ -292,7 +292,7 @@
                                 <td class=""></td>
                                 <td class=""></td>
                                 <td class="total-row">Total</td>
-                                <td class="total-banks-balance" name="total-banks-balance">{{ saldo_total_bancos|currency_br }}</td>
+                                <td class="total-banks-balance" name="total-banks-balance">{{ total_banks_balance|currency_br }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -347,9 +347,9 @@
                                         {{ cash_flow_table_item.observation }}
                                         <small class="tag-row">Tags: {{ cash_flow_table_item.tags }}</small>
                                     </td>
-                                    <td class="parcela-row">{{ cash_flow_table_item.current_installment }}/{{ cash_flow_table_item.total_installments }}</td>
-                                    <input type="hidden" id="total-installments-originais-credit" name="total_installments_originais">
-                                    <input type="hidden" id="total-installments-originais-debit" name="total_installments_originais">
+                                    <td class="installment-row">{{ cash_flow_table_item.current_installment }}/{{ cash_flow_table_item.total_installments }}</td>
+                                    <input type="hidden" id="original-total-installments-credit" name="original_total_installments">
+                                    <input type="hidden" id="original-total-installments-debit" name="original_total_installments">
                                     {% if cash_flow_table_item.transaction_type == 'Débito' %}
                                         <td class="debito-row">{{ cash_flow_table_item.amount|format_number }}</td>
                                         <td class="credito-row"></td>
@@ -357,7 +357,7 @@
                                         <td class="debito-row"></td>
                                         <td class="credito-row">{{ cash_flow_table_item.amount|format_number }}</td>
                                     {% endif %}
-                                    <td class="saldo-row">{{ cash_flow_table_item.saldo|format_number }}</td>
+                                    <td class="balance-row">{{ cash_flow_table_item.saldo|format_number }}</td>
                                 </tr>
                             {% endif %}
                         {% endfor %}
@@ -419,7 +419,7 @@
                                             <div class="subgroup-label">{{ subgroup }}</div>
                                             {% for account in accounts %}
                                                 <label class="label-filters">
-                                                    <input type="checkbox" name="contas_credit" data-uuid-account="{{ account.uuid }}" data-account="{{ account.account }}" class="checkbox-account">
+                                                    <input type="checkbox" name="contas_credit" data-uuid-account="{{ account.uuid }}" data-account="{{ account.account }}" class="checkbox-account-modal">
                                                     {{ account.account }}
                                                 </label>
                                             {% endfor %}
@@ -464,15 +464,15 @@
 
                     <div class="credit-modal-form__installments-container installments-container mesclar-2">
                         <section class="modal-section credit-modal-form__section--installment section--installment" id="section--installment">
-                            <label for="recorrencia-credit" class="recorrencia-label">Recorrência</label>
-                            <select class="modal-recorrencia" id="recorrencia-credit" name="recorrencia" required onchange="showInstallments(null, 'credit')">
-                                <option value="nao">Não</option>
-                                <option value="sim">Sim</option>
+                            <label for="recurrence-credit" class="recurrence-label">Recorrência</label>
+                            <select class="modal-recurrence" id="recurrence-credit" name="recurrence" required onchange="showInstallments(null, 'credit')">
+                                <option value="no">Não</option>
+                                <option value="yes">Sim</option>
                             </select>
                         </section>
-                        <section class="modal-section credit-modal-form__section--installment-number section--installment-number" id="parcelas-section-credit" style="display:none;">
-                            <label for="parcelas-credit">Número de Parcelas</label>
-                            <input class="modal-parcelas" id="parcelas-credit" type="number" name="parcelas" data-current-installment="{{ cash_flow.current_installment }}" data-total-installments="{{ cash_flow.total_installments }}" min="1" value="1">
+                        <section class="modal-section credit-modal-form__section--installment-number section--installment-number" id="installments-section-credit" style="display:none;">
+                            <label for="installments-credit">Número de Parcelas</label>
+                            <input class="modal-installments" id="installments-credit" type="number" name="installments" data-current-installment="{{ cash_flow.current_installment }}" data-total-installments="{{ cash_flow.total_installments }}" min="1" value="1">
                         </section>
                         <section class="modal-section credit-modal-form__section--periods section--periods" id="credit-modal-form__section--periods" style="display:none;">
                             <label for="periods-credit">Períodos</label>
@@ -577,16 +577,16 @@
                 </section>
             
                 <section class="modal-section">
-                    <label for="recorrencia-debit" class="recorrencia-label">Recorrência</label>
-                    <select class="modal-recorrencia" id="recorrencia-debit" name="recorrencia" required onchange="showInstallments(null, 'debit')">
-                        <option value="nao">Não</option>
-                        <option value="sim">Sim</option>
+                    <label for="recurrence-debit" class="recurrence-label">Recorrência</label>
+                    <select class="modal-recurrence" id="recurrence-debit" name="recurrence" required onchange="showInstallments(null, 'debit')">
+                        <option value="no">Não</option>
+                        <option value="yes">Sim</option>
                     </select><br>
                 </section>
             
-                <section class="modal-section mesclar-2" id="parcelas-section-debit" style="display:none;">
-                    <label for="parcelas-debit">Número de Parcelas</label>
-                    <input class="modal-parcelas" id="parcelas-debit" type="number" name="parcelas" data-current-installment="{{ cash_flow.current_installment }}" data-total-installments="{{ cash_flow.total_installments }}" min="1" value="1"><br>
+                <section class="modal-section mesclar-2" id="installments-section-debit" style="display:none;">
+                    <label for="installments-debit">Número de Parcelas</label>
+                    <input class="modal-installments" id="installments-debit" type="number" name="installments" data-current-installment="{{ cash_flow.current_installment }}" data-total-installments="{{ cash_flow.total_installments }}" min="1" value="1"><br>
                 </section>
 
                 <section class="modal-section mesclar-2">
@@ -603,20 +603,20 @@
         </dialog>
 
         <!-- Modal Transferências -->    
-        <dialog class="modal modal-transferencias">
+        <dialog class="modal transference-modal">
 
             <h1 class="modal-title">Transferências</h1>
             
-            <form class="modal-form modal-form-transferencias" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
-                <input type="hidden" name="transferencias" value="transferencia">
+            <form class="modal-form modal-form-transferences" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
+                <input type="hidden" name="transferences" value="process_transfer">
                 <section class="modal-section">
-                    <label for="date-transferencias">Data</label>
-                    <input class="modal-date" id="date-transferencias" type="date" name="data" required><br>
+                    <label for="date-transferences">Data</label>
+                    <input class="modal-date" id="date-transferences" type="date" name="transfer_date" required><br>
                 </section>
                 
                 <section class="modal-section">
-                    <label for="amount-transferencias">Valor</label>
-                    <input class="modal-amount" id="amount-transferencias" type="text" name="amount" oninput="formatAmount(this)" value="R$ " required><br>
+                    <label for="amount-transferences">Valor</label>
+                    <input class="modal-amount" id="amount-transferences" type="text" name="amount" oninput="formatAmount(this)" value="R$ " required><br>
                 </section>
                 
                 <section class="modal-section">
@@ -644,7 +644,7 @@
                 </section>
                 <section class="modal-botoes mesclar-2">
                     <input class="modal-salvar" name="salvar_transferencias" type="submit" value="Salvar">
-                    <button type="button" class="modal-fechar-transferencias">Cancelar</button>
+                    <button type="button" class="modal-fechar-transferences">Cancelar</button>
                 </section>
             </form>
         </dialog>
@@ -683,7 +683,7 @@
                                         <td class=""></td>
                                         <td class=""></td>
                                         <td class="total-row">Total</td>
-                                        <td class="total-banks-settlement-balance" name="total-banks-settlement-balance">{{ saldo_total_bancos|currency_br }}</td>
+                                        <td class="total-banks-settlement-balance" name="total-banks-settlement-balance">{{ total_banks_balance|currency_br }}</td>
                                     </tr>
                                 </tbody>
                             </table>

@@ -74,16 +74,16 @@ def calculate_monthly_totals(cash_flow_entries) -> List[Dict]:
     return entries_with_totals
 
 def process_cash_flow_form(request):
-    if 'transferencias' in request.POST and request.POST['transferencias'] == 'transferencia':
+    if 'transferences' in request.POST and request.POST['transferences'] == 'process_transfer':
         return process_transfer(request)
     else:
         form_data = get_form_data(request)
     if form_data['entry_id']:
         if form_data['total_installments'] > 1:
-            if form_data['total_installments_originais'] > 1:
-                update_existing_cash_flow_entries(form_data)  # Manter total_installments se for uma série de parcelas
+            if form_data['original_total_installments'] > 1:
+                update_existing_cash_flow_entries(form_data)  # Manter total_installments se for uma série de installments
             else:
-                # Criar novos fluxos se o número de parcelas foi alterado para mais de um
+                # Criar novos fluxos se o número de installments foi alterado para mais de um
                 CashFlowEntry.objects.filter(id=form_data['entry_id']).delete()
                 create_cash_flow_entries(form_data)
         else:
@@ -112,7 +112,7 @@ def get_form_data(request):
         'general_ledger_account_uuid': account_data['account_uuid'],
         'general_ledger_account_name': account_data['account_name'],
         'total_installments': other_data['total_installments'],
-        'total_installments_originais': other_data['original_total_installments'],
+        'original_total_installments': other_data['original_total_installments'],
         'tags': other_data['entry_tags'],
         'notes': other_data['entry_notes'],
         'entry_id': entry_id,
@@ -155,9 +155,9 @@ def get_other_data(request):
     entry_description = request.POST.get('description', '')
     entry_observation = request.POST.get('observation', '')
     entry_notes = request.POST.get('notes', '')
-    installment = request.POST.get('parcelas', '1')
+    installment = request.POST.get('installments', '1')
     total_installments = int(installment) if installment.isdigit() else 1
-    original_total_installments = int(request.POST.get('total_installments_originais', '1'))
+    original_total_installments = int(request.POST.get('original_total_installments', '1'))
     entry_tags = request.POST.get('tags', '')
     return {
         'entry_description': entry_description,
@@ -181,9 +181,9 @@ def get_weekend_action_data(request, transaction_type):
     return weekend_action
 
 def get_periods_data(request, transaction_type):
-    recorrencia = request.POST.get('recorrencia')
+    recurrence = request.POST.get('recurrence')
     periods_field = 'periods_credit' if transaction_type == 'Crédito' else 'periods_debit'
-    if recorrencia == 'nao':
+    if recurrence == 'no':
         return 'monthly'
     else:
         # Caso contrário, usa o valor enviado pelo formulário
@@ -213,7 +213,7 @@ def update_existing_cash_flow_entries(form_data):
     # Atualiza os períodos
     cash_flow_table.periods = form_data['periods']
 
-    # Não altera total_installments se já é parte de uma série de parcelas
+    # Não altera total_installments se já é parte de uma série de installments
     if cash_flow_table.total_installments <= 1 or 'total_installments' not in form_data:
         cash_flow_table.total_installments = form_data.get('total_installments', cash_flow_table.total_installments)
     
@@ -335,7 +335,7 @@ def process_transfer(request):
         withdrawal_bank_id, withdrawal_bank_name = withdrawal_bank_data
         deposit_bank_id, deposit_bank_name = deposit_bank_data
 
-    transfer_date = request.POST.get('data')
+    transfer_date = request.POST.get('transfer_date')
     transfer_transaction_amount_str = request.POST.get('amount', 'R$ 0,00').replace('R$ ', '').replace('.', '').replace(',', '.')
     transfer_transaction_amount = Decimal(transfer_transaction_amount_str) if transfer_transaction_amount_str else 0.00
     transfer_observation = request.POST.get('observation')
