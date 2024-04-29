@@ -419,7 +419,7 @@
                                             <div class="subgroup-label">{{ subgroup }}</div>
                                             {% for account in accounts %}
                                                 <label class="label-filters">
-                                                    <input type="checkbox" name="contas_credit" data-uuid-account="{{ account.uuid }}" data-account="{{ account.account }}" class="checkbox-account-modal">
+                                                    <input type="checkbox" name="accounts_credit" data-uuid-account="{{ account.uuid }}" data-account="{{ account.account }}" class="checkbox-account-modal">
                                                     {{ account.account }}
                                                 </label>
                                             {% endfor %}
@@ -672,7 +672,7 @@
                                     {% for banks_item in Banks_list %}
                                     <tr class="banks-table-settle__body--row" scope="row">
                                         <td class="checkbox-row"><label class="checkbox-container-liquidacao"><input id="custom-checkbox-liquidacao-{{ banks_item.id }}" class="custom-checkbox-liquidacao" type="checkbox"><span class="checkmark-liquidacao"></span></label></td>
-                                        <td class="bank-row banco-liquidacao" name="banco" data-nome-banco="{{ banks_item.banco }}" data-id-banco="{{ banks_item.id }}">{{ banks_item.banco }}</td>
+                                        <td class="bank-row banco-liquidacao" name="banco" data-bank-name="{{ banks_item.banco }}" data-bank-id="{{ banks_item.id }}">{{ banks_item.banco }}</td>
                                         <td class="bank-branch-row" name="bank_branch">{{ banks_item.bank_branch }}</td>
                                         <td class="bank-account-row" name="bank_account">{{ banks_item.bank_account }}</td>
                                         <td class="saldo-banco-liquidacao-row" name="initial_balance">{{ banks_item.initial_balance|add:banks_item.current_balance|format_number }}</td>

@@ -89,7 +89,7 @@
                     </thead>
                     <tbody>
                         {% for banks_item in Banks_list %}
-                        <tr class="row-bancos" scope="row" data-saldo-inicial="{{ banks_item.initial_balance }}" data-id-banco="{{ banks_item.id }}">
+                        <tr class="row-bancos" scope="row" data-saldo-inicial="{{ banks_item.initial_balance }}" data-bank-id="{{ banks_item.id }}">
                             <td class="banco-row" name="banco">{{ banks_item.banco }}</td>
                             <td class="ag-row" name="bank_branch">{{ banks_item.bank_branch }}</td>
                             <td class="conta-row" name="bank_account">{{ banks_item.bank_account }}</td>
