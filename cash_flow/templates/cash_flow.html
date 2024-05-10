@@ -145,7 +145,7 @@
                         <section class="flex">
                             <label for="dropdown-button-banks">Bancos</label>
                             <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-banks', event)" id="dropdown-button-banks" class="dropdown-button">Selecione</button>
+                                <button type="button" onclick="toggleDropdown('dropdown-content-banks', event)" id="dropdown-button-banks" class="dropdown-button">Selecione</button>
                                 <div id="dropdown-content-banks" class="dropdown-content">
                                     <div class="dropdown-header">
                                         <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-banks', true)">Selecionar Todos</button>
@@ -176,7 +176,7 @@
                         <section class="flex">
                             <label for="dropdown-button-transaction_type">Natureza</label>
                             <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-transaction_type', event)" id="dropdown-button-transaction_type" class="dropdown-button">Crédito, Débito</button>
+                                <button type="button" onclick="toggleDropdown('dropdown-content-transaction_type', event)" id="dropdown-button-transaction_type" class="dropdown-button">Crédito, Débito</button>
                                 <div id="dropdown-content-transaction_type" class="dropdown-content">
                                     <div class="dropdown-header">
                                         <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-transaction_type', true)">Selecionar Todos</button>
@@ -224,7 +224,7 @@
                         <div class="search-content-container__block">
                             <label for="dropdown-button-months">Meses</label>
                             <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-months', event)" id="dropdown-button-months" class="dropdown-button">Selecione</button>
+                                <button type="button" onclick="toggleDropdown('dropdown-content-months', event)" id="dropdown-button-months" class="dropdown-button">Selecione</button>
                                 <div id="dropdown-content-months" class="dropdown-content">
                                     <div class="dropdown-header">
                                         <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-months', true)">Selecionar Todos</button>
@@ -245,7 +245,7 @@
                         <div class="search-content-container__block">
                             <label for="dropdown-button-accounts">Contas Contábeis</label>
                             <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-accounts', event)" id="dropdown-button-accounts" class="dropdown-button">Selecione</button>
+                                <button type="button" onclick="toggleDropdown('dropdown-content-accounts', event)" id="dropdown-button-accounts" class="dropdown-button">Selecione</button>
                                 <div id="dropdown-content-accounts" class="dropdown-content">
                                     <div class="dropdown-header">
                                         <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-accounts', true)">Selecionar Todos</button>
@@ -378,12 +378,12 @@
             <div class="modal-header">
                 <h1 class="modal-title">Recebimentos</h1>
                 <div class="modal-tabs">
-                    <button class="tab-link" onclick="changeTab(event, 'Form1')">Detalhes</button>
-                    <button class="tab-link" onclick="changeTab(event, 'Form2')">Diversos</button>
+                    <button class="tab-link" onclick="changeTab(event, 'modal-details-form-credit')">Detalhes</button>
+                    <button class="tab-link" onclick="changeTab(event, 'modal-others-form-credit')">Diversos</button>
                 </div>
             </div>
 
-            <div id="Form1" class="tab-content">
+            <div id="modal-details-form-credit" class="tab-content modal-details-form">
                 <form class="modal-form credit-modal-form" action="/fluxo_de_caixa/" method="POST" onsubmit="return validateCheckboxes()">{% csrf_token %}
                     <input type="hidden" name="entry_id_credit" value="{{ cash_flow.id }}">
                     <input type="hidden" name="uuid_credit" value="{{ cash_flow.uuid_correlation }}">
@@ -410,7 +410,7 @@
                     <section class="modal-section credit-modal-form__section--general-ledger-dropdown section--general-ledger-dropdown">
                         <label for="dropdown-button-accounts-credit">Conta Contábil</label>
                         <div class="dropdown-multiselect">
-                            <button type="button" onclick="toggleDropdownModals('dropdown-content-accounts-credit', event)" id="dropdown-button-accounts-credit" class="modal-dropdown-button">Selecione</button>
+                            <button type="button" onclick="toggleDropdown('dropdown-content-accounts-credit', event)" id="dropdown-button-accounts-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
                             <div id="dropdown-content-accounts-credit" class="dropdown-content">
                                 <input id="modal-dropdown-button-account-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-accounts-credit')" placeholder="Filtrar...">
                                 <div class="dropdown-options">
@@ -435,7 +435,7 @@
                     <section class="modal-section credit-modal-form__section--document-type section--document-type">
                         <label for="dropdown-button-document-type-credit">Tipo de Documento</label>
                         <div class="dropdown-multiselect">
-                            <button type="button" onclick="toggleDropdownModals('dropdown-content-document-type-credit', event)" id="dropdown-button-document-type-credit" class="modal-dropdown-button">Selecione</button>
+                            <button type="button" onclick="toggleDropdown('dropdown-content-document-type-credit', event)" id="dropdown-button-document-type-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
                             <div id="dropdown-content-document-type-credit" class="dropdown-content">
                                 <input id="modal-dropdown-button-document-type-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-document-type-credit')" placeholder="Filtrar...">
                                 <div class="dropdown-options">
@@ -513,7 +513,7 @@
                 </form>
             </div>
 
-            <div id="Form2" class="tab-content" style="display:none;">
+            <div id="modal-others-form-credit" class="tab-content modal-others-form" style="display:none;">
                 <form class="modal-form modal-form-credit" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
                     <section class="modal-botoes">
                         <input type="submit" class="modal-salvar" name="salvar_credit" value="Salvar">
@@ -521,7 +521,6 @@
                     </section>
                 </form>
             </div>
-
         </dialog>
 
         <!-- Modal debit -->
