@@ -70,7 +70,7 @@
         <nav class="side-navigation" style="width: 60px;">
             <div class="side-navigation__buttons-list" style="width: 60px;">
                 <li class="side-navigation__buttons-list--list">
-                    <button class="credit credit-button list__button">
+                    <button class="credit credit-button list__button" id="credit-button">
                         <svg data-value-pt="Recebimentos" xmlns="http://www.w3.org/2000/svg" color="#202020" width="24" height="24" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5"/>
                             <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z"/>
@@ -78,7 +78,7 @@
                     </button>
                 </li>
                 <li class="side-navigation__buttons-list--list">
-                    <button class="debit debit-button list__button">
+                    <button class="debit debit-button list__button" id="debit-button">
                         <svg data-value-pt="Pagamentos" xmlns="http://www.w3.org/2000/svg" color="#202020" width="24" height="24" fill="currentColor" class="bi bi-box-arrow-down-right" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M8.636 12.5a.5.5 0 0 1-.5.5H1.5A1.5 1.5 0 0 1 0 11.5v-10A1.5 1.5 0 0 1 1.5 0h10A1.5 1.5 0 0 1 13 1.5v6.636a.5.5 0 0 1-1 0V1.5a.5.5 0 0 0-.5-.5h-10a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h6.636a.5.5 0 0 1 .5.5"/>
                             <path fill-rule="evenodd" d="M16 15.5a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1 0-1h3.793L6.146 6.854a.5.5 0 1 1 .708-.708L15 14.293V10.5a.5.5 0 0 1 1 0z"/>
@@ -86,7 +86,7 @@
                     </button>
                 </li>
                 <li class="side-navigation__buttons-list--list">
-                    <button class="transferences transference-button list__button">
+                    <button class="transferences transference-button list__button" id="transference-button">
                         <svg data-value-pt="Transferências" xmlns="http://www.w3.org/2000/svg" color="#202020" width="24" height="24" fill="currentColor" class="bi bi-shuffle" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3v1c-1.798 0-3.173 1.01-4.126 2.082A9.6 9.6 0 0 0 7.556 8a9.6 9.6 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12v1c-2.202 0-3.827-1.24-4.874-2.418A10.6 10.6 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.6 9.6 0 0 0 6.444 8a9.6 9.6 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5"/>
                             <path d="M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m0 9v-3.932a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192"/>
@@ -383,31 +383,31 @@
                 </div>
             </div>
 
-            <div id="modal-details-form-credit" class="tab-content modal-details-form">
+            <div id="modal-details-form-credit" class="tab-content modal-details-form modal-details-form-credit">
                 <form class="modal-form credit-modal-form" action="/fluxo_de_caixa/" method="POST" onsubmit="return validateCheckboxes()">{% csrf_token %}
                     <input type="hidden" name="entry_id_credit" value="{{ cash_flow.id }}">
                     <input type="hidden" name="uuid_credit" value="{{ cash_flow.uuid_correlation }}">
-                    <section class="modal-section credit-modal-form__section--date section--date">
+                    <section class="modal-section credit-modal-form__section--date section__date">
                         <label for="date-credit">Data</label>
                         <input class="modal-date" id="date-credit" type="date" name="due_date" required>
                     </section>
                 
-                    <section class="modal-section credit-modal-form__section--description section--description">
+                    <section class="modal-section credit-modal-form__section--description section__description">
                         <label for="description-credit">Descrição</label>
                         <input class="modal-description" id="description-credit" maxlength="100" type="text" name="description" required>
                     </section>
                 
-                    <section class="modal-section credit-modal-form__section--observation section--observation">
+                    <section class="modal-section credit-modal-form__section--observation section__observation">
                         <label for="observation-credit">Observação</label>
                         <input class="modal-observation" id="observation-credit" maxlength="100" type="text" name="observation"></input>
                     </section>
                 
-                    <section class="modal-section credit-modal-form__section--amount section--amount">
+                    <section class="modal-section credit-modal-form__section--amount section__amount">
                         <label for="amount-credit">Valor</label>
                         <input class="modal-amount" id="amount-credit" type="text" name="amount" oninput="formatAmount(this)" value="R$ " required>
                     </section>
                 
-                    <section class="modal-section credit-modal-form__section--general-ledger-dropdown section--general-ledger-dropdown">
+                    <section class="modal-section credit-modal-form__section--general-ledger-dropdown section__general-ledger-dropdown">
                         <label for="dropdown-button-accounts-credit">Conta Contábil</label>
                         <div class="dropdown-multiselect">
                             <button type="button" onclick="toggleDropdown('dropdown-content-accounts-credit', event)" id="dropdown-button-accounts-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
@@ -419,20 +419,20 @@
                                             <div class="subgroup-label">{{ subgroup }}</div>
                                             {% for account in accounts %}
                                                 <label class="label-filters">
-                                                    <input type="checkbox" name="accounts_credit" data-uuid-account="{{ account.uuid }}" data-account="{{ account.account }}" class="checkbox-account-modal">
+                                                    <input type="checkbox" class="checkbox-account-modal" name="accounts_credit" data-uuid-account="{{ account.uuid }}" data-account="{{ account.account }}">
                                                     {{ account.account }}
                                                 </label>
                                             {% endfor %}
                                         {% endif %}
                                     {% endfor %}
-                                    <input type="hidden" id="general_ledger_account_name_credit" name="general_ledger_account_name_credit" value="">
-                                    <input type="hidden" id="general_ledger_account_uuid_credit" name="general_ledger_account_uuid_credit" value="">
+                                    <input type="hidden" id="general-ledger-account-name-credit" name="general_ledger_account_name_credit" value="">
+                                    <input type="hidden" id="general-ledger-account-uuid-credit" name="general_ledger_account_uuid_credit" value="">
                                 </div>
                             </div>
                         </div>
                     </section>
 
-                    <section class="modal-section credit-modal-form__section--document-type section--document-type">
+                    <section class="modal-section credit-modal-form__section--document-type section__document-type">
                         <label for="dropdown-button-document-type-credit">Tipo de Documento</label>
                         <div class="dropdown-multiselect">
                             <button type="button" onclick="toggleDropdown('dropdown-content-document-type-credit', event)" id="dropdown-button-document-type-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
@@ -441,40 +441,40 @@
                                 <div class="dropdown-options">
                                     {% for document_type in Document_types %}
                                         <label class="label-filters">
-                                            <input type="checkbox" name="document_type_option_credit" data-uuid-document-type="{{ document_type.uuid_document_type }}" data-document-type="{{ document_type.document_type }}" class="document-type-checkbox">
+                                            <input type="checkbox" class="document-type-checkbox" name="document_type_option_credit" data-uuid-document-type="{{ document_type.uuid_document_type }}" data-document-type="{{ document_type.document_type }}">
                                             {{ document_type.document_type }}
                                         </label>
                                         {% endfor %}
-                                    <input type="hidden" id="document_type_credit" name="document_type_credit" value="">
-                                    <input type="hidden" id="uuid_document_type_credit" name="uuid_document_type_credit" value="">
+                                    <input type="hidden" id="document-type-name-credit" name="document_type_name_credit" value="">
+                                    <input type="hidden" id="document-type-uuid-credit" name="document_type_uuid_credit" value="">
                                 </div>
                             </div>
                         </div>
                     </section>
                     
-                    <section class="modal-section credit-modal-form__section--notes section--notes mesclar-2">
+                    <section class="modal-section credit-modal-form__section--notes section__notes mesclar-2">
                         <label for="notes-credit">Anotações</label>
                         <input id="notes-credit" class="notes-credit" name="notes" type="text">
                     </section>
 
-                    <section class="modal-section credit-modal-form__section--tag section--tag">
+                    <section class="modal-section credit-modal-form__section--tag section__tag">
                         <label for="tagInput-credit">Tags</label>
                         <input id="tagInput-credit" class="tagInput" type="text" placeholder="Adicione uma tag">
                     </section>
 
                     <div class="credit-modal-form__installments-container installments-container mesclar-2">
-                        <section class="modal-section credit-modal-form__section--installment section--installment" id="section--installment">
+                        <section class="modal-section credit-modal-form__section--recurrence section__recurrence">
                             <label for="recurrence-credit" class="recurrence-label">Recorrência</label>
                             <select class="modal-recurrence" id="recurrence-credit" name="recurrence" required onchange="showInstallments(null, 'credit')">
                                 <option value="no">Não</option>
                                 <option value="yes">Sim</option>
                             </select>
                         </section>
-                        <section class="modal-section credit-modal-form__section--installment-number section--installment-number" id="installments-section-credit" style="display:none;">
+                        <section class="modal-section credit-modal-form__section--installments-number section__installments-number" id="section-installments-number-credit" style="display:none;">
                             <label for="installments-credit">Número de Parcelas</label>
-                            <input class="modal-installments" id="installments-credit" type="number" name="installments" data-current-installment="{{ cash_flow.current_installment }}" data-total-installments="{{ cash_flow.total_installments }}" min="1" value="1">
+                            <input class="modal-installments" id="installments-number-credit" type="number" name="installments" data-current-installment="{{ cash_flow.current_installment }}" data-total-installments="{{ cash_flow.total_installments }}" min="1" value="1">
                         </section>
-                        <section class="modal-section credit-modal-form__section--periods section--periods" id="credit-modal-form__section--periods" style="display:none;">
+                        <section class="modal-section credit-modal-form__section--periods section__periods" id="section-periods-credit" style="display:none;">
                             <label for="periods-credit">Períodos</label>
                             <select class="periods-credit" id="periods-credit" name="periods_credit">
                                 <option value="monthly">Mensal</option>
@@ -484,7 +484,7 @@
                                 <option value="yearly">Anual</option>
                             </select>
                         </section>
-                        <section class="modal-section credit-modal-form__section--weekend section--weekend" id="credit-modal-form__section--weekend" style="display:none;">
+                        <section class="modal-section credit-modal-form__section--weekend section__weekend" id="section-weekend-credit" style="display:none;">
                             <label>Finais de Semana</label>
                             <div class="weekend-container">
                                 <div class="weekend-checkbox-container">
@@ -496,11 +496,11 @@
                                     <label class="checkbox-container-weekend"><input id="custom-checkbox-postpone-credit" class="custom-checkbox-weekend checkbox-weekend" type="checkbox"><span class="checkmark-weekend"></span></label>
                                 </div>
                             </div>
-                            <input type="hidden" id="weekend_action_credit" name="weekend_action_credit" value="">
+                            <input type="hidden" id="weekend-action-credit" name="weekend_action_credit" value="">
                         </section>
                     </div>
                     
-                    <section class="modal-section credit-modal-form__section--tag-container section--tag-container">
+                    <section class="modal-section credit-modal-form__section--tag-container section__tag-container">
                         <div id="tag-container-credit" class="tag-container"></div>
                         <input type="hidden" id="tagsHiddenInput-credit" name="tags">
                     </section>
@@ -513,11 +513,27 @@
                 </form>
             </div>
 
-            <div id="modal-others-form-credit" class="tab-content modal-others-form" style="display:none;">
+            <div id="modal-others-form-credit" class="tab-content modal-others-form modal-others-form-credit" style="display:none;">
                 <form class="modal-form modal-form-credit" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
-                    <section class="modal-botoes">
-                        <input type="submit" class="modal-salvar" name="salvar_credit" value="Salvar">
-                        <button type="button" class="modal-fechar-credit">Cancelar</button>
+
+                    <section class="modal-section credit-modal-form__section--department section__department">
+                        <label for="dropdown-button-department-credit">Departamento</label>
+                        <div class="dropdown-multiselect">
+                            <button type="button" onclick="toggleDropdown('dropdown-content-department-credit', event)" id="dropdown-button-department-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
+                            <div id="dropdown-content-department-credit" class="dropdown-content">
+                                <input id="modal-dropdown-button-department-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-department-credit')" placeholder="Filtrar...">
+                                <div class="dropdown-options">
+                                    {% for department in Departments %}
+                                        <label class="label-filters">
+                                            <input type="checkbox" class="department-checkbox" name="department_option_credit" data-uuid-document-type="{{ department.uuid_department }}" data-document-type="{{ department.department }}">
+                                            {{ department.department }}
+                                        </label>
+                                        {% endfor %}
+                                    <input type="hidden" id="department-name-credit" name="department_name_credit" value="">
+                                    <input type="hidden" id="department-uuid-credit" name="department_uuid_credit" value="">
+                                </div>
+                            </div>
+                        </div>
                     </section>
                 </form>
             </div>
@@ -568,8 +584,8 @@
                                         {% endfor %}
                                     {% endif %}
                                 {% endfor %}
-                                <input type="hidden" id="general_ledger_account_uuid_debit" name="general_ledger_account_uuid_debit" value="">
-                                <input type="hidden" id="general_ledger_account_name_debit" name="general_ledger_account_name_debit" value="">
+                                <input type="hidden" id="general-ledger-account-name-debit" name="general_ledger_account_name_debit" value="">
+                                <input type="hidden" id="general-ledger-account-uuid-debit" name="general_ledger_account_uuid_debit" value="">
                             </div>
                         </div>
                     </div>
@@ -583,9 +599,9 @@
                     </select><br>
                 </section>
             
-                <section class="modal-section mesclar-2" id="installments-section-debit" style="display:none;">
+                <section class="modal-section mesclar-2" id="installment-number-debit" style="display:none;">
                     <label for="installments-debit">Número de Parcelas</label>
-                    <input class="modal-installments" id="installments-debit" type="number" name="installments" data-current-installment="{{ cash_flow.current_installment }}" data-total-installments="{{ cash_flow.total_installments }}" min="1" value="1"><br>
+                    <input class="modal-installments" id="installments-number-debit" type="number" name="installments" data-current-installment="{{ cash_flow.current_installment }}" data-total-installments="{{ cash_flow.total_installments }}" min="1" value="1"><br>
                 </section>
 
                 <section class="modal-section mesclar-2">

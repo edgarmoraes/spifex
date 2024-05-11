@@ -109,16 +109,16 @@ def get_form_data(request):
         'description': other_data['entry_description'],
         'observation': other_data['entry_observation'],
         'amount': transaction_amount,
-        'general_ledger_account_uuid': account_data['account_uuid'],
         'general_ledger_account_name': account_data['account_name'],
+        'general_ledger_account_uuid': account_data['account_uuid'],
         'total_installments': other_data['total_installments'],
         'original_total_installments': other_data['original_total_installments'],
         'tags': other_data['entry_tags'],
         'notes': other_data['entry_notes'],
         'entry_id': entry_id,
         'transaction_type': transaction_type,
-        'document_type': document_type_data['document_type'],
-        'uuid_document_type': document_type_data['uuid_document_type'],
+        'document_type_name': document_type_data['document_type_name'],
+        'document_type_uuid': document_type_data['document_type_uuid'],
         'periods': periods_data,
         'weekend_action': weekend_action,
     }
@@ -127,10 +127,10 @@ def get_transaction_type(request):
     return 'Crédito' if 'salvar_credit' in request.POST else 'Débito'
 
 def get_account_data(request, transaction_type):
-    account_uuid_field = 'general_ledger_account_uuid_credit' if transaction_type == 'Crédito' else 'general_ledger_account_uuid_debit'
     account_name_field = 'general_ledger_account_name_credit' if transaction_type == 'Crédito' else 'general_ledger_account_name_debit'
-    account_uuid = request.POST.get(account_uuid_field)
+    account_uuid_field = 'general_ledger_account_uuid_credit' if transaction_type == 'Crédito' else 'general_ledger_account_uuid_debit'
     account_name = request.POST.get(account_name_field)
+    account_uuid = request.POST.get(account_uuid_field)
     return {'account_uuid': account_uuid, 'account_name': account_name}
 
 def get_entry_id(request, transaction_type):
@@ -169,11 +169,11 @@ def get_other_data(request):
     }
 
 def get_document_type_data(request, transaction_type):
-    document_type_field = 'document_type_credit' if transaction_type == 'Crédito' else 'document_type_debit'
-    uuid_document_type_field = 'uuid_document_type_credit' if transaction_type == 'Crédito' else 'uuid_document_type_debit'
-    document_type = request.POST.get(document_type_field)
-    uuid_document_type = request.POST.get(uuid_document_type_field)
-    return {'document_type': document_type, 'uuid_document_type': uuid_document_type}
+    document_type_name_field = 'document_type_name_credit' if transaction_type == 'Crédito' else 'document_type_name_debit'
+    document_type_uuid_field = 'document_type_uuid_credit' if transaction_type == 'Crédito' else 'document_type_uuid_debit'
+    document_type_name = request.POST.get(document_type_name_field)
+    document_type_uuid = request.POST.get(document_type_uuid_field)
+    return {'document_type_name': document_type_name,'document_type_uuid': document_type_uuid}
 
 def get_weekend_action_data(request, transaction_type):
     weekend_action_field = 'weekend_action_credit' if transaction_type == 'Crédito' else 'weekend_action_debit'
