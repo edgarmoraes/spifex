@@ -24,20 +24,20 @@ def chart_of_accounts(request):
                     worksheet['XFD2'].value != "1ccd101b-aed4-4b56-b852-02c8ce8a6f70" or
                     worksheet['XFD3'].value != "a5296f55-e314-48d2-8415-f0204d3162f8"):
                 messages.error(request, 'A planilha não passou na verificação de segurança.')
-                return redirect('/plano_de_contas/')  # Replace with your upload URL
+                return redirect('/configuracoes/plano_de_contas/')  # Replace with your upload URL
 
             # Check for used accounts
             used_accounts = set(
-                CashFlowEntry.objects.filter(conta_contabil__in=Chart_of_accounts.objects.values_list('account', flat=True))
-                .values_list('conta_contabil', flat=True)
+                CashFlowEntry.objects.filter(general_ledger_account__in=Chart_of_accounts.objects.values_list('account', flat=True))
+                .values_list('general_ledger_account', flat=True)
             ).union(
-                SettledEntry.objects.filter(conta_contabil__in=Chart_of_accounts.objects.values_list('account', flat=True))
-                .values_list('conta_contabil', flat=True)
+                SettledEntry.objects.filter(general_ledger_account__in=Chart_of_accounts.objects.values_list('account', flat=True))
+                .values_list('general_ledger_account', flat=True)
             )
 
             if used_accounts:
                 messages.error(request, f'As seguintes contas estão sendo utilizadas: {", ".join(used_accounts)}')
-                return redirect('/plano_de_contas/')  # Replace with your upload URL
+                return redirect('/configuracoes/plano_de_contas/')  # Replace with your upload URL
 
             # Import logic
             with transaction.atomic():
@@ -68,7 +68,7 @@ def add_account(request):
         form = AccountForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('/plano_de_contas/')
+            return redirect('/configuracoes/plano_de_contas/')
         else:
             print(form.errors)  # Isso ajudará a ver os erros no console do servidor
     else:
@@ -97,10 +97,10 @@ def edit_account(request, account_id):
         if form.is_valid():
             form.save()
         account_uuid = account.uuid
-        SettledEntry.objects.filter(uuid_conta_contabil=account_uuid).update(conta_contabil=account.account)
-        CashFlowEntry.objects.filter(uuid_conta_contabil=account_uuid).update(conta_contabil=account.account)
+        SettledEntry.objects.filter(uuid_general_ledger_account=account_uuid).update(general_ledger_account=account.account)
+        CashFlowEntry.objects.filter(uuid_general_ledger_account=account_uuid).update(general_ledger_account=account.account)
 
-        return redirect('/plano_de_contas/')
+        return redirect('/configuracoes/plano_de_contas/')
     else:
         form = AccountForm(instance=account)
     
@@ -109,13 +109,13 @@ def edit_account(request, account_id):
 def delete_account(request, account_id):
     account = get_object_or_404(Chart_of_accounts, id=account_id)
 
-    if CashFlowEntry.objects.filter(uuid_conta_contabil=account.uuid).exists() or \
-       SettledEntry.objects.filter(uuid_conta_contabil=account.uuid).exists():
+    if CashFlowEntry.objects.filter(uuid_general_ledger_account=account.uuid).exists() or \
+       SettledEntry.objects.filter(uuid_general_ledger_account=account.uuid).exists():
         messages.error(request, 'Esta conta está sendo utilizada e não pode ser excluída.')
         return redirect('chart_of_accounts:edit_account', account_id)
 
     account.delete()
-    return redirect('/plano_de_contas/')
+    return redirect('/configuracoes/plano_de_contas/')
 
 @receiver(post_save, sender=Chart_of_accounts)
 def update_lists_after_save(sender, instance, **kwargs):

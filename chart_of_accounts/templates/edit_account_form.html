@@ -19,9 +19,9 @@
         <div class="navigation-bar__tabs">
             <div class="navigation-bar__tabs--tabs">
                 <div class="tabs__buttons-list">
-                    <button class="tab-button tabs__buttons-list--cash-flow-page"><a href="{% url 'cash_flow:cash_flow' %}">Fluxo de Caixa</a></button>
-                    <button class="tab-button tabs__buttons-list--settled-page"><a href="{% url 'settled_entry:settled_entry' %}">Realizado</a></button>
-                    <button class="tab-button tabs__buttons-list--reports-page"><a href="{% url 'reports:cash_flow_report' %}">Relatórios</a></button>
+                    <a href="{% url 'cash_flow:cash_flow' %}"><button class="tab-button tabs__buttons-list--cash-flow-page">Fluxo de Caixa</button></a>
+                    <a href="{% url 'settled_entry:settled_entry' %}"><button class="tab-button tabs__buttons-list--settled-page">Realizado</button></a>
+                    <a href="{% url 'reports:reports' %}"><button class="tab-button tabs__buttons-list--reports-page">Relatórios</button></a>
                     <div class="tabs__buttons-list--profile-container">
                         <button class="profile-container__account-button">
                             <span class="profile-container__account-button--typography">
@@ -104,8 +104,8 @@
         </div>
     </main>
     <script type="text/javascript">
-        var getSubgroupsUrl = "{% url 'chart_of_accounts:get_subgroups' %}";
-        var getGroupsUrl = "{% url 'chart_of_accounts:get_groups' %}";
+        var getSubgroupsUrl="{% url 'chart_of_accounts:get_subgroups' %}";
+        var getGroupsUrl="{% url 'chart_of_accounts:get_groups' %}";
     </script>
     <script src="{% static 'scripts/edit_account_form.js' %}"></script>
 </body>

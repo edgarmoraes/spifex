@@ -21,9 +21,9 @@
         <div class="navigation-bar__tabs">
             <div class="navigation-bar__tabs--tabs">
                 <div class="tabs__buttons-list">
-                    <button class="tab-button tabs__buttons-list--cash-flow-page"><a href="{% url 'cash_flow:cash_flow' %}">Fluxo de Caixa</a></button>
-                    <button class="tab-button tabs__buttons-list--settled-page"><a href="{% url 'settled_entry:settled_entry' %}">Realizado</a></button>
-                    <button class="tab-button tabs__buttons-list--reports-page"><a href="{% url 'reports:cash_flow_report' %}">Relatórios</a></button>
+                    <a href="{% url 'cash_flow:cash_flow' %}"><button class="tab-button tabs__buttons-list--cash-flow-page">Fluxo de Caixa</button></a>
+                    <a href="{% url 'settled_entry:settled_entry' %}"><button class="tab-button tabs__buttons-list--settled-page">Realizado</button></a>
+                    <a href="{% url 'reports:reports' %}"><button class="tab-button tabs__buttons-list--reports-page">Relatórios</button></a>
                     <div class="tabs__buttons-list--profile-container">
                         <button class="profile-container__account-button">
                             <span class="profile-container__account-button--typography">
@@ -105,24 +105,24 @@
         </nav>
         <div class="second-tab filter-tab">
             <div class="box-grid">
-                <form id="formulario-filtros" method="get">
+                <form id="form-filters" method="get">
                     <div class="box-grid-filters">
                         <!-- ############### Filtro Contas Contábeis ############### -->
                         <section class="flex">
-                            <label for="dropdown-button-contas">Contas Contábeis</label>
+                            <label for="dropdown-button-accounts">Contas Contábeis</label>
                             <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-contas', event)" id="dropdown-button-contas" class="dropdown-button">Selecione</button>
-                                <div id="dropdown-content-contas" class="dropdown-content">
+                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-accounts', event)" id="dropdown-button-accounts" class="dropdown-button">Selecione</button>
+                                <div id="dropdown-content-accounts" class="dropdown-content">
                                     <div class="dropdown-header">
-                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-contas', true)">Selecionar Todos</button>
-                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-contas', false)">Desmarcar Todos</button>
+                                        <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-accounts', true)">Selecionar Todos</button>
+                                        <button class="button-deselect-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-accounts', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
                                         {% for subgroup, accounts in Accounts_by_subgroup_list.items %}
                                             <div class="subgroup-label" data-nature="{{ accounts.0.nature }}">{{ subgroup }}</div>
                                             {% for account in accounts %}
                                                 <label class="label-filters">
-                                                    <input type="checkbox" name="contas" value="{{ account.uuid }}" class="conta-checkbox">
+                                                    <input type="checkbox" name="contas" value="{{ account.uuid }}" class="checkbox-account">
                                                     {{ account.account }}
                                                 </label>
                                             {% endfor %}
@@ -133,18 +133,18 @@
                         </section>
                         <!-- ############### Filtro Meses ############### -->
                         <section class="flex">
-                            <label for="dropdown-button-meses">Meses</label>
+                            <label for="dropdown-button-months">Meses</label>
                             <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-meses', event)" id="dropdown-button-meses" class="dropdown-button">Selecione</button>
-                                <div id="dropdown-content-meses" class="dropdown-content">
+                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-months', event)" id="dropdown-button-months" class="dropdown-button">Selecione</button>
+                                <div id="dropdown-content-months" class="dropdown-content">
                                     <div class="dropdown-header">
-                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', true)">Selecionar Todos</button>
-                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-meses', false)">Desmarcar Todos</button>
+                                        <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-months', true)">Selecionar Todos</button>
+                                        <button class="button-deselect-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-months', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
                                         {% for months in Months_list_settled %}
                                         <label class="label-filters">
-                                            <input type="checkbox" name="meses" value="{{ months.formatted_date }}" class="mes-checkbox" data-start-of-month="{{ months.start_of_month|date:'Y-m-d' }}" data-end-of-month="{{ months.end_of_month|date:'Y-m-d' }}">
+                                            <input type="checkbox" name="meses" value="{{ months.formatted_date }}" class="checkbox-month" data-start-of-month="{{ months.start_of_month|date:'Y-m-d' }}" data-end-of-month="{{ months.end_of_month|date:'Y-m-d' }}">
                                             {{ months.formatted_date }}
                                         </label>
                                         {% endfor %}
@@ -154,18 +154,18 @@
                         </section>
                         <!-- ############### Filtro Bancos ############### -->
                         <section class="flex">
-                            <label for="dropdown-button-bancos">Bancos</label>
+                            <label for="dropdown-button-banks">Bancos</label>
                             <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-bancos', event)" id="dropdown-button-bancos" class="dropdown-button">Selecione</button>
-                                <div id="dropdown-content-bancos" class="dropdown-content">
+                                <button type="button" onclick="toggleDropdownFilters('dropdown-content-banks', event)" id="dropdown-button-banks" class="dropdown-button">Selecione</button>
+                                <div id="dropdown-content-banks" class="dropdown-content">
                                     <div class="dropdown-header">
-                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-bancos', true)">Selecionar Todos</button>
-                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-bancos', false)">Desmarcar Todos</button>
+                                        <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-banks', true)">Selecionar Todos</button>
+                                        <button class="button-deselect-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-banks', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
                                         {% for banks_item in Banks_list %}
                                         <label class="label-filters">
-                                            <input type="checkbox" name="bancos" value="{{ banks_item.id }}" class="banco-checkbox">
+                                            <input type="checkbox" name="bancos" value="{{ banks_item.id }}" class="checkbox-bank">
                                             {{ banks_item.banco }}
                                         </label>
                                         {% endfor %}
@@ -175,13 +175,13 @@
                         </section>
                         <!-- ############### Filtro Data Início ############### -->
                         <section class="flex">
-                            <label for="data-inicio">De</label>
-                            <input class="data" type="date" id="data-inicio" name = "data_inicio">
+                            <label for="start-date">De</label>
+                            <input class="data" type="date" id="start-date" name="start_date">
                         </section>
                         <!-- ############### Filtro Data Fim ############### -->
                         <section class="flex">
-                            <label for="data-fim">Até</label>
-                            <input class="data" type="date" id="data-fim" name = "data_fim">
+                            <label for="end-date">Até</label>
+                            <input class="data" type="date" id="end-date" name="end_date">
                         </section>
                         <!-- ############### Filtro transaction_type ############### -->
                         <section class="flex">
@@ -190,8 +190,8 @@
                                 <button type="button" onclick="toggleDropdownFilters('dropdown-content-transaction_type', event)" id="dropdown-button-transaction_type" class="dropdown-button">Crédito, Débito</button>
                                 <div id="dropdown-content-transaction_type" class="dropdown-content">
                                     <div class="dropdown-header">
-                                        <button class="button-selecionar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-transaction_type', true)">Selecionar Todos</button>
-                                        <button class="button-desmarcar-todos" type="button" onclick="toggleAllCheckboxes('#dropdown-content-transaction_type', false)">Desmarcar Todos</button>
+                                        <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-transaction_type', true)">Selecionar Todos</button>
+                                        <button class="button-deselect-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-transaction_type', false)">Desmarcar Todos</button>
                                     </div>
                                     <div class="dropdown-options">
                                         <label class="label-filters">
@@ -242,7 +242,7 @@
                         </thead>
                         <tbody class="banks-table__body">
                             {% for banks_item in Banks_list %}
-                            <tr class="banks-table__body--row" data-banco-id="{{ banks_item.id }}" scope="row">
+                            <tr class="banks-table__body--row" data-bank-id="{{ banks_item.id }}" scope="row">
                                 <td class="bank-row" name="banco">{{ banks_item.banco }}</td>
                                 <td class="bank-branch-row" name="bank_branch">{{ banks_item.bank_branch }}</td>
                                 <td class="bank-account-row" name="bank_account">{{ banks_item.bank_account }}</td>
@@ -253,7 +253,7 @@
                                 <td class=""></td>
                                 <td class=""></td>
                                 <td class="total-row">Total</td>
-                                <td class="total-banks-balance" name="total-banks-balance">{{ saldo_total_bancos|currency_br }}</td>
+                                <td class="total-banks-balance" name="total-banks-balance">{{ total_banks_balance|currency_br }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -286,8 +286,8 @@
                                     <td class="total-balance-row">{{ settled_table_item.saldo|format_number }}</td>
                                 </tr>
                             {% else %}
-                                <tr class="settled-table__body--row" id="settled-table__body--row" data-id-row="{{ settled_table_item.id }}" data-banco-liquidacao="{{ settled_table_item.settlement_bank }}" data-banco-id-liquidacao="{{ settled_table_item.settlement_bank_id }}" data-general-ledger-account="{{ settled_table_item.general_ledger_account }}" data-uuid-general-ledger-account="{{ settled_table_item.uuid_general_ledger_account }}" current-installment="{{ settled_table_item.current_installment }}" total-installments="{{ settled_table_item.total_installments }}" data-transaction-type="{{ settled_table_item.transaction_type }}" data-uuid-correlacao="{{ settled_table_item.uuid_correlation }}" data-uuid-correlacao-parcelas="{{ settled_table_item.uuid_correlation_installments }}" scope="row">
-                                    <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox-{{ settled_table_item.id }}" class="custom-checkbox" type="checkbox" data-id="{{ settled_table_item.id }}" data-uuid-correlacao="{{ settled_table_item.uuid_correlation }}" data-uuid-correlacao-parcelas="{{ settled_table_item.uuid_correlation_installments }}"><span class="checkmark"></span></label></td>
+                                <tr class="settled-table__body--row" id="settled-table__body--row" data-id-row="{{ settled_table_item.id }}" data-banco-liquidacao="{{ settled_table_item.settlement_bank }}" data-bank-id-liquidacao="{{ settled_table_item.settlement_bank_id }}" data-general-ledger-account="{{ settled_table_item.general_ledger_account }}" data-uuid-general-ledger-account="{{ settled_table_item.uuid_general_ledger_account }}" current-installment="{{ settled_table_item.current_installment }}" total-installments="{{ settled_table_item.total_installments }}" data-transaction-type="{{ settled_table_item.transaction_type }}" data-uuid-correlacao="{{ settled_table_item.uuid_correlation }}" data-uuid-correlacao-installments="{{ settled_table_item.uuid_correlation_installments }}" scope="row">
+                                    <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox-{{ settled_table_item.id }}" class="custom-checkbox" type="checkbox" data-id="{{ settled_table_item.id }}" data-uuid-correlacao="{{ settled_table_item.uuid_correlation }}" data-uuid-correlacao-installments="{{ settled_table_item.uuid_correlation_installments }}"><span class="checkmark"></span></label></td>
                                     <td class="due_date-row">{{ settled_table_item.settlement_date|date:"d/m/Y" }}</td>
                                     <td class="description-row">{{ settled_table_item.description }}</td>
                                     <td class="observation-row">
@@ -295,9 +295,9 @@
                                         <small class="tag-row">Tags: {{ settled_table_item.tags }}</small>
                                     </td>
                                     <td class="banco-row">{{ settled_table_item.settlement_bank }}</td>
-                                    <td class="parcela-row">{{ settled_table_item.current_installment }}/{{ settled_table_item.total_installments }}</td>
-                                    <input type="hidden" id="total-installments-originais-recebimentos" name="total_installments_originais">
-                                    <input type="hidden" id="total-installments-originais-pagamentos" name="total_installments_originais">
+                                    <td class="installment-row">{{ settled_table_item.current_installment }}/{{ settled_table_item.total_installments }}</td>
+                                    <input type="hidden" id="original-total-installments-recebimentos" name="original_total_installments">
+                                    <input type="hidden" id="original-total-installments-pagamentos" name="original_total_installments">
                                     {% if settled_table_item.transaction_type == 'Débito' %}
                                         <td class="debito-row">{{ settled_table_item.amount|format_number }}</td>
                                         <td class="credito-row"></td>
@@ -305,7 +305,7 @@
                                         <td class="debito-row"></td>
                                         <td class="credito-row">{{ settled_table_item.amount|format_number }}</td>
                                     {% endif %}
-                                    <td class="saldo-row" id = "saldo-row">{{ settled_table_item.saldo|format_number }}</td>
+                                    <td class="balance-row" id="balance-row">{{ settled_table_item.saldo|format_number }}</td>
                                 </tr>
                             {% endif %}
                         {% endfor %}
@@ -321,39 +321,39 @@
             <form class="modal-form-realizado" action="/realizado/" method="POST">{% csrf_token %}
                 <input type="hidden" name="lancamento_id_realizado" value="{{ settled_table_item.id }}">
                 <input type="hidden" name="uuid_realizado" value="{{ settled_table_item.uuid_correlation }}">
-                <input type="hidden" name="uuid_parcelas_realizado" value="{{ settled_table_item.uuid_correlation_installments }}">
-                <section class="modal-flex">
+                <input type="hidden" name="uuid_installments_realizado" value="{{ settled_table_item.uuid_correlation_installments }}">
+                <section class="modal-section">
                     <label for="data-realizado">Data</label>
-                    <input class="modal-data" id="data-realizado" type="date" name="due_date" required><br>
+                    <input class="modal-date" id="data-realizado" type="date" name="due_date" required><br>
                 </section>
             
-                <section class="modal-flex">
+                <section class="modal-section">
                     <label for="description-realizado">Descrição</label>
                     <input class="modal-description" id="description-realizado" maxlength="100" type="text" name="description" required><br>
                 </section>
             
-                <section class="modal-flex">
+                <section class="modal-section">
                     <label for="observation-realizado">Observação</label>
-                    <input class="modal-obs" id="observation-realizado" maxlength="100" type="text" name="observation"></input><br>
+                    <input class="modal-observation" id="observation-realizado" maxlength="100" type="text" name="observation"></input><br>
                 </section>
                 
-                <section class="modal-flex">
+                <section class="modal-section">
                     <label for="amount-realizado">Valor</label>
                     <input class="modal-amount" id="amount-realizado" type="text" name="amount" required readonly><br>
                 </section>
             
-                <section class="modal-flex">
+                <section class="modal-section">
                     <label for="general-ledger-account-realizado">Conta Contábil</label>
                     <input class="modal-general-ledger-account" id="general-ledger-account-realizado" type="text" name="general_ledger_account" required readonly>
                     </input><br>
                 </section>
             
-                <section class="modal-flex" id="parcelas-section-realizado">
-                    <label for="parcelas-realizado">Parcela</label>
-                    <input class="modal-parcelas" id="parcelas-realizado" type="text" name="parcelas" current-installment="{{ settled_table_item.current_installment }}" total-installments="{{ settled_table_item.total_installments }}" min="1" value="1" readonly><br>
+                <section class="modal-section" id="installments-section-realizado">
+                    <label for="installments-realizado">Parcela</label>
+                    <input class="modal-installments" id="installments-realizado" type="text" name="installments" current-installment="{{ settled_table_item.current_installment }}" total-installments="{{ settled_table_item.total_installments }}" min="1" value="1" readonly><br>
                 </section>
 
-                <section class="modal-flex mesclar-2">
+                <section class="modal-section mesclar-2">
                     <div id="tag-container-realizado" class="tag-container"></div>
                 </section>
                 <section class="modal-botoes">

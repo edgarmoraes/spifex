@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'cash_flow',
     'realizado',
-    'configuracoes',
+    'settings',
     'registration',
     'chart_of_accounts',
     'reports',
@@ -130,7 +130,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'cash_flow', 'static'),
     os.path.join(BASE_DIR, 'realizado', 'static'),
-    os.path.join(BASE_DIR, 'configuracoes', 'static'),
+    os.path.join(BASE_DIR, 'settings', 'static'),
     os.path.join(BASE_DIR, 'chart_of_accounts', 'static'),
 ]
 
