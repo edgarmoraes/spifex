@@ -126,7 +126,7 @@ def get_form_data(request):
     }
 
 def get_transaction_type(request):
-    return 'Crédito' if 'salvar_credit' in request.POST else 'Débito'
+    return 'Crédito' if 'save_credit' in request.POST else 'Débito'
 
 def get_account_data(request, transaction_type):
     account_name_field = 'general_ledger_account_name_credit' if transaction_type == 'Crédito' else 'general_ledger_account_name_debit'
@@ -209,8 +209,8 @@ def update_existing_cash_flow_entries(form_data):
     cash_flow_table.uuid_general_ledger_account = form_data['general_ledger_account_uuid']
 
     # Atualiza o tipo de documento e seu UUID
-    cash_flow_table.document_type = form_data['document_type']
-    cash_flow_table.uuid_document_type = form_data['uuid_document_type']
+    cash_flow_table.document_type = form_data['document_type_name']
+    cash_flow_table.uuid_document_type = form_data['document_type_uuid']
 
     # Atualiza os períodos
     cash_flow_table.periods = form_data['periods']
@@ -259,8 +259,8 @@ def create_cash_flow_entries(form_data):
             amount=form_data['amount'],
             general_ledger_account=form_data['general_ledger_account_name'],
             uuid_general_ledger_account=form_data['general_ledger_account_uuid'],
-            document_type=form_data['document_type'],
-            uuid_document_type=form_data['uuid_document_type'],
+            document_type=form_data['document_type_name'],
+            uuid_document_type=form_data['document_type_uuid'],
             current_installment=i,
             total_installments=total_installments,
             notes=form_data['notes'],
