@@ -525,7 +525,7 @@
                                 <div class="dropdown-options">
                                     {% for department in Departments %}
                                         <label class="label-filters">
-                                            <input type="checkbox" class="department-checkbox" name="department_option_credit" data-uuid-document-type="{{ department.uuid_department }}" data-document-type="{{ department.department }}">
+                                            <input type="checkbox" class="department-checkbox" name="department_option_credit" data-uuid-department="{{ department.uuid_department }}" data-department="{{ department.department }}">
                                             {{ department.department }}
                                         </label>
                                         {% endfor %}
@@ -535,6 +535,7 @@
                             </div>
                         </div>
                     </section>
+                    
                 </form>
             </div>
         </dialog>
