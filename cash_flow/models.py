@@ -12,7 +12,7 @@ class CashFlowEntry(models.Model):
     tags = models.CharField(max_length = 100)
     transaction_type = models.CharField(max_length=50)
     document_type = models.CharField(max_length=50)
-    department = models.CharField(max_length=50)
+    department = models.JSONField()  # Altera para JSONField
     notes = models.CharField(max_length=256)
     periods = models.CharField(max_length=50)
     weekend_action = models.CharField(max_length=50)
@@ -20,7 +20,7 @@ class CashFlowEntry(models.Model):
     uuid_correlation = models.UUIDField(null=True, blank=True)
     uuid_general_ledger_account = models.UUIDField(null=True, blank=True)
     uuid_document_type = models.UUIDField(null=True, blank=True)
-    uuid_department = models.UUIDField(null=True, blank=True)
+    uuid_department = models.JSONField(null=True, blank=True)  # Altera para JSONField
 
 class MonthsListCashFlow(models.Model):
     start_of_month = models.DateField(null=True, blank=True)

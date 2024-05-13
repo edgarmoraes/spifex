@@ -210,9 +210,20 @@ def get_periods_data(request, transaction_type):
 def get_department_data(request, transaction_type):
     department_name_field = 'department_name_credit' if transaction_type == 'Crédito' else 'department_name_debit'
     department_uuid_field = 'department_uuid_credit' if transaction_type == 'Crédito' else 'department_uuid_debit'
-    department_name = request.POST.get(department_name_field)
-    department_uuid = request.POST.get(department_uuid_field)
-    return {'department_name': department_name,'department_uuid': department_uuid}
+    department_name = request.POST.get(department_name_field, '[]')
+    department_uuid = request.POST.get(department_uuid_field, '[]')
+
+    try:
+        department_name_list = json.loads(department_name)
+        department_uuid_list = json.loads(department_uuid)
+    except json.JSONDecodeError:
+        department_name_list = []
+        department_uuid_list = []
+
+    return {
+        'department_name': department_name_list,
+        'department_uuid': department_uuid_list
+    }
 
 def update_existing_cash_flow_entries(form_data):
     # Busca o fluxo de caixa pelo ID
