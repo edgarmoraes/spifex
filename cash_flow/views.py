@@ -30,7 +30,7 @@ def display_cash_flow(request):
     months_list_cash_flow = MonthsListCashFlow.objects.all()
     accounts_queryset = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
     document_type_cash_flow = DocumentType.objects.all()
-    dempartments_cash_flow = Departments.objects.all()
+    departments_cash_flow = Departments.objects.all()
 
     accounts_by_subgroup = group_accounts_by_subgroup(accounts_queryset)
     entries_with_totals = calculate_monthly_totals(cash_flow_entries)
@@ -41,7 +41,7 @@ def display_cash_flow(request):
         'Banks_list': active_banks,
         'Accounts_by_subgroup_list': accounts_by_subgroup,
         'Document_types': document_type_cash_flow,
-        'Departments': dempartments_cash_flow,
+        'Departments': departments_cash_flow,
     }
     return render(request, 'cash_flow.html', context)
 
@@ -105,6 +105,7 @@ def get_form_data(request):
     document_type_data = get_document_type_data(request, transaction_type)
     periods_data = get_periods_data(request, transaction_type)
     weekend_action = get_weekend_action_data(request, transaction_type)
+    department_data = get_department_data(request, transaction_type)
 
     return {
         'due_date': due_date,
@@ -123,10 +124,12 @@ def get_form_data(request):
         'document_type_uuid': document_type_data['document_type_uuid'],
         'periods': periods_data,
         'weekend_action': weekend_action,
+        'department_name': department_data['department_name'],
+        'department_uuid': department_data['department_uuid'],
     }
 
 def get_transaction_type(request):
-    return 'Crédito' if 'save_credit' in request.POST else 'Débito'
+    return 'Crédito' if 'modal_save_credit' in request.POST else 'Débito'
 
 def get_account_data(request, transaction_type):
     account_name_field = 'general_ledger_account_name_credit' if transaction_type == 'Crédito' else 'general_ledger_account_name_debit'
@@ -192,6 +195,13 @@ def get_periods_data(request, transaction_type):
         periods = request.POST.get(periods_field)
         return periods if periods else 'monthly'
 
+def get_department_data(request, transaction_type):
+    department_name_field = 'department_name_credit' if transaction_type == 'Crédito' else 'department_name_debit'
+    department_uuid_field = 'department_uuid_credit' if transaction_type == 'Crédito' else 'department_uuid_debit'
+    department_name = request.POST.get(department_name_field)
+    department_uuid = request.POST.get(department_uuid_field)
+    return {'department_name': department_name,'department_uuid': department_uuid}
+
 def update_existing_cash_flow_entries(form_data):
     # Busca o fluxo de caixa pelo ID
     cash_flow_table = get_object_or_404(CashFlowEntry, id=form_data['entry_id'])
@@ -214,6 +224,10 @@ def update_existing_cash_flow_entries(form_data):
 
     # Atualiza os períodos
     cash_flow_table.periods = form_data['periods']
+
+    # Atualiza o tipo de department e seu UUID
+    cash_flow_table.department = form_data['department_name']
+    cash_flow_table.uuid_department = form_data['department_uuid']
 
     # Não altera total_installments se já é parte de uma série de installments
     if cash_flow_table.total_installments <= 1 or 'total_installments' not in form_data:
@@ -261,6 +275,8 @@ def create_cash_flow_entries(form_data):
             uuid_general_ledger_account=form_data['general_ledger_account_uuid'],
             document_type=form_data['document_type_name'],
             uuid_document_type=form_data['document_type_uuid'],
+            department=form_data['department_name'],
+            uuid_department=form_data['department_uuid'],
             current_installment=i,
             total_installments=total_installments,
             notes=form_data['notes'],
