@@ -381,7 +381,9 @@
                     <h1 class="modal-title">Recebimentos</h1>
                     <div class="modal-tabs">
                         <button class="tab-link" onclick="changeTab(event, 'modal-details-tab-credit')">Detalhes</button>
-                        <button class="tab-link" onclick="changeTab(event, 'modal-others-tab-credit')">Diversos</button>
+                        <button class="tab-link" onclick="changeTab(event, 'modal-cost-center-tab-credit')">Centro de Custos</button>
+                        <button class="tab-link" onclick="changeTab(event, 'modal-stakeholders-tab-credit')">Partes Interessadas</button>
+                        <button class="tab-link" onclick="changeTab(event, 'modal-recurrence-tab-credit')">Recorrência</button>
                     </div>
                 </div>
             <form class="modal-form credit-modal-form" action="/fluxo_de_caixa/" method="POST" onsubmit="return validateCheckboxes()">{% csrf_token %}
@@ -464,6 +466,65 @@
                             <input id="tagInput-credit" class="tagInput" type="text" placeholder="Adicione uma tag">
                         </section>
 
+
+                        
+                        <section class="modal-section credit-modal-form__section--tag-container section__tag-container">
+                            <div id="tag-container-credit" class="tag-container"></div>
+                            <input type="hidden" id="tagsHiddenInput-credit" name="tags">
+                        </section>
+                    </div>
+                </div>
+
+                <div id="modal-cost-center-tab-credit" class="tab-content modal-cost-center-tab modal-cost-center-tab-credit" style="display:none;">
+                    <div class="modal-fields credit-modal-fields">
+                        <section class="modal-section credit-modal-form__section--department section__department">
+                            <label for="dropdown-button-department-credit">Departamento</label>
+                            <div class="dropdown-multiselect">
+                                <button type="button" onclick="toggleDropdown('dropdown-content-department-credit', event)" id="dropdown-button-department-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
+                                <div id="dropdown-content-department-credit" class="dropdown-content">
+                                    <input id="modal-dropdown-button-department-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-department-credit')" placeholder="Filtrar...">
+                                    <div class="dropdown-options">
+                                        {% for department in Departments %}
+                                            <label class="label-filters">
+                                                <input type="checkbox" class="department-checkbox" name="department_option_credit" data-uuid-department="{{ department.uuid_department }}" data-department="{{ department.department }}">
+                                                {{ department.department }}
+                                            </label>
+                                            {% endfor %}
+                                        <input type="hidden" id="department-name-credit" name="department_name_credit" value="">
+                                        <input type="hidden" id="department-uuid-credit" name="department_uuid_credit" value="">
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <div id="modal-stakeholders-tab-credit" class="tab-content modal-stakeholders-tab modal-stakeholders-tab-credit" style="display:none;">
+                    <div class="modal-fields credit-modal-fields">
+                        <section class="modal-section credit-modal-form__section--department section__department">
+                            <label for="dropdown-button-department-credit">Cliente</label>
+                            <div class="dropdown-multiselect">
+                                <button type="button" onclick="toggleDropdown('dropdown-content-department-credit', event)" id="dropdown-button-department-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
+                                <div id="dropdown-content-department-credit" class="dropdown-content">
+                                    <input id="modal-dropdown-button-department-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-department-credit')" placeholder="Filtrar...">
+                                    <div class="dropdown-options">
+                                        {% for department in Departments %}
+                                            <label class="label-filters">
+                                                <input type="checkbox" class="department-checkbox" name="department_option_credit" data-uuid-department="{{ department.uuid_department }}" data-department="{{ department.department }}">
+                                                {{ department.department }}
+                                            </label>
+                                            {% endfor %}
+                                        <input type="hidden" id="department-name-credit" name="department_name_credit" value="">
+                                        <input type="hidden" id="department-uuid-credit" name="department_uuid_credit" value="">
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <div id="modal-recurrence-tab-credit" class="tab-content modal-recurrence-tab modal-recurrence-tab-credit" style="display:none;">
+                    <div class="modal-fields credit-modal-fields">
                         <div class="credit-modal-form__installments-container installments-container mesclar-2">
                             <section class="modal-section credit-modal-form__section--recurrence section__recurrence">
                                 <label for="recurrence-credit" class="recurrence-label">Recorrência</label>
@@ -501,37 +562,9 @@
                                 <input type="hidden" id="weekend-action-credit" name="weekend_action_credit" value="">
                             </section>
                         </div>
-                        
-                        <section class="modal-section credit-modal-form__section--tag-container section__tag-container">
-                            <div id="tag-container-credit" class="tag-container"></div>
-                            <input type="hidden" id="tagsHiddenInput-credit" name="tags">
-                        </section>
                     </div>
                 </div>
 
-                <div id="modal-others-tab-credit" class="tab-content modal-others-tab modal-others-tab-credit" style="display:none;">
-                    <div class="modal-fields credit-modal-fields">
-                        <section class="modal-section credit-modal-form__section--department section__department">
-                            <label for="dropdown-button-department-credit">Departamento</label>
-                            <div class="dropdown-multiselect">
-                                <button type="button" onclick="toggleDropdown('dropdown-content-department-credit', event)" id="dropdown-button-department-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
-                                <div id="dropdown-content-department-credit" class="dropdown-content">
-                                    <input id="modal-dropdown-button-department-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-department-credit')" placeholder="Filtrar...">
-                                    <div class="dropdown-options">
-                                        {% for department in Departments %}
-                                            <label class="label-filters">
-                                                <input type="checkbox" class="department-checkbox" name="department_option_credit" data-uuid-department="{{ department.uuid_department }}" data-department="{{ department.department }}">
-                                                {{ department.department }}
-                                            </label>
-                                            {% endfor %}
-                                        <input type="hidden" id="department-name-credit" name="department_name_credit" value="">
-                                        <input type="hidden" id="department-uuid-credit" name="department_uuid_credit" value="">
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                </div>
                 <section class="modal-buttons">
                     <input type="submit" class="modal-save-button" name="modal_save_credit" value="Salvar">
                     <button type="button" class="modal-close-credit">Cancelar</button>
