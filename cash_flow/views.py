@@ -102,6 +102,7 @@ def get_form_data(request):
     account_data = get_account_data(request, transaction_type)
     other_data = get_other_data(request)
     entry_id = get_entry_id(request, transaction_type)
+    uuid_correlation = get_uuid_correlation(request, transaction_type)
     document_type_data = get_document_type_data(request, transaction_type)
     periods_data = get_periods_data(request, transaction_type)
     weekend_action = get_weekend_action_data(request, transaction_type)
@@ -119,6 +120,7 @@ def get_form_data(request):
         'tags': other_data['entry_tags'],
         'notes': other_data['entry_notes'],
         'entry_id': entry_id,
+        'uuid_correlation': uuid_correlation,
         'transaction_type': transaction_type,
         'document_type_name': document_type_data['document_type_name'],
         'document_type_uuid': document_type_data['document_type_uuid'],
@@ -147,6 +149,16 @@ def get_entry_id(request, transaction_type):
     elif transaction_type == 'Débito' and payment_entry_id:
         return int(payment_entry_id)
     return None
+
+def get_uuid_correlation(request, transaction_type):
+    uuid_correlation_field = 'uuid_correlation_credit' if transaction_type == 'Crédito' else 'uuid_correlation_debit'
+    uuid_correlation = request.POST.get(uuid_correlation_field)
+    
+    # Verifica se o valor recebido é a string 'None'
+    if uuid_correlation == 'None':
+        return {'uuid_correlation': None}
+    else:
+        return {'uuid_correlation': uuid_correlation}
 
 def get_due_date(request):
     due_date_str = request.POST.get('due_date')

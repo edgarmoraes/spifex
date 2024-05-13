@@ -10,5 +10,4 @@ urlpatterns = [
     path('exibir_bancos/', views.display_banks, name='display_banks'),
     path('processar_transferencia/', views.process_transfer, name='process_transfer'),
     path('processar_liquidacao/', views.process_settlement, name='process_settlement'),
-    path('update/', views.process_cash_flow_form, name='update_cash_flow_form'),
 ]

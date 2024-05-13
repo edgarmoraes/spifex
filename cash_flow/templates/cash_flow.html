@@ -376,166 +376,167 @@
         <!-- ############### Janelas/Modais de Lançamentos ############### -->
         <!-- Modal credit -->
         <dialog class="modal credit-modal" id="credit-modal">
-            <div class="modal-header">
-                <h1 class="modal-title">Recebimentos</h1>
-                <div class="modal-tabs">
-                    <button class="tab-link" onclick="changeTab(event, 'modal-details-tab-credit')">Detalhes</button>
-                    <button class="tab-link" onclick="changeTab(event, 'modal-others-tab-credit')">Diversos</button>
+
+                <div class="modal-header">
+                    <h1 class="modal-title">Recebimentos</h1>
+                    <div class="modal-tabs">
+                        <button class="tab-link" onclick="changeTab(event, 'modal-details-tab-credit')">Detalhes</button>
+                        <button class="tab-link" onclick="changeTab(event, 'modal-others-tab-credit')">Diversos</button>
+                    </div>
                 </div>
-            </div>
-            <div id="modal-details-tab-credit" class="tab-content modal-details-tab modal-details-tab-credit">
-                <form class="modal-form credit-modal-form modal-details-form-credit" action="/fluxo_de_caixa/" method="POST" onsubmit="return validateCheckboxes()">{% csrf_token %}
-                    <input type="hidden" name="entry_id_credit" value="{{ cash_flow.id }}">
-                    <input type="hidden" name="uuid_credit" value="{{ cash_flow.uuid_correlation }}">
-                    <section class="modal-section credit-modal-form__section--date section__date">
-                        <label for="date-credit">Data</label>
-                        <input class="modal-date" id="date-credit" type="date" name="due_date" required>
-                    </section>
-                
-                    <section class="modal-section credit-modal-form__section--description section__description">
-                        <label for="description-credit">Descrição</label>
-                        <input class="modal-description" id="description-credit" maxlength="100" type="text" name="description" required>
-                    </section>
-                
-                    <section class="modal-section credit-modal-form__section--observation section__observation">
-                        <label for="observation-credit">Observação</label>
-                        <input class="modal-observation" id="observation-credit" maxlength="100" type="text" name="observation"></input>
-                    </section>
-                
-                    <section class="modal-section credit-modal-form__section--amount section__amount">
-                        <label for="amount-credit">Valor</label>
-                        <input class="modal-amount" id="amount-credit" type="text" name="amount" oninput="formatAmount(this)" value="R$ " required>
-                    </section>
-                
-                    <section class="modal-section credit-modal-form__section--general-ledger-dropdown section__general-ledger-dropdown">
-                        <label for="dropdown-button-accounts-credit">Conta Contábil</label>
-                        <div class="dropdown-multiselect">
-                            <button type="button" onclick="toggleDropdown('dropdown-content-accounts-credit', event)" id="dropdown-button-accounts-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
-                            <div id="dropdown-content-accounts-credit" class="dropdown-content">
-                                <input id="modal-dropdown-button-account-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-accounts-credit')" placeholder="Filtrar...">
-                                <div class="dropdown-options">
-                                    {% for subgroup, accounts in Accounts_by_subgroup_list.items %}
-                                        {% if accounts.0.nature == 'Crédito' %}
-                                            <div class="subgroup-label">{{ subgroup }}</div>
-                                            {% for account in accounts %}
-                                                <label class="label-filters">
-                                                    <input type="checkbox" class="checkbox-account-modal" name="accounts_credit" data-uuid-account="{{ account.uuid }}" data-account="{{ account.account }}">
-                                                    {{ account.account }}
-                                                </label>
-                                            {% endfor %}
-                                        {% endif %}
-                                    {% endfor %}
-                                    <input type="hidden" id="general-ledger-account-name-credit" name="general_ledger_account_name_credit" value="">
-                                    <input type="hidden" id="general-ledger-account-uuid-credit" name="general_ledger_account_uuid_credit" value="">
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section class="modal-section credit-modal-form__section--document-type section__document-type">
-                        <label for="dropdown-button-document-type-credit">Tipo de Documento</label>
-                        <div class="dropdown-multiselect">
-                            <button type="button" onclick="toggleDropdown('dropdown-content-document-type-credit', event)" id="dropdown-button-document-type-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
-                            <div id="dropdown-content-document-type-credit" class="dropdown-content">
-                                <input id="modal-dropdown-button-document-type-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-document-type-credit')" placeholder="Filtrar...">
-                                <div class="dropdown-options">
-                                    {% for document_type in Document_types %}
-                                        <label class="label-filters">
-                                            <input type="checkbox" class="document-type-checkbox" name="document_type_option_credit" data-uuid-document-type="{{ document_type.uuid_document_type }}" data-document-type="{{ document_type.document_type }}">
-                                            {{ document_type.document_type }}
-                                        </label>
-                                        {% endfor %}
-                                    <input type="hidden" id="document-type-name-credit" name="document_type_name_credit" value="">
-                                    <input type="hidden" id="document-type-uuid-credit" name="document_type_uuid_credit" value="">
-                                </div>
-                            </div>
-                        </div>
-                    </section>
+            <form class="modal-form credit-modal-form" action="/fluxo_de_caixa/" method="POST" onsubmit="return validateCheckboxes()">{% csrf_token %}
+                <div id="modal-details-tab-credit" class="tab-content modal-details-tab modal-details-tab-credit">
+                    <div class="modal-fields credit-modal-fields">
+                        <input type="hidden" name="entry_id_credit" value="{{ cash_flow.id }}">
+                        <input type="hidden" name="uuid_correlation_credit" value="{{ cash_flow.uuid_correlation }}">
+                        <section class="modal-section credit-modal-form__section--date section__date">
+                            <label for="date-credit">Data</label>
+                            <input class="modal-date" id="date-credit" type="date" name="due_date" required>
+                        </section>
                     
-                    <section class="modal-section credit-modal-form__section--notes section__notes mesclar-2">
-                        <label for="notes-credit">Anotações</label>
-                        <input id="notes-credit" class="notes-credit" name="notes" type="text">
-                    </section>
-
-                    <section class="modal-section credit-modal-form__section--tag section__tag">
-                        <label for="tagInput-credit">Tags</label>
-                        <input id="tagInput-credit" class="tagInput" type="text" placeholder="Adicione uma tag">
-                    </section>
-
-                    <div class="credit-modal-form__installments-container installments-container mesclar-2">
-                        <section class="modal-section credit-modal-form__section--recurrence section__recurrence">
-                            <label for="recurrence-credit" class="recurrence-label">Recorrência</label>
-                            <select class="modal-recurrence" id="recurrence-credit" name="recurrence" required onchange="showInstallments(null, 'credit')">
-                                <option value="no">Não</option>
-                                <option value="yes">Sim</option>
-                            </select>
+                        <section class="modal-section credit-modal-form__section--description section__description">
+                            <label for="description-credit">Descrição</label>
+                            <input class="modal-description" id="description-credit" maxlength="100" type="text" name="description" required>
                         </section>
-                        <section class="modal-section credit-modal-form__section--installments-number section__installments-number" id="section-installments-number-credit" style="display:none;">
-                            <label for="installments-credit">Número de Parcelas</label>
-                            <input class="modal-installments" id="installments-number-credit" type="number" name="installments" data-current-installment="{{ cash_flow.current_installment }}" data-total-installments="{{ cash_flow.total_installments }}" min="1" value="1">
+                    
+                        <section class="modal-section credit-modal-form__section--observation section__observation">
+                            <label for="observation-credit">Observação</label>
+                            <input class="modal-observation" id="observation-credit" maxlength="100" type="text" name="observation"></input>
                         </section>
-                        <section class="modal-section credit-modal-form__section--periods section__periods" id="section-periods-credit" style="display:none;">
-                            <label for="periods-credit">Períodos</label>
-                            <select class="periods-credit" id="periods-credit" name="periods_credit">
-                                <option value="monthly">Mensal</option>
-                                <option value="weekly">Semanal</option>
-                                <option value="bimonthly">Bimestral</option>
-                                <option value="semiannual">Semestral</option>
-                                <option value="yearly">Anual</option>
-                            </select>
+                    
+                        <section class="modal-section credit-modal-form__section--amount section__amount">
+                            <label for="amount-credit">Valor</label>
+                            <input class="modal-amount" id="amount-credit" type="text" name="amount" oninput="formatAmount(this)" value="R$ " required>
                         </section>
-                        <section class="modal-section credit-modal-form__section--weekend section__weekend" id="section-weekend-credit" style="display:none;">
-                            <label>Finais de Semana</label>
-                            <div class="weekend-container">
-                                <div class="weekend-checkbox-container">
-                                    <label class="weekend-label" for="custom-checkbox-antedate-credit">Antecipar</label>
-                                    <label class="checkbox-container-weekend"><input id="custom-checkbox-antedate-credit" class="custom-checkbox-weekend checkbox-weekend" type="checkbox"><span class="checkmark-weekend"></span></label>
-                                </div>
-                                <div class="weekend-checkbox-container">
-                                    <label class="weekend-label" for="custom-checkbox-postpone-credit">Postergar</label>
-                                    <label class="checkbox-container-weekend"><input id="custom-checkbox-postpone-credit" class="custom-checkbox-weekend checkbox-weekend" type="checkbox"><span class="checkmark-weekend"></span></label>
+                    
+                        <section class="modal-section credit-modal-form__section--general-ledger-dropdown section__general-ledger-dropdown">
+                            <label for="dropdown-button-accounts-credit">Conta Contábil</label>
+                            <div class="dropdown-multiselect">
+                                <button type="button" onclick="toggleDropdown('dropdown-content-accounts-credit', event)" id="dropdown-button-accounts-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
+                                <div id="dropdown-content-accounts-credit" class="dropdown-content">
+                                    <input id="modal-dropdown-button-account-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-accounts-credit')" placeholder="Filtrar...">
+                                    <div class="dropdown-options">
+                                        {% for subgroup, accounts in Accounts_by_subgroup_list.items %}
+                                            {% if accounts.0.nature == 'Crédito' %}
+                                                <div class="subgroup-label">{{ subgroup }}</div>
+                                                {% for account in accounts %}
+                                                    <label class="label-filters">
+                                                        <input type="checkbox" class="checkbox-account-modal" name="accounts_credit" data-uuid-account="{{ account.uuid }}" data-account="{{ account.account }}">
+                                                        {{ account.account }}
+                                                    </label>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        <input type="hidden" id="general-ledger-account-name-credit" name="general_ledger_account_name_credit" value="">
+                                        <input type="hidden" id="general-ledger-account-uuid-credit" name="general_ledger_account_uuid_credit" value="">
+                                    </div>
                                 </div>
                             </div>
-                            <input type="hidden" id="weekend-action-credit" name="weekend_action_credit" value="">
+                        </section>
+
+                        <section class="modal-section credit-modal-form__section--document-type section__document-type">
+                            <label for="dropdown-button-document-type-credit">Tipo de Documento</label>
+                            <div class="dropdown-multiselect">
+                                <button type="button" onclick="toggleDropdown('dropdown-content-document-type-credit', event)" id="dropdown-button-document-type-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
+                                <div id="dropdown-content-document-type-credit" class="dropdown-content">
+                                    <input id="modal-dropdown-button-document-type-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-document-type-credit')" placeholder="Filtrar...">
+                                    <div class="dropdown-options">
+                                        {% for document_type in Document_types %}
+                                            <label class="label-filters">
+                                                <input type="checkbox" class="document-type-checkbox" name="document_type_option_credit" data-uuid-document-type="{{ document_type.uuid_document_type }}" data-document-type="{{ document_type.document_type }}">
+                                                {{ document_type.document_type }}
+                                            </label>
+                                            {% endfor %}
+                                        <input type="hidden" id="document-type-name-credit" name="document_type_name_credit" value="">
+                                        <input type="hidden" id="document-type-uuid-credit" name="document_type_uuid_credit" value="">
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <section class="modal-section credit-modal-form__section--notes section__notes mesclar-2">
+                            <label for="notes-credit">Anotações</label>
+                            <input id="notes-credit" class="notes-credit" name="notes" type="text">
+                        </section>
+
+                        <section class="modal-section credit-modal-form__section--tag section__tag">
+                            <label for="tagInput-credit">Tags</label>
+                            <input id="tagInput-credit" class="tagInput" type="text" placeholder="Adicione uma tag">
+                        </section>
+
+                        <div class="credit-modal-form__installments-container installments-container mesclar-2">
+                            <section class="modal-section credit-modal-form__section--recurrence section__recurrence">
+                                <label for="recurrence-credit" class="recurrence-label">Recorrência</label>
+                                <select class="modal-recurrence" id="recurrence-credit" name="recurrence" required onchange="showInstallments(null, 'credit')">
+                                    <option value="no">Não</option>
+                                    <option value="yes">Sim</option>
+                                </select>
+                            </section>
+                            <section class="modal-section credit-modal-form__section--installments-number section__installments-number" id="section-installments-number-credit" style="display:none;">
+                                <label for="installments-credit">Número de Parcelas</label>
+                                <input class="modal-installments" id="installments-number-credit" type="number" name="installments" data-current-installment="{{ cash_flow.current_installment }}" data-total-installments="{{ cash_flow.total_installments }}" min="1" value="1">
+                            </section>
+                            <section class="modal-section credit-modal-form__section--periods section__periods" id="section-periods-credit" style="display:none;">
+                                <label for="periods-credit">Períodos</label>
+                                <select class="periods-credit" id="periods-credit" name="periods_credit">
+                                    <option value="monthly">Mensal</option>
+                                    <option value="weekly">Semanal</option>
+                                    <option value="bimonthly">Bimestral</option>
+                                    <option value="semiannual">Semestral</option>
+                                    <option value="yearly">Anual</option>
+                                </select>
+                            </section>
+                            <section class="modal-section credit-modal-form__section--weekend section__weekend" id="section-weekend-credit" style="display:none;">
+                                <label>Finais de Semana</label>
+                                <div class="weekend-container">
+                                    <div class="weekend-checkbox-container">
+                                        <label class="weekend-label" for="custom-checkbox-antedate-credit">Antecipar</label>
+                                        <label class="checkbox-container-weekend"><input id="custom-checkbox-antedate-credit" class="custom-checkbox-weekend checkbox-weekend" type="checkbox"><span class="checkmark-weekend"></span></label>
+                                    </div>
+                                    <div class="weekend-checkbox-container">
+                                        <label class="weekend-label" for="custom-checkbox-postpone-credit">Postergar</label>
+                                        <label class="checkbox-container-weekend"><input id="custom-checkbox-postpone-credit" class="custom-checkbox-weekend checkbox-weekend" type="checkbox"><span class="checkmark-weekend"></span></label>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="weekend-action-credit" name="weekend_action_credit" value="">
+                            </section>
+                        </div>
+                        
+                        <section class="modal-section credit-modal-form__section--tag-container section__tag-container">
+                            <div id="tag-container-credit" class="tag-container"></div>
+                            <input type="hidden" id="tagsHiddenInput-credit" name="tags">
                         </section>
                     </div>
-                    
-                    <section class="modal-section credit-modal-form__section--tag-container section__tag-container">
-                        <div id="tag-container-credit" class="tag-container"></div>
-                        <input type="hidden" id="tagsHiddenInput-credit" name="tags">
-                    </section>
-                    <input type="submit" class="modal-save-button" name="modal_save_credit" style="visibility:hidden;">
-                </form>
-            </div>
+                </div>
 
-            <div id="modal-others-tab-credit" class="tab-content modal-others-tab modal-others-tab-credit" style="display:none;">
-                <form class="modal-form credit-modal-form modal-others-form-credit" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
-                    <section class="modal-section credit-modal-form__section--department section__department">
-                        <label for="dropdown-button-department-credit">Departamento</label>
-                        <div class="dropdown-multiselect">
-                            <button type="button" onclick="toggleDropdown('dropdown-content-department-credit', event)" id="dropdown-button-department-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
-                            <div id="dropdown-content-department-credit" class="dropdown-content">
-                                <input id="modal-dropdown-button-department-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-department-credit')" placeholder="Filtrar...">
-                                <div class="dropdown-options">
-                                    {% for department in Departments %}
-                                        <label class="label-filters">
-                                            <input type="checkbox" class="department-checkbox" name="department_option_credit" data-uuid-department="{{ department.uuid_department }}" data-department="{{ department.department }}">
-                                            {{ department.department }}
-                                        </label>
-                                        {% endfor %}
-                                    <input type="hidden" id="department-name-credit" name="department_name_credit" value="">
-                                    <input type="hidden" id="department-uuid-credit" name="department_uuid_credit" value="">
+                <div id="modal-others-tab-credit" class="tab-content modal-others-tab modal-others-tab-credit" style="display:none;">
+                    <div class="modal-fields credit-modal-fields">
+                        <section class="modal-section credit-modal-form__section--department section__department">
+                            <label for="dropdown-button-department-credit">Departamento</label>
+                            <div class="dropdown-multiselect">
+                                <button type="button" onclick="toggleDropdown('dropdown-content-department-credit', event)" id="dropdown-button-department-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
+                                <div id="dropdown-content-department-credit" class="dropdown-content">
+                                    <input id="modal-dropdown-button-department-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-department-credit')" placeholder="Filtrar...">
+                                    <div class="dropdown-options">
+                                        {% for department in Departments %}
+                                            <label class="label-filters">
+                                                <input type="checkbox" class="department-checkbox" name="department_option_credit" data-uuid-department="{{ department.uuid_department }}" data-department="{{ department.department }}">
+                                                {{ department.department }}
+                                            </label>
+                                            {% endfor %}
+                                        <input type="hidden" id="department-name-credit" name="department_name_credit" value="">
+                                        <input type="hidden" id="department-uuid-credit" name="department_uuid_credit" value="">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </section>
-                    <input type="submit" class="modal-save-button" name="modal_save_credit" style="visibility:hidden;">
-                </form>
-            </div>
-            <section class="modal-buttons">
-                <input type="submit" class="modal-save-button" name="modal_save_credit" value="Salvar">
-                <button type="button" class="modal-close-credit">Cancelar</button>
-            </section>
+                        </section>
+                    </div>
+                </div>
+                <section class="modal-buttons">
+                    <input type="submit" class="modal-save-button" name="modal_save_credit" value="Salvar">
+                    <button type="button" class="modal-close-credit">Cancelar</button>
+                </section>
+            </form>
         </dialog>
 
         <!-- Modal debit -->
