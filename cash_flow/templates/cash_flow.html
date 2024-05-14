@@ -489,12 +489,14 @@
                                                 <input type="checkbox" class="department-checkbox" name="department_option_credit" data-uuid-department="{{ department.uuid_department }}" data-department="{{ department.department }}">
                                                 {{ department.department }}
                                             </label>
-                                            {% endfor %}
-                                            <input type="hidden" id="department-name-credit" name="department_name_credit" value="[]">
-                                            <input type="hidden" id="department-uuid-credit" name="department_uuid_credit" value="[]">
+                                        {% endfor %}
+                                        <input type="hidden" id="department-name-credit" name="department_name_credit" value="[]">
+                                        <input type="hidden" id="department-uuid-credit" name="department_uuid_credit" value="[]">
+                                        <input type="hidden" id="department-percentage-credit" name="department_percentage_credit" value="[]">
                                     </div>
                                 </div>
                             </div>
+                            <div id="department-list-credit" class="department-list"></div>
                         </section>
 
                         <section class="modal-section credit-modal-form__section--project section__project">
