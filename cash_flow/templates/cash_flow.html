@@ -336,6 +336,7 @@
                                 data-document-type="{{ cash_flow_table_item.document_type }}"
                                 data-uuid-document-type="{{ cash_flow_table_item.uuid_document_type }}"
                                 data-department="{{ cash_flow_table_item.department }}"
+                                data-percentage-department="{{ cash_flow_table_item.department_percentage }}"
                                 data-uuid-department="{{ cash_flow_table_item.uuid_department }}"
                                 data-periods="{{ cash_flow_table_item.periods }}"
                                 data-weekend-action="{{ cash_flow_table_item.weekend_action }}"
@@ -486,7 +487,7 @@
                                     <div class="dropdown-options">
                                         {% for department in Departments %}
                                             <label class="label-filters">
-                                                <input type="checkbox" class="department-checkbox" name="department_option_credit" data-uuid-department="{{ department.uuid_department }}" data-department="{{ department.department }}">
+                                                <input type="checkbox" class="department-checkbox" name="department_option_credit" data-percentage-department="{{ department.department_percentage }}" data-uuid-department="{{ department.uuid_department }}" data-department="{{ department.department }}">
                                                 {{ department.department }}
                                             </label>
                                         {% endfor %}
