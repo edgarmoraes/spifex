@@ -189,9 +189,17 @@ def get_other_data(request):
 def get_document_type_data(request, transaction_type):
     document_type_name_field = 'document_type_name_credit' if transaction_type == 'Crédito' else 'document_type_name_debit'
     document_type_uuid_field = 'document_type_uuid_credit' if transaction_type == 'Crédito' else 'document_type_uuid_debit'
+
     document_type_name = request.POST.get(document_type_name_field)
     document_type_uuid = request.POST.get(document_type_uuid_field)
-    return {'document_type_name': document_type_name,'document_type_uuid': document_type_uuid}
+
+    # Substituir strings vazias por None
+    if document_type_name == '':
+        document_type_name = None
+    if document_type_uuid == '':
+        document_type_uuid = None
+
+    return {'document_type_name': document_type_name, 'document_type_uuid': document_type_uuid}
 
 def get_weekend_action_data(request, transaction_type):
     weekend_action_field = 'weekend_action_credit' if transaction_type == 'Crédito' else 'weekend_action_debit'
@@ -274,12 +282,16 @@ def create_cash_flow_entries(form_data):
 
     initial_installment = form_data.get('current_installment', 1)
     total_installments = form_data['total_installments']
+    uuid_installments_correlation = None
 
     # Converte 'due_date' para datetime.date se necessário
     if isinstance(form_data['due_date'], datetime):
         base_due_date = form_data['due_date'].date()
     else:
         base_due_date = datetime.strptime(form_data['due_date'], '%Y-%m-%d').date()
+
+    if total_installments > 1:
+        uuid_installments_correlation = uuid.uuid4()
 
     for i in range(initial_installment, total_installments + 1):
         if form_data['periods'] == 'weekly':
@@ -315,7 +327,8 @@ def create_cash_flow_entries(form_data):
             periods=form_data['periods'],
             transaction_type=form_data['transaction_type'],
             weekend_action=form_data['weekend_action'],
-            creation_date=datetime.now()
+            uuid_installments_correlation=uuid_installments_correlation,
+            creation_date=datetime.now(),
         )
 
 def adjust_date_for_weekend(due_date, weekend_action):

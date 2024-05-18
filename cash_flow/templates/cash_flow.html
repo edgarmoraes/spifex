@@ -393,12 +393,12 @@
                         <input type="hidden" name="entry_id_credit" value="{{ cash_flow.id }}">
                         <input type="hidden" name="uuid_correlation_credit" value="{{ cash_flow.uuid_correlation }}">
                         <section class="modal-section credit-modal-form__section--date section__date">
-                            <label for="date-credit">Data</label>
+                            <label for="date-credit">Data*</label>
                             <input class="modal-date" id="date-credit" type="date" name="due_date" required>
                         </section>
                     
                         <section class="modal-section credit-modal-form__section--description section__description">
-                            <label for="description-credit">Descrição</label>
+                            <label for="description-credit">Descrição*</label>
                             <input class="modal-description" id="description-credit" maxlength="100" type="text" name="description" required>
                         </section>
                     
@@ -408,12 +408,12 @@
                         </section>
                     
                         <section class="modal-section credit-modal-form__section--amount section__amount">
-                            <label for="amount-credit">Valor</label>
+                            <label for="amount-credit">Valor*</label>
                             <input class="modal-amount" id="amount-credit" type="text" name="amount" oninput="formatAmount(this)" value="R$ " required>
                         </section>
                     
                         <section class="modal-section credit-modal-form__section--general-ledger-dropdown section__general-ledger-dropdown">
-                            <label for="dropdown-button-accounts-credit">Conta Contábil</label>
+                            <label for="dropdown-button-accounts-credit">Conta Contábil*</label>
                             <div class="dropdown-multiselect">
                                 <button type="button" onclick="toggleDropdown('dropdown-content-accounts-credit', event)" id="dropdown-button-accounts-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
                                 <div id="dropdown-content-accounts-credit" class="dropdown-content">
@@ -480,7 +480,7 @@
                     <div class="modal-fields credit-modal-fields modal-cost-center-fields">
                         <section class="modal-section credit-modal-form__section--department section__department">
                             <label for="dropdown-button-department-credit">Departamento</label>
-                            <div class="dropdown-multiselect">
+                            <div class="dropdown-multiselect dropdown-multiselect-department">
                                 <button type="button" onclick="toggleDropdown('dropdown-content-department-credit', event)" id="dropdown-button-department-credit" class="modal-dropdown-button dropdown-button" style="width: 75%;">Selecione</button>
                                 <div id="dropdown-content-department-credit" class="dropdown-content">
                                     <input id="modal-dropdown-button-department-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-department-credit')" placeholder="Filtrar...">
@@ -491,9 +491,9 @@
                                                 {{ department.department }}
                                             </label>
                                         {% endfor %}
-                                        <input type="hidden" id="department-name-credit" name="department_name_credit" value="[]">
-                                        <input type="hidden" id="department-uuid-credit" name="department_uuid_credit" value="[]">
-                                        <input type="hidden" id="department-percentage-credit" name="department_percentage_credit" value="[]">
+                                        <input type="hidden" id="department-name-credit" name="department_name_credit" value="">
+                                        <input type="hidden" id="department-uuid-credit" name="department_uuid_credit" value="">
+                                        <input type="hidden" id="department-percentage-credit" name="department_percentage_credit" value="">
                                     </div>
                                 </div>
                             </div>
@@ -502,7 +502,7 @@
 
                         <section class="modal-section credit-modal-form__section--project section__project">
                             <label for="dropdown-button-project-credit">Projetos</label>
-                            <div class="dropdown-multiselect">
+                            <div class="dropdown-multiselect dropdown-multiselect-project">
                                 <button type="button" onclick="toggleDropdown('dropdown-content-project-credit', event)" id="dropdown-button-project-credit" class="modal-dropdown-button dropdown-button" style="width: 75%;">Selecione</button>
                                 <div id="dropdown-content-project-credit" class="dropdown-content">
                                     <input id="modal-dropdown-button-project-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-project-credit')" placeholder="Filtrar...">
@@ -526,7 +526,7 @@
                     <div class="modal-fields credit-modal-fields modal-stakeholders-fields">
                         <section class="modal-section credit-modal-form__section--client section__client">
                             <label for="dropdown-button-client-credit">Cliente</label>
-                            <div class="dropdown-multiselect">
+                            <div class="dropdown-multiselect dropdown-multiselect">
                                 <button type="button" onclick="toggleDropdown('dropdown-content-client-credit', event)" id="dropdown-button-client-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
                                 <div id="dropdown-content-client-credit" class="dropdown-content">
                                     <input id="modal-dropdown-button-client-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-client-credit')" placeholder="Filtrar...">
