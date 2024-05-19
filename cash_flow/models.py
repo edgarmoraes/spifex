@@ -23,6 +23,8 @@ class CashFlowEntry(models.Model):
     uuid_general_ledger_account = models.UUIDField(blank=True)
     uuid_document_type = models.UUIDField(null=True, blank=True)
     uuid_department = models.JSONField(null=True, blank=True)
+    uuid_transference = models.JSONField(null=True, blank=True)
+    uuid_partial_settlement_correlation = models.UUIDField(null=True, blank=True)
 
 class MonthsListCashFlow(models.Model):
     start_of_month = models.DateField(null=True, blank=True)

@@ -286,8 +286,22 @@
                                     <td class="total-balance-row">{{ settled_table_item.saldo|format_number }}</td>
                                 </tr>
                             {% else %}
-                                <tr class="settled-table__body--row" id="settled-table__body--row" data-id-row="{{ settled_table_item.id }}" data-banco-liquidacao="{{ settled_table_item.settlement_bank }}" data-bank-id-liquidacao="{{ settled_table_item.settlement_bank_id }}" data-general-ledger-account="{{ settled_table_item.general_ledger_account }}" data-uuid-general-ledger-account="{{ settled_table_item.uuid_general_ledger_account }}" current-installment="{{ settled_table_item.current_installment }}" total-installments="{{ settled_table_item.total_installments }}" data-transaction-type="{{ settled_table_item.transaction_type }}" data-uuid-correlacao="{{ settled_table_item.uuid_correlation }}" data-uuid-correlacao-installments="{{ settled_table_item.uuid_correlation_installments }}" scope="row">
-                                    <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox-{{ settled_table_item.id }}" class="custom-checkbox" type="checkbox" data-id="{{ settled_table_item.id }}" data-uuid-correlacao="{{ settled_table_item.uuid_correlation }}" data-uuid-correlacao-installments="{{ settled_table_item.uuid_correlation_installments }}"><span class="checkmark"></span></label></td>
+                                <tr class="settled-table__body--row" id="settled-table__body--row"
+                                data-id-row="{{ settled_table_item.id }}"
+                                data-banco-liquidacao="{{ settled_table_item.settlement_bank }}"
+                                data-bank-id-liquidacao="{{ settled_table_item.settlement_bank_id }}"
+                                data-general-ledger-account="{{ settled_table_item.general_ledger_account }}"
+                                data-uuid-general-ledger-account="{{ settled_table_item.uuid_general_ledger_account }}"
+                                current-installment="{{ settled_table_item.current_installment }}"
+                                total-installments="{{ settled_table_item.total_installments }}"
+                                data-transaction-type="{{ settled_table_item.transaction_type }}"
+                                data-uuid-correlation-transference="{{ settled_table_item.uuid_transference }}"
+                                data-uuid-partial-settlement-correlation="{{ settled_table_item.uuid_partial_settlement_correlation }}"
+                                scope="row">
+                                    <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox-{{ settled_table_item.id }}" class="custom-checkbox" type="checkbox"
+                                        data-id="{{ settled_table_item.id }}"
+                                        data-uuid-correlation-transference="{{ settled_table_item.uuid_transference }}"
+                                        data-uuid-partial-settlement-correlation="{{ settled_table_item.uuid_partial_settlement_correlation }}"><span class="checkmark"></span></label></td>
                                     <td class="due_date-row">{{ settled_table_item.settlement_date|date:"d/m/Y" }}</td>
                                     <td class="description-row">{{ settled_table_item.description }}</td>
                                     <td class="observation-row">
@@ -320,8 +334,8 @@
             
             <form class="modal-form-realizado" action="/realizado/" method="POST">{% csrf_token %}
                 <input type="hidden" name="lancamento_id_realizado" value="{{ settled_table_item.id }}">
-                <input type="hidden" name="uuid_realizado" value="{{ settled_table_item.uuid_correlation }}">
-                <input type="hidden" name="uuid_installments_realizado" value="{{ settled_table_item.uuid_correlation_installments }}">
+                <input type="hidden" name="uuid_transference" value="{{ settled_table_item.uuid_transference }}">
+                <input type="hidden" name="uuid_partial_settlement_correlation" value="{{ settled_table_item.uuid_partial_settlement_correlation }}">
                 <section class="modal-section">
                     <label for="data-realizado">Data</label>
                     <input class="modal-date" id="data-realizado" type="date" name="due_date" required><br>

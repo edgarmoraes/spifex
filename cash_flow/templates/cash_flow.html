@@ -332,7 +332,7 @@
                                 data-notes="{{ cash_flow_table_item.notes }}"
                                 data-current-installment="{{ cash_flow_table_item.current_installment }}"
                                 data-total-installments="{{ cash_flow_table_item.total_installments }}"
-                                data-uuid-row="{{ cash_flow_table_item.uuid_correlation }}"
+                                data-uuid-partial-settlement-correlation="{{ cash_flow_table_item.uuid_partial_settlement_correlation }}"
                                 data-document-type="{{ cash_flow_table_item.document_type }}"
                                 data-uuid-document-type="{{ cash_flow_table_item.uuid_document_type }}"
                                 data-department="{{ cash_flow_table_item.department }}"
@@ -343,7 +343,7 @@
                                 scope="row">
                                     <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox-{{ cash_flow_table_item.id }}" class="custom-checkbox" type="checkbox"
                                         data-id="{{ cash_flow_table_item.id }}"
-                                        data-uuid-row="{{ cash_flow_table_item.uuid_correlation }}"><span class="checkmark"></span></label></td>
+                                        data-uuid-partial-settlement-correlation="{{ cash_flow_table_item.uuid_partial_settlement_correlation }}"><span class="checkmark"></span></label></td>
                                     <td class="due_date-row">{{ cash_flow_table_item.due_date|date:"d/m/Y" }}</td>
                                     <td class="description-row">{{ cash_flow_table_item.description }}</td>
                                     <td class="observation-row">
@@ -391,7 +391,7 @@
                 <div id="modal-details-tab-credit" class="tab-content modal-details-tab modal-details-tab-credit">
                     <div class="modal-fields credit-modal-fields modal-details-fields">
                         <input type="hidden" name="entry_id_credit" value="{{ cash_flow.id }}">
-                        <input type="hidden" name="uuid_correlation_credit" value="{{ cash_flow.uuid_correlation }}">
+                        <input type="hidden" name="uuid_partial_settlement_correlation_credit" value="{{ cash_flow.uuid_partial_settlement_correlation }}">
                         <section class="modal-section credit-modal-form__section--date section__date">
                             <label for="date-credit">Data*</label>
                             <input class="modal-date" id="date-credit" type="date" name="due_date" required>
@@ -726,7 +726,7 @@
             
             <form class="modal-form-liquidacoes" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
                 <input type="hidden" name="liquidacoes" value="liquidacoes">
-                <input type="hidden" name="uuid" data-uuid-row="{{ cash_flow.uuid_correlation }}">
+                <input type="hidden" name="uuid" data-uuid-partial-settlement-correlation="{{ cash_flow.uuid_partial_settlement_correlation }}">
                 <section class="mesclar-3">
                     <div class="banks-table-settlement-wrapper" id="banks-table-settlement-wrapper">
                             <table class="banks-table-settlement" id="banks-table-settlement">
