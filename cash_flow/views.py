@@ -345,7 +345,7 @@ def delete_entries(request):
     if request.method == 'POST':
         ids_to_delete = extract_ids_to_delete(request)
 
-        # Verifica se algum dos lançamentos selecionados tem uuid_correlation não nulo
+        # Verifica se algum dos lançamentos selecionados tem uuid_partial_settlement_correlation não nulo
         entries_with_dependencies = CashFlowEntry.objects.filter(id__in=ids_to_delete, uuid_partial_settlement_correlation__isnull=False)
 
         if entries_with_dependencies.exists():

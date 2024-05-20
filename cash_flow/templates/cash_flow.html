@@ -602,7 +602,7 @@
             
             <form class="modal-form debit-modal-form" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
                 <input type="hidden" name="entry_id_debit" value="{{ cash_flow.id }}">
-                <input type="hidden" name="uuid_debit" value="{{ cash_flow.uuid_correlation }}">
+                <input type="hidden" name="uuid_debit" value="{{ cash_flow.uuid_partial_settlement_correlation }}">
                 <section class="modal-section">
                     <label for="date-debit">Data</label>
                     <input class="modal-date" type="date" id="date-debit" name="due_date" required><br>
