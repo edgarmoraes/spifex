@@ -12,4 +12,5 @@ urlpatterns = [
     path('logout/', views.LogoutPage, name='logout'),
     path('configuracoes/plano_de_contas/', include(('chart_of_accounts.urls', 'chart_of_accounts'), namespace='chart_of_accounts')),
     path('relatorios/', include(('reports.urls', 'reports'), namespace='reports')),
+    path('configuracoes/projetos/', include(('projects.urls', 'projects'), namespace='projects')),
 ]

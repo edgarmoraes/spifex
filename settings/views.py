@@ -19,7 +19,7 @@ def banks(request):
         context = {
             'Banks_list': banks_list,
         }
-        return render(request, 'bancos_e_contas.html', context)
+        return render(request, 'banks_and_accounts.html', context)
     
 def departments(request):
     if request.method =="GET":
@@ -89,7 +89,7 @@ def verify_and_delete_bank(request, bank_id):
     
 @require_POST
 def save_department(request):
-    department_id = request.POST.get('id_departamentos')
+    department_id = request.POST.get('id_department')
     department_name = request.POST.get('department')
 
     if department_id:

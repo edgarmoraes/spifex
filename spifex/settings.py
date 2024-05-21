@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'registration',
     'chart_of_accounts',
     'reports',
+    'projects',
 ]
 
 MIDDLEWARE = [

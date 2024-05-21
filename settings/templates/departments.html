@@ -68,24 +68,24 @@
     <main class="main">
         <section class="container-buttons">
             <a href="{% url 'settings:settings' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
-            <button class="botao-adicionar adicionar-departamentos">
+            <button class="button-add add-department">
                 <svg class="svgIcon" width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M11 17C11 17.5523 11.4477 18 12 18C12.5523 18 13 17.5523 13 17V13H17C17.5523 13 18 12.5523 18 12C18 11.4477 17.5523 11 17 11H13V7C13 6.44771 12.5523 6 12 6C11.4477 6 11 6.44771 11 7V11H7C6.44772 11 6 11.4477 6 12C6 12.5523 6.44772 13 7 13H11V17Z" fill="#000000"/>
                     </svg>
             </button>
         </section>
-        <div class="box-grid-departamentos">
-            <div class="conteudo-tabela-departamentos">
-                <table class="tabela-departamentos">
-                    <thead class="cabecalho-departamentos">
-                        <tr class="linha-cabecalho-departamentos">
-                            <th class="cadastro-departamentos-col" scope="col">Departamentos</th>
+        <div class="box-grid-departments">
+            <div class="departments-table-wrapper">
+                <table class="departments-table">
+                    <thead class="departments-table__head">
+                        <tr class="departments-table__head--row">
+                            <th class="departments-col" scope="col">Departamentos</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="departments-table__body">
                         {% for departments_item in Departments_list %}
-                        <tr class="row-departamentos" scope="row" data-saldo-inicial="{{ departments_item.saldo_inicial }}" data-id-departamentos="{{ departments_item.id }}" data-uuid-departamentos="{{ departments_item.uuid_department }}">
-                            <td class="departamentos-row">{{ departments_item.department }}</td>
+                        <tr class="departments-table__body--row" scope="row" data-id-department="{{ departments_item.id }}" data-uuid-department="{{ departments_item.uuid_department }}">
+                            <td class="department-row">{{ departments_item.department }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -93,25 +93,25 @@
             </div>
         </div>
         <!-- Modal -->
-        <dialog class="modal-departamentos">
-            <h1 class="modal-titulo">Departamentos</h1>
+        <dialog class="department-modal">
+            <h1 class="modal-title">Departamentos</h1>
         
-            <form class="modal-form-departamentos" action="/salvar_departamento/" method="POST">{% csrf_token %}
-                <input type="hidden" name="id_departamentos" value="{{ departments_item.id }}">
-                <input type="hidden" name="uuid_departments" value="{{ departments_item.uuid_department }}">
+            <form class="modal form department-modal-form" action="/salvar_departamento/" method="POST">{% csrf_token %}
+                <input type="hidden" name="id_department" value="{{ departments_item.id }}">
+                <input type="hidden" name="uuid_department" value="{{ departments_item.uuid_department }}">
                 <section class="modal-flex">
                     <label for="department">Nome do departamento</label>
-                    <input class="modal-departamentos" id="department" type="text" name="department" required><br>
+                    <input class="modal-department" id="department" type="text" name="department" required><br>
                 </section>
                 <section class="modal-buttons">
-                    <input class="modal-save-button-departamentos" type="submit" value="Salvar">
-                    <button type="button" class="modal-apagar-departamentos" style="display:none;">Apagar</button>
-                    <button type="button" class="modal-close-departamentos">Cancelar</button>
+                    <input class="modal-save-button-department" type="submit" value="Salvar">
+                    <button type="button" class="modal-delete-department" style="display:none;">Apagar</button>
+                    <button type="button" class="modal-close-department">Cancelar</button>
                 </section>
             </form>
         </dialog>
     </main>
 
-    <script src="{% static 'scripts/scripts-departments.js' %}"></script>
+    <script src="{% static 'scripts/scripts_departments.js' %}"></script>
 </body>
 </html>
