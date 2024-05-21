@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'cash_flow',
-    'realizado',
+    'settled_entry',
     'settings',
     'registration',
     'chart_of_accounts',
@@ -130,7 +130,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'cash_flow', 'static'),
-    os.path.join(BASE_DIR, 'realizado', 'static'),
+    os.path.join(BASE_DIR, 'settled_entry', 'static'),
     os.path.join(BASE_DIR, 'settings', 'static'),
     os.path.join(BASE_DIR, 'chart_of_accounts', 'static'),
 ]

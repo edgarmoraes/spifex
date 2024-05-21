@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('realizado', '0002_settledentry_uuid_transference'),
+        ('settled_entry', '0002_settledentry_uuid_transference'),
     ]
 
     operations = [

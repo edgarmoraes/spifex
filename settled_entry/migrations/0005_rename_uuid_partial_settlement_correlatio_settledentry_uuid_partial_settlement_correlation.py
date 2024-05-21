@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('realizado', '0004_rename_uuid_partial_settlement_correlation_settledentry_uuid_partial_settlement_correlatio'),
+        ('settled_entry', '0004_rename_uuid_partial_settlement_correlation_settledentry_uuid_partial_settlement_correlatio'),
     ]
 
     operations = [

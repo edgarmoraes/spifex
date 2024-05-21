@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.dispatch import receiver
 from django.http import JsonResponse
 from typing import Dict, List, Tuple
-from realizado.models import SettledEntry
+from settled_entry.models import SettledEntry
 from dateutil.relativedelta import relativedelta
 from django.views.decorators.csrf import csrf_exempt
 from chart_of_accounts.models import Chart_of_accounts
