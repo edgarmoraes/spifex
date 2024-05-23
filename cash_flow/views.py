@@ -10,13 +10,13 @@ from django.contrib import messages
 from django.dispatch import receiver
 from django.http import JsonResponse
 from typing import Dict, List, Tuple
-from realizado.models import SettledEntry
+from settled_entry.models import SettledEntry
 from dateutil.relativedelta import relativedelta
 from django.views.decorators.csrf import csrf_exempt
 from chart_of_accounts.models import Chart_of_accounts
 from django.db.models.signals import post_save, post_delete
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import CashFlowEntry, TemporaryTable, MonthsListCashFlow, Banks, DocumentType
+from .models import CashFlowEntry, TemporaryTable, MonthsListCashFlow, Banks, DocumentType, Departments
 
 def cash_flow(request):
     if request.method == "GET":
@@ -30,6 +30,7 @@ def display_cash_flow(request):
     months_list_cash_flow = MonthsListCashFlow.objects.all()
     accounts_queryset = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
     document_type_cash_flow = DocumentType.objects.all()
+    departments_cash_flow = Departments.objects.all()
 
     accounts_by_subgroup = group_accounts_by_subgroup(accounts_queryset)
     entries_with_totals = calculate_monthly_totals(cash_flow_entries)
@@ -40,6 +41,7 @@ def display_cash_flow(request):
         'Banks_list': active_banks,
         'Accounts_by_subgroup_list': accounts_by_subgroup,
         'Document_types': document_type_cash_flow,
+        'Departments': departments_cash_flow,
     }
     return render(request, 'cash_flow.html', context)
 
@@ -100,9 +102,11 @@ def get_form_data(request):
     account_data = get_account_data(request, transaction_type)
     other_data = get_other_data(request)
     entry_id = get_entry_id(request, transaction_type)
+    uuid_partial_settlement_correlation = get_uuid_partial_settlement_correlation(request, transaction_type)
     document_type_data = get_document_type_data(request, transaction_type)
     periods_data = get_periods_data(request, transaction_type)
     weekend_action = get_weekend_action_data(request, transaction_type)
+    department_data = get_department_data(request, transaction_type)
 
     return {
         'due_date': due_date,
@@ -116,15 +120,19 @@ def get_form_data(request):
         'tags': other_data['entry_tags'],
         'notes': other_data['entry_notes'],
         'entry_id': entry_id,
+        'uuid_partial_settlement_correlation': uuid_partial_settlement_correlation,
         'transaction_type': transaction_type,
         'document_type_name': document_type_data['document_type_name'],
         'document_type_uuid': document_type_data['document_type_uuid'],
         'periods': periods_data,
         'weekend_action': weekend_action,
+        'department_name': department_data['department_name'],
+        'department_percentage': department_data['department_percentage'],
+        'department_uuid': department_data['department_uuid'],
     }
 
 def get_transaction_type(request):
-    return 'Crédito' if 'salvar_credit' in request.POST else 'Débito'
+    return 'Crédito' if 'modal_save_credit' in request.POST else 'Débito'
 
 def get_account_data(request, transaction_type):
     account_name_field = 'general_ledger_account_name_credit' if transaction_type == 'Crédito' else 'general_ledger_account_name_debit'
@@ -142,6 +150,16 @@ def get_entry_id(request, transaction_type):
     elif transaction_type == 'Débito' and payment_entry_id:
         return int(payment_entry_id)
     return None
+
+def get_uuid_partial_settlement_correlation(request, transaction_type):
+    uuid_partial_settlement_correlation_field = 'uuid_partial_settlement_correlation_credit' if transaction_type == 'Crédito' else 'uuid_partial_settlement_correlation_debit'
+    uuid_partial_settlement_correlation = request.POST.get(uuid_partial_settlement_correlation_field)
+    
+    # Verifica se o valor recebido é a string 'None'
+    if uuid_partial_settlement_correlation == 'None':
+        return {'uuid_partial_settlement_correlation': None}
+    else:
+        return {'uuid_partial_settlement_correlation': uuid_partial_settlement_correlation}
 
 def get_due_date(request):
     due_date_str = request.POST.get('due_date')
@@ -171,9 +189,17 @@ def get_other_data(request):
 def get_document_type_data(request, transaction_type):
     document_type_name_field = 'document_type_name_credit' if transaction_type == 'Crédito' else 'document_type_name_debit'
     document_type_uuid_field = 'document_type_uuid_credit' if transaction_type == 'Crédito' else 'document_type_uuid_debit'
+
     document_type_name = request.POST.get(document_type_name_field)
     document_type_uuid = request.POST.get(document_type_uuid_field)
-    return {'document_type_name': document_type_name,'document_type_uuid': document_type_uuid}
+
+    # Substituir strings vazias por None
+    if document_type_name == '':
+        document_type_name = None
+    if document_type_uuid == '':
+        document_type_uuid = None
+
+    return {'document_type_name': document_type_name, 'document_type_uuid': document_type_uuid}
 
 def get_weekend_action_data(request, transaction_type):
     weekend_action_field = 'weekend_action_credit' if transaction_type == 'Crédito' else 'weekend_action_debit'
@@ -189,6 +215,29 @@ def get_periods_data(request, transaction_type):
         # Caso contrário, usa o valor enviado pelo formulário
         periods = request.POST.get(periods_field)
         return periods if periods else 'monthly'
+
+def get_department_data(request, transaction_type):
+    department_name_field = 'department_name_credit' if transaction_type == 'Crédito' else 'department_name_debit'
+    department_uuid_field = 'department_uuid_credit' if transaction_type == 'Crédito' else 'department_uuid_debit'
+    department_percentage_field = 'department_percentage_credit' if transaction_type == 'Crédito' else 'department_percentage_debit'
+    department_name = request.POST.get(department_name_field, '[]')
+    department_uuid = request.POST.get(department_uuid_field, '[]')
+    department_percentage = request.POST.get(department_percentage_field, '[]')
+
+    try:
+        department_name_list = json.loads(department_name)
+        department_uuid_list = json.loads(department_uuid)
+        department_percentage_list = json.loads(department_percentage)
+    except json.JSONDecodeError:
+        department_name_list = []
+        department_uuid_list = []
+        department_percentage_list = []
+
+    return {
+        'department_name': department_name_list,
+        'department_uuid': department_uuid_list,
+        'department_percentage': department_percentage_list
+    }
 
 def update_existing_cash_flow_entries(form_data):
     # Busca o fluxo de caixa pelo ID
@@ -207,11 +256,16 @@ def update_existing_cash_flow_entries(form_data):
     cash_flow_table.uuid_general_ledger_account = form_data['general_ledger_account_uuid']
 
     # Atualiza o tipo de documento e seu UUID
-    cash_flow_table.document_type = form_data['document_type']
-    cash_flow_table.uuid_document_type = form_data['uuid_document_type']
+    cash_flow_table.document_type = form_data['document_type_name']
+    cash_flow_table.uuid_document_type = form_data['document_type_uuid']
 
     # Atualiza os períodos
     cash_flow_table.periods = form_data['periods']
+
+    # Atualiza o tipo de department e seu UUID
+    cash_flow_table.department = form_data['department_name']
+    cash_flow_table.uuid_department = form_data['department_uuid']
+    cash_flow_table.department_percentage = form_data['department_percentage']
 
     # Não altera total_installments se já é parte de uma série de installments
     if cash_flow_table.total_installments <= 1 or 'total_installments' not in form_data:
@@ -228,12 +282,16 @@ def create_cash_flow_entries(form_data):
 
     initial_installment = form_data.get('current_installment', 1)
     total_installments = form_data['total_installments']
+    uuid_installments_correlation = None
 
     # Converte 'due_date' para datetime.date se necessário
     if isinstance(form_data['due_date'], datetime):
         base_due_date = form_data['due_date'].date()
     else:
         base_due_date = datetime.strptime(form_data['due_date'], '%Y-%m-%d').date()
+
+    if total_installments > 1:
+        uuid_installments_correlation = uuid.uuid4()
 
     for i in range(initial_installment, total_installments + 1):
         if form_data['periods'] == 'weekly':
@@ -257,8 +315,11 @@ def create_cash_flow_entries(form_data):
             amount=form_data['amount'],
             general_ledger_account=form_data['general_ledger_account_name'],
             uuid_general_ledger_account=form_data['general_ledger_account_uuid'],
-            document_type=form_data['document_type'],
-            uuid_document_type=form_data['uuid_document_type'],
+            document_type=form_data['document_type_name'],
+            uuid_document_type=form_data['document_type_uuid'],
+            department=form_data['department_name'],
+            department_percentage=form_data['department_percentage'],
+            uuid_department=form_data['department_uuid'],
             current_installment=i,
             total_installments=total_installments,
             notes=form_data['notes'],
@@ -266,7 +327,8 @@ def create_cash_flow_entries(form_data):
             periods=form_data['periods'],
             transaction_type=form_data['transaction_type'],
             weekend_action=form_data['weekend_action'],
-            creation_date=datetime.now()
+            uuid_installments_correlation=uuid_installments_correlation,
+            creation_date=datetime.now(),
         )
 
 def adjust_date_for_weekend(due_date, weekend_action):
@@ -283,8 +345,8 @@ def delete_entries(request):
     if request.method == 'POST':
         ids_to_delete = extract_ids_to_delete(request)
 
-        # Verifica se algum dos lançamentos selecionados tem uuid_correlation não nulo
-        entries_with_dependencies = CashFlowEntry.objects.filter(id__in=ids_to_delete, uuid_correlation__isnull=False)
+        # Verifica se algum dos lançamentos selecionados tem uuid_partial_settlement_correlation não nulo
+        entries_with_dependencies = CashFlowEntry.objects.filter(id__in=ids_to_delete, uuid_partial_settlement_correlation__isnull=False)
 
         if entries_with_dependencies.exists():
             # Retorna uma mensagem de erro se algum lançamento tem dependência
@@ -339,7 +401,7 @@ def process_transfer(request):
     transfer_transaction_amount_str = request.POST.get('amount', 'R$ 0,00').replace('R$ ', '').replace('.', '').replace(',', '.')
     transfer_transaction_amount = Decimal(transfer_transaction_amount_str) if transfer_transaction_amount_str else 0.00
     transfer_observation = request.POST.get('observation')
-    id_correlation = uuid.uuid4()
+    uuid_transference = uuid.uuid4()
     
     settlement_date = datetime.strptime(transfer_date, '%Y-%m-%d')
 
@@ -362,7 +424,7 @@ def process_transfer(request):
         transaction_type='Débito',
         original_creation_date=datetime.now(),
         settlement_date=settlement_date,
-        uuid_correlation=id_correlation
+        uuid_transference=uuid_transference
     )
     withdrawal_entry.save()
 
@@ -381,7 +443,7 @@ def process_transfer(request):
         transaction_type='Crédito',
         original_creation_date=datetime.now(),
         settlement_date=settlement_date,
-        uuid_correlation=id_correlation
+        uuid_transference=uuid_transference
     )
     deposit_entry.save()
 
@@ -406,8 +468,8 @@ def process_single_item(item, response):
     try:
         original_record = get_cash_flow_entry(item['id'])
         partial_amount, is_partial_settlement, completing_settlement = calculate_settlement_info(item, original_record)
-        uuid_correlation = update_uuid_correlation(original_record, partial_amount, is_partial_settlement)
-        create_settled_entry(item, original_record, partial_amount, is_partial_settlement, uuid_correlation)
+        uuid_partial_settlement_correlation = update_uuid_partial_settlement_correlation(original_record, partial_amount, is_partial_settlement)
+        create_settled_entry(item, original_record, partial_amount, is_partial_settlement, uuid_partial_settlement_correlation)
         update_original_record_if_needed(original_record, partial_amount, is_partial_settlement, completing_settlement)
     except CashFlowEntry.DoesNotExist:
         response['messages'].append(f'Registro {item["id"]} não encontrado.')
@@ -422,15 +484,15 @@ def calculate_settlement_info(item, original_record):
     completing_settlement = partial_amount == total_amount
     return partial_amount, is_partial_settlement, completing_settlement
 
-def update_uuid_correlation(original_record, partial_amount, is_partial_settlement):
-    if is_partial_settlement and not original_record.uuid_correlation:
-        original_record.uuid_correlation = uuid.uuid4()
+def update_uuid_partial_settlement_correlation(original_record, partial_amount, is_partial_settlement):
+    if is_partial_settlement and not original_record.uuid_partial_settlement_correlation:
+        original_record.uuid_partial_settlement_correlation = uuid.uuid4()
         original_record.save()
-    return original_record.uuid_correlation
+    return original_record.uuid_partial_settlement_correlation
 
-def create_settled_entry(item, original_record, partial_amount, is_partial_settlement, uuid_correlation):
+def create_settled_entry(item, original_record, partial_amount, is_partial_settlement, uuid_partial_settlement_correlation):
     settlement_date_aware = timezone.make_aware(datetime.strptime(item['settlement_date'], '%Y-%m-%d'))
-    installment_number = SettledEntry.objects.filter(uuid_correlation=uuid_correlation).count() + 1 if uuid_correlation else 1
+    installment_number = SettledEntry.objects.filter(uuid_partial_settlement_correlation=uuid_partial_settlement_correlation).count() + 1 if uuid_partial_settlement_correlation else 1
     updated_entry_description = f"{original_record.description} | Parcela ({installment_number})" if is_partial_settlement else original_record.description
 
     SettledEntry.objects.create(
@@ -449,8 +511,7 @@ def create_settled_entry(item, original_record, partial_amount, is_partial_settl
         settlement_date=settlement_date_aware,
         settlement_bank=item.get('settlement_bank', ''),
         settlement_bank_id=item.get('settlement_bank_id', ''),
-        uuid_correlation=uuid_correlation,
-        uuid_correlation_installments=uuid_correlation
+        uuid_partial_settlement_correlation=uuid_partial_settlement_correlation
     )
 
 def update_original_record_if_needed(original_record, partial_amount, is_partial_settlement, completing_settlement):

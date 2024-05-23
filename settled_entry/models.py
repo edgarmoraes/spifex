@@ -16,9 +16,9 @@ class SettledEntry(models.Model):
     settlement_date = models.DateTimeField()
     settlement_bank = models.CharField(max_length=255, null=True, blank=True)
     settlement_bank_id = models.IntegerField(null=True, blank=True)
-    uuid_correlation = models.UUIDField(null=True, blank=True)
-    uuid_correlation_installments = models.UUIDField(null=True, blank=True)
     uuid_general_ledger_account = models.UUIDField(null=True, blank=True)
+    uuid_partial_settlement_correlation = models.UUIDField(null=True, blank=True)
+    uuid_transference = models.UUIDField(null=True, blank=True)
 
     _skip_update_balance = False
 

@@ -126,16 +126,16 @@ def process_return(request):
         if not original_record:
             continue
 
-        uuid_correlation = original_record.uuid_correlation
-        uuid_correlation_installments = original_record.uuid_correlation_installments
+        uuid_transference = original_record.uuid_transference
+        uuid_partial_settlement_correlation = original_record.uuid_partial_settlement_correlation
 
-        if not uuid_correlation:
+        if not uuid_transference and not uuid_partial_settlement_correlation:
             create_cash_flow_entry(original_record)
-        elif uuid_correlation and uuid_correlation_installments is None:
-            # Aqui é onde implementamos a lógica específica: Deletar todos os lançamentos em SettledEntry que compartilham o mesmo uuid_correlation
-            SettledEntry.objects.filter(uuid_correlation=uuid_correlation).delete()
+        elif uuid_transference and uuid_partial_settlement_correlation is None:
+            # Aqui é onde implementamos a lógica específica: Deletar todos os lançamentos em SettledEntry que compartilham o mesmo uuid_transference
+            SettledEntry.objects.filter(uuid_transference=uuid_transference).delete()
         else:
-            process_selected_uuids(uuid_correlation, uuid_correlation_installments, selected_ids, original_record)
+            process_selected_uuids(uuid_transference, uuid_partial_settlement_correlation, selected_ids, original_record)
 
     return JsonResponse({'status': 'success'})
 
@@ -155,17 +155,17 @@ def create_cash_flow_entry(record):
     )
     record.delete()
 
-def process_selected_uuids(uuid_correlation, uuid_correlation_installments, selected_ids, original_record):
-    more_records = SettledEntry.objects.filter(uuid_correlation=uuid_correlation, uuid_correlation_installments=uuid_correlation_installments).exclude(id__in=selected_ids).exists()
-    exists_in_cash_flow = CashFlowEntry.objects.filter(uuid_correlation=uuid_correlation).exists()
+def process_selected_uuids(uuid_transference, uuid_partial_settlement_correlation, selected_ids, original_record):
+    more_records = SettledEntry.objects.filter(uuid_transference=uuid_transference, uuid_partial_settlement_correlation=uuid_partial_settlement_correlation).exclude(id__in=selected_ids).exists()
+    exists_in_cash_flow = CashFlowEntry.objects.filter(uuid_partial_settlement_correlation=uuid_partial_settlement_correlation).exists()
 
-    selected_records = SettledEntry.objects.filter(id__in=selected_ids, uuid_correlation=uuid_correlation, uuid_correlation_installments=uuid_correlation_installments)
+    selected_records = SettledEntry.objects.filter(id__in=selected_ids, uuid_transference=uuid_transference, uuid_partial_settlement_correlation=uuid_partial_settlement_correlation)
     selected_total_amount = selected_records.aggregate(Sum('amount'))['amount__sum'] or 0
 
     if more_records and exists_in_cash_flow:
-        unify_entries_in_cash_flow(uuid_correlation, selected_total_amount)
+        unify_entries_in_cash_flow(uuid_partial_settlement_correlation, selected_total_amount)
     elif not more_records and exists_in_cash_flow:
-        unify_entries_in_cash_flow(uuid_correlation, selected_total_amount, delete_uuid=True)
+        unify_entries_in_cash_flow(uuid_partial_settlement_correlation, selected_total_amount, delete_uuid=True)
     elif not more_records and not exists_in_cash_flow:
         create_unified_entries_in_cash_flow(selected_records.first(), selected_total_amount, keep_uuid=False)
     elif more_records and not exists_in_cash_flow:
@@ -173,11 +173,11 @@ def process_selected_uuids(uuid_correlation, uuid_correlation_installments, sele
 
     selected_records.delete()
 
-def unify_entries_in_cash_flow(uuid_correlation, total_amount, delete_uuid=False):
-    cash_flow = CashFlowEntry.objects.get(uuid_correlation=uuid_correlation)
+def unify_entries_in_cash_flow(uuid_partial_settlement_correlation, total_amount, delete_uuid=False):
+    cash_flow = CashFlowEntry.objects.get(uuid_partial_settlement_correlation=uuid_partial_settlement_correlation)
     cash_flow.amount += total_amount
     if delete_uuid:
-        cash_flow.uuid_correlation = None
+        cash_flow.uuid_partial_settlement_correlation = None
     cash_flow.save()
 
 def create_unified_entries_in_cash_flow(record, total_amount, keep_uuid=False):
@@ -193,7 +193,7 @@ def create_unified_entries_in_cash_flow(record, total_amount, keep_uuid=False):
         tags=record.tags,
         transaction_type=record.transaction_type,
         creation_date=record.original_creation_date,
-        uuid_correlation=record.uuid_correlation if keep_uuid else None
+        uuid_partial_settlement_correlation=record.uuid_partial_settlement_correlation if keep_uuid else None
     )
 
 @receiver(post_delete, sender=SettledEntry)
@@ -241,21 +241,21 @@ def update_entry(request, id):
     return JsonResponse({"error": "Método não permitido"}, status=405)
 
 @csrf_exempt
-def update_entries_by_uuid(request, uuid):
+def update_entries_by_uuid(request, uuid_transference):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
             due_date = data.get('novaData', None)
             if due_date:
                 due_date = datetime.strptime(due_date, '%Y-%m-%d').date()
-                settled_entries = SettledEntry.objects.filter(uuid_correlation=uuid)
+                settled_entries = SettledEntry.objects.filter(uuid_transference=uuid_transference)
                 for settled_entry in settled_entries:
                     original_date_time = settled_entry.settlement_date.time() if settled_entry.settlement_date else datetime.time(12, 0)
                     settled_entry.settlement_date = datetime.combine(due_date, original_date_time)
                     settled_entry._skip_update_balance = True
                     settled_entry.save()
             
-            return JsonResponse({"message": f"Lançamentos atualizados com sucesso para o UUID {uuid}!"}, status=200)
+            return JsonResponse({"message": f"Lançamentos atualizados com sucesso para o UUID {uuid_transference}!"}, status=200)
         except ValueError as e:
             return JsonResponse({"error": f"Erro ao processar a data: {str(e)}"}, status=400)
     return JsonResponse({"error": "Método não permitido"}, status=405)

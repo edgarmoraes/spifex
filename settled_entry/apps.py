@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class RealizadoConfig(AppConfig):
+class SettledEntryConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'realizado'
+    name = 'settled_entry'
