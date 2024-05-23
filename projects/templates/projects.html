@@ -74,44 +74,36 @@
                     </svg>
             </button>
         </section>
-        <dialog class="modal-bancos">
-            <h1 class="modal-titulo">Projeto</h1>
-        
-            <form class="modal-form-bancos" action="/salvar_banco/" method="POST">{% csrf_token %}
-                <input type="hidden" name="bank_id" value="{{ banks_item.id }}">
-                <section class="modal-flex">
-                    <label for="bank-name">Banco</label>
-                    <input class="modal-banco" id="bank-name" type="text" name="bank_name" required><br>
-                </section>
-        
-                <section class="modal-flex">
-                    <label for="bank-branch">Agência</label>
-                    <input class="modal-agencia" id="bank-branch" type="text" name="bank_branch" required><br>
-                </section>
-        
-                <section class="modal-flex">
-                    <label for="bank-account">Conta</label>
-                    <input class="modal-conta" id="bank-account" name="bank_account" required><br>
-                </section>
-        
-                <section class="modal-flex">
-                    <label for="saldo-inicial">Saldo Inicial</label>
-                    <input class="modal-valor" type="text" id="saldo-inicial" name="saldo-inicial" oninput="formatarCampoValor(this)" value="R$ " required><br>
-                </section>
-        
-                <section class="modal-flex">
-                    <label for="bank-status">Status</label>
-                    <select class="modal-conta-contabil" id="bank-status" name="bank_status" required>
-                      <option value="ativo">Ativo</option>
-                      <option value="inativo">Inativo</option>
-                    </select><br>
-                </section>
-                <section class="modal-buttons">
-                    <input class="modal-save-button-bancos" type="submit" value="Salvar">
-                    <button type="button" class="modal-delete-bancos" style="display:none;">Apagar</button>
-                    <button type="button" class="modal-close-bancos">Cancelar</button>
-                </section>
-            </form>
+        <dialog class="modal project-modal" id="project-modal">
+            <h1 class="modal-title">Projeto</h1>
+                <form class="modal-form modal-form-project" action="/salvar_projeto/" method="POST">{% csrf_token %}
+                    <div class="modal-fields">
+                        <section class="modal-section project-modal-form__section--project-name section__project-name">
+                            <label for="project-name">Nome do projeto*</label>
+                            <input class="modal-project-name" id="project-name" type="text" name="project_name" required><br>
+                        </section>
+                        <section class="modal-section project-modal-form__section--project-id section__project-id">
+                            <label for="project-id">Código do projeto*</label>
+                            <input class="modal-project-id" id="project-id" type="text" name="project_id" required><br>
+                        </section>
+                        <section class="modal-section project-modal-form__section--project-type section__project-type">
+                            <label for="project-type">Tipo de projeto*</label>
+                            <select class="modal-project-type" id="project-type" name="project_type" required>
+                            <option value="internal">Interno</option>
+                            <option value="external">Externo</option>
+                            </select>
+                        </section>
+                        <section class="modal-section project-modal-form__section--project-description section__project-description mesclar-2">
+                            <label for="project-description">Descrição do projeto*</label>
+                            <input id="project-description" class="project-description" name="project_description" type="text">
+                        </section>
+                        <div class="modal-buttons">
+                            <input class="modal-save-button-project" type="submit" value="Salvar">
+                            <button type="button" class="modal-delete-project" style="display:none;">Apagar</button>
+                            <button type="button" class="modal-close-project">Cancelar</button>
+                        </div>
+                    </div>
+                </form>
         </dialog>
     </main> 
     <script src="{% static 'scripts/scripts_projects.js' %}"></script>
