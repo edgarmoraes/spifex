@@ -1,9 +1,15 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from .models import Project
+from .models import Projects
 
 def projects(request):
-    return render(request, 'projects.html')
+    if request.method =="GET":
+        projects_list = Projects.objects.all().order_by('id')
+
+        context = {
+            'Projects_list': projects_list,
+        }
+        return render(request, 'projects.html', context)
 
 def save_project(request):
     if request.method == 'POST':
@@ -12,7 +18,7 @@ def save_project(request):
         project_type = request.POST.get('project_type')
         project_description = request.POST.get('project_description')
 
-        project = Project(
+        project = Projects(
             project_name=project_name,
             project_code=project_code,
             project_type=project_type,
@@ -22,3 +28,4 @@ def save_project(request):
 
         return JsonResponse({'success': True})
     return JsonResponse({'success': False})
+

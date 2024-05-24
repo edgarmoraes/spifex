@@ -74,6 +74,25 @@
                     </svg>
             </button>
         </section>
+        <div class="box-grid-projects">
+            <div class="projects-table-wrapper">
+                <table class="projects-table">
+                    <thead class="projects-table__head">
+                        <tr class="projects-table__head--row">
+                            <th class="projects-col" scope="col">Projetos</th>
+                        </tr>
+                    </thead>
+                    <tbody class="projects-table__body">
+                        {% for projects_item in Projects_list %}
+                        <tr class="projects-table__body--row" scope="row" data-id-project="{{ projects_item.id }}" data-uuid-project="{{ projects_item.uuid_project }}">
+                            <td class="project-row">{{ projects_item.project_name }} - {{ projects_item.project_code }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Modal -->
         <dialog class="modal project-modal" id="project-modal">
             <h1 class="modal-title">Projeto</h1>
                 <form class="modal-form modal-form-project" action="{% url 'projects:save_project' %}" method="POST">{% csrf_token %}
