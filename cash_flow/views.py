@@ -11,6 +11,7 @@ from django.dispatch import receiver
 from django.http import JsonResponse
 from typing import Dict, List, Tuple
 from settled_entry.models import SettledEntry
+from projects.models import Projects
 from dateutil.relativedelta import relativedelta
 from django.views.decorators.csrf import csrf_exempt
 from chart_of_accounts.models import Chart_of_accounts
@@ -31,6 +32,7 @@ def display_cash_flow(request):
     accounts_queryset = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
     document_type_cash_flow = DocumentType.objects.all()
     departments_cash_flow = Departments.objects.all()
+    projects_cash_flow = Projects.objects.all()
 
     accounts_by_subgroup = group_accounts_by_subgroup(accounts_queryset)
     entries_with_totals = calculate_monthly_totals(cash_flow_entries)
@@ -42,6 +44,7 @@ def display_cash_flow(request):
         'Accounts_by_subgroup_list': accounts_by_subgroup,
         'Document_types': document_type_cash_flow,
         'Departments': departments_cash_flow,
+        'Projects': projects_cash_flow,
     }
     return render(request, 'cash_flow.html', context)
 

@@ -509,8 +509,8 @@
                                     <div class="dropdown-options">
                                         {% for project in Projects %}
                                             <label class="label-filters">
-                                                <input type="checkbox" class="project-checkbox" name="project_option_credit" data-uuid-project="{{ project.uuid_project }}" data-project="{{ project.project }}">
-                                                {{ project.project }}
+                                                <input type="checkbox" class="project-checkbox" name="project_option_credit" data-uuid-project="{{ project.uuid_project }}" data-project="{{ project.project_name }}">
+                                                {{ project.project_name }} - {{ project.project_code }}
                                             </label>
                                             {% endfor %}
                                         <input type="hidden" id="project-name-credit" name="project_name_credit" value="">
