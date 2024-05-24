@@ -68,34 +68,34 @@
     <main class="main">
         <section class="container-buttons">
             <a href="{% url 'settings:settings' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
-            <button class="botao-adicionar adicionar-bancos">
+            <button class="button-add add-bank">
                 <svg class="svgIcon" width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M11 17C11 17.5523 11.4477 18 12 18C12.5523 18 13 17.5523 13 17V13H17C17.5523 13 18 12.5523 18 12C18 11.4477 17.5523 11 17 11H13V7C13 6.44771 12.5523 6 12 6C11.4477 6 11 6.44771 11 7V11H7C6.44772 11 6 11.4477 6 12C6 12.5523 6.44772 13 7 13H11V17Z" fill="#000000"/>
                     </svg>
             </button>
         </section>
-        <div class="box-grid-bancos">
-            <div class="conteudo-tabela-bancos">
-                <table class="tabela-bancos">
-                    <thead class="cabecalho-bancos">
-                        <tr class="linha-cabecalho-bancos">
-                            <th class="cadastro-contas-bancos-col" scope="col">Contas</th>
-                            <th class="cadastro-ag-bancos-col" scope="col">Agência</th>
-                            <th class="cadastro-conta-bancos-col" scope="col">Conta</th>
-                            <th class="cadastro-JPsaldo-bancos-col" scope="col">Saldo Inicial</th>
-                            <th class="cadastro-JPsaldo-bancos-col" scope="col">Saldo Atual</th>
-                            <th class="cadastro-status-bancos-col" scope="col">Status</th>
+        <div class="box-grid-banks">
+            <div class="banks-table-wrapper" id="banks-table-wrapper">
+                <table class="banks-table" id="banks-table">
+                    <thead class="banks-table__head">
+                        <tr class="banks-table__head--row">
+                            <th class="banks-col" scope="col">Contas</th>
+                            <th class="bank-branch-col" scope="col">Agência</th>
+                            <th class="bank-account-col" scope="col">Conta</th>
+                            <th class="bank-initial-balance-col" scope="col">Saldo Inicial</th>
+                            <th class="bank-consolidated-balance-col" scope="col">Saldo Atual</th>
+                            <th class="bank-status-col" scope="col">Status</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="banks-table__body">
                         {% for banks_item in Banks_list %}
-                        <tr class="row-bancos" scope="row" data-saldo-inicial="{{ banks_item.initial_balance }}" data-bank-id="{{ banks_item.id }}">
-                            <td class="banco-row" name="banco">{{ banks_item.banco }}</td>
-                            <td class="ag-row" name="bank_branch">{{ banks_item.bank_branch }}</td>
-                            <td class="conta-row" name="bank_account">{{ banks_item.bank_account }}</td>
-                            <td class="saldo-banco-row" name="initial_balance">{{ banks_item.initial_balance|format_number }}</td>
-                            <td class="saldo_consolidado-banco-row" name="initial_balance">{{ banks_item.consolidated_balance|format_number }}</td>
-                            <td class="status-row" name="bank_status">
+                        <tr class="banks-table__body--row" scope="row" data-initial-balance="{{ banks_item.initial_balance }}" data-bank-id="{{ banks_item.id }}">
+                            <td class="bank-row" name="banco">{{ banks_item.banco }}</td>
+                            <td class="bank-branch-row" name="bank_branch">{{ banks_item.bank_branch }}</td>
+                            <td class="bank-account-row" name="bank_account">{{ banks_item.bank_account }}</td>
+                            <td class="bank-initial-balance-row" name="initial_balance">{{ banks_item.initial_balance|format_number }}</td>
+                            <td class="bank-consolidated-balance-row" name="consolidated_balance">{{ banks_item.consolidated_balance|format_number }}</td>
+                            <td class="bank-status-row" name="bank_status">
                                 {% if banks_item.bank_status %}
                                 Ativo
                                 {% else %}
@@ -129,8 +129,8 @@
                 </section>
         
                 <section class="modal-flex">
-                    <label for="saldo-inicial">Saldo Inicial</label>
-                    <input class="modal-valor" type="text" id="saldo-inicial" name="saldo-inicial" oninput="formatarCampoValor(this)" value="R$ " required><br>
+                    <label for="bank-initial-balance">Saldo Inicial</label>
+                    <input class="modal-valor" type="text" id="bank-initial-balance" name="bank_initial_balance" oninput="formatarCampoValor(this)" value="R$ " required><br>
                 </section>
         
                 <section class="modal-flex">
