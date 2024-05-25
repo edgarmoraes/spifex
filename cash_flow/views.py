@@ -110,6 +110,7 @@ def get_form_data(request):
     periods_data = get_periods_data(request, transaction_type)
     weekend_action = get_weekend_action_data(request, transaction_type)
     department_data = get_department_data(request, transaction_type)
+    project_data = get_project_data(request, transaction_type)
 
     return {
         'due_date': due_date,
@@ -132,6 +133,8 @@ def get_form_data(request):
         'department_name': department_data['department_name'],
         'department_percentage': department_data['department_percentage'],
         'department_uuid': department_data['department_uuid'],
+        'project_name': project_data['project_name'],
+        'project_uuid': project_data['project_uuid'],
     }
 
 def get_transaction_type(request):
@@ -204,6 +207,21 @@ def get_document_type_data(request, transaction_type):
 
     return {'document_type_name': document_type_name, 'document_type_uuid': document_type_uuid}
 
+def get_project_data(request, transaction_type):
+    project_name_field = 'project_name_credit' if transaction_type == 'Crédito' else 'project_name_debit'
+    project_uuid_field = 'project_uuid_credit' if transaction_type == 'Crédito' else 'project_uuid_debit'
+
+    project_name = request.POST.get(project_name_field)
+    project_uuid = request.POST.get(project_uuid_field)
+
+    # Substituir strings vazias por None
+    if project_name == '':
+        project_name = None
+    if project_uuid == '':
+        project_uuid = None
+
+    return {'project_name': project_name, 'project_uuid': project_uuid}
+
 def get_weekend_action_data(request, transaction_type):
     weekend_action_field = 'weekend_action_credit' if transaction_type == 'Crédito' else 'weekend_action_debit'
     weekend_action = request.POST.get(weekend_action_field)
@@ -261,6 +279,10 @@ def update_existing_cash_flow_entries(form_data):
     # Atualiza o tipo de documento e seu UUID
     cash_flow_table.document_type = form_data['document_type_name']
     cash_flow_table.uuid_document_type = form_data['document_type_uuid']
+
+    # Atualiza o project e seu UUID
+    cash_flow_table.project = form_data['project_name']
+    cash_flow_table.uuid_project = form_data['project_uuid']
 
     # Atualiza os períodos
     cash_flow_table.periods = form_data['periods']
@@ -323,6 +345,8 @@ def create_cash_flow_entries(form_data):
             department=form_data['department_name'],
             department_percentage=form_data['department_percentage'],
             uuid_department=form_data['department_uuid'],
+            project=form_data['project_name'],
+            uuid_project=form_data['project_uuid'],
             current_installment=i,
             total_installments=total_installments,
             notes=form_data['notes'],
