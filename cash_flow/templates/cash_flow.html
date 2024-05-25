@@ -104,7 +104,7 @@
                     </button>
                 </li>
                 <li class="side-navigation__buttons-list--operations side-navigation__buttons-list--list">
-                    <button class="list__button list__button--settle-button" id="list__button--settle-button">
+                    <button class="settle list__button--settle-button list__button" id="settle-button">
                         <svg data-value-pt="Liquidar" xmlns="http://www.w3.org/2000/svg" color="#202020" width="24" height="24" fill="currentColor" class="bi bi-file-earmark-lock2" viewBox="0 0 16 16">
                             <path d="M10 7v1.076c.54.166 1 .597 1 1.224v2.4c0 .816-.781 1.3-1.5 1.3h-3c-.719 0-1.5-.484-1.5-1.3V9.3c0-.627.46-1.058 1-1.224V7a2 2 0 1 1 4 0M7 7v1h2V7a1 1 0 0 0-2 0"/>
                             <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
@@ -112,14 +112,14 @@
                     </button>
                 </li>
                 <li class="side-navigation__buttons-list--operations side-navigation__buttons-list--list">
-                    <button class="list__button list__button--delete-button" id="list__button--delete-button">
+                    <button class="delete list__button--delete-button list__button" id="list__button--delete-button">
                         <svg data-value-pt="Deletar" xmlns="http://www.w3.org/2000/svg" color="#202020" width="24" height="24" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
                             <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
                           </svg>
                     </button>
                 </li>
                 <li class="side-navigation__buttons-list--operations side-navigation__buttons-list--list">
-                    <button class="list__button list__button--cancel-button" id="list__button--cancel-button">
+                    <button class="cancel list__button--cancel-button list__button" id="list__button--cancel-button">
                         <svg data-value-pt="Cancelar" xmlns="http://www.w3.org/2000/svg" color="#202020" width="24" height="24" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
                             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
                             <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
@@ -414,7 +414,7 @@
                     
                         <section class="modal-section credit-modal-form__section--general-ledger-dropdown section__general-ledger-dropdown">
                             <label for="dropdown-button-accounts-credit">Conta Contábil*</label>
-                            <div class="dropdown-multiselect">
+                            <div class="dropdown-multiselect dropdown-multiselect-accounts">
                                 <button type="button" onclick="toggleDropdown('dropdown-content-accounts-credit', event)" id="dropdown-button-accounts-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
                                 <div id="dropdown-content-accounts-credit" class="dropdown-content">
                                     <input id="modal-dropdown-button-account-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-accounts-credit')" placeholder="Filtrar...">
@@ -439,7 +439,7 @@
 
                         <section class="modal-section credit-modal-form__section--document-type section__document-type">
                             <label for="dropdown-button-document-type-credit">Tipo de Documento</label>
-                            <div class="dropdown-multiselect">
+                            <div class="dropdown-multiselect dropdown-multiselect-credit dropdown-multiselect-document-type">
                                 <button type="button" onclick="toggleDropdown('dropdown-content-document-type-credit', event)" id="dropdown-button-document-type-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
                                 <div id="dropdown-content-document-type-credit" class="dropdown-content">
                                     <input id="modal-dropdown-button-document-type-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-document-type-credit')" placeholder="Filtrar...">
@@ -480,7 +480,7 @@
                     <div class="modal-fields credit-modal-fields modal-cost-center-fields">
                         <section class="modal-section credit-modal-form__section--department section__department">
                             <label for="dropdown-button-department-credit">Departamento</label>
-                            <div class="dropdown-multiselect dropdown-multiselect-department">
+                            <div class="dropdown-multiselect dropdown-multiselect-credit dropdown-multiselect-department">
                                 <button type="button" onclick="toggleDropdown('dropdown-content-department-credit', event)" id="dropdown-button-department-credit" class="modal-dropdown-button dropdown-button" style="width: 75%;">Selecione</button>
                                 <div id="dropdown-content-department-credit" class="dropdown-content">
                                     <input id="modal-dropdown-button-department-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-department-credit')" placeholder="Filtrar...">
@@ -502,7 +502,7 @@
 
                         <section class="modal-section credit-modal-form__section--project section__project">
                             <label for="dropdown-button-project-credit">Projetos</label>
-                            <div class="dropdown-multiselect dropdown-multiselect-project">
+                            <div class="dropdown-multiselect dropdown-multiselect-credit dropdown-multiselect-project">
                                 <button type="button" onclick="toggleDropdown('dropdown-content-project-credit', event)" id="dropdown-button-project-credit" class="modal-dropdown-button dropdown-button" style="width: 75%;">Selecione</button>
                                 <div id="dropdown-content-project-credit" class="dropdown-content">
                                     <input id="modal-dropdown-button-project-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-project-credit')" placeholder="Filtrar...">
@@ -526,7 +526,7 @@
                     <div class="modal-fields credit-modal-fields modal-stakeholders-fields">
                         <section class="modal-section credit-modal-form__section--client section__client">
                             <label for="dropdown-button-client-credit">Cliente</label>
-                            <div class="dropdown-multiselect dropdown-multiselect">
+                            <div class="dropdown-multiselect dropdown-multiselect-credit dropdown-multiselect-stakeholders">
                                 <button type="button" onclick="toggleDropdown('dropdown-content-client-credit', event)" id="dropdown-button-client-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
                                 <div id="dropdown-content-client-credit" class="dropdown-content">
                                     <input id="modal-dropdown-button-client-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-client-credit')" placeholder="Filtrar...">
@@ -590,7 +590,7 @@
 
                 <section class="modal-buttons">
                     <input type="submit" class="modal-save-button" name="modal_save_credit" value="Salvar">
-                    <button type="button" class="modal-close-credit">Cancelar</button>
+                    <button type="button" class="modal-close-credit" name="modal_close_credit">Cancelar</button>
                 </section>
             </form>
         </dialog>
