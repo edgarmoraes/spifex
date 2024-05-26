@@ -93,22 +93,23 @@
             </div>
         </div>
         <!-- Modal -->
-        <dialog class="department-modal">
+        <dialog class="modal department-modal" id="department-modal">
             <h1 class="modal-title">Departamentos</h1>
-        
-            <form class="modal form department-modal-form" action="/salvar_departamento/" method="POST">{% csrf_token %}
-                <input type="hidden" name="id_department" value="{{ departments_item.id }}">
-                <input type="hidden" name="uuid_department" value="{{ departments_item.uuid_department }}">
-                <section class="modal-flex">
-                    <label for="department">Nome do departamento</label>
-                    <input class="modal-department" id="department" type="text" name="department" required><br>
-                </section>
-                <section class="modal-buttons">
-                    <input class="modal-save-button-department" type="submit" value="Salvar">
-                    <button type="button" class="modal-delete-department" style="display:none;">Apagar</button>
-                    <button type="button" class="modal-close-department">Cancelar</button>
-                </section>
-            </form>
+                <form class="modal-form department-modal-form" action="/salvar_departamento/" method="POST">{% csrf_token %}
+                    <div class="modal-fields">
+                        <input type="hidden" name="id_department" value="{{ departments_item.id }}">
+                        <input type="hidden" name="uuid_department" value="{{ departments_item.uuid_department }}">
+                        <section class="modal-section department-modal-form__section--department-name section__department-name">
+                            <label for="department">Nome do departamento*</label>
+                            <input class="modal-department" id="department" type="text" name="department" required><br>
+                        </section>
+                        <div class="modal-buttons">
+                            <input class="modal-save-button-department" type="submit" value="Salvar">
+                            <button type="button" class="modal-delete-department" style="display:none;">Apagar</button>
+                            <button type="button" class="modal-close-department">Cancelar</button>
+                        </div>
+                    </div>
+                </form>
         </dialog>
     </main>
 

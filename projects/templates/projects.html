@@ -97,6 +97,8 @@
             <h1 class="modal-title">Projeto</h1>
                 <form class="modal-form modal-form-project" action="{% url 'projects:save_project' %}" method="POST">{% csrf_token %}
                     <div class="modal-fields">
+                        <input type="hidden" name="id_project" value="{{ projects_item.id }}">
+                        <input type="hidden" name="uuid_project" value="{{ projects_item.uuid_project }}">
                         <section class="modal-section project-modal-form__section--project-name section__project-name">
                             <label for="project-name">Nome do projeto*</label>
                             <input class="modal-project-name" id="project-name" type="text" name="project_name" required><br>
