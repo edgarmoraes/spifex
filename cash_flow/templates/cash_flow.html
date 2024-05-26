@@ -304,7 +304,7 @@
                     <thead class="cash-flow-table__head">
                         <tr class="cash-flow-table__head--row">
                             <th class="checkbox-col" scope="col">ㅤﾠ</th>
-                            <th class="due_date-col" scope="col">Vencimento</th>
+                            <th class="due-date-col" scope="col">Vencimento</th>
                             <th class="description-col" scope="col">Descrição</th>
                             <th class="observation-col" scope="col">Observação</th>
                             <th class="installment-col" scope="col">Parcela</th>
@@ -331,6 +331,7 @@
                                 data-transaction-type="{{ cash_flow_table_item.transaction_type }}"
                                 data-notes="{{ cash_flow_table_item.notes }}"
                                 data-current-installment="{{ cash_flow_table_item.current_installment }}"
+                                data-uuid-installments-correlation="{{ cash_flow_table_item.uuid_installments_correlation }}"
                                 data-total-installments="{{ cash_flow_table_item.total_installments }}"
                                 data-uuid-partial-settlement-correlation="{{ cash_flow_table_item.uuid_partial_settlement_correlation }}"
                                 data-document-type="{{ cash_flow_table_item.document_type }}"
@@ -346,7 +347,7 @@
                                     <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox-{{ cash_flow_table_item.id }}" class="custom-checkbox" type="checkbox"
                                         data-id="{{ cash_flow_table_item.id }}"
                                         data-uuid-partial-settlement-correlation="{{ cash_flow_table_item.uuid_partial_settlement_correlation }}"><span class="checkmark"></span></label></td>
-                                    <td class="due_date-row">{{ cash_flow_table_item.due_date|date:"d/m/Y" }}</td>
+                                    <td class="due-date-row">{{ cash_flow_table_item.due_date|date:"d/m/Y" }}</td>
                                     <td class="description-row">{{ cash_flow_table_item.description }}</td>
                                     <td class="observation-row">
                                         {{ cash_flow_table_item.observation }}
