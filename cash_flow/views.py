@@ -1,4 +1,5 @@
 import uuid
+from uuid import UUID
 import json
 from decimal import Decimal
 from datetime import datetime, timedelta
@@ -357,6 +358,19 @@ def create_cash_flow_entries(form_data):
             uuid_installments_correlation=uuid_installments_correlation,
             creation_date=datetime.now(),
         )
+
+def get_related_installments(request, correlation_id):
+    try:
+        # Ensure correlation_id is a valid UUID
+        if isinstance(correlation_id, str):
+            correlation_id = UUID(correlation_id)
+        
+        related_entries = CashFlowEntry.objects.filter(uuid_installments_correlation=correlation_id).values(
+            'due_date', 'description', 'current_installment', 'total_installments', 'amount', 'transaction_type'
+        )
+        return JsonResponse(list(related_entries), safe=False)
+    except ValueError:
+        return JsonResponse({'error': 'Invalid UUID'}, status=400)
 
 def adjust_date_for_weekend(due_date, weekend_action):
     if weekend_action == 'postpone':
