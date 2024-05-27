@@ -10,5 +10,5 @@ urlpatterns = [
     path('exibir_bancos/', views.display_banks, name='display_banks'),
     path('processar_transferencia/', views.process_transfer, name='process_transfer'),
     path('processar_liquidacao/', views.process_settlement, name='process_settlement'),
-    path('get_related_installments/<uuid:correlation_id>/', views.get_related_installments, name='get_related_installments'),
+    path('pegar_parcelas_relacionadas/<uuid:correlation_id>/', views.get_related_installments, name='get_related_installments'),
 ]
