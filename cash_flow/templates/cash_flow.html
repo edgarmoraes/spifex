@@ -392,7 +392,8 @@
                 </div>
             </div>
 
-            <form class="modal-form credit-modal-form" action="/fluxo_de_caixa/" method="POST" onsubmit="return validateCheckboxes()">{% csrf_token %}
+            <form class="modal-form credit-modal-form" action="/fluxo_de_caixa/" method="POST" onsubmit="return validateCheckboxes()">
+                {% csrf_token %}
                 <div id="modal-details-tab-credit" class="tab-content modal-details-tab modal-details-tab-credit">
                     <div class="modal-fields credit-modal-fields modal-details-fields">
                         <input type="hidden" name="entry_id_credit" value="{{ cash_flow.id }}">
