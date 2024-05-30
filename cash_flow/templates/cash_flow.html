@@ -389,6 +389,7 @@
                     <button class="tab-link" onclick="changeTab(event, 'modal-cost-center-tab-credit')">Centro de Custos</button>
                     <button class="tab-link" onclick="changeTab(event, 'modal-stakeholders-tab-credit')">Partes Interessadas</button>
                     <button class="tab-link" onclick="changeTab(event, 'modal-recurrence-tab-credit')">Recorrência</button>
+                    <button class="tab-link" onclick="changeTab(event, 'modal-inventory-tab-credit')">Estoque</button>
                 </div>
             </div>
 
@@ -608,6 +609,30 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+
+                <div id="modal-inventory-tab-credit" class="tab-content modal-inventory-tab modal-inventory-tab-credit" style="display:none;">
+                    <div class="modal-fields credit-modal-fields modal-inventory-fields">
+                        <section class="modal-section credit-modal-form__section--inventory section__inventory">
+                            <label for="dropdown-button-inventory-credit">Estoque</label>
+                            <div class="dropdown-multiselect dropdown-multiselect-credit dropdown-multiselect-inventory">
+                                <button type="button" onclick="toggleDropdown('dropdown-content-inventory-credit', event)" id="dropdown-button-inventory-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
+                                <div id="dropdown-content-inventory-credit" class="dropdown-content">
+                                    <input id="modal-dropdown-button-inventory-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-inventory-credit')" placeholder="Filtrar...">
+                                    <div class="dropdown-options">
+                                        {% for inventory in Inventory %}
+                                            <label class="label-filters">
+                                                <input type="checkbox" class="inventory-checkbox" name="inventory_option_credit" data-uuid-inventory="{{ inventory.uuid_inventory }}" data-inventory-item-code="{{ inventory.inventory_item_code }}" data-inventory-item="{{ inventory.inventory_item }}">
+                                                {{ inventory.inventory }}
+                                            </label>
+                                            {% endfor %}
+                                        <input type="hidden" id="inventory-name-credit" name="inventory_name_credit" value="">
+                                        <input type="hidden" id="inventory-uuid-credit" name="inventory_uuid_credit" value="">
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
                     </div>
                 </div>
 
