@@ -64,42 +64,45 @@
     </nav>
     <main class="main">
         <div class="settings-list">
-            <section class="accordion-section">
-                <a class="accordion-title" href="{% url 'settings:banks' %}">Bancos e Contas</a>
+            <section class="settings-section settings-section__bank-accounts">
+                <a href="{% url 'settings:banks' %}">
+                    <h2 class="settings-section-title">Bancos e Contas</h2>
+                </a>
             </section>
-            <section class="accordion-section">
-                <a class="accordion-title" href="#">Usuários e Permissões</a>
+            <section class="settings-section settings-section__users-and-permissions">
+                <a href="#">
+                    <h2 class="settings-section-title">Usuários e Permissões</h2>
+                </a>
             </section>
-            <section class="accordion-section">
-                <a class="accordion-title" href="#">Configurações Gerais</a>
+            <section class="settings-section settings-section__general-settings">
+                <a href="#">
+                    <h2 class="settings-section-title">Configurações Gerais</h2>
+                </a>
             </section>
-            <section class="accordion-section">
-                <h2 class="accordion-title">Centro de Custos</h2>
-                <div class="accordion-content">
+            <section class="settings-section settings-section__cost-center">
+                <h2 class="settings-section-title">Centro de Custos</h2>
+                <div class="settings-section-content">
                     <ul>
-                        <li><a href="{% url 'chart_of_accounts:chart_of_accounts' %}">Plano de Contas</a></li>
-                        <li><a href="{% url 'settings:inventory' %}">Estoque</a></li>
-                        <li><a href="{% url 'settings:departments' %}">Departamentos</a></li>
-                        <li><a href="{% url 'projects:projects'%}">Projetos</a></li>
-                        <li><a href="#">Equipamentos e Maquinários</a></li>
+                        <a href="{% url 'chart_of_accounts:chart_of_accounts' %}"><li>Plano de Contas</li></a>
+                        <a href="{% url 'settings:inventory' %}"><li>Estoque</li></a>
+                        <a href="{% url 'settings:departments' %}"><li>Departamentos</li></a>
+                        <a href="{% url 'projects:projects'%}"><li>Projetos</li></a>
+                        <a href="#"><li>Equipamentos e Maquinários</li></a>
                     </ul>
                 </div>
             </section>
-            <section class="accordion-section accordion-section-stakeholders">
-                <h2 class="accordion-title">Stakeholders</h2>
-                <div class="accordion-content">
+            <section class="settings-section settings-section__stakeholders">
+                <h2 class="settings-section-title">Stakeholders</h2>
+                <div class="settings-section-content">
                     <ul>
-                        <li><a href="#">Fornecedores</a></li>
-                        <li><a href="#">Clientes</a></li>
-                        <li><a href="#">Colaboradores</a></li>
-                        <li><a href="#">Orgãos Governamentais</a></li>
+                        <a href="#"><li>Fornecedores</li></a>
+                        <a href="#"><li>Clientes</li></a>
+                        <a href="#"><li>Colaboradores</li></a>
+                        <a href="#"><li>Orgãos Governamentais</li></a>
                     </ul>
                 </div>
             </section>
         </div>
-        <footer class="footer">
-            <p>&copy; Spifex</p>
-        </footer>
     </main>
     <script src="{% static 'scripts/scripts_settings.js' %}"></script>
 </body>
