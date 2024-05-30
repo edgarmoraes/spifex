@@ -1,13 +1,16 @@
 {% load static %}
-
+{% load currency_filters %}
+{% load number_filters %}
+{% load add_decimal %}
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/settings.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/inventory.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
     <link rel="icon" href="{% static 'favicon.png' %}" type="image/x-icon">
-    <title>Spifex | Configurações</title>
+    <title>Spifex | Departamentos</title>
 </head>
 <body>
     <nav class="navigation-bar">
@@ -63,44 +66,57 @@
         </div>
     </nav>
     <main class="main">
-        <div class="settings-list">
-            <section class="accordion-section">
-                <a class="accordion-title" href="{% url 'settings:banks' %}">Bancos e Contas</a>
-            </section>
-            <section class="accordion-section">
-                <a class="accordion-title" href="#">Usuários e Permissões</a>
-            </section>
-            <section class="accordion-section">
-                <a class="accordion-title" href="#">Configurações Gerais</a>
-            </section>
-            <section class="accordion-section">
-                <h2 class="accordion-title">Centro de Custos</h2>
-                <div class="accordion-content">
-                    <ul>
-                        <li><a href="{% url 'chart_of_accounts:chart_of_accounts' %}">Plano de Contas</a></li>
-                        <li><a href="{% url 'settings:inventory' %}">Estoque</a></li>
-                        <li><a href="{% url 'settings:departments' %}">Departamentos</a></li>
-                        <li><a href="{% url 'projects:projects'%}">Projetos</a></li>
-                        <li><a href="#">Equipamentos e Maquinários</a></li>
-                    </ul>
-                </div>
-            </section>
-            <section class="accordion-section accordion-section-stakeholders">
-                <h2 class="accordion-title">Stakeholders</h2>
-                <div class="accordion-content">
-                    <ul>
-                        <li><a href="#">Fornecedores</a></li>
-                        <li><a href="#">Clientes</a></li>
-                        <li><a href="#">Colaboradores</a></li>
-                        <li><a href="#">Orgãos Governamentais</a></li>
-                    </ul>
-                </div>
-            </section>
+        <section class="container-buttons">
+            <a href="{% url 'settings:settings' %}"><input type="button" class="button-back" name="button-back" value="Voltar"></a>
+            <button class="button-add add-inventory">
+                <svg class="svgIcon" width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M11 17C11 17.5523 11.4477 18 12 18C12.5523 18 13 17.5523 13 17V13H17C17.5523 13 18 12.5523 18 12C18 11.4477 17.5523 11 17 11H13V7C13 6.44771 12.5523 6 12 6C11.4477 6 11 6.44771 11 7V11H7C6.44772 11 6 11.4477 6 12C6 12.5523 6.44772 13 7 13H11V17Z" fill="#000000"/>
+                    </svg>
+            </button>
+        </section>
+        <div class="box-grid-inventory">
+            <div class="inventory-table-wrapper">
+                <table class="inventory-table">
+                    <thead class="inventory-table__head">
+                        <tr class="inventory-table__head--row">
+                            <th class="inventory-col" scope="col">Estoque</th>
+                        </tr>
+                    </thead>
+                    <tbody class="inventory-table__body">
+                        {% for inventory_item in Inventory_list %}
+                        <tr class="inventory-table__body--row" scope="row" data-id-item="{{ inventory_item.id }}" data-name-item="{{ inventory_item.item }}" data-quantity-item="{{ inventory_item.quantity }}" data-uuid-item="{{ inventory_item.uuid_item }}">
+                            <td class="inventory-row">{{ inventory_item.item }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <footer class="footer">
-            <p>&copy; Spifex</p>
-        </footer>
+        <!-- Modal -->
+        <dialog class="modal inventory-modal" id="inventory-modal">
+            <h1 class="modal-title">Estoque</h1>
+                <form class="modal-form inventory-modal-form" action="/salvar_estoque/" method="POST">{% csrf_token %}
+                    <div class="modal-fields">
+                        <input type="hidden" name="id_item" value="{{ inventory_item.id }}">
+                        <input type="hidden" name="uuid_item" value="{{ inventory_item.uuid_item }}">
+                        <section class="modal-section inventory-modal-form__section--inventory-name section__inventory-name">
+                            <label for="inventory">Nome item*</label>
+                            <input class="modal-inventory" id="inventory" type="text" name="inventory" required><br>
+                        </section>
+                        <section class="modal-section inventory-modal-form__section--inventory-name section__inventory-name">
+                            <label for="inventory">Nome item*</label>
+                            <input class="modal-inventory" id="inventory" type="text" name="inventory" required><br>
+                        </section>
+                        <div class="modal-buttons">
+                            <input class="modal-save-button-inventory" type="submit" value="Salvar">
+                            <button type="button" class="modal-delete-inventory" style="display:none;">Apagar</button>
+                            <button type="button" class="modal-close-inventory">Cancelar</button>
+                        </div>
+                    </div>
+                </form>
+        </dialog>
     </main>
-    <script src="{% static 'scripts/scripts_settings.js' %}"></script>
+
+    <script src="{% static 'scripts/scripts_inventory.js' %}"></script>
 </body>
 </html>
