@@ -2,7 +2,7 @@ import uuid
 from decimal import Decimal
 from django.shortcuts import render
 from django.http import JsonResponse
-from cash_flow.models import Banks, Departments
+from cash_flow.models import Banks, Departments, Inventory
 from settled_entry.models import SettledEntry
 from django.db.models import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
@@ -29,6 +29,15 @@ def departments(request):
             'Departments_list': departments_list,
         }
         return render(request, 'departments.html', context)
+    
+def inventory(request):
+    if request.method =="GET":
+        inventory_list = Inventory.objects.all().order_by('id')
+
+        context = {
+            'Inventory_list': inventory_list,
+        }
+        return render(request, 'inventory.html', context)
     
 @csrf_exempt
 def save_bank(request):
@@ -98,7 +107,7 @@ def save_department(request):
             department_list = Departments.objects.get(pk=department_id)
             # Verifica se o nome é diferente para evitar conflito de nome único
             if department_list.department != department_name and Departments.objects.filter(department=department_name).exists():
-                return JsonResponse({'success': False, 'message': 'Por favor, escolha um nome diferente para o department.'})
+                return JsonResponse({'success': False, 'message': 'Por favor, escolha um nome diferente para o departmento.'})
             department_list.department = department_name
             department_list.save()
             return JsonResponse({'success': True, 'message': 'Departamento atualizado com sucesso.'})
@@ -107,7 +116,7 @@ def save_department(request):
     else:
         # Criar um novo department
         if Departments.objects.filter(department=department_name).exists():
-            return JsonResponse({'success': False, 'message': 'Por favor, escolha um nome diferente para o department.'})
+            return JsonResponse({'success': False, 'message': 'Por favor, escolha um nome diferente para o departmento.'})
         
         new_department = Departments(
             department=department_name,
@@ -128,3 +137,46 @@ def verify_and_delete_department(request, department_id):
     except Departments.DoesNotExist:
         # Departamento não encontrado
         return JsonResponse({'success': False, 'error': 'Departamento não encontrado.'})
+    
+@require_POST
+def save_inventory(request):
+    item_id = request.POST.get('id_inventory')
+    item_name = request.POST.get('item_inventory')
+    item_quantity = request.POST.get('quantity_inventory')
+
+    if item_id:
+        # Atualizar um item existente
+        try:
+            inventory_list = Inventory.objects.get(pk=item_id)
+            # Verifica se o nome é diferente para evitar conflito de nome único
+            if inventory_list.department != item_name and Inventory.objects.filter(department=item_name).exists():
+                return JsonResponse({'success': False, 'message': 'Por favor, escolha um nome diferente para o item.'})
+            inventory_list.department = item_name
+            inventory_list.save()
+            return JsonResponse({'success': True, 'message': 'Item atualizado com sucesso.'})
+        except Inventory.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Item não encontrado.'})
+    else:
+        # Criar um novo department
+        if Inventory.objects.filter(department=item_name).exists():
+            return JsonResponse({'success': False, 'message': 'Por favor, escolha um nome diferente para o item.'})
+        
+        new_item = Inventory(
+            item=item_name,
+            uuid_item=uuid.uuid4()
+        )
+        new_item.save()
+
+        return JsonResponse({'success': True, 'message': 'Item adicionado com sucesso.'})
+
+@require_POST
+def verify_and_delete_inventory(request, item_id):
+    try:
+        # Tenta encontrar e excluir o inventory
+        inventory_list = Inventory.objects.get(pk=item_id)
+        inventory_list.delete()
+        # Item excluído com sucesso
+        return JsonResponse({'success': True})
+    except Inventory.DoesNotExist:
+        # Item não encontrado
+        return JsonResponse({'success': False, 'error': 'Item não encontrado.'})
