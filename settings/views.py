@@ -98,7 +98,7 @@ def verify_and_delete_bank(request, bank_id):
     
 @require_POST
 def save_department(request):
-    department_id = request.POST.get('id_department')
+    department_id = request.POST.get('department_id')
     department_name = request.POST.get('department')
 
     if department_id:
@@ -140,40 +140,42 @@ def verify_and_delete_department(request, department_id):
     
 @require_POST
 def save_inventory(request):
-    item_id = request.POST.get('id_inventory')
-    item_name = request.POST.get('item_inventory')
-    item_quantity = request.POST.get('quantity_inventory')
+    inventory_item_id = request.POST.get('inventory_item_id')
+    inventory_item = request.POST.get('inventory_item')
+    inventory_quantity = request.POST.get('inventory_quantity')
 
-    if item_id:
+    if inventory_item_id:
         # Atualizar um item existente
         try:
-            inventory_list = Inventory.objects.get(pk=item_id)
+            inventory_list = Inventory.objects.get(pk=inventory_item_id)
             # Verifica se o nome é diferente para evitar conflito de nome único
-            if inventory_list.department != item_name and Inventory.objects.filter(department=item_name).exists():
+            if inventory_list.inventory_item != inventory_item and Inventory.objects.filter(inventory_item=inventory_item).exists():
                 return JsonResponse({'success': False, 'message': 'Por favor, escolha um nome diferente para o item.'})
-            inventory_list.department = item_name
+            inventory_list.inventory_item = inventory_item
+            inventory_list.inventory_quantity = inventory_quantity  # Atualiza a quantidade de inventário
             inventory_list.save()
             return JsonResponse({'success': True, 'message': 'Item atualizado com sucesso.'})
         except Inventory.DoesNotExist:
             return JsonResponse({'success': False, 'message': 'Item não encontrado.'})
     else:
-        # Criar um novo department
-        if Inventory.objects.filter(department=item_name).exists():
+        # Criar um novo item
+        if Inventory.objects.filter(inventory_item=inventory_item).exists():
             return JsonResponse({'success': False, 'message': 'Por favor, escolha um nome diferente para o item.'})
         
         new_item = Inventory(
-            item=item_name,
-            uuid_item=uuid.uuid4()
+            inventory_item=inventory_item,
+            inventory_quantity=inventory_quantity,
+            uuid_inventory_item=uuid.uuid4()
         )
         new_item.save()
 
         return JsonResponse({'success': True, 'message': 'Item adicionado com sucesso.'})
 
 @require_POST
-def verify_and_delete_inventory(request, item_id):
+def verify_and_delete_inventory(request, inventory_item_id):
     try:
         # Tenta encontrar e excluir o inventory
-        inventory_list = Inventory.objects.get(pk=item_id)
+        inventory_list = Inventory.objects.get(pk=inventory_item_id)
         inventory_list.delete()
         # Item excluído com sucesso
         return JsonResponse({'success': True})

@@ -13,5 +13,5 @@ urlpatterns = [
     path('salvar_estoque/', views.save_inventory, name='save_inventory'),
     path('verificar_e_excluir_banco/<int:bank_id>/', views.verify_and_delete_bank, name='verify_and_delete_bank'),
     path('verificar_e_excluir_departamento/<int:department_id>/', views.verify_and_delete_department, name='verify_and_delete_department'),
-    path('verificar_e_excluir_estoque/<int:item_id>/', views.verify_and_delete_inventory, name='verify_and_delete_inventory'),
+    path('verificar_e_excluir_estoque/<int:inventory_item_id>/', views.verify_and_delete_inventory, name='verify_and_delete_inventory'),
 ]

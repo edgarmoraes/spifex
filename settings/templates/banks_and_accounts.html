@@ -108,44 +108,41 @@
             </div>
         </div>
         <!-- Modal -->
-        <dialog class="modal-bancos">
-            <h1 class="modal-titulo">Bancos e Contas</h1>
-        
-            <form class="modal-form-bancos" action="/salvar_banco/" method="POST">{% csrf_token %}
-                <input type="hidden" name="bank_id" value="{{ banks_item.id }}">
-                <section class="modal-flex">
-                    <label for="bank-name">Banco</label>
-                    <input class="modal-banco" id="bank-name" type="text" name="bank_name" required><br>
-                </section>
-        
-                <section class="modal-flex">
-                    <label for="bank-branch">Agência</label>
-                    <input class="modal-agencia" id="bank-branch" type="text" name="bank_branch" required><br>
-                </section>
-        
-                <section class="modal-flex">
-                    <label for="bank-account">Conta</label>
-                    <input class="modal-conta" id="bank-account" name="bank_account" required><br>
-                </section>
-        
-                <section class="modal-flex">
-                    <label for="bank-initial-balance">Saldo Inicial</label>
-                    <input class="modal-valor" type="text" id="bank-initial-balance" name="bank_initial_balance" oninput="formatarCampoValor(this)" value="R$ " required><br>
-                </section>
-        
-                <section class="modal-flex">
-                    <label for="bank-status">Status</label>
-                    <select class="modal-conta-contabil" id="bank-status" name="bank_status" required>
-                      <option value="ativo">Ativo</option>
-                      <option value="inativo">Inativo</option>
-                    </select><br>
-                </section>
-                <section class="modal-buttons">
-                    <input class="modal-save-button-bancos" type="submit" value="Salvar">
-                    <button type="button" class="modal-delete-bancos" style="display:none;">Apagar</button>
-                    <button type="button" class="modal-close-bancos">Cancelar</button>
-                </section>
-            </form>
+        <dialog class="modal banks-modal" id="banks-modal">
+            <h1 class="modal-title">Bancos e Contas</h1>
+                <form class="modal-form banks-modal-form" action="/salvar_banco/" method="POST">{% csrf_token %}
+                    <div class="modal-fields">
+                        <input type="hidden" name="bank_id" value="{{ banks_item.id }}">
+                        <section class="modal-section">
+                            <label for="bank-name">Banco</label>
+                            <input class="modal-banco" id="bank-name" type="text" name="bank_name" required><br>
+                        </section>
+                        <section class="modal-section">
+                            <label for="bank-branch">Agência</label>
+                            <input class="modal-agencia" id="bank-branch" type="text" name="bank_branch" required><br>
+                        </section>
+                        <section class="modal-section">
+                            <label for="bank-account">Conta</label>
+                            <input class="modal-conta" id="bank-account" name="bank_account" required><br>
+                        </section>
+                        <section class="modal-section">
+                            <label for="bank-initial-balance">Saldo Inicial</label>
+                            <input class="modal-valor" type="text" id="bank-initial-balance" name="bank_initial_balance" oninput="formatAmount(this)" value="R$ " required><br>
+                        </section>
+                        <section class="modal-section">
+                            <label for="bank-status">Status</label>
+                            <select class="modal-conta-contabil" id="bank-status" name="bank_status" required>
+                            <option value="ativo">Ativo</option>
+                            <option value="inativo">Inativo</option>
+                            </select><br>
+                        </section>
+                        <div class="modal-buttons">
+                            <input class="modal-save-button-bank" type="submit" value="Salvar">
+                            <button type="button" class="modal-delete-bank" style="display:none;">Apagar</button>
+                            <button type="button" class="modal-close-bank">Cancelar</button>
+                        </div>
+                    </div>
+                </form>
         </dialog>
     </main>
     <script src="{% static 'scripts/scripts_banks_and_accounts.js' %}"></script>
