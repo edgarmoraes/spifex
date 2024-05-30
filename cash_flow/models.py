@@ -92,6 +92,7 @@ class DocumentType(models.Model):
     uuid_document_type = models.UUIDField(null=True, blank=True)
 
 class Inventory(models.Model):
+    inventory_item_code = models.CharField(max_length=255)
     inventory_item = models.CharField(max_length=255)
     inventory_quantity = models.PositiveIntegerField(default=0)
     uuid_inventory_item = models.UUIDField(null=True, blank=True)

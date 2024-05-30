@@ -79,15 +79,19 @@
                 <table class="inventory-table">
                     <thead class="inventory-table__head">
                         <tr class="inventory-table__head--row">
+                            <th class="id-col" scope="col">ID</th>
+                            <th class="code-col" scope="col">Código</th>
                             <th class="inventory-col" scope="col">Item</th>
-                            <th class="inventory-col" scope="col">Quantidade</th>
+                            <th class="quantity-col" scope="col">Quantidade</th>
                         </tr>
                     </thead>
                     <tbody class="inventory-table__body">
                         {% for inventory_item in Inventory_list %}
-                        <tr class="inventory-table__body--row" scope="row" data-id-inventory-item="{{ inventory_item.id }}" data-inventory-item="{{ inventory_item.inventory_item }}" data-inventory-quantity="{{ inventory_item.inventory_quantity }}" data-uuid-inventory-item="{{ inventory_item.uuid_inventory_item }}">
+                        <tr class="inventory-table__body--row" scope="row" data-id-inventory-item="{{ inventory_item.id }}" data-inventory-item-code="{{ inventory_item.inventory_item_code }}" data-inventory-item="{{ inventory_item.inventory_item }}" data-inventory-quantity="{{ inventory_item.inventory_quantity }}" data-uuid-inventory-item="{{ inventory_item.uuid_inventory_item }}">
+                            <td class="id-row">{{ inventory_item.id }}</td>
+                            <td class="code-row">{{ inventory_item.inventory_item_code }}</td>
                             <td class="inventory-row">{{ inventory_item.inventory_item }}</td>
-                            <td class="inventory-row">{{ inventory_item.inventory_quantity }}</td>
+                            <td class="quantity-row">{{ inventory_item.inventory_quantity }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -101,15 +105,19 @@
                     <div class="modal-fields">
                         <input type="hidden" name="inventory_item_id" value="{{ inventory_item.id }}">
                         <input type="hidden" name="inventory_item_uuid" value="{{ inventory_item.uuid_inventory_item }}">
+                        <section class="modal-section inventory-modal-form__section--inventory-item-code section__inventory-item-code">
+                            <label for="inventory-item-code">Código*</label>
+                            <input class="modal-inventory-item-code" id="inventory-item-code" type="text" name="inventory_item_code" required><br>
+                        </section>
                         <section class="modal-section inventory-modal-form__section--inventory-item section__inventory-item">
-                            <label for="inventory-item">Nome item*</label>
+                            <label for="inventory-item">Nome do item*</label>
                             <input class="modal-inventory-item" id="inventory-item" type="text" name="inventory_item" required><br>
                         </section>
                         <section class="modal-section inventory-modal-form__section--inventory-quantity section__inventory-quantity">
                             <label for="inventory-quantity">Quantidade*</label>
                             <input class="modal-inventory-quantity" id="inventory-quantity" type="number" name="inventory_quantity" required><br>
                         </section>
-                        <div class="modal-buttons">
+                        <div class="modal-buttons mesclar-3">
                             <input class="modal-save-button-inventory" type="submit" value="Salvar">
                             <button type="button" class="modal-delete-inventory" style="display:none;">Apagar</button>
                             <button type="button" class="modal-close-inventory">Cancelar</button>

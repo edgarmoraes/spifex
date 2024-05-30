@@ -142,27 +142,31 @@ def verify_and_delete_department(request, department_id):
 def save_inventory(request):
     inventory_item_id = request.POST.get('inventory_item_id')
     inventory_item = request.POST.get('inventory_item')
+    inventory_item_code = request.POST.get('inventory_item_code')
     inventory_quantity = request.POST.get('inventory_quantity')
 
     if inventory_item_id:
         # Atualizar um item existente
         try:
             inventory_list = Inventory.objects.get(pk=inventory_item_id)
-            # Verifica se o nome é diferente para evitar conflito de nome único
-            if inventory_list.inventory_item != inventory_item and Inventory.objects.filter(inventory_item=inventory_item).exists():
-                return JsonResponse({'success': False, 'message': 'Por favor, escolha um nome diferente para o item.'})
+            # Verifica se o nome ou o código são diferentes para evitar conflito de nome ou código únicos
+            if (inventory_list.inventory_item != inventory_item and Inventory.objects.filter(inventory_item=inventory_item).exists()) or \
+               (inventory_list.inventory_item_code != inventory_item_code and Inventory.objects.filter(inventory_item_code=inventory_item_code).exists()):
+                return JsonResponse({'success': False, 'message': 'Por favor, escolha um nome ou código diferente para o item.'})
+            inventory_list.inventory_item_code = inventory_item_code
             inventory_list.inventory_item = inventory_item
-            inventory_list.inventory_quantity = inventory_quantity  # Atualiza a quantidade de inventário
+            inventory_list.inventory_quantity = inventory_quantity
             inventory_list.save()
             return JsonResponse({'success': True, 'message': 'Item atualizado com sucesso.'})
         except Inventory.DoesNotExist:
             return JsonResponse({'success': False, 'message': 'Item não encontrado.'})
     else:
         # Criar um novo item
-        if Inventory.objects.filter(inventory_item=inventory_item).exists():
-            return JsonResponse({'success': False, 'message': 'Por favor, escolha um nome diferente para o item.'})
+        if Inventory.objects.filter(inventory_item=inventory_item).exists() or Inventory.objects.filter(inventory_item_code=inventory_item_code).exists():
+            return JsonResponse({'success': False, 'message': 'Por favor, escolha um nome ou código diferente para o item.'})
         
         new_item = Inventory(
+            inventory_item_code=inventory_item_code,
             inventory_item=inventory_item,
             inventory_quantity=inventory_quantity,
             uuid_inventory_item=uuid.uuid4()
