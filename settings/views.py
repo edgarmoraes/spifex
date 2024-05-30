@@ -36,8 +36,8 @@ def save_bank(request):
     if request.method != 'POST':
         return JsonResponse({"success": False, "error": "Método não permitido."}, status=405)
     
-    opening_balance_str = request.POST.get('saldo-inicial', 'R$ 0,00').replace('R$ ', '').replace('.', '').replace(',', '.')
-    opening_balance = Decimal(opening_balance_str) if opening_balance_str else Decimal('0.00')
+    initial_balance_str = request.POST.get('bank_initial_balance', 'R$ 0,00').replace('R$ ', '').replace('.', '').replace(',', '.')
+    initial_balance = Decimal(initial_balance_str) if initial_balance_str else Decimal('0.00')
 
     bank_id = request.POST.get('bank_id')
     bank_name = request.POST.get('bank_name')
@@ -56,7 +56,7 @@ def save_bank(request):
         banks_table.banco = bank_name
         banks_table.bank_branch = bank_branch
         banks_table.bank_account = bank_account
-        banks_table.initial_balance = opening_balance
+        banks_table.initial_balance = initial_balance
         banks_table.bank_status = bank_status
         banks_table.save()
 

@@ -14,6 +14,7 @@ class CashFlowEntry(models.Model):
     document_type = models.CharField(null=True, max_length=50)
     department = models.JSONField(null=True, blank=True)
     department_percentage = models.JSONField(null=True, blank=True)
+    project = models.CharField(null=True, max_length=50)
     notes = models.CharField(max_length=256)
     periods = models.CharField(max_length=50)
     weekend_action = models.CharField(max_length=50)
@@ -22,6 +23,7 @@ class CashFlowEntry(models.Model):
     uuid_general_ledger_account = models.UUIDField(blank=True)
     uuid_document_type = models.UUIDField(null=True, blank=True)
     uuid_department = models.JSONField(null=True, blank=True)
+    uuid_project = models.UUIDField(null=True, blank=True)
     uuid_transference = models.JSONField(null=True, blank=True)
     uuid_partial_settlement_correlation = models.UUIDField(null=True, blank=True)
 

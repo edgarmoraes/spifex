@@ -1,4 +1,5 @@
 import uuid
+from uuid import UUID
 import json
 from decimal import Decimal
 from datetime import datetime, timedelta
@@ -11,6 +12,7 @@ from django.dispatch import receiver
 from django.http import JsonResponse
 from typing import Dict, List, Tuple
 from settled_entry.models import SettledEntry
+from projects.models import Projects
 from dateutil.relativedelta import relativedelta
 from django.views.decorators.csrf import csrf_exempt
 from chart_of_accounts.models import Chart_of_accounts
@@ -31,6 +33,7 @@ def display_cash_flow(request):
     accounts_queryset = Chart_of_accounts.objects.all().order_by('-subgroup', 'account')
     document_type_cash_flow = DocumentType.objects.all()
     departments_cash_flow = Departments.objects.all()
+    projects_cash_flow = Projects.objects.all()
 
     accounts_by_subgroup = group_accounts_by_subgroup(accounts_queryset)
     entries_with_totals = calculate_monthly_totals(cash_flow_entries)
@@ -42,6 +45,7 @@ def display_cash_flow(request):
         'Accounts_by_subgroup_list': accounts_by_subgroup,
         'Document_types': document_type_cash_flow,
         'Departments': departments_cash_flow,
+        'Projects': projects_cash_flow,
     }
     return render(request, 'cash_flow.html', context)
 
@@ -107,6 +111,7 @@ def get_form_data(request):
     periods_data = get_periods_data(request, transaction_type)
     weekend_action = get_weekend_action_data(request, transaction_type)
     department_data = get_department_data(request, transaction_type)
+    project_data = get_project_data(request, transaction_type)
 
     return {
         'due_date': due_date,
@@ -129,6 +134,8 @@ def get_form_data(request):
         'department_name': department_data['department_name'],
         'department_percentage': department_data['department_percentage'],
         'department_uuid': department_data['department_uuid'],
+        'project_name': project_data['project_name'],
+        'project_uuid': project_data['project_uuid'],
     }
 
 def get_transaction_type(request):
@@ -201,6 +208,21 @@ def get_document_type_data(request, transaction_type):
 
     return {'document_type_name': document_type_name, 'document_type_uuid': document_type_uuid}
 
+def get_project_data(request, transaction_type):
+    project_name_field = 'project_name_credit' if transaction_type == 'Crédito' else 'project_name_debit'
+    project_uuid_field = 'project_uuid_credit' if transaction_type == 'Crédito' else 'project_uuid_debit'
+
+    project_name = request.POST.get(project_name_field)
+    project_uuid = request.POST.get(project_uuid_field)
+
+    # Substituir strings vazias por None
+    if project_name == '':
+        project_name = None
+    if project_uuid == '':
+        project_uuid = None
+
+    return {'project_name': project_name, 'project_uuid': project_uuid}
+
 def get_weekend_action_data(request, transaction_type):
     weekend_action_field = 'weekend_action_credit' if transaction_type == 'Crédito' else 'weekend_action_debit'
     weekend_action = request.POST.get(weekend_action_field)
@@ -258,6 +280,10 @@ def update_existing_cash_flow_entries(form_data):
     # Atualiza o tipo de documento e seu UUID
     cash_flow_table.document_type = form_data['document_type_name']
     cash_flow_table.uuid_document_type = form_data['document_type_uuid']
+
+    # Atualiza o project e seu UUID
+    cash_flow_table.project = form_data['project_name']
+    cash_flow_table.uuid_project = form_data['project_uuid']
 
     # Atualiza os períodos
     cash_flow_table.periods = form_data['periods']
@@ -320,6 +346,8 @@ def create_cash_flow_entries(form_data):
             department=form_data['department_name'],
             department_percentage=form_data['department_percentage'],
             uuid_department=form_data['department_uuid'],
+            project=form_data['project_name'],
+            uuid_project=form_data['project_uuid'],
             current_installment=i,
             total_installments=total_installments,
             notes=form_data['notes'],
@@ -330,6 +358,19 @@ def create_cash_flow_entries(form_data):
             uuid_installments_correlation=uuid_installments_correlation,
             creation_date=datetime.now(),
         )
+
+def get_related_installments(request, correlation_id):
+    try:
+        # Ensure correlation_id is a valid UUID
+        if isinstance(correlation_id, str):
+            correlation_id = UUID(correlation_id)
+        
+        related_entries = CashFlowEntry.objects.filter(uuid_installments_correlation=correlation_id).values(
+            'due_date', 'description', 'current_installment', 'total_installments', 'amount', 'transaction_type'
+        )
+        return JsonResponse(list(related_entries), safe=False)
+    except ValueError:
+        return JsonResponse({'error': 'Invalid UUID'}, status=400)
 
 def adjust_date_for_weekend(due_date, weekend_action):
     if weekend_action == 'postpone':
