@@ -618,13 +618,13 @@
                             <label for="dropdown-button-inventory-credit">Estoque</label>
                             <div class="dropdown-multiselect dropdown-multiselect-credit dropdown-multiselect-inventory">
                                 <button type="button" onclick="toggleDropdown('dropdown-content-inventory-credit', event)" id="dropdown-button-inventory-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
-                                <div id="dropdown-content-inventory-credit" class="dropdown-content">
+                                <div id="dropdown-content-inventory-credit" class="dropdown-content dropdown-content-inventory-credit">
                                     <input id="modal-dropdown-button-inventory-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-inventory-credit')" placeholder="Filtrar...">
                                     <div class="dropdown-options">
                                         {% for inventory in Inventory %}
                                             <label class="label-filters">
                                                 <input type="checkbox" class="inventory-checkbox" name="inventory_option_credit" data-uuid-inventory="{{ inventory.uuid_inventory }}" data-inventory-item-code="{{ inventory.inventory_item_code }}" data-inventory-item="{{ inventory.inventory_item }}">
-                                                {{ inventory.inventory }}
+                                                {{ inventory.inventory_item_code }} - {{ inventory.inventory_item }}
                                             </label>
                                             {% endfor %}
                                         <input type="hidden" id="inventory-name-credit" name="inventory_name_credit" value="">

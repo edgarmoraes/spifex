@@ -81,7 +81,7 @@
                         <tr class="inventory-table__head--row">
                             <th class="id-col" scope="col">ID</th>
                             <th class="code-col" scope="col">Código</th>
-                            <th class="inventory-col" scope="col">Item</th>
+                            <th class="inventory-item-col" scope="col">Item</th>
                             <th class="quantity-col" scope="col">Quantidade</th>
                         </tr>
                     </thead>
@@ -90,7 +90,7 @@
                         <tr class="inventory-table__body--row" scope="row" data-id-inventory-item="{{ inventory_item.id }}" data-inventory-item-code="{{ inventory_item.inventory_item_code }}" data-inventory-item="{{ inventory_item.inventory_item }}" data-inventory-quantity="{{ inventory_item.inventory_quantity }}" data-uuid-inventory-item="{{ inventory_item.uuid_inventory_item }}">
                             <td class="id-row">{{ inventory_item.id }}</td>
                             <td class="code-row">{{ inventory_item.inventory_item_code }}</td>
-                            <td class="inventory-row">{{ inventory_item.inventory_item }}</td>
+                            <td class="inventory-item-row">{{ inventory_item.inventory_item }}</td>
                             <td class="quantity-row">{{ inventory_item.inventory_quantity }}</td>
                         </tr>
                         {% endfor %}
