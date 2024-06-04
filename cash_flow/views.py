@@ -433,8 +433,8 @@ def create_temporary_record(object):
     )
 
 def process_transfer(request):
-    withdrawal_bank_data = request.POST.get('banco_saida').split('|')
-    deposit_bank_data = request.POST.get('banco_entrada').split('|')
+    withdrawal_bank_data = request.POST.get('withdrawal_bank').split('|')
+    deposit_bank_data = request.POST.get('deposit_bank').split('|')
 
     if len(withdrawal_bank_data) == 2 and len(deposit_bank_data) == 2:
         withdrawal_bank_id, withdrawal_bank_name = withdrawal_bank_data

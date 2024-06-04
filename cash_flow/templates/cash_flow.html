@@ -104,7 +104,7 @@
                     </button>
                 </li>
                 <li class="side-navigation__buttons-list--operations side-navigation__buttons-list--list">
-                    <button class="settle list__button--settle-button list__button" id="settle-button">
+                    <button class="settle list__button--settlement-button list__button" id="settlement-button">
                         <svg data-value-pt="Liquidar" xmlns="http://www.w3.org/2000/svg" color="#202020" width="24" height="24" fill="currentColor" class="bi bi-file-earmark-lock2" viewBox="0 0 16 16">
                             <path d="M10 7v1.076c.54.166 1 .597 1 1.224v2.4c0 .816-.781 1.3-1.5 1.3h-3c-.719 0-1.5-.484-1.5-1.3V9.3c0-.627.46-1.058 1-1.224V7a2 2 0 1 1 4 0M7 7v1h2V7a1 1 0 0 0-2 0"/>
                             <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
@@ -282,7 +282,7 @@
                         <tbody class="banks-table__body">
                             {% for banks_item in Banks_list %}
                             <tr class="banks-table__body--row" scope="row" name="bank-id" data-bank-id="{{ banks_item.id }}">
-                                <td class="bank-row" name="banco">{{ banks_item.banco }}</td>
+                                <td class="bank-row" name="bank">{{ banks_item.banco }}</td>
                                 <td class="bank-branch-row" name="bank_branch">{{ banks_item.bank_branch }}</td>
                                 <td class="bank-account-row" name="bank_account">{{ banks_item.bank_account }}</td>
                                 <td class="bank-balance-row" name="initial_balance">{{ banks_item.initial_balance|add_decimal:banks_item.current_balance|format_number }}</td>
@@ -304,7 +304,7 @@
                     <thead class="cash-flow-table__head">
                         <tr class="cash-flow-table__head--row">
                             <th class="checkbox-col" scope="col">
-                                <label class="checkbox-container"><input id="select-all-checkbox" class="select-all-checkbox" type="checkbox"><span class="checkmark"></span></label>
+                                <label class="checkbox-container"><input id="custom-checkbox-select-all" class="custom-checkbox-select-all" type="checkbox"><span class="checkmark-checkbox-select-all"></span></label>
                             </th>
                             <th class="due-date-col" scope="col">Vencimento</th>
                             <th class="description-col" scope="col">Descrição</th>
@@ -723,90 +723,93 @@
 
         <!-- Modal Transferências -->    
         <dialog class="modal transference-modal">
-
-            <h1 class="modal-title">Transferências</h1>
+            <div class="modal-header">
+                <h1 class="modal-title" style="margin-bottom: 25px;">Transferências</h1>
+            </div>
             
-            <form class="modal-form modal-form-transferences" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
-                <input type="hidden" name="transferences" value="process_transfer">
-                <section class="modal-section">
-                    <label for="date-transferences">Data</label>
-                    <input class="modal-date" id="date-transferences" type="date" name="transfer_date" required><br>
-                </section>
-                
-                <section class="modal-section">
-                    <label for="amount-transferences">Valor</label>
-                    <input class="modal-amount" id="amount-transferences" type="text" name="amount" oninput="formatAmount(this)" value="R$ " required><br>
-                </section>
-                
-                <section class="modal-section">
-                    <label for="banco-saida">Do banco</label>
-                    <select class="modal-banco-saida" id="banco-saida" name="banco_saida" required>
-                        <option value="" disabled selected hidden>Selecione</option>
-                        {% for banks_item in Banks_list %}
-                        <option value="{{ banks_item.id }}|{{ banks_item.banco }}">{{ banks_item.banco }}</option>
-                        {% endfor %}
-                    </select><br>
-                </section>
-                <section class="modal-section">
-                    <label for="banco-entrada">Para o banco</label>
-                    <select class="modal-banco-entrada" id="banco-entrada" name="banco_entrada" required>
-                        <option value="" disabled selected hidden>Selecione</option>
-                        {% for banks_item in Banks_list %}
-                        <option value="{{ banks_item.id }}|{{ banks_item.banco }}">{{ banks_item.banco }}</option>
-                        {% endfor %}
-                    </select><br>
-                </section>
-            
-                <section class="modal-section mesclar-2">
-                    <label for="observation-transferencia">Observação</label>
-                    <input class="modal-description" id="observation-transferencia" type="text" name="observation"><br>
-                </section>
-                <section class="modal-buttons mesclar-2">
-                    <input class="modal-save-button" name="salvar_transferencias" type="submit" value="Salvar">
-                    <button type="button" class="modal-close-transferences">Cancelar</button>
-                </section>
+            <form class="modal-form transferences-modal-form" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
+                <div class="modal-fields transferences-modal-fields">
+                    <input type="hidden" name="transferences" value="process_transfer">
+                    <section class="modal-section">
+                        <label for="date-transferences">Data</label>
+                        <input class="modal-date" id="date-transferences" type="date" name="transfer_date" required><br>
+                    </section>
+                    
+                    <section class="modal-section">
+                        <label for="amount-transferences">Valor</label>
+                        <input class="modal-amount" id="amount-transferences" type="text" name="amount" oninput="formatAmount(this)" value="R$ " required><br>
+                    </section>
+                    
+                    <section class="modal-section">
+                        <label for="withdrawal-bank">Do banco</label>
+                        <select class="modal-withdrawal-bank" id="withdrawal-bank" name="withdrawal_bank" required>
+                            <option value="" disabled selected hidden>Selecione</option>
+                            {% for banks_item in Banks_list %}
+                            <option value="{{ banks_item.id }}|{{ banks_item.banco }}">{{ banks_item.banco }}</option>
+                            {% endfor %}
+                        </select><br>
+                    </section>
+                    <section class="modal-section">
+                        <label for="deposit-bank">Para o banco</label>
+                        <select class="modal-deposit-bank" id="deposit-bank" name="deposit_bank" required>
+                            <option value="" disabled selected hidden>Selecione</option>
+                            {% for banks_item in Banks_list %}
+                            <option value="{{ banks_item.id }}|{{ banks_item.banco }}">{{ banks_item.banco }}</option>
+                            {% endfor %}
+                        </select><br>
+                    </section>
+                    <section class="modal-section mesclar-2">
+                        <label for="observation-transferencia">Observação</label>
+                        <input class="modal-description" id="observation-transferencia" type="text" name="observation"><br>
+                    </section>
+                    <section class="modal-buttons mesclar-2">
+                        <input class="modal-save-button" name="salvar_transferencias" type="submit" value="Salvar">
+                        <button type="button" class="modal-close-transferences">Cancelar</button>
+                    </section>
+                </div>
             </form>
         </dialog>
 
         <!-- Modal Liquidação -->
-        <dialog class="modal modal-liquidacoes" id="modal-liquidacoes">
-            <h1 class="modal-title">Liquidar</h1>
+        <dialog class="modal settlement-modal" id="settlement-modal">
+            <div class="modal-header">
+                <h1 class="modal-title" style="margin-bottom: 25px;">Liquidar</h1>
+            </div>
             
-            <form class="modal-form-liquidacoes" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
+            <form class="modal-form settlement-modal-form" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
                 <input type="hidden" name="liquidacoes" value="liquidacoes">
                 <input type="hidden" name="uuid" data-uuid-partial-settlement-correlation="{{ cash_flow.uuid_partial_settlement_correlation }}">
                 <section class="mesclar-3">
                     <div class="banks-table-settlement-wrapper" id="banks-table-settlement-wrapper">
-                            <table class="banks-table-settlement" id="banks-table-settlement">
-                                <thead class="banks-table__head">
-                                    <tr class="banks-table__head--row">
-                                        <th class="checkbox-col" scope="col"></th>
-                                        <th class="bancos-bancos-liquidacao-col" scope="col">Contas</th>
-                                        <th class="ag-bancos-liquidacao-col" scope="col">Agência</th>
-                                        <th class="conta-bancos-liquidacao-col" scope="col">Contas</th>
-                                        <th class="saldo-bancos-liquidacao-col" scope="col">Saldo</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for banks_item in Banks_list %}
-                                    <tr class="banks-table-settle__body--row" scope="row">
-                                        <td class="checkbox-row"><label class="checkbox-container-liquidacao"><input id="custom-checkbox-liquidacao-{{ banks_item.id }}" class="custom-checkbox-liquidacao" type="checkbox"><span class="checkmark-liquidacao"></span></label></td>
-                                        <td class="bank-row banco-liquidacao" name="banco" data-bank-name="{{ banks_item.banco }}" data-bank-id="{{ banks_item.id }}">{{ banks_item.banco }}</td>
-                                        <td class="bank-branch-row" name="bank_branch">{{ banks_item.bank_branch }}</td>
-                                        <td class="bank-account-row" name="bank_account">{{ banks_item.bank_account }}</td>
-                                        <td class="saldo-banco-liquidacao-row" name="initial_balance">{{ banks_item.initial_balance|add:banks_item.current_balance|format_number }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                    <tr class="total-banks-balance-row" scope="row">
-                                        <td class=""></td>
-                                        <td class=""></td>
-                                        <td class=""></td>
-                                        <td class="total-row">Total</td>
-                                        <td class="total-banks-settlement-balance" name="total-banks-settlement-balance">{{ total_banks_balance|currency_br }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
+                        <table class="banks-table-settlement" id="banks-table-settlement">
+                            <thead class="banks-table__head">
+                                <tr class="banks-table__head--row">
+                                    <th class="checkbox-col" scope="col"></th>
+                                    <th class="settlement-bank-col" scope="col">Contas</th>
+                                    <th class="settlement-bank-branch-col" scope="col">Agência</th>
+                                    <th class="settlement-bank-account-col" scope="col">Contas</th>
+                                    <th class="settlement-bank-balance-col" scope="col">Saldo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for banks_item in Banks_list %}
+                                <tr class="banks-table-settlement__body--row" scope="row">
+                                    <td class="checkbox-row"><label class="checkbox-container-settlement"><input id="custom-checkbox-settlement-{{ banks_item.id }}" class="custom-checkbox-settlement" type="checkbox"><span class="checkmark-settlement"></span></label></td>
+                                    <td class="bank-row settlement-bank-row" name="settlement_bank" data-bank-name="{{ banks_item.banco }}" data-bank-id="{{ banks_item.id }}">{{ banks_item.banco }}</td>
+                                    <td class="bank-branch-row" name="bank_branch">{{ banks_item.bank_branch }}</td>
+                                    <td class="bank-account-row" name="bank_account">{{ banks_item.bank_account }}</td>
+                                    <td class="settlement-bank-balance-row" name="initial_balance">{{ banks_item.initial_balance|add:banks_item.current_balance|format_number }}</td>
+                                </tr>
+                                {% endfor %}
+                                <tr class="total-banks-balance-row" scope="row">
+                                    <td class=""></td>
+                                    <td class=""></td>
+                                    <td class=""></td>
+                                    <td class="total-row">Total</td>
+                                    <td class="total-banks-settlement-balance" name="total-banks-settlement-balance">{{ total_banks_balance|currency_br }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </section>
 
@@ -825,12 +828,12 @@
                 </div>
         
                 <section class="modal-buttons mesclar-3">
-                    <div class="saldo-liquidacao">
-                        <div class="titulo-saldo-liquidacao">SALDO:</div>
-                        <div name="saldo-liquidacao">R$ 0,00</div>
+                    <div class="settlement-balance">
+                        <div class="settlement-balance-label">SALDO:</div>
+                        <div name="settlement-balance">R$ 0,00</div>
                     </div>
-                    <input type="submit" class="modal-save-button" id="salvar-liquidacao" name="salvar_liquidacao" value="Liquidar">
-                    <button type="button" class="modal-close-liquidacoes">Cancelar</button>
+                    <input type="submit" class="modal-save-button" id="save-settlement" name="save_settlement" value="Liquidar">
+                    <button type="button" class="modal-close-settlement">Cancelar</button>
                 </section>
             </form>
         </dialog>
