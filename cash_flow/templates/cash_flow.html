@@ -730,18 +730,18 @@
             <form class="modal-form transferences-modal-form" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
                 <div class="modal-fields transferences-modal-fields">
                     <input type="hidden" name="transferences" value="process_transfer">
-                    <section class="modal-section">
-                        <label for="date-transferences">Data</label>
+                    <section class="modal-section transferences-modal-form__section--date">
+                        <label for="date-transferences">Data*</label>
                         <input class="modal-date" id="date-transferences" type="date" name="transfer_date" required><br>
                     </section>
                     
-                    <section class="modal-section">
-                        <label for="amount-transferences">Valor</label>
+                    <section class="modal-section transferences-modal-form__section--amount">
+                        <label for="amount-transferences">Valor*</label>
                         <input class="modal-amount" id="amount-transferences" type="text" name="amount" oninput="formatAmount(this)" value="R$ " required><br>
                     </section>
                     
-                    <section class="modal-section">
-                        <label for="withdrawal-bank">Do banco</label>
+                    <section class="modal-section transferences-modal-form__section--withdrawal-bank">
+                        <label for="withdrawal-bank">Do banco*</label>
                         <select class="modal-withdrawal-bank" id="withdrawal-bank" name="withdrawal_bank" required>
                             <option value="" disabled selected hidden>Selecione</option>
                             {% for banks_item in Banks_list %}
@@ -749,8 +749,9 @@
                             {% endfor %}
                         </select><br>
                     </section>
-                    <section class="modal-section">
-                        <label for="deposit-bank">Para o banco</label>
+
+                    <section class="modal-section transferences-modal-form__section--deposit-bank">
+                        <label for="deposit-bank">Para o banco*</label>
                         <select class="modal-deposit-bank" id="deposit-bank" name="deposit_bank" required>
                             <option value="" disabled selected hidden>Selecione</option>
                             {% for banks_item in Banks_list %}
@@ -758,12 +759,14 @@
                             {% endfor %}
                         </select><br>
                     </section>
-                    <section class="modal-section mesclar-2">
-                        <label for="observation-transferencia">Observação</label>
-                        <input class="modal-description" id="observation-transferencia" type="text" name="observation"><br>
+
+                    <section class="modal-section transferences-modal-form__section--observation mesclar-2">
+                        <label for="observation-transferences">Observação</label>
+                        <input class="observation-transferences" id="observation-transferences" type="text" name="observation"><br>
                     </section>
+                    
                     <section class="modal-buttons mesclar-2">
-                        <input class="modal-save-button" name="salvar_transferencias" type="submit" value="Salvar">
+                        <input class="modal-save-button" name="save_transferences" type="submit" value="Salvar">
                         <button type="button" class="modal-close-transferences">Cancelar</button>
                     </section>
                 </div>
