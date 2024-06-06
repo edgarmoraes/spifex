@@ -288,15 +288,26 @@
                             {% else %}
                                 <tr class="settled-table__body--row" id="settled-table__body--row"
                                 data-id-row="{{ settled_table_item.id }}"
-                                data-banco-liquidacao="{{ settled_table_item.settlement_bank }}"
-                                data-bank-id-liquidacao="{{ settled_table_item.settlement_bank_id }}"
+                                data-settlement-bank="{{ settled_table_item.settlement_bank }}"
+                                data-settlement-bank-id="{{ settled_table_item.settlement_bank_id }}"
                                 data-general-ledger-account="{{ settled_table_item.general_ledger_account }}"
                                 data-uuid-general-ledger-account="{{ settled_table_item.uuid_general_ledger_account }}"
-                                current-installment="{{ settled_table_item.current_installment }}"
-                                total-installments="{{ settled_table_item.total_installments }}"
                                 data-transaction-type="{{ settled_table_item.transaction_type }}"
-                                data-uuid-correlation-transference="{{ settled_table_item.uuid_transference }}"
+                                data-notes="{{ settled_table_item.notes }}"
+                                data-current-installment="{{ settled_table_item.current_installment }}"
+                                data-uuid-installments-correlation="{{ settled_table_item.uuid_installments_correlation }}"
+                                data-total-installments="{{ settled_table_item.total_installments }}"
                                 data-uuid-partial-settlement-correlation="{{ settled_table_item.uuid_partial_settlement_correlation }}"
+                                data-document-type="{{ settled_table_item.document_type }}"
+                                data-uuid-document-type="{{ settled_table_item.uuid_document_type }}"
+                                data-project="{{ settled_table_item.project }}"
+                                data-uuid-project="{{ settled_table_item.uuid_project }}"
+                                data-department="{{ settled_table_item.department }}"
+                                data-percentage-department="{{ settled_table_item.department_percentage }}"
+                                data-uuid-department="{{ settled_table_item.uuid_department }}"
+                                data-periods="{{ settled_table_item.periods }}"
+                                data-weekend-action="{{ settled_table_item.weekend_action }}"
+                                data-uuid-correlation-transference="{{ settled_table_item.uuid_transference }}"
                                 scope="row">
                                     <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox-{{ settled_table_item.id }}" class="custom-checkbox" type="checkbox"
                                         data-id="{{ settled_table_item.id }}"
@@ -364,7 +375,7 @@
             
                 <section class="modal-section" id="installments-section-realizado">
                     <label for="installments-realizado">Parcela</label>
-                    <input class="modal-installments" id="installments-realizado" type="text" name="installments" current-installment="{{ settled_table_item.current_installment }}" total-installments="{{ settled_table_item.total_installments }}" min="1" value="1" readonly><br>
+                    <input class="modal-installments" id="installments-realizado" type="text" name="installments" data-current-installment="{{ settled_table_item.current_installment }}" data-total-installments="{{ settled_table_item.total_installments }}" min="1" value="1" readonly><br>
                 </section>
 
                 <section class="modal-section mesclar-2">

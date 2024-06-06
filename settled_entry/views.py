@@ -76,7 +76,7 @@ def delete_update_single_date(sender, instance, **kwargs):
     recalculate_totals()
 
 def recalculate_totals():
-    # Apaga todos os records existentes em MonthsListSettled
+    # Apaga todos os entries existentes em MonthsListSettled
     MonthsListSettled.objects.all().delete()
 
     # Encontra todas as datas únicas de due_date em SettledEntry
@@ -97,7 +97,7 @@ def recalculate_totals():
             transaction_type='Débito'
         ).aggregate(Sum('amount'))['amount__sum'] or 0
 
-        # Cria um novo record em MonthsListSettled para cada mês
+        # Cria um novo entry em MonthsListSettled para cada mês
         MonthsListSettled.objects.create(
             formatted_date=start_of_month.strftime('%b/%Y'),
             start_of_month=start_of_month,
@@ -122,56 +122,68 @@ def process_return(request):
     selected_ids = [item['id'] for item in data]
 
     for item in data:
-        original_record = SettledEntry.objects.filter(id=item['id']).first()
-        if not original_record:
+        original_entry = SettledEntry.objects.filter(id=item['id']).first()
+        if not original_entry:
             continue
 
-        uuid_transference = original_record.uuid_transference
-        uuid_partial_settlement_correlation = original_record.uuid_partial_settlement_correlation
+        uuid_transference = original_entry.uuid_transference
+        uuid_partial_settlement_correlation = original_entry.uuid_partial_settlement_correlation
 
         if not uuid_transference and not uuid_partial_settlement_correlation:
-            create_cash_flow_entry(original_record)
+            create_cash_flow_entry(original_entry)
         elif uuid_transference and uuid_partial_settlement_correlation is None:
             # Aqui é onde implementamos a lógica específica: Deletar todos os lançamentos em SettledEntry que compartilham o mesmo uuid_transference
             SettledEntry.objects.filter(uuid_transference=uuid_transference).delete()
         else:
-            process_selected_uuids(uuid_transference, uuid_partial_settlement_correlation, selected_ids, original_record)
+            process_selected_uuids(uuid_transference, uuid_partial_settlement_correlation, selected_ids, original_entry)
 
     return JsonResponse({'status': 'success'})
 
-def create_cash_flow_entry(record):
+def create_cash_flow_entry(entry):
     CashFlowEntry.objects.create(
-        due_date=record.due_date,
-        description=record.description,
-        observation=record.observation,
-        amount=record.amount,
-        general_ledger_account=record.general_ledger_account,
-        uuid_general_ledger_account=record.uuid_general_ledger_account,
-        current_installment=record.current_installment,
-        total_installments=record.total_installments,
-        tags=record.tags,
-        transaction_type=record.transaction_type,
-        creation_date=record.original_creation_date,
+        due_date=entry.due_date,
+        description=entry.description,
+        observation=entry.observation,
+        amount=entry.amount,
+        general_ledger_account=entry.general_ledger_account,
+        current_installment=entry.current_installment,
+        total_installments=entry.total_installments,
+        tags=entry.tags,
+        transaction_type=entry.transaction_type,
+        document_type=entry.document_type,
+        department=entry.department,
+        department_percentage=entry.department_percentage,
+        project=entry.project,
+        notes=entry.notes,
+        periods=entry.periods,
+        weekend_action=entry.weekend_action,
+        creation_date=entry.original_creation_date,
+        uuid_installments_correlation=entry.uuid_installments_correlation,
+        uuid_general_ledger_account=entry.uuid_general_ledger_account,
+        uuid_document_type=entry.uuid_document_type,
+        uuid_department=entry.uuid_department,
+        uuid_project=entry.uuid_project,
+        uuid_transference=entry.uuid_transference
     )
-    record.delete()
+    entry.delete()
 
-def process_selected_uuids(uuid_transference, uuid_partial_settlement_correlation, selected_ids, original_record):
-    more_records = SettledEntry.objects.filter(uuid_transference=uuid_transference, uuid_partial_settlement_correlation=uuid_partial_settlement_correlation).exclude(id__in=selected_ids).exists()
+def process_selected_uuids(uuid_transference, uuid_partial_settlement_correlation, selected_ids, original_entry):
+    more_entries = SettledEntry.objects.filter(uuid_transference=uuid_transference, uuid_partial_settlement_correlation=uuid_partial_settlement_correlation).exclude(id__in=selected_ids).exists()
     exists_in_cash_flow = CashFlowEntry.objects.filter(uuid_partial_settlement_correlation=uuid_partial_settlement_correlation).exists()
 
-    selected_records = SettledEntry.objects.filter(id__in=selected_ids, uuid_transference=uuid_transference, uuid_partial_settlement_correlation=uuid_partial_settlement_correlation)
-    selected_total_amount = selected_records.aggregate(Sum('amount'))['amount__sum'] or 0
+    selected_entries = SettledEntry.objects.filter(id__in=selected_ids, uuid_transference=uuid_transference, uuid_partial_settlement_correlation=uuid_partial_settlement_correlation)
+    selected_total_amount = selected_entries.aggregate(Sum('amount'))['amount__sum'] or 0
 
-    if more_records and exists_in_cash_flow:
+    if more_entries and exists_in_cash_flow:
         unify_entries_in_cash_flow(uuid_partial_settlement_correlation, selected_total_amount)
-    elif not more_records and exists_in_cash_flow:
+    elif not more_entries and exists_in_cash_flow:
         unify_entries_in_cash_flow(uuid_partial_settlement_correlation, selected_total_amount, delete_uuid=True)
-    elif not more_records and not exists_in_cash_flow:
-        create_unified_entries_in_cash_flow(selected_records.first(), selected_total_amount, keep_uuid=False)
-    elif more_records and not exists_in_cash_flow:
-        create_unified_entries_in_cash_flow(selected_records.first(), selected_total_amount, keep_uuid=True)
+    elif not more_entries and not exists_in_cash_flow:
+        create_unified_entries_in_cash_flow(selected_entries.first(), selected_total_amount, keep_uuid=False)
+    elif more_entries and not exists_in_cash_flow:
+        create_unified_entries_in_cash_flow(selected_entries.first(), selected_total_amount, keep_uuid=True)
 
-    selected_records.delete()
+    selected_entries.delete()
 
 def unify_entries_in_cash_flow(uuid_partial_settlement_correlation, total_amount, delete_uuid=False):
     cash_flow = CashFlowEntry.objects.get(uuid_partial_settlement_correlation=uuid_partial_settlement_correlation)
@@ -180,20 +192,31 @@ def unify_entries_in_cash_flow(uuid_partial_settlement_correlation, total_amount
         cash_flow.uuid_partial_settlement_correlation = None
     cash_flow.save()
 
-def create_unified_entries_in_cash_flow(record, total_amount, keep_uuid=False):
+def create_unified_entries_in_cash_flow(entry, total_amount, keep_uuid=False):
     CashFlowEntry.objects.create(
-        due_date=record.due_date,
-        description=record.description,
-        observation=record.observation,
+        due_date=entry.due_date,
+        description=entry.description,
+        observation=entry.observation,
         amount=total_amount,
-        general_ledger_account=record.general_ledger_account,
-        uuid_general_ledger_account=record.uuid_general_ledger_account,
-        current_installment=record.current_installment,
-        total_installments=record.total_installments,
-        tags=record.tags,
-        transaction_type=record.transaction_type,
-        creation_date=record.original_creation_date,
-        uuid_partial_settlement_correlation=record.uuid_partial_settlement_correlation if keep_uuid else None
+        general_ledger_account=entry.general_ledger_account,
+        current_installment=entry.current_installment,
+        total_installments=entry.total_installments,
+        tags=entry.tags,
+        transaction_type=entry.transaction_type,
+        document_type=entry.document_type,
+        department=entry.department,
+        department_percentage=entry.department_percentage,
+        project=entry.project,
+        notes=entry.notes,
+        periods=entry.periods,
+        weekend_action=entry.weekend_action,
+        creation_date=entry.original_creation_date,
+        uuid_general_ledger_account=entry.uuid_general_ledger_account,
+        uuid_document_type=entry.uuid_document_type,
+        uuid_department=entry.uuid_department,
+        uuid_project=entry.uuid_project,
+        uuid_transference=entry.uuid_transference,
+        uuid_partial_settlement_correlation=entry.uuid_partial_settlement_correlation if keep_uuid else None
     )
 
 @receiver(post_delete, sender=SettledEntry)

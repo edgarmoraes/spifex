@@ -146,7 +146,7 @@
                             <label for="dropdown-button-banks">Bancos</label>
                             <div class="dropdown-multiselect">
                                 <button type="button" onclick="toggleDropdown('dropdown-content-banks', event)" id="dropdown-button-banks" class="dropdown-button">Selecione</button>
-                                <div id="dropdown-content-banks" class="dropdown-content">
+                                <div id="dropdown-content-banks" class="dropdown-content dropdown-content-banks">
                                     <div class="dropdown-header">
                                         <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-banks', true)">Selecionar Todos</button>
                                         <button class="button-deselect-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-banks', false)">Desmarcar Todos</button>
@@ -177,7 +177,7 @@
                             <label for="dropdown-button-transaction-type">Natureza</label>
                             <div class="dropdown-multiselect">
                                 <button type="button" onclick="toggleDropdown('dropdown-content-transaction-type', event)" id="dropdown-button-transaction-type" class="dropdown-button">Crédito, Débito</button>
-                                <div id="dropdown-content-transaction-type" class="dropdown-content">
+                                <div id="dropdown-content-transaction-type" class="dropdown-content dropdown-content-transaction-type">
                                     <div class="dropdown-header">
                                         <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-transaction-type', true)">Selecionar Todos</button>
                                         <button class="button-deselect-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-transaction-type', false)">Desmarcar Todos</button>
@@ -225,7 +225,7 @@
                             <label for="dropdown-button-months">Meses</label>
                             <div class="dropdown-multiselect">
                                 <button type="button" onclick="toggleDropdown('dropdown-content-months', event)" id="dropdown-button-months" class="dropdown-button">Selecione</button>
-                                <div id="dropdown-content-months" class="dropdown-content">
+                                <div id="dropdown-content-months" class="dropdown-content dropdown-content-months">
                                     <div class="dropdown-header">
                                         <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-months', true)">Selecionar Todos</button>
                                         <button class="button-deselect-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-months', false)">Desmarcar Todos</button>
@@ -246,7 +246,7 @@
                             <label for="dropdown-button-accounts">Contas Contábeis</label>
                             <div class="dropdown-multiselect">
                                 <button type="button" onclick="toggleDropdown('dropdown-content-accounts', event)" id="dropdown-button-accounts" class="dropdown-button">Selecione</button>
-                                <div id="dropdown-content-accounts" class="dropdown-content">
+                                <div id="dropdown-content-accounts" class="dropdown-content dropdown-content-accounts">
                                     <div class="dropdown-header">
                                         <button class="button-select-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-accounts', true)">Selecionar Todos</button>
                                         <button class="button-deselect-all" type="button" onclick="toggleAllCheckboxes('#dropdown-content-accounts', false)">Desmarcar Todos</button>
@@ -423,7 +423,7 @@
                             <label for="dropdown-button-accounts-credit">Conta Contábil*</label>
                             <div class="dropdown-multiselect dropdown-multiselect-accounts">
                                 <button type="button" onclick="toggleDropdown('dropdown-content-accounts-credit', event)" id="dropdown-button-accounts-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
-                                <div id="dropdown-content-accounts-credit" class="dropdown-content">
+                                <div id="dropdown-content-accounts-credit" class="dropdown-content dropdown-content-accounts dropdown-content-accounts-credit">
                                     <input id="modal-dropdown-button-account-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-accounts-credit')" placeholder="Filtrar...">
                                     <div class="dropdown-options">
                                         {% for subgroup, accounts in Accounts_by_subgroup_list.items %}
@@ -448,7 +448,7 @@
                             <label for="dropdown-button-document-type-credit">Tipo de Documento</label>
                             <div class="dropdown-multiselect dropdown-multiselect-credit dropdown-multiselect-document-type">
                                 <button type="button" onclick="toggleDropdown('dropdown-content-document-type-credit', event)" id="dropdown-button-document-type-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
-                                <div id="dropdown-content-document-type-credit" class="dropdown-content">
+                                <div id="dropdown-content-document-type-credit" class="dropdown-content dropdown-content-document-type dropdown-content-document-type-credit">
                                     <input id="modal-dropdown-button-document-type-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-document-type-credit')" placeholder="Filtrar...">
                                     <div class="dropdown-options">
                                         {% for document_type in Document_types %}
@@ -489,7 +489,7 @@
                             <label for="dropdown-button-department-credit">Departamento</label>
                             <div class="dropdown-multiselect dropdown-multiselect-credit dropdown-multiselect-department">
                                 <button type="button" onclick="toggleDropdown('dropdown-content-department-credit', event)" id="dropdown-button-department-credit" class="modal-dropdown-button dropdown-button" style="width: 75%;">Selecione</button>
-                                <div id="dropdown-content-department-credit" class="dropdown-content">
+                                <div id="dropdown-content-department-credit" class="dropdown-content dropdown-content-department dropdown-content-department-credit">
                                     <input id="modal-dropdown-button-department-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-department-credit')" placeholder="Filtrar...">
                                     <div class="dropdown-options">
                                         {% for department in Departments %}
@@ -511,7 +511,7 @@
                             <label for="dropdown-button-project-credit">Projetos</label>
                             <div class="dropdown-multiselect dropdown-multiselect-credit dropdown-multiselect-project">
                                 <button type="button" onclick="toggleDropdown('dropdown-content-project-credit', event)" id="dropdown-button-project-credit" class="modal-dropdown-button dropdown-button" style="width: 75%;">Selecione</button>
-                                <div id="dropdown-content-project-credit" class="dropdown-content">
+                                <div id="dropdown-content-project-credit" class="dropdown-content dropdown-content-project dropdown-content-project-credit">
                                     <input id="modal-dropdown-button-project-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-project-credit')" placeholder="Filtrar...">
                                     <div class="dropdown-options">
                                         {% for project in Projects %}
@@ -535,7 +535,7 @@
                             <label for="dropdown-button-client-credit">Cliente</label>
                             <div class="dropdown-multiselect dropdown-multiselect-credit dropdown-multiselect-stakeholders">
                                 <button type="button" onclick="toggleDropdown('dropdown-content-client-credit', event)" id="dropdown-button-client-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
-                                <div id="dropdown-content-client-credit" class="dropdown-content">
+                                <div id="dropdown-content-client-credit" class="dropdown-content dropdown-content-client dropdown-content-client-credit">
                                     <input id="modal-dropdown-button-client-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-client-credit')" placeholder="Filtrar...">
                                     <div class="dropdown-options">
                                         {% for client in Clients %}
@@ -618,7 +618,7 @@
                             <label for="dropdown-button-inventory-credit">Estoque</label>
                             <div class="dropdown-multiselect dropdown-multiselect-credit dropdown-multiselect-inventory">
                                 <button type="button" onclick="toggleDropdown('dropdown-content-inventory-credit', event)" id="dropdown-button-inventory-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
-                                <div id="dropdown-content-inventory-credit" class="dropdown-content dropdown-content-inventory-credit">
+                                <div id="dropdown-content-inventory-credit" class="dropdown-content dropdown-content-inventory dropdown-content-inventory-credit">
                                     <input id="modal-dropdown-button-inventory-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-inventory-credit')" placeholder="Filtrar...">
                                     <div class="dropdown-options">
                                         {% for inventory in Inventory %}
