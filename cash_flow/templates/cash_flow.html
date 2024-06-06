@@ -345,6 +345,10 @@
                                 data-uuid-department="{{ cash_flow_table_item.uuid_department }}"
                                 data-periods="{{ cash_flow_table_item.periods }}"
                                 data-weekend-action="{{ cash_flow_table_item.weekend_action }}"
+                                data-inventory-item-code="{{ cash_flow_table_item.inventory_item_code }}"
+                                data-inventory-item="{{ cash_flow_table_item.inventory_item }}"
+                                data-inventory-quantity="{{ cash_flow_table_item.inventory_quantity }}"
+                                data-uuid-inventory="{{ cash_flow_table_item.uuid_inventory_item }}"
                                 scope="row">
                                     <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox-{{ cash_flow_table_item.id }}" class="custom-checkbox" type="checkbox"
                                         data-id="{{ cash_flow_table_item.id }}"
@@ -388,8 +392,8 @@
                     <button class="tab-link" onclick="changeTab(event, 'modal-details-tab-credit')">Detalhes</button>
                     <button class="tab-link" onclick="changeTab(event, 'modal-cost-center-tab-credit')">Centro de Custos</button>
                     <button class="tab-link" onclick="changeTab(event, 'modal-stakeholders-tab-credit')">Partes Interessadas</button>
-                    <button class="tab-link" onclick="changeTab(event, 'modal-recurrence-tab-credit')">Recorrência</button>
                     <button class="tab-link" onclick="changeTab(event, 'modal-inventory-tab-credit')">Estoque</button>
+                    <button class="tab-link" onclick="changeTab(event, 'modal-recurrence-tab-credit')">Recorrência</button>
                 </div>
             </div>
 
@@ -551,6 +555,35 @@
                     </div>
                 </div>
 
+                <div id="modal-inventory-tab-credit" class="tab-content modal-inventory-tab modal-inventory-tab-credit" style="display:none;">
+                    <div class="modal-fields credit-modal-fields modal-inventory-fields">
+                        <section class="modal-section credit-modal-form__section--inventory section__inventory">
+                            <label for="dropdown-button-inventory-credit">Estoque</label>
+                            <div class="dropdown-multiselect dropdown-multiselect-credit dropdown-multiselect-inventory">
+                                <button type="button" onclick="toggleDropdown('dropdown-content-inventory-credit', event)" id="dropdown-button-inventory-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
+                                <div id="dropdown-content-inventory-credit" class="dropdown-content dropdown-content-inventory dropdown-content-inventory-credit">
+                                    <input id="modal-dropdown-button-inventory-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-inventory-credit')" placeholder="Filtrar...">
+                                    <div class="dropdown-options">
+                                        {% for inventory in Inventory %}
+                                            <label class="label-filters">
+                                                <input type="checkbox" class="inventory-checkbox" name="inventory_option_credit" data-uuid-inventory="{{ inventory.uuid_inventory_item }}" data-inventory-item-code="{{ inventory.inventory_item_code }}" data-inventory-item="{{ inventory.inventory_item }}" data-inventory-quantity="{{ inventory.inventory_quantity }}">
+                                                {{ inventory.inventory_item_code }} - {{ inventory.inventory_item }}
+                                            </label>
+                                            {% endfor %}
+                                        <input type="hidden" id="inventory-name-credit" name="inventory_name_credit" value="">
+                                        <input type="hidden" id="inventory-item-code-credit" name="inventory_item_code_credit" value="">
+                                        <input type="hidden" id="inventory-uuid-credit" name="inventory_uuid_credit" value="">
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    <section class="modal-section credit-modal-form__section--quantity section__quantity" id="credit-modal-form__section--quantity" style="display: none;">
+                        <label for="inventory-quantity-credit">Quantidade*</label>
+                        <input id="inventory-quantity-credit" class="inventory-quantity-credit" name="inventory_quantity_credit" type="number">
+                    </section>
+                    </div>
+                </div>
+
                 <div id="modal-recurrence-tab-credit" class="tab-content modal-recurrence-tab modal-recurrence-tab-credit" style="display:none;">
                     <div class="modal-fields credit-modal-fields modal-recurrence-fields">
                         <div class="credit-modal-form__installments-container installments-container mesclar-2">
@@ -607,30 +640,6 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                </div>
-
-                <div id="modal-inventory-tab-credit" class="tab-content modal-inventory-tab modal-inventory-tab-credit" style="display:none;">
-                    <div class="modal-fields credit-modal-fields modal-inventory-fields">
-                        <section class="modal-section credit-modal-form__section--inventory section__inventory">
-                            <label for="dropdown-button-inventory-credit">Estoque</label>
-                            <div class="dropdown-multiselect dropdown-multiselect-credit dropdown-multiselect-inventory">
-                                <button type="button" onclick="toggleDropdown('dropdown-content-inventory-credit', event)" id="dropdown-button-inventory-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
-                                <div id="dropdown-content-inventory-credit" class="dropdown-content dropdown-content-inventory dropdown-content-inventory-credit">
-                                    <input id="modal-dropdown-button-inventory-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-inventory-credit')" placeholder="Filtrar...">
-                                    <div class="dropdown-options">
-                                        {% for inventory in Inventory %}
-                                            <label class="label-filters">
-                                                <input type="checkbox" class="inventory-checkbox" name="inventory_option_credit" data-uuid-inventory="{{ inventory.uuid_inventory }}" data-inventory-item-code="{{ inventory.inventory_item_code }}" data-inventory-item="{{ inventory.inventory_item }}">
-                                                {{ inventory.inventory_item_code }} - {{ inventory.inventory_item }}
-                                            </label>
-                                            {% endfor %}
-                                        <input type="hidden" id="inventory-name-credit" name="inventory_name_credit" value="">
-                                        <input type="hidden" id="inventory-uuid-credit" name="inventory_uuid_credit" value="">
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
                     </div>
                 </div>
 

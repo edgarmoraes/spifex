@@ -26,6 +26,10 @@ class CashFlowEntry(models.Model):
     uuid_project = models.UUIDField(null=True, blank=True)
     uuid_transference = models.JSONField(null=True, blank=True)
     uuid_partial_settlement_correlation = models.UUIDField(null=True, blank=True)
+    inventory_item_code = models.CharField(null=True, max_length=255)
+    inventory_item = models.CharField(null=True, max_length=255)
+    inventory_quantity = models.PositiveIntegerField(null=True, default=0)
+    uuid_inventory_item = models.UUIDField(null=True, blank=True)
 
 class MonthsListCashFlow(models.Model):
     start_of_month = models.DateField(null=True, blank=True)

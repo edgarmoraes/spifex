@@ -114,6 +114,7 @@ def get_form_data(request):
     weekend_action = get_weekend_action_data(request, transaction_type)
     department_data = get_department_data(request, transaction_type)
     project_data = get_project_data(request, transaction_type)
+    inventory_data = get_inventory_data(request, transaction_type)
 
     return {
         'due_date': due_date,
@@ -138,6 +139,10 @@ def get_form_data(request):
         'department_uuid': department_data['department_uuid'],
         'project_name': project_data['project_name'],
         'project_uuid': project_data['project_uuid'],
+        'inventory_name': inventory_data['inventory_name'],
+        'inventory_quantity': inventory_data['inventory_quantity'],
+        'inventory_item_code': inventory_data['inventory_item_code'],
+        'inventory_uuid': inventory_data['inventory_uuid'],
     }
 
 def get_transaction_type(request):
@@ -263,6 +268,31 @@ def get_department_data(request, transaction_type):
         'department_percentage': department_percentage_list
     }
 
+def get_inventory_data(request, transaction_type):
+    inventory_name_field = 'inventory_name_credit' if transaction_type == 'Crédito' else 'inventory_name_debit'
+    inventory_quantity_field = 'inventory_quantity_credit' if transaction_type == 'Crédito' else 'inventory_quantity_debit'
+    inventory_item_code_field = 'inventory_item_code_credit' if transaction_type == 'Crédito' else 'inventory_item_code_debit'
+    inventory_uuid_field = 'inventory_uuid_credit' if transaction_type == 'Crédito' else 'inventory_uuid_debit'
+
+    inventory_name = request.POST.get(inventory_name_field)
+    inventory_quantity = request.POST.get(inventory_quantity_field)
+    inventory_item_code = request.POST.get(inventory_item_code_field)
+    inventory_uuid = request.POST.get(inventory_uuid_field)
+
+    # Substituir strings vazias por None
+    if inventory_name == '':
+        inventory_name = None
+    if inventory_uuid == '':
+        inventory_uuid = None
+
+    # Converte inventory_quantity para int ou None se estiver vazio
+    try:
+        inventory_quantity = int(inventory_quantity) if inventory_quantity else None
+    except ValueError:
+        inventory_quantity = None
+
+    return {'inventory_name': inventory_name, 'inventory_quantity': inventory_quantity, 'inventory_item_code': inventory_item_code, 'inventory_uuid': inventory_uuid}
+
 def update_existing_cash_flow_entries(form_data):
     # Busca o fluxo de caixa pelo ID
     cash_flow_table = get_object_or_404(CashFlowEntry, id=form_data['entry_id'])
@@ -300,6 +330,12 @@ def update_existing_cash_flow_entries(form_data):
         cash_flow_table.total_installments = form_data.get('total_installments', cash_flow_table.total_installments)
     
     cash_flow_table.tags = form_data['tags']
+
+    # Atualiza o inventory_item, inventory_quantity, inventory_item_code e seu UUID
+    cash_flow_table.inventory_item = form_data['inventory_name']
+    cash_flow_table.inventory_quantity = form_data['inventory_quantity']
+    cash_flow_table.inventory_item_code = form_data['inventory_item_code']
+    cash_flow_table.uuid_inventory_item = form_data['inventory_uuid']
 
     # Salva as alterações no banco de dados
     cash_flow_table.save()
@@ -358,6 +394,10 @@ def create_cash_flow_entries(form_data):
             transaction_type=form_data['transaction_type'],
             weekend_action=form_data['weekend_action'],
             uuid_installments_correlation=uuid_installments_correlation,
+            inventory_item_code=form_data['inventory_item_code'],
+            inventory_item=form_data['inventory_name'],
+            inventory_quantity=form_data['inventory_quantity'],
+            uuid_inventory_item=form_data['inventory_uuid'],
             creation_date=datetime.now(),
         )
 
