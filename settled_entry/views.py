@@ -163,7 +163,11 @@ def create_cash_flow_entry(entry):
         uuid_document_type=entry.uuid_document_type,
         uuid_department=entry.uuid_department,
         uuid_project=entry.uuid_project,
-        uuid_transference=entry.uuid_transference
+        uuid_transference=entry.uuid_transference,
+        inventory_item_code=entry.inventory_item_code,
+        inventory_item=entry.inventory_item,
+        inventory_quantity=entry.inventory_quantity,
+        uuid_inventory_item=entry.uuid_inventory_item
     )
     entry.delete()
 
@@ -216,6 +220,10 @@ def create_unified_entries_in_cash_flow(entry, total_amount, keep_uuid=False):
         uuid_department=entry.uuid_department,
         uuid_project=entry.uuid_project,
         uuid_transference=entry.uuid_transference,
+        inventory_item_code=entry.inventory_item_code,
+        inventory_item=entry.inventory_item,
+        inventory_quantity=entry.inventory_quantity,
+        uuid_inventory_item=entry.uuid_inventory_item,
         uuid_partial_settlement_correlation=entry.uuid_partial_settlement_correlation if keep_uuid else None
     )
 

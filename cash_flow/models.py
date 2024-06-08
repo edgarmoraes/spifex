@@ -30,6 +30,14 @@ class CashFlowEntry(models.Model):
     inventory_item = models.CharField(null=True, max_length=255)
     inventory_quantity = models.PositiveIntegerField(null=True, default=0)
     uuid_inventory_item = models.UUIDField(null=True, blank=True)
+    
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old_instance = CashFlowEntry.objects.get(pk=self.pk)
+            self._old_uuid_inventory_item = old_instance.uuid_inventory_item
+        else:
+            self._old_uuid_inventory_item = None
+        super().save(*args, **kwargs)
 
 class MonthsListCashFlow(models.Model):
     start_of_month = models.DateField(null=True, blank=True)
@@ -100,3 +108,4 @@ class Inventory(models.Model):
     inventory_item = models.CharField(max_length=255)
     inventory_quantity = models.PositiveIntegerField(default=0)
     uuid_inventory_item = models.UUIDField(null=True, blank=True)
+    inventory_quantity_cash_flow = models.PositiveIntegerField(null=True, default=0)

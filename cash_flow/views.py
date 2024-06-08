@@ -606,7 +606,11 @@ def create_settled_entry(item, entry, partial_amount, is_partial_settlement, uui
         uuid_department=entry.uuid_department,
         uuid_project=entry.uuid_project,
         uuid_transference=entry.uuid_transference,
-        uuid_partial_settlement_correlation=uuid_partial_settlement_correlation
+        uuid_partial_settlement_correlation=uuid_partial_settlement_correlation,
+        inventory_item_code=entry.inventory_item_code,
+        inventory_item=entry.inventory_item,
+        inventory_quantity=entry.inventory_quantity,
+        uuid_inventory_item=entry.uuid_inventory_item
     )
 
 def update_entry_if_needed(entry, partial_amount, is_partial_settlement, completing_settlement):
@@ -622,10 +626,15 @@ def update_entry_if_needed(entry, partial_amount, is_partial_settlement, complet
 @receiver(post_save, sender=CashFlowEntry)
 def save_update_single_date(sender, instance, **kwargs):
     recalculate_totals()
+    # Atualiza a quantidade de inventário para o item antigo e o novo item
+    if hasattr(instance, '_old_uuid_inventory_item') and instance._old_uuid_inventory_item:
+        update_inventory_quantity(instance._old_uuid_inventory_item)
+    update_inventory_quantity(instance.uuid_inventory_item)
 
 @receiver(post_delete, sender=CashFlowEntry)
 def delete_update_single_date(sender, instance, **kwargs):
     recalculate_totals()
+    update_inventory_quantity(instance.uuid_inventory_item)
 
 def recalculate_totals():
     """ Sinal para atualizar MonthsListCashFlow quando um FluxoDeCaixa for salvo """
@@ -659,6 +668,16 @@ def recalculate_totals():
             total_debit=total_debit,
             monthly_balance=total_credit - total_debit
         )
+
+def update_inventory_quantity(uuid_inventory_item):
+    if not uuid_inventory_item:
+        return
+    
+    # Soma as quantidades de inventário para o uuid_inventory_item específico
+    total_quantity = CashFlowEntry.objects.filter(uuid_inventory_item=uuid_inventory_item).aggregate(Sum('inventory_quantity'))['inventory_quantity__sum'] or 0
+
+    # Atualiza o campo inventory_quantity_cash_flow no modelo Inventory
+    Inventory.objects.filter(uuid_inventory_item=uuid_inventory_item).update(inventory_quantity_cash_flow=total_quantity)
 
 # FUNÇÕES ÚNICAS ############################################################################
 
