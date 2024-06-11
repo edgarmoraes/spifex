@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from dateutil.relativedelta import relativedelta
 from django.views.decorators.csrf import csrf_exempt
 from chart_of_accounts.models import Chart_of_accounts
-from cash_flow.models import CashFlowEntry, Banks
+from cash_flow.models import CashFlowEntry, Banks, Inventory
 from .models import SettledEntry, MonthsListSettled
 from django.db.models.signals import post_save, post_delete
 
@@ -129,10 +129,16 @@ def process_return(request):
         uuid_transference = original_entry.uuid_transference
         uuid_partial_settlement_correlation = original_entry.uuid_partial_settlement_correlation
 
+        # Atualiza a quantidade de inventário ao retornar o lançamento
+        update_inventory_quantity_on_return(
+            original_entry.uuid_inventory_item,
+            original_entry.inventory_quantity,
+            original_entry.transaction_type
+        )
+
         if not uuid_transference and not uuid_partial_settlement_correlation:
             create_cash_flow_entry(original_entry)
         elif uuid_transference and uuid_partial_settlement_correlation is None:
-            # Aqui é onde implementamos a lógica específica: Deletar todos os lançamentos em SettledEntry que compartilham o mesmo uuid_transference
             SettledEntry.objects.filter(uuid_transference=uuid_transference).delete()
         else:
             process_selected_uuids(uuid_transference, uuid_partial_settlement_correlation, selected_ids, original_entry)
@@ -226,6 +232,16 @@ def create_unified_entries_in_cash_flow(entry, total_amount, keep_uuid=False):
         uuid_inventory_item=entry.uuid_inventory_item,
         uuid_partial_settlement_correlation=entry.uuid_partial_settlement_correlation if keep_uuid else None
     )
+
+def update_inventory_quantity_on_return(uuid_inventory_item, quantity_change, transaction_type):
+    """Atualiza a quantidade de inventário quando um lançamento é retornado."""
+    if uuid_inventory_item:
+        inventory_item = Inventory.objects.get(uuid_inventory_item=uuid_inventory_item)
+        if transaction_type == 'Crédito':
+            inventory_item.inventory_quantity += quantity_change
+        elif transaction_type == 'Débito':
+            inventory_item.inventory_quantity -= quantity_change
+        inventory_item.save()
 
 @receiver(post_delete, sender=SettledEntry)
 def update_bank_balance(sender, instance, **kwargs):
