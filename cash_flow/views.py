@@ -554,9 +554,25 @@ def process_single_item(item, response):
         uuid_partial_settlement_correlation = update_uuid_partial_settlement_correlation(entry, partial_amount, is_partial_settlement)
         create_settled_entry(item, entry, partial_amount, is_partial_settlement, uuid_partial_settlement_correlation)
         update_entry_if_needed(entry, partial_amount, is_partial_settlement, completing_settlement)
+
+        # Verifica se a liquidação é parcial
+        if is_partial_settlement:
+            # Atualiza a quantidade de inventário antes de limpar os campos
+            update_inventory_quantity_after_partial_settlement(entry, partial_amount)
+            # Após a liquidação, limpa os campos de inventário
+            clear_inventory_fields(entry)
+            
         update_inventory_quantity_after_settlement(entry.uuid_inventory_item, entry.inventory_quantity, entry.transaction_type)
     except CashFlowEntry.DoesNotExist:
         response['messages'].append(f'Registro {item["id"]} não encontrado.')
+
+def clear_inventory_fields(entry):
+    """Limpa os campos de inventário no modelo CashFlowEntry."""
+    entry.inventory_item_code = None
+    entry.inventory_item = None
+    entry.inventory_quantity = None
+    entry.uuid_inventory_item = None
+    entry.save()
 
 def get_cash_flow_entry(entry_id):
     return CashFlowEntry.objects.get(id=entry_id)
@@ -679,8 +695,18 @@ def update_inventory_quantity(uuid_inventory_item):
     # Atualiza o campo inventory_quantity_cash_flow no modelo Inventory
     Inventory.objects.filter(uuid_inventory_item=uuid_inventory_item).update(inventory_quantity_cash_flow=total_quantity)
 
+def update_inventory_quantity_after_partial_settlement(entry, partial_amount):
+    """Atualiza a quantidade de inventário após uma liquidação parcial."""
+    if entry.uuid_inventory_item and entry.inventory_quantity:
+        inventory_item = Inventory.objects.get(uuid_inventory_item=entry.uuid_inventory_item)
+        if entry.transaction_type == 'Crédito':
+            inventory_item.inventory_quantity -= (partial_amount / entry.amount) * entry.inventory_quantity
+        elif entry.transaction_type == 'Débito':
+            inventory_item.inventory_quantity += (partial_amount / entry.amount) * entry.inventory_quantity
+        inventory_item.save()
+
 def update_inventory_quantity_after_settlement(uuid_inventory_item, quantity_change, transaction_type):
-    """Atualiza a quantidade de inventário com base no tipo de transação."""
+    """Atualiza a quantidade de inventário com base no tipo de transação após a liquidação."""
     if uuid_inventory_item:
         inventory_item = Inventory.objects.get(uuid_inventory_item=uuid_inventory_item)
         if transaction_type == 'Crédito':

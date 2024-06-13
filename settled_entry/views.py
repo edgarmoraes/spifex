@@ -129,15 +129,13 @@ def process_return(request):
         uuid_transference = original_entry.uuid_transference
         uuid_partial_settlement_correlation = original_entry.uuid_partial_settlement_correlation
 
-        # Atualiza a quantidade de inventário ao retornar o lançamento
-        update_inventory_quantity_on_return(
-            original_entry.uuid_inventory_item,
-            original_entry.inventory_quantity,
-            original_entry.transaction_type
-        )
-
         if not uuid_transference and not uuid_partial_settlement_correlation:
             create_cash_flow_entry(original_entry)
+            update_inventory_quantity_on_return(
+                original_entry.uuid_inventory_item,
+                original_entry.inventory_quantity,
+                original_entry.transaction_type
+            )
         elif uuid_transference and uuid_partial_settlement_correlation is None:
             SettledEntry.objects.filter(uuid_transference=uuid_transference).delete()
         else:
@@ -178,22 +176,75 @@ def create_cash_flow_entry(entry):
     entry.delete()
 
 def process_selected_uuids(uuid_transference, uuid_partial_settlement_correlation, selected_ids, original_entry):
-    more_entries = SettledEntry.objects.filter(uuid_transference=uuid_transference, uuid_partial_settlement_correlation=uuid_partial_settlement_correlation).exclude(id__in=selected_ids).exists()
-    exists_in_cash_flow = CashFlowEntry.objects.filter(uuid_partial_settlement_correlation=uuid_partial_settlement_correlation).exists()
+    partial_settlement_correlations = SettledEntry.objects.filter(id__in=selected_ids).values_list('uuid_partial_settlement_correlation', flat=True).distinct()
 
-    selected_entries = SettledEntry.objects.filter(id__in=selected_ids, uuid_transference=uuid_transference, uuid_partial_settlement_correlation=uuid_partial_settlement_correlation)
-    selected_total_amount = selected_entries.aggregate(Sum('amount'))['amount__sum'] or 0
+    for correlation in partial_settlement_correlations:
+        if correlation is None:
+            selected_entries = SettledEntry.objects.filter(id__in=selected_ids, uuid_partial_settlement_correlation__isnull=True)
+            for entry in selected_entries:
+                update_inventory_quantity_on_return(
+                    entry.uuid_inventory_item,
+                    entry.inventory_quantity,
+                    entry.transaction_type
+                )
+                create_cash_flow_entry(entry)
+            selected_entries.delete()
+            continue
 
-    if more_entries and exists_in_cash_flow:
-        unify_entries_in_cash_flow(uuid_partial_settlement_correlation, selected_total_amount)
-    elif not more_entries and exists_in_cash_flow:
-        unify_entries_in_cash_flow(uuid_partial_settlement_correlation, selected_total_amount, delete_uuid=True)
-    elif not more_entries and not exists_in_cash_flow:
-        create_unified_entries_in_cash_flow(selected_entries.first(), selected_total_amount, keep_uuid=False)
-    elif more_entries and not exists_in_cash_flow:
-        create_unified_entries_in_cash_flow(selected_entries.first(), selected_total_amount, keep_uuid=True)
+        more_entries = SettledEntry.objects.filter(uuid_partial_settlement_correlation=correlation).exclude(id__in=selected_ids).exists()
+        exists_in_cash_flow = CashFlowEntry.objects.filter(uuid_partial_settlement_correlation=correlation).exists()
 
-    selected_entries.delete()
+        selected_entries = SettledEntry.objects.filter(id__in=selected_ids, uuid_partial_settlement_correlation=correlation)
+        selected_total_amount = selected_entries.aggregate(Sum('amount'))['amount__sum'] or 0
+
+        # Adiciona lógica para verificar e passar dados de inventário para o próximo lançamento
+        selected_with_inventory_data = selected_entries.filter(
+            inventory_item_code__isnull=False,
+            inventory_item__isnull=False,
+            inventory_quantity__isnull=False,
+            uuid_inventory_item__isnull=False
+        )
+
+        if more_entries:
+            for entry in selected_with_inventory_data:
+                next_entry = SettledEntry.objects.filter(
+                    uuid_partial_settlement_correlation=correlation
+                ).exclude(id__in=selected_ids).first()
+
+                if next_entry:
+                    next_entry.inventory_item_code = entry.inventory_item_code
+                    next_entry.inventory_item = entry.inventory_item
+                    next_entry.inventory_quantity = entry.inventory_quantity
+                    next_entry.uuid_inventory_item = entry.uuid_inventory_item
+                    next_entry.save()
+
+        if not more_entries:
+            # Se não houver mais lançamentos, atualiza o inventário no CashFlowEntry
+            cash_flow_entries = CashFlowEntry.objects.filter(uuid_partial_settlement_correlation=correlation)
+            if cash_flow_entries.exists():
+                cash_flow_entry = cash_flow_entries.first()
+                if original_entry.inventory_item_code:
+                    cash_flow_entry.inventory_item_code = original_entry.inventory_item_code
+                    cash_flow_entry.inventory_item = original_entry.inventory_item
+                    cash_flow_entry.inventory_quantity = original_entry.inventory_quantity
+                    cash_flow_entry.uuid_inventory_item = original_entry.uuid_inventory_item
+                cash_flow_entry.save()
+            update_inventory_quantity_on_return(
+                original_entry.uuid_inventory_item,
+                original_entry.inventory_quantity,
+                original_entry.transaction_type
+            )
+
+        if more_entries and exists_in_cash_flow:
+            unify_entries_in_cash_flow(correlation, selected_total_amount)
+        elif not more_entries and exists_in_cash_flow:
+            unify_entries_in_cash_flow(correlation, selected_total_amount, delete_uuid=True)
+        elif not more_entries and not exists_in_cash_flow:
+            create_unified_entries_in_cash_flow(selected_entries.first(), selected_total_amount, keep_uuid=False)
+        elif more_entries and not exists_in_cash_flow:
+            create_unified_entries_in_cash_flow(selected_entries.first(), selected_total_amount, keep_uuid=True)
+
+        selected_entries.delete()
 
 def unify_entries_in_cash_flow(uuid_partial_settlement_correlation, total_amount, delete_uuid=False):
     cash_flow = CashFlowEntry.objects.get(uuid_partial_settlement_correlation=uuid_partial_settlement_correlation)
