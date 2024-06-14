@@ -552,7 +552,11 @@ def process_single_item(item, response):
         entry = get_cash_flow_entry(item['id'])
         partial_amount, is_partial_settlement, completing_settlement = calculate_settlement_info(item, entry)
         uuid_partial_settlement_correlation = update_uuid_partial_settlement_correlation(entry, partial_amount, is_partial_settlement)
-        create_settled_entry(item, entry, partial_amount, is_partial_settlement, uuid_partial_settlement_correlation)
+
+        # Calcule o número da parcela aqui
+        installment_number = SettledEntry.objects.filter(uuid_partial_settlement_correlation=uuid_partial_settlement_correlation).count() + 1
+
+        create_settled_entry(item, entry, partial_amount, is_partial_settlement, uuid_partial_settlement_correlation, installment_number)
         update_entry_if_needed(entry, partial_amount, is_partial_settlement, completing_settlement)
 
         # Verifica se a liquidação é parcial
@@ -580,7 +584,7 @@ def get_cash_flow_entry(entry_id):
 def calculate_settlement_info(item, entry):
     total_amount = entry.amount
     partial_amount = Decimal(item.get('partial_amount', 0))
-    is_partial_settlement = partial_amount > 0 and partial_amount <= total_amount
+    is_partial_settlement = partial_amount > 0 and partial_amount < total_amount
     completing_settlement = partial_amount == total_amount
     return partial_amount, is_partial_settlement, completing_settlement
 
@@ -590,10 +594,14 @@ def update_uuid_partial_settlement_correlation(entry, partial_amount, is_partial
         entry.save()
     return entry.uuid_partial_settlement_correlation
 
-def create_settled_entry(item, entry, partial_amount, is_partial_settlement, uuid_partial_settlement_correlation):
+def create_settled_entry(item, entry, partial_amount, is_partial_settlement, uuid_partial_settlement_correlation, installment_number):
     settlement_date_aware = timezone.make_aware(datetime.strptime(item['settlement_date'], '%Y-%m-%d'))
-    installment_number = SettledEntry.objects.filter(uuid_partial_settlement_correlation=uuid_partial_settlement_correlation).count() + 1 if uuid_partial_settlement_correlation else 1
-    updated_entry_description = f"{entry.description} | Parcela ({installment_number})" if is_partial_settlement else entry.description
+
+    # Atualizar a descrição para incluir o número da parcela em todas as liquidações parciais, incluindo a última
+    if is_partial_settlement or (partial_amount == entry.amount):
+        updated_entry_description = f"{entry.description} | Parcela ({installment_number})"
+    else:
+        updated_entry_description = entry.description
 
     SettledEntry.objects.create(
         cash_flow_id=entry.id,

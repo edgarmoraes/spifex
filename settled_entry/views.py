@@ -272,6 +272,7 @@ def create_unified_entries_in_cash_flow(entry, total_amount, keep_uuid=False):
         periods=entry.periods,
         weekend_action=entry.weekend_action,
         creation_date=entry.original_creation_date,
+        uuid_installments_correlation=entry.uuid_installments_correlation,
         uuid_general_ledger_account=entry.uuid_general_ledger_account,
         uuid_document_type=entry.uuid_document_type,
         uuid_department=entry.uuid_department,
