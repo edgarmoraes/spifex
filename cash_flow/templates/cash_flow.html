@@ -533,21 +533,21 @@
 
                 <div id="modal-stakeholders-tab-credit" class="tab-content modal-stakeholders-tab modal-stakeholders-tab-credit" style="display:none;">
                     <div class="modal-fields credit-modal-fields modal-stakeholders-fields">
-                        <section class="modal-section credit-modal-form__section--client section__client">
-                            <label for="dropdown-button-client-credit">Cliente</label>
+                        <section class="modal-section credit-modal-form__section--costumer section__costumer">
+                            <label for="dropdown-button-costumer-credit">Cliente</label>
                             <div class="dropdown-multiselect dropdown-multiselect-credit dropdown-multiselect-stakeholders">
-                                <button type="button" onclick="toggleDropdown('dropdown-content-client-credit', event)" id="dropdown-button-client-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
-                                <div id="dropdown-content-client-credit" class="dropdown-content dropdown-content-client dropdown-content-client-credit">
-                                    <input id="modal-dropdown-button-client-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-client-credit')" placeholder="Filtrar...">
+                                <button type="button" onclick="toggleDropdown('dropdown-content-costumer-credit', event)" id="dropdown-button-costumer-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
+                                <div id="dropdown-content-costumer-credit" class="dropdown-content dropdown-content-costumer dropdown-content-costumer-credit">
+                                    <input id="modal-dropdown-button-costumer-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-costumer-credit')" placeholder="Filtrar...">
                                     <div class="dropdown-options">
-                                        {% for client in Clients %}
+                                        {% for costumer in Costumers %}
                                             <label class="label-filters">
-                                                <input type="checkbox" class="client-checkbox" name="client_option_credit" data-uuid-client="{{ client.uuid_client }}" data-client="{{ client.client }}">
-                                                {{ client.client }}
+                                                <input type="checkbox" class="costumer-checkbox" name="costumer_option_credit" data-uuid-costumer="{{ costumer.uuid_costumer }}" data-costumer="{{ costumer.costumer }}">
+                                                {{ costumer.costumer }}
                                             </label>
                                             {% endfor %}
-                                        <input type="hidden" id="client-name-credit" name="client_name_credit" value="">
-                                        <input type="hidden" id="client-uuid-credit" name="client_uuid_credit" value="">
+                                        <input type="hidden" id="costumer-name-credit" name="costumer_name_credit" value="">
+                                        <input type="hidden" id="costumer-uuid-credit" name="costumer_uuid_credit" value="">
                                     </div>
                                 </div>
                             </div>

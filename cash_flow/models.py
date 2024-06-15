@@ -109,3 +109,24 @@ class Inventory(models.Model):
     inventory_quantity = models.PositiveIntegerField(default=0)
     uuid_inventory_item = models.UUIDField(null=True, blank=True)
     inventory_quantity_cash_flow = models.PositiveIntegerField(null=True, default=0)
+
+class Entities(models.Model):
+    full_name = models.CharField(null=True, blank=True, max_length=255)
+    ssn_tax_id = models.CharField(null=True, blank=True, max_length=14, unique=True)  # CPF equivalent, SSN in the US
+    ein_tax_id = models.CharField(null=True, blank=True, max_length=18, unique=True)  # CNPJ equivalent, EIN in the US
+    alias_name = models.CharField(null=True, blank=True, max_length=20)
+    area_code = models.CharField(null=True, blank=True, max_length=3)  # DDD equivalent in the US
+    phone_number = models.CharField(null=True, blank=True, max_length=10)  # Phone number without area code
+    street = models.CharField(null=True, blank=True, max_length=255)
+    street_number = models.CharField(null=True, blank=True, max_length=10)
+    state = models.CharField(null=True, blank=True, max_length=2)  # US state abbreviations are usually 2 letters
+    city = models.CharField(null=True, blank=True, max_length=255)
+    postal_code = models.CharField(null=True, blank=True, max_length=10)  # Zip code
+    email = models.EmailField(null=True, blank=True, max_length=255)
+    bank_name = models.CharField(null=True, blank=True, max_length=255)
+    bank_branch = models.CharField(null=True, blank=True, max_length=10)  # Bank agency number
+    checking_account = models.CharField(null=True, blank=True, max_length=20)  # Bank account number
+    account_holder_tax_id = models.CharField(null=True, blank=True, max_length=20)  # CPF or CNPJ of the account holder
+    account_holder_name = models.CharField(null=True, blank=True, max_length=255)  # Name of the account holder
+    entity_type = models.CharField(null=True, blank=True, max_length=10)
+    uuid_entities = models.UUIDField(null=True, blank=True)
