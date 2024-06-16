@@ -106,8 +106,8 @@
                             data-account-holder-tax-id="{{ entities_item.account_holder_tax_id }}"
                             data-account-holder-name="{{ entities_item.account_holder_name }}"
                             data-uuid-entity-item="{{ entities_item.uuid_entities }}">
-                            <td class="full-name-row">{{ entities_item.full_name }}</td>
-                            <td class="tax-id-row">{{ entities_item.ssn_tax_id|default:entities_item.ein_tax_id }}</td>
+                            <td class="full-name-row">{{ entities_item.full_name|default_if_none:'' }}</td>
+                            <td class="tax-id-row">{{ entities_item.ssn_tax_id|default_if_none:entities_item.ein_tax_id|default_if_none:'' }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -146,7 +146,7 @@
                         </section>
                         <section class="modal-section entity-modal-form__section--tax-id section__tax-id">
                             <label for="tax-id">CPF ou CNPJ*</label>
-                            <input class="modal-tax-id" id="tax-id" type="text" name="tax_id" maxlength="18" required><br>
+                            <input class="modal-tax-id" id="tax-id" type="text" name="tax_id" maxlength="18"><br>
                         </section>
                         <section class="modal-section entity-modal-form__section--alias-name section__alias-name">
                             <label for="alias-name">Nome Fantasia</label>

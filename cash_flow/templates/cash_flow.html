@@ -542,10 +542,17 @@
                                     <div class="dropdown-options">
                                         {% for costumer in Costumers %}
                                             <label class="label-filters">
-                                                <input type="checkbox" class="costumer-checkbox" name="costumer_option_credit" data-uuid-costumer="{{ costumer.uuid_costumer }}" data-costumer="{{ costumer.costumer }}">
-                                                {{ costumer.costumer }}
+                                                <input type="checkbox" class="costumer-checkbox" name="costumer_option_credit" data-uuid-costumer="{{ costumer.uuid_entities }}" data-costumer="{{ costumer.full_name }}">
+                                                {{ costumer.full_name }}
+                                                {% if costumer.ssn_tax_id %}
+                                                     - {{ costumer.ssn_tax_id }}
+                                                {% elif costumer.ein_tax_id %}
+                                                     - {{ costumer.ein_tax_id }}
+                                                {% else %}
+                                                     - ID não disponível
+                                                {% endif %}
                                             </label>
-                                            {% endfor %}
+                                        {% endfor %}
                                         <input type="hidden" id="costumer-name-credit" name="costumer_name_credit" value="">
                                         <input type="hidden" id="costumer-uuid-credit" name="costumer_uuid_credit" value="">
                                     </div>
