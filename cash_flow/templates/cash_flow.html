@@ -533,28 +533,42 @@
 
                 <div id="modal-stakeholders-tab-credit" class="tab-content modal-stakeholders-tab modal-stakeholders-tab-credit" style="display:none;">
                     <div class="modal-fields credit-modal-fields modal-stakeholders-fields">
-                        <section class="modal-section credit-modal-form__section--costumer section__costumer">
-                            <label for="dropdown-button-costumer-credit">Cliente</label>
+                        <input type="hidden" id="entity-name-credit" name="entity_name_credit" value="">
+                        <input type="hidden" id="entity-tax-id-credit" name="entity_tax_id_credit" value="">
+                        <input type="hidden" id="entity-uuid-credit" name="entity_uuid_credit" value="">
+                
+                        <!-- Nova seção de seleção -->
+                        <section class="modal-section credit-modal-form__section--entity-type section__entity-type">
+                            <label for="entity-type-credit">Tipo de Entidade</label>
+                            <select id="entity-type-credit" name="entity_type_credit" onchange="handleEntityTypeChange(event, 'credit')">
+                                <option value="">Selecione</option>
+                                <option value="customer">Cliente</option>
+                                <option value="supplier">Fornecedor</option>
+                                <option value="employee">Funcionário</option>
+                            </select>
+                        </section>
+                
+                        <!-- Seção de dropdown -->
+                        <section class="modal-section credit-modal-form__section--entity section__entity" style="display:none;">
+                            <label for="dropdown-button-entity-credit">Cliente</label>
                             <div class="dropdown-multiselect dropdown-multiselect-credit dropdown-multiselect-stakeholders">
-                                <button type="button" onclick="toggleDropdown('dropdown-content-costumer-credit', event)" id="dropdown-button-costumer-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
-                                <div id="dropdown-content-costumer-credit" class="dropdown-content dropdown-content-costumer dropdown-content-costumer-credit">
-                                    <input id="modal-dropdown-button-costumer-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-costumer-credit')" placeholder="Filtrar...">
+                                <button type="button" onclick="toggleDropdown('dropdown-content-entity-credit', event)" id="dropdown-button-entity-credit" class="modal-dropdown-button dropdown-button">Selecione</button>
+                                <div id="dropdown-content-entity-credit" class="dropdown-content dropdown-content-entity dropdown-content-entity-credit">
+                                    <input id="modal-dropdown-button-entity-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-entity-credit')" placeholder="Filtrar...">
                                     <div class="dropdown-options">
-                                        {% for costumer in Costumers %}
+                                        {% for entity in Entities %}
                                             <label class="label-filters">
-                                                <input type="checkbox" class="costumer-checkbox" name="costumer_option_credit" data-uuid-costumer="{{ costumer.uuid_entities }}" data-costumer="{{ costumer.full_name }}">
-                                                {{ costumer.full_name }}
-                                                {% if costumer.ssn_tax_id %}
-                                                     - {{ costumer.ssn_tax_id }}
-                                                {% elif costumer.ein_tax_id %}
-                                                     - {{ costumer.ein_tax_id }}
+                                                <input type="checkbox" class="entity-checkbox" name="entity_option_credit" data-entity-type="{{ entity.entity_type }}" data-uuid-entity="{{ entity.uuid_entities }}" data-entity="{{ entity.full_name }}" data-entity-tax-id="{% if entity.ssn_tax_id %}{{ entity.ssn_tax_id }}{% elif entity.ein_tax_id %}{{ entity.ein_tax_id }}{% else %}{% endif %}" >
+                                                {{ entity.full_name }}
+                                                {% if entity.ssn_tax_id %}
+                                                     - {{ entity.ssn_tax_id }}
+                                                {% elif entity.ein_tax_id %}
+                                                     - {{ entity.ein_tax_id }}
                                                 {% else %}
                                                      - ID não disponível
                                                 {% endif %}
                                             </label>
                                         {% endfor %}
-                                        <input type="hidden" id="costumer-name-credit" name="costumer_name_credit" value="">
-                                        <input type="hidden" id="costumer-uuid-credit" name="costumer_uuid_credit" value="">
                                     </div>
                                 </div>
                             </div>

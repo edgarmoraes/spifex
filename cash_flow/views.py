@@ -35,7 +35,7 @@ def display_cash_flow(request):
     departments_cash_flow = Departments.objects.all()
     projects_cash_flow = Projects.objects.all()
     inventory_cash_flow = Inventory.objects.all()
-    costumers_cash_flow = Entities.objects.filter(entity_type='customer')
+    entities_cash_flow = Entities.objects.all()
 
     accounts_by_subgroup = group_accounts_by_subgroup(accounts_queryset)
     entries_with_totals = calculate_monthly_totals(cash_flow_entries)
@@ -49,7 +49,7 @@ def display_cash_flow(request):
         'Departments': departments_cash_flow,
         'Projects': projects_cash_flow,
         'Inventory': inventory_cash_flow,
-        'Costumers': costumers_cash_flow,
+        'Entities': entities_cash_flow,
     }
     return render(request, 'cash_flow.html', context)
 
