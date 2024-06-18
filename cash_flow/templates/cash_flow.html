@@ -349,6 +349,10 @@
                                 data-inventory-item="{{ cash_flow_table_item.inventory_item }}"
                                 data-inventory-quantity="{{ cash_flow_table_item.inventory_quantity }}"
                                 data-uuid-inventory="{{ cash_flow_table_item.uuid_inventory_item }}"
+                                data-entity="{{ cash_flow_table_item.entity_full_name }}"
+                                data-entity-tax-id="{{ cash_flow_table_item.entity_tax_id }}"
+                                data-entity-type="{{ cash_flow_table_item.entity_type }}"
+                                data-uuid-entity="{{ cash_flow_table_item.uuid_entity }}"
                                 scope="row">
                                     <td class="checkbox-row"><label class="checkbox-container"><input id="custom-checkbox-{{ cash_flow_table_item.id }}" class="custom-checkbox" type="checkbox"
                                         data-id="{{ cash_flow_table_item.id }}"

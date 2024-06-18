@@ -34,6 +34,10 @@ class SettledEntry(models.Model):
     inventory_item = models.CharField(null=True, max_length=255)
     inventory_quantity = models.PositiveIntegerField(null=True, default=0)
     uuid_inventory_item = models.UUIDField(null=True, blank=True)
+    entity_full_name = models.CharField(null=True, max_length=255)
+    entity_tax_id = models.CharField(null=True, max_length=255)
+    entity_type = models.CharField(null=True, max_length=255)
+    uuid_entity = models.UUIDField(null=True, blank=True)
 
     _skip_update_balance = False
 

@@ -32,6 +32,7 @@ class CashFlowEntry(models.Model):
     uuid_inventory_item = models.UUIDField(null=True, blank=True)
     entity_full_name = models.CharField(null=True, max_length=255)
     entity_tax_id = models.CharField(null=True, max_length=255)
+    entity_type = models.CharField(null=True, max_length=255)
     uuid_entity = models.UUIDField(null=True, blank=True)
     
     def save(self, *args, **kwargs):

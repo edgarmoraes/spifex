@@ -117,6 +117,7 @@ def get_form_data(request):
     department_data = get_department_data(request, transaction_type)
     project_data = get_project_data(request, transaction_type)
     inventory_data = get_inventory_data(request, transaction_type)
+    entity_data = get_entity_data(request, transaction_type)
 
     return {
         'due_date': due_date,
@@ -145,6 +146,10 @@ def get_form_data(request):
         'inventory_quantity': inventory_data['inventory_quantity'],
         'inventory_item_code': inventory_data['inventory_item_code'],
         'inventory_uuid': inventory_data['inventory_uuid'],
+        'entity_name': entity_data['entity_name'],
+        'entity_tax_id': entity_data['entity_tax_id'],
+        'entity_type': entity_data['entity_type'],
+        'entity_uuid': entity_data['entity_uuid'],
     }
 
 def get_transaction_type(request):
@@ -295,6 +300,29 @@ def get_inventory_data(request, transaction_type):
 
     return {'inventory_name': inventory_name, 'inventory_quantity': inventory_quantity, 'inventory_item_code': inventory_item_code, 'inventory_uuid': inventory_uuid}
 
+def get_entity_data(request, transaction_type):
+    entity_name_field = 'entity_name_credit' if transaction_type == 'Crédito' else 'entity_name_debit'
+    entity_tax_id_field = 'entity_tax_id_credit' if transaction_type == 'Crédito' else 'entity_tax_id_debit'
+    entity_type_field = 'entity_type_credit' if transaction_type == 'Crédito' else 'entity_type_debit'
+    entity_uuid_field = 'entity_uuid_credit' if transaction_type == 'Crédito' else 'entity_uuid_debit'
+
+    entity_name = request.POST.get(entity_name_field)
+    entity_tax_id = request.POST.get(entity_tax_id_field)
+    entity_type = request.POST.get(entity_type_field)
+    entity_uuid = request.POST.get(entity_uuid_field)
+
+    # Substituir strings vazias por None
+    if entity_name == '':
+        entity_name = None
+    if entity_tax_id == '':
+        entity_tax_id = None
+    if entity_type == '':
+        entity_type = None
+    if entity_uuid == '':
+        entity_uuid = None
+
+    return {'entity_name': entity_name, 'entity_tax_id': entity_tax_id, 'entity_type': entity_type, 'entity_uuid': entity_uuid}
+
 def update_existing_cash_flow_entries(form_data):
     # Busca o fluxo de caixa pelo ID
     cash_flow_table = get_object_or_404(CashFlowEntry, id=form_data['entry_id'])
@@ -338,6 +366,12 @@ def update_existing_cash_flow_entries(form_data):
     cash_flow_table.inventory_quantity = form_data['inventory_quantity']
     cash_flow_table.inventory_item_code = form_data['inventory_item_code']
     cash_flow_table.uuid_inventory_item = form_data['inventory_uuid']
+
+    # Atualiza o entity, entity tax ID e seu UUID
+    cash_flow_table.entity_full_name = form_data['entity_name']
+    cash_flow_table.entity_tax_id = form_data['entity_tax_id']
+    cash_flow_table.entity_type = form_data['entity_type']
+    cash_flow_table.uuid_entity = form_data['entity_uuid']
 
     # Salva as alterações no banco de dados
     cash_flow_table.save()
@@ -400,7 +434,11 @@ def create_cash_flow_entries(form_data):
             inventory_item=form_data['inventory_name'],
             inventory_quantity=form_data['inventory_quantity'],
             uuid_inventory_item=form_data['inventory_uuid'],
-            creation_date=datetime.now(),
+            entity_full_name=form_data['entity_name'],
+            entity_tax_id=form_data['entity_tax_id'],
+            entity_type=form_data['entity_type'],
+            uuid_entity=form_data['entity_uuid'],
+            creation_date=datetime.now()
         )
 
 def get_related_installments(request, correlation_id):
@@ -637,7 +675,11 @@ def create_settled_entry(item, entry, partial_amount, is_partial_settlement, uui
         inventory_item_code=entry.inventory_item_code,
         inventory_item=entry.inventory_item,
         inventory_quantity=entry.inventory_quantity,
-        uuid_inventory_item=entry.uuid_inventory_item
+        uuid_inventory_item=entry.uuid_inventory_item,
+        entity_full_name=entry.entity_full_name,
+        entity_tax_id=entry.entity_tax_id,
+        entity_type=entry.entity_type,
+        uuid_entity=entry.uuid_entity
     )
 
 def update_entry_if_needed(entry, partial_amount, is_partial_settlement, completing_settlement):
