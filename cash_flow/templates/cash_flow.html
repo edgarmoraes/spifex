@@ -675,78 +675,285 @@
 
         <!-- Modal debit -->
         <dialog class="modal debit-modal" id="debit-modal">
+            <div class="modal-header">
+                <h1 class="modal-title">Pagamentos</h1>
+                <div class="modal-tabs">
+                    <button class="tab-link" onclick="changeTab(event, 'modal-details-tab-debit')">Detalhes</button>
+                    <button class="tab-link" onclick="changeTab(event, 'modal-cost-center-tab-debit')">Centro de Custos</button>
+                    <button class="tab-link" onclick="changeTab(event, 'modal-stakeholders-tab-debit')">Partes Interessadas</button>
+                    <button class="tab-link" onclick="changeTab(event, 'modal-inventory-tab-debit')">Estoque</button>
+                    <button class="tab-link" onclick="changeTab(event, 'modal-recurrence-tab-debit')">Recorrência</button>
+                </div>
+            </div>
 
-            <h1 class="modal-title">Pagamentos</h1>
-            
-            <form class="modal-form debit-modal-form" action="/fluxo_de_caixa/" method="POST">{% csrf_token %}
-                <input type="hidden" name="entry_id_debit" value="{{ cash_flow.id }}">
-                <input type="hidden" name="uuid_debit" value="{{ cash_flow.uuid_partial_settlement_correlation }}">
-                <section class="modal-section">
-                    <label for="date-debit">Data</label>
-                    <input class="modal-date" type="date" id="date-debit" name="due_date" required><br>
-                </section>
-            
-                <section class="modal-section">
-                    <label for="description-debit">Descrição</label>
-                    <input class="modal-description" id="description-debit" maxlength="100" type="text" name="description" required><br>
-                </section>
-            
-                <section class="modal-section">
-                    <label for="observation-debit">Observação</label>
-                    <input class="modal-observation" id="observation-debit" maxlength="100" type="text" name="observation"></input><br>
-                </section>
-                
-                <section class="modal-section">
-                    <label for="amount-debit">Valor</label>
-                    <input class="modal-amount" id="amount-debit" type="text" name="amount" oninput="formatAmount(this)" value="R$ " required><br>
-                </section>
-            
-                <section class="modal-section">
-                    <label for="dropdown-button-accounts-debit">Conta Contábil</label>
-                    <div class="dropdown-multiselect">
-                        <button type="button" onclick="toggleDropdownModals('dropdown-content-accounts-debit', event)" id="dropdown-button-accounts-debit" class="dropdown-button">Selecione</button>
-                        <div id="dropdown-content-accounts-debit" class="dropdown-content">
-                            <div class="dropdown-options">
-                                {% for subgroup, accounts in Accounts_by_subgroup_list.items %}
-                                    {% if accounts.0.nature == 'Débito' %}
-                                        <div class="subgroup-label">{{ subgroup }}</div>
-                                        {% for account in accounts %}
+            <form class="modal-form debit-modal-form" action="/fluxo_de_caixa/" method="POST" onsubmit="return validateCheckboxes()">
+                {% csrf_token %}
+                <div id="modal-details-tab-debit" class="tab-content modal-details-tab modal-details-tab-debit">
+                    <div class="modal-fields debit-modal-fields modal-details-fields">
+                        <input type="hidden" name="entry_id_debit" value="{{ cash_flow.id }}">
+                        <input type="hidden" name="uuid_partial_settlement_correlation_debit" value="{{ cash_flow.uuid_partial_settlement_correlation }}">
+                        <section class="modal-section debit-modal-form__section--date section__date">
+                            <label for="date-debit">Data*</label>
+                            <input class="modal-date" id="date-debit" type="date" name="due_date" required>
+                        </section>
+                    
+                        <section class="modal-section debit-modal-form__section--description section__description">
+                            <label for="description-debit">Descrição*</label>
+                            <input class="modal-description" id="description-debit" maxlength="100" type="text" name="description" required>
+                        </section>
+                    
+                        <section class="modal-section debit-modal-form__section--observation section__observation">
+                            <label for="observation-debit">Observação</label>
+                            <input class="modal-observation" id="observation-debit" maxlength="100" type="text" name="observation"></input>
+                        </section>
+                    
+                        <section class="modal-section debit-modal-form__section--amount section__amount">
+                            <label for="amount-debit">Valor*</label>
+                            <input class="modal-amount" id="amount-debit" type="text" name="amount" oninput="formatAmount(this)" value="R$ " required>
+                        </section>
+                    
+                        <section class="modal-section debit-modal-form__section--general-ledger-dropdown section__general-ledger-dropdown">
+                            <label for="dropdown-button-accounts-debit">Conta Contábil*</label>
+                            <div class="dropdown-multiselect dropdown-multiselect-accounts">
+                                <button type="button" onclick="toggleDropdown('dropdown-content-accounts-debit', event)" id="dropdown-button-accounts-debit" class="modal-dropdown-button dropdown-button">Selecione</button>
+                                <div id="dropdown-content-accounts-debit" class="dropdown-content dropdown-content-accounts dropdown-content-accounts-debit">
+                                    <input id="modal-dropdown-button-account-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-accounts-debit')" placeholder="Filtrar...">
+                                    <div class="dropdown-options">
+                                        {% for subgroup, accounts in Accounts_by_subgroup_list.items %}
+                                            {% if accounts.0.nature == 'Crédito' %}
+                                                <div class="subgroup-label">{{ subgroup }}</div>
+                                                {% for account in accounts %}
+                                                    <label class="label-filters">
+                                                        <input type="checkbox" class="general-ledger-checkbox" name="accounts_debit" data-uuid-account="{{ account.uuid }}" data-account="{{ account.account }}">
+                                                        {{ account.account }}
+                                                    </label>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        <input type="hidden" id="general-ledger-account-name-debit" name="general_ledger_account_name_debit" value="">
+                                        <input type="hidden" id="general-ledger-account-uuid-debit" name="general_ledger_account_uuid_debit" value="">
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="modal-section debit-modal-form__section--document-type section__document-type">
+                            <label for="dropdown-button-document-type-debit">Tipo de Documento</label>
+                            <div class="dropdown-multiselect dropdown-multiselect-debit dropdown-multiselect-document-type">
+                                <button type="button" onclick="toggleDropdown('dropdown-content-document-type-debit', event)" id="dropdown-button-document-type-debit" class="modal-dropdown-button dropdown-button">Selecione</button>
+                                <div id="dropdown-content-document-type-debit" class="dropdown-content dropdown-content-document-type dropdown-content-document-type-debit">
+                                    <input id="modal-dropdown-button-document-type-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-document-type-debit')" placeholder="Filtrar...">
+                                    <div class="dropdown-options">
+                                        {% for document_type in Document_types %}
                                             <label class="label-filters">
-                                                <input type="checkbox" name="contas_debit" data-uuid-account="{{ account.uuid }}" data-account="{{ account.account }}" class="checkbox-account">
-                                                {{ account.account }}
+                                                <input type="checkbox" class="document-type-checkbox" name="document_type_option_debit" data-uuid-document-type="{{ document_type.uuid_document_type }}" data-document-type="{{ document_type.document_type }}">
+                                                {{ document_type.document_type }}
+                                            </label>
+                                            {% endfor %}
+                                        <input type="hidden" id="document-type-name-debit" name="document_type_name_debit" value="">
+                                        <input type="hidden" id="document-type-uuid-debit" name="document_type_uuid_debit" value="">
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <section class="modal-section debit-modal-form__section--notes section__notes mesclar-2">
+                            <label for="notes-debit">Anotações</label>
+                            <input id="notes-debit" class="notes-debit" name="notes" type="text">
+                        </section>
+
+                        <section class="modal-section debit-modal-form__section--tag section__tag">
+                            <label for="tagInput-debit">Tags</label>
+                            <input id="tagInput-debit" class="tagInput" type="text" placeholder="Adicione uma tag">
+                        </section>
+
+                        <section class="modal-section debit-modal-form__section--tag-container section__tag-container mesclar-3">
+                            <div id="tag-container-debit" class="tag-container"></div>
+                            <input type="hidden" id="tagsHiddenInput-debit" name="tags">
+                        </section>
+                    </div>
+                </div>
+
+                <div id="modal-cost-center-tab-debit" class="tab-content modal-cost-center-tab modal-cost-center-tab-debit" style="display:none;">
+                    <div class="modal-fields debit-modal-fields modal-cost-center-fields">
+                        <section class="modal-section debit-modal-form__section--department section__department">
+                            <label for="dropdown-button-department-debit">Departamento</label>
+                            <div class="dropdown-multiselect dropdown-multiselect-debit dropdown-multiselect-department">
+                                <button type="button" onclick="toggleDropdown('dropdown-content-department-debit', event)" id="dropdown-button-department-debit" class="modal-dropdown-button dropdown-button" style="width: 75%;">Selecione</button>
+                                <div id="dropdown-content-department-debit" class="dropdown-content dropdown-content-department dropdown-content-department-debit">
+                                    <input id="modal-dropdown-button-department-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-department-debit')" placeholder="Filtrar...">
+                                    <div class="dropdown-options">
+                                        {% for department in Departments %}
+                                            <label class="label-filters">
+                                                <input type="checkbox" class="department-checkbox" name="department_option_debit" data-percentage-department="{{ department.department_percentage }}" data-uuid-department="{{ department.uuid_department }}" data-department="{{ department.department }}">
+                                                {{ department.department }}
                                             </label>
                                         {% endfor %}
-                                    {% endif %}
-                                {% endfor %}
-                                <input type="hidden" id="general-ledger-account-name-debit" name="general_ledger_account_name_debit" value="">
-                                <input type="hidden" id="general-ledger-account-uuid-debit" name="general_ledger_account_uuid_debit" value="">
+                                        <input type="hidden" id="department-name-debit" name="department_name_debit" value="">
+                                        <input type="hidden" id="department-uuid-debit" name="department_uuid_debit" value="">
+                                        <input type="hidden" id="department-percentage-debit" name="department_percentage_debit" value="">
+                                    </div>
+                                </div>
                             </div>
+                            <div id="department-list-debit" class="department-list"></div>
+                        </section>
+
+                        <section class="modal-section debit-modal-form__section--project section__project">
+                            <label for="dropdown-button-project-debit">Projetos</label>
+                            <div class="dropdown-multiselect dropdown-multiselect-debit dropdown-multiselect-project">
+                                <button type="button" onclick="toggleDropdown('dropdown-content-project-debit', event)" id="dropdown-button-project-debit" class="modal-dropdown-button dropdown-button" style="width: 75%;">Selecione</button>
+                                <div id="dropdown-content-project-debit" class="dropdown-content dropdown-content-project dropdown-content-project-debit">
+                                    <input id="modal-dropdown-button-project-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-project-debit')" placeholder="Filtrar...">
+                                    <div class="dropdown-options">
+                                        {% for project in Projects %}
+                                            <label class="label-filters">
+                                                <input type="checkbox" class="project-checkbox" name="project_option_debit" data-uuid-project="{{ project.uuid_project }}" data-project="{{ project.project_name }}">
+                                                {{ project.project_name }} - {{ project.project_code }}
+                                            </label>
+                                            {% endfor %}
+                                        <input type="hidden" id="project-name-debit" name="project_name_debit" value="">
+                                        <input type="hidden" id="project-uuid-debit" name="project_uuid_debit" value="">
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <div id="modal-stakeholders-tab-debit" class="tab-content modal-stakeholders-tab modal-stakeholders-tab-debit" style="display:none;">
+                    <div class="modal-fields debit-modal-fields modal-stakeholders-fields">
+                        <input type="hidden" id="entity-name-debit" name="entity_name_debit" value="">
+                        <input type="hidden" id="entity-tax-id-debit" name="entity_tax_id_debit" value="">
+                        <input type="hidden" id="entity-uuid-debit" name="entity_uuid_debit" value="">
+                
+                        <section class="modal-section debit-modal-form__section--entity-type section__entity-type">
+                            <label for="entity-type-debit">Tipo de Entidade</label>
+                            <select id="entity-type-debit" name="entity_type_debit" onchange="handleEntityTypeChange(event, 'debit')">
+                                <option value="">Selecione</option>
+                                <option value="customer">Cliente</option>
+                                <option value="supplier">Fornecedor</option>
+                                <option value="employee">Funcionário</option>
+                            </select>
+                        </section>
+                
+                        <section class="modal-section debit-modal-form__section--entity section__entity" style="display:none;">
+                            <label for="dropdown-button-entity-debit">Cliente</label>
+                            <div class="dropdown-multiselect dropdown-multiselect-debit dropdown-multiselect-stakeholders">
+                                <button type="button" onclick="toggleDropdown('dropdown-content-entity-debit', event)" id="dropdown-button-entity-debit" class="modal-dropdown-button dropdown-button">Selecione</button>
+                                <div id="dropdown-content-entity-debit" class="dropdown-content dropdown-content-entity dropdown-content-entity-debit">
+                                    <input id="modal-dropdown-button-entity-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-entity-debit')" placeholder="Filtrar...">
+                                    <div class="dropdown-options">
+                                        {% for entity in Entities %}
+                                            <label class="label-filters">
+                                                <input type="checkbox" class="entity-checkbox" name="entity_option_debit" data-entity-type="{{ entity.entity_type }}" data-uuid-entity="{{ entity.uuid_entities }}" data-entity="{{ entity.full_name }}" data-entity-tax-id="{% if entity.ssn_tax_id %}{{ entity.ssn_tax_id }}{% elif entity.ein_tax_id %}{{ entity.ein_tax_id }}{% else %}{% endif %}" >
+                                                {{ entity.full_name }}
+                                                {% if entity.ssn_tax_id %}
+                                                     - {{ entity.ssn_tax_id }}
+                                                {% elif entity.ein_tax_id %}
+                                                     - {{ entity.ein_tax_id }}
+                                                {% else %}
+                                                     - ID não disponível
+                                                {% endif %}
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <div id="modal-inventory-tab-debit" class="tab-content modal-inventory-tab modal-inventory-tab-debit" style="display:none;">
+                    <div class="modal-fields debit-modal-fields modal-inventory-fields">
+                        <section class="modal-section debit-modal-form__section--inventory section__inventory">
+                            <label for="dropdown-button-inventory-debit">Estoque</label>
+                            <div class="dropdown-multiselect dropdown-multiselect-debit dropdown-multiselect-inventory">
+                                <button type="button" onclick="toggleDropdown('dropdown-content-inventory-debit', event)" id="dropdown-button-inventory-debit" class="modal-dropdown-button dropdown-button">Selecione</button>
+                                <div id="dropdown-content-inventory-debit" class="dropdown-content dropdown-content-inventory dropdown-content-inventory-debit">
+                                    <input id="modal-dropdown-button-inventory-search" class="modal-dropdown-button-search" type="text" oninput="filterOptions(this, 'dropdown-content-inventory-debit')" placeholder="Filtrar...">
+                                    <div class="dropdown-options">
+                                        {% for inventory in Inventory %}
+                                            <label class="label-filters">
+                                                <input type="checkbox" class="inventory-checkbox" name="inventory_option_debit" data-uuid-inventory="{{ inventory.uuid_inventory_item }}" data-inventory-item-code="{{ inventory.inventory_item_code }}" data-inventory-item="{{ inventory.inventory_item }}" data-inventory-quantity="{{ inventory.inventory_quantity }}">
+                                                {{ inventory.inventory_item_code }} - {{ inventory.inventory_item }}
+                                            </label>
+                                            {% endfor %}
+                                        <input type="hidden" id="inventory-name-debit" name="inventory_name_debit" value="">
+                                        <input type="hidden" id="inventory-item-code-debit" name="inventory_item_code_debit" value="">
+                                        <input type="hidden" id="inventory-uuid-debit" name="inventory_uuid_debit" value="">
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <section class="modal-section debit-modal-form__section--quantity section__quantity" id="debit-modal-form__section--quantity" style="display: none;">
+                            <label for="inventory-quantity-debit">Quantidade*</label>
+                            <input id="inventory-quantity-debit" class="inventory-quantity-debit" name="inventory_quantity_debit" type="number">
+                        </section>
+                    </div>
+                </div>
+
+                <div id="modal-recurrence-tab-debit" class="tab-content modal-recurrence-tab modal-recurrence-tab-debit" style="display:none;">
+                    <div class="modal-fields debit-modal-fields modal-recurrence-fields">
+                        <div class="debit-modal-form__installments-container installments-container mesclar-2">
+                            <section class="modal-section debit-modal-form__section--recurrence section__recurrence">
+                                <label for="recurrence-debit" class="recurrence-label">Recorrência</label>
+                                <select class="modal-recurrence" id="recurrence-debit" name="recurrence" required onchange="showInstallments(null, 'debit')">
+                                    <option value="no">Não</option>
+                                    <option value="yes">Sim</option>
+                                </select>
+                            </section>
+                            <section class="modal-section debit-modal-form__section--installments-number section__installments-number" id="section-installments-number-debit" style="display:none;">
+                                <label for="installments-debit">Número de Parcelas</label>
+                                <input class="modal-installments" id="installments-number-debit" type="number" name="installments" data-current-installment="{{ cash_flow.current_installment }}" data-total-installments="{{ cash_flow.total_installments }}" min="1" value="1">
+                            </section>
+                            <section class="modal-section debit-modal-form__section--periods section__periods" id="section-periods-debit" style="display:none;">
+                                <label for="periods-debit">Períodos</label>
+                                <select class="periods-debit" id="periods-debit" name="periods_debit">
+                                    <option value="monthly">Mensal</option>
+                                    <option value="weekly">Semanal</option>
+                                    <option value="bimonthly">Bimestral</option>
+                                    <option value="semiannual">Semestral</option>
+                                    <option value="yearly">Anual</option>
+                                </select>
+                            </section>
+                            <section class="modal-section debit-modal-form__section--weekend section__weekend" id="section-weekend-debit" style="display:none;">
+                                <label>Finais de Semana</label>
+                                <div class="weekend-container">
+                                    <div class="weekend-checkbox-container">
+                                        <label class="weekend-label" for="custom-checkbox-antedate-debit">Antecipar</label>
+                                        <label class="checkbox-container-weekend"><input id="custom-checkbox-antedate-debit" class="custom-checkbox-weekend checkbox-weekend" type="checkbox"><span class="checkmark-weekend"></span></label>
+                                    </div>
+                                    <div class="weekend-checkbox-container">
+                                        <label class="weekend-label" for="custom-checkbox-postpone-debit">Postergar</label>
+                                        <label class="checkbox-container-weekend"><input id="custom-checkbox-postpone-debit" class="custom-checkbox-weekend checkbox-weekend" type="checkbox"><span class="checkmark-weekend"></span></label>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="weekend-action-debit" name="weekend_action_debit" value="">
+                            </section>
                         </div>
                     </div>
-                </section>
-            
-                <section class="modal-section">
-                    <label for="recurrence-debit" class="recurrence-label">Recorrência</label>
-                    <select class="modal-recurrence" id="recurrence-debit" name="recurrence" required onchange="showInstallments(null, 'debit')">
-                        <option value="no">Não</option>
-                        <option value="yes">Sim</option>
-                    </select><br>
-                </section>
-            
-                <section class="modal-section mesclar-2" id="installment-number-debit" style="display:none;">
-                    <label for="installments-debit">Número de Parcelas</label>
-                    <input class="modal-installments" id="installments-number-debit" type="number" name="installments" data-current-installment="{{ cash_flow.current_installment }}" data-total-installments="{{ cash_flow.total_installments }}" min="1" value="1"><br>
-                </section>
-
-                <section class="modal-section mesclar-2">
-                    <div id="tag-container-debit" class="tag-container">
+                    <div class="installments-list-container" id="installments-list-container">
+                        <div class="cash-flow-table-wrapper installments-table-wrapper" style="display:none;">
+                            <table class="cash-flow-table installments-table" id="installments-table">
+                                <thead class="cash-flow-table__head installments-table__head">
+                                    <tr class="cash-flow-table__head--row">
+                                        <th class="due-date-col" scope="col">Vencimento</th>
+                                        <th class="description-col" scope="col">Descrição</th>
+                                        <th class="installment-col" scope="col">Parcela</th>
+                                        <th class="amount-col" scope="col">Débito/Crédito</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="cash-flow-table__body" id="installments-table-body">
+                                    <!-- List of related entries will be inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <input type="text" id="tagInput-debit" class="tagInput" placeholder="Adicione uma tag">
-                    <input type="hidden" id="tagsHiddenInput-debit" name="tags">
-                </section>
+                </div>
+
                 <section class="modal-buttons">
-                    <input type="submit" class="modal-save-button" name="salvar_debit" value="Salvar">
-                    <button type="button" class="modal-close-debit">Cancelar</button>
+                    <input type="submit" class="modal-save-button" name="modal_save_debit" value="Salvar">
+                    <button type="button" class="modal-close-button modal-close-debit" name="modal_close_debit">Cancelar</button>
                 </section>
             </form>
         </dialog>
