@@ -120,8 +120,8 @@
                                     <div class="dropdown-options">
                                         {% for banks_item in Banks_list %}
                                         <label class="label-filters">
-                                            <input type="checkbox" name="bancos" value="{{ banks_item.id }}" class="checkbox-bank">
-                                            {{ banks_item.banco }}
+                                            <input type="checkbox" name="banks" value="{{ banks_item.id }}" class="checkbox-bank">
+                                            {{ banks_item.bank }}
                                         </label>
                                         {% endfor %}
                                     </div>
@@ -248,7 +248,7 @@
                         <tbody class="banks-table__body">
                             {% for banks_item in Banks_list %}
                             <tr class="banks-table__body--row" data-bank-id="{{ banks_item.id }}" scope="row">
-                                <td class="bank-row" name="banco">{{ banks_item.banco }}</td>
+                                <td class="bank-row" name="bank">{{ banks_item.bank }}</td>
                                 <td class="bank-branch-row" name="bank_branch">{{ banks_item.bank_branch }}</td>
                                 <td class="bank-account-row" name="bank_account">{{ banks_item.bank_account }}</td>
                                 <td class="bank-balance-row" name="initial_balance">{{ banks_item.initial_balance|add_decimal:banks_item.current_balance|format_number }}</td>
@@ -328,7 +328,7 @@
                                         {{ settled_table_item.observation }}
                                         <small class="tag-row">Tags: {{ settled_table_item.tags }}</small>
                                     </td>
-                                    <td class="banco-row">{{ settled_table_item.settlement_bank }}</td>
+                                    <td class="bank-row">{{ settled_table_item.settlement_bank }}</td>
                                     <td class="installment-row">{{ settled_table_item.current_installment }}/{{ settled_table_item.total_installments }}</td>
                                     <input type="hidden" id="original-total-installments-recebimentos" name="original_total_installments">
                                     <input type="hidden" id="original-total-installments-pagamentos" name="original_total_installments">

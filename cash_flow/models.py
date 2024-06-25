@@ -82,7 +82,7 @@ class TemporaryTable(models.Model):
         TemporaryTable.objects.filter(moved_in__lt=time_limit).delete()
 
 class Banks(models.Model):
-    banco = models.CharField(max_length = 100)
+    bank = models.CharField(max_length = 100)
     bank_branch = models.CharField(max_length = 100)
     bank_account = models.CharField(max_length = 100)
     initial_balance = models.DecimalField(max_digits=13, decimal_places=2)

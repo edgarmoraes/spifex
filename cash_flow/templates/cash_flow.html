@@ -155,7 +155,7 @@
                                         {% for banks_item in Banks_list %}
                                         <label>
                                             <input id="checkbox-bank-{{ banks_item.id }}" type="checkbox" class="checkbox-bank" value="{{ banks_item.id }}" data-bank-id="{{ banks_item.id }}">
-                                            {{ banks_item.banco }}
+                                            {{ banks_item.bank }}
                                         </label>
                                         {% endfor %}
                                     </div>
@@ -282,7 +282,7 @@
                         <tbody class="banks-table__body">
                             {% for banks_item in Banks_list %}
                             <tr class="banks-table__body--row" scope="row" name="bank-id" data-bank-id="{{ banks_item.id }}">
-                                <td class="bank-row" name="bank">{{ banks_item.banco }}</td>
+                                <td class="bank-row" name="bank">{{ banks_item.bank }}</td>
                                 <td class="bank-branch-row" name="bank_branch">{{ banks_item.bank_branch }}</td>
                                 <td class="bank-account-row" name="bank_account">{{ banks_item.bank_account }}</td>
                                 <td class="bank-balance-row" name="initial_balance">{{ banks_item.initial_balance|add_decimal:banks_item.current_balance|format_number }}</td>
@@ -982,7 +982,7 @@
                         <select class="modal-withdrawal-bank" id="withdrawal-bank" name="withdrawal_bank" required>
                             <option value="" disabled selected hidden>Selecione</option>
                             {% for banks_item in Banks_list %}
-                            <option value="{{ banks_item.id }}|{{ banks_item.banco }}">{{ banks_item.banco }}</option>
+                            <option value="{{ banks_item.id }}|{{ banks_item.bank }}">{{ banks_item.bank }}</option>
                             {% endfor %}
                         </select><br>
                     </section>
@@ -992,7 +992,7 @@
                         <select class="modal-deposit-bank" id="deposit-bank" name="deposit_bank" required>
                             <option value="" disabled selected hidden>Selecione</option>
                             {% for banks_item in Banks_list %}
-                            <option value="{{ banks_item.id }}|{{ banks_item.banco }}">{{ banks_item.banco }}</option>
+                            <option value="{{ banks_item.id }}|{{ banks_item.bank }}">{{ banks_item.bank }}</option>
                             {% endfor %}
                         </select><br>
                     </section>
@@ -1035,7 +1035,7 @@
                                 {% for banks_item in Banks_list %}
                                 <tr class="banks-table-settlement__body--row" scope="row">
                                     <td class="checkbox-row"><label class="checkbox-container-settlement"><input id="custom-checkbox-settlement-{{ banks_item.id }}" class="custom-checkbox-settlement" type="checkbox"><span class="checkmark-settlement"></span></label></td>
-                                    <td class="bank-row settlement-bank-row" name="settlement_bank" data-bank-name="{{ banks_item.banco }}" data-bank-id="{{ banks_item.id }}">{{ banks_item.banco }}</td>
+                                    <td class="bank-row settlement-bank-row" name="settlement_bank" data-bank-name="{{ banks_item.bank }}" data-bank-id="{{ banks_item.id }}">{{ banks_item.bank }}</td>
                                     <td class="bank-branch-row" name="bank_branch">{{ banks_item.bank_branch }}</td>
                                     <td class="bank-account-row" name="bank_account">{{ banks_item.bank_account }}</td>
                                     <td class="settlement-bank-balance-row" name="initial_balance">{{ banks_item.initial_balance|add:banks_item.current_balance|format_number }}</td>

@@ -66,12 +66,12 @@ def save_bank(request):
     try:
         if bank_id:  # Atualização
             banks_table = Banks.objects.get(pk=bank_id)
-            was_updated = banks_table.banco != bank_name  # Verifica se a descrição do banco foi atualizada
+            was_updated = banks_table.bank != bank_name  # Verifica se a descrição do banco foi atualizada
         else:  # Criação
             banks_table = Banks()
             was_updated = False
 
-        banks_table.banco = bank_name
+        banks_table.bank = bank_name
         banks_table.bank_branch = bank_branch
         banks_table.bank_account = bank_account
         banks_table.initial_balance = initial_balance
